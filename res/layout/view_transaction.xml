@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="#62B1F6">
+
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_gravity="left"
+    	android:background="@drawable/titlelabel_background"
+    	android:text="@string/titleViewTransaction"
+    	android:id="@+id/titleViewTransaction"
+    	android:textSize="25sp"
+    	android:gravity="center_vertical"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="15sp"
+    />
+    
+    <!-- TableLayout to hold our general transaction data -->
+   	<TableLayout 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:stretchColumns="*">
+		<TableRow>
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Description"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_column="1" />
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:text="Description"
+    			android:id="@+id/vtDescription"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_span="4" />			
+		</TableRow>
+		<TableRow>
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Date"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_column="1" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="12-15-2011"
+    			android:id="@+id/vtDate"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Status"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="Cleared"
+    			android:id="@+id/vtStatus"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+		</TableRow>
+		<TableRow>
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Number"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_column="1" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="1025"
+    			android:id="@+id/vtNumber"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Amount"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="$ 255.93"
+    			android:id="@+id/vtAmount"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp" />
+		</TableRow>
+		<TableRow>
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Memo"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_column="1" />
+    		<TextView
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:gravity="left" 
+    			android:text="Just a test memo"
+    			android:id="@+id/vtMemo"
+    			android:textColor="@android:color/black"
+    			android:textSize="15sp"
+    			android:layout_span="3" />
+		</TableRow>
+		<TableRow>
+			<TextView 
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content" 
+    			android:text="@string/vtlabel_Splits"
+    			android:textSize="15sp"
+    			android:textColor="@android:color/black"
+    			android:layout_column="1" />
+		</TableRow>
+	</TableLayout>
+   	<!-- Layout for Account Listing Area -->
+   	<ListView
+   		android:layout_height="wrap_content"
+   		android:layout_width="fill_parent"
+   		android:id="@+id/listSplits">    
+   	</ListView>
+    <LinearLayout 
+    	android:orientation="horizontal"
+    	android:gravity="bottom"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent">
+    	<Button 
+    		android:text="@string/titleButtonEdit"
+	    	android:id="@+id/buttonEdit"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+	    	android:layout_weight="1">
+    	</Button>
+	    <Button
+    		android:text="@string/titleButtonDelete"
+    		android:id="@+id/buttonDelete"
+	    	android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1">
+	    </Button>
+	</LinearLayout>
+</LinearLayout>

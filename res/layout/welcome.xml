@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#62B1F6"
+    android:weightSum="1">
+    
+    <!-- Title TextView -->
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_gravity="left"
+    	android:background="@drawable/titlelabel_background"
+    	android:text="@string/titleWelcome"
+    	android:textSize="25sp"
+    	android:gravity="center_vertical"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <!-- Layout for Welcome Message Area -->
+    <LinearLayout
+    	android:orientation="vertical"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:background="@drawable/background" >
+    	
+    	<!-- StartNew TextView -->
+    	<TextView 
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_marginTop="20sp"
+    		android:layout_marginLeft="15sp"
+    		android:layout_marginRight="15sp"
+    		android:gravity="left"
+    		android:text="@string/titleStartNew"
+    		android:id="@+id/titleStartNew"
+    		android:textSize="15sp"
+    		android:textColor="@android:color/black"
+    		android:background="#afff"
+    	/>   
+    	
+    	<!-- OpenDatabase TextView -->
+    	<TextView
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		android:layout_marginLeft="15sp"
+    		android:layout_marginRight="15sp"
+    		android:layout_marginBottom="30sp"
+    		android:gravity="left"
+    		android:text="@string/titleOpenDatabase"
+    		android:id="@+id/titleOpenDatabase"
+    		android:textSize="15sp"
+    		android:textColor="@android:color/black"
+    		android:background="#afff"
+    	/> 
+    </LinearLayout>
+</LinearLayout>

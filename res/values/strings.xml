@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KMyMoney for Droid</string>
+    <string name="titleWelcome">Welcome</string>
+    <string name="titleStartNew">Start a new KMyMoney database</string>
+    <string name="titleOpenDatabase">Open a current KMyMoney database</string>
+    <string name="titleDefaultDbLocation">Default Db location</string>
+    <string name="summaryDefaultDbLocation">Default Db location</string>
+    <string name="titleFileChooser">Choose a File</string>
+    <string name="titleDatabaseName">Please enter a database name</string>
+    <string name="titleButtonOK">Ok</string>
+    <string name="titleButtonCancel">Cancel</string>
+    <string name="titleButtonEdit">Edit</string>
+    <string name="titleButtonDelete">Delete</string>
+    <string name="titleNewDatabase">New Database</string>
+    <string name="titleHome">Home</string>
+    <string name="titleLedger">Ledger</string>
+    <string name="titleViewTransaction">Transaction</string>
+    <string name="vtlabel_Description">Description:</string>
+    <string name="vtlabel_Date">Date: </string>
+    <string name="vtlabel_Status">Status: </string>
+    <string name="vtlabel_Number">Number: </string>
+    <string name="vtlabel_Amount">Amount: </string>
+    <string name="vtlabel_Memo">Memo: </string>
+    <string name="vtlabel_Splits">Categories</string>
+    <string name="titlePrefs">Options</string>
+    <string name="titleAccounts">Accounts</string>
+    <string name="titleCategories">Categories</string>
+    <string name="titlePayees">Payees</string>
+    <string name="titleNew">New</string>
+    <string name="titleEdit">Edit</string>
+    <string name="titleDelete">Delete</string>
+</resources>

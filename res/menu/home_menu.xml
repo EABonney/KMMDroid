@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+    	android:id="@+id/itemPrefs"
+    	android:icon="@android:drawable/ic_menu_preferences"
+    	android:title="@string/titlePrefs">
+    </item>
+    <item 
+    	android:id="@+id/itemAccounts" 
+    	android:icon="@drawable/accounts_view"
+    	android:title="@string/titleAccounts">
+    </item>
+    <item 
+    	android:id="@+id/itemCategories" 
+    	android:icon="@drawable/categories_view"
+    	android:title="@string/titleCategories">
+    </item>
+    <item 
+    	android:id="@+id/itemPayees" 
+    	android:icon="@drawable/payees_view"
+    	android:title="@string/titlePayees">
+    	</item>
+    
+</menu>
