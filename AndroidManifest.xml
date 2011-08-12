@@ -29,8 +29,12 @@
         <activity android:name=".LedgerActivity"
         		  android:label="@string/titleLedger">
 		</activity>
-		<activity android:name="ViewTransactionActivity"
+		<activity android:name=".ViewTransactionActivity"
 				  android:label="@string/titleViewTransaction">
+		</activity>
+		
+		<activity android:name=".AccountsActivity"
+				  android:label="@string/titleAcconts">
 		</activity>
     </application>
 </manifest>

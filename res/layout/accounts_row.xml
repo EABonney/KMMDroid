@@ -8,41 +8,47 @@
 	<LinearLayout
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-			
-		<TextView
+
+		<ImageView
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:src="@drawable/account_add"
+			android:id="@+id/arIcon" >
+		</ImageView>
+				
+		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
 			android:layout_weight="1"
 			android:gravity="left"
-			android:id="@+id/lrDate"
-			android:text="Date"
+			android:id="@+id/arAccountName"
+			android:text="Account Name"
+			android:textSize="12sp"
 			android:textColor="@android:color/black" />
-			
-		<TextView
+
+		<TextView 
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
 			android:layout_weight="1"
-			android:gravity="left"
-			android:id="@+id/lrDetails"
-			android:text="Details"
+			android:layout_gravity="center_vertical"
+			android:gravity="center"
+			android:id="@+id/arAccountType"
+			android:text="Account Name"
+			android:textSize="12sp"
 			android:textColor="@android:color/black" />
-			
+						
 		<TextView
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
-			android:layout_weight="1"
-			android:gravity="right"
-			android:id="@+id/lrAmount"
-			android:text="Amount"
-			android:textColor="@android:color/black" />
-			
-		<TextView
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
 			android:layout_weight="1"
 			android:gravity="right"
-			android:id="@+id/lrBalance"
-			android:text="Amount"
+			android:id="@+id/arAccountBalance"
+			android:text="Balance"
+			android:textSize="12sp"
 			android:textColor="@android:color/black" />
 	</LinearLayout>
 </LinearLayout>

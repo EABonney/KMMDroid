@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 public class HomeActivity extends Activity
 {
+
 	@SuppressWarnings("unused")
 	private static final String TAG = "HomeActivity";
 	private static final int C_ACCOUNTNAME = 0;
@@ -112,6 +114,20 @@ public class HomeActivity extends Activity
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.home_menu, menu);
+		return true;
+	}
+	
+	// Called when an options item is clicked
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.itemAccounts:
+				startActivity(new Intent(this, AccountsActivity.class));
+				break;
+		}
+		
 		return true;
 	}
 }
