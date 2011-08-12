@@ -30,4 +30,5 @@
     <string name="titleNew">New</string>
     <string name="titleEdit">Edit</string>
     <string name="titleDelete">Delete</string>
+    <string name="titleAcconts">Accounts</string>
 </resources>
