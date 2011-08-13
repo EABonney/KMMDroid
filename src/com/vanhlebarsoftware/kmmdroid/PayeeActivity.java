@@ -7,14 +7,20 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class PayeeActivity extends Activity
 {
 	private static final String TAG = "PayeeActivity";
+	private static final int C_PAYEENAME = 0;
+	private static final int C_ID = 1;
 	private static final String dbTable = "kmmPayees";
 	private static final String[] dbColumns = { "name", "id AS _id"};
+	private static final String strOrderBy = "name ASC";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { R.id.prPayeeName };
 	KMMDroidApp KMMDapp;
@@ -37,7 +43,7 @@ public class PayeeActivity extends Activity
 
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
-        //listPayees.setOnItemClickListener(mMessageClickedHandler);
+        listPayees.setOnItemClickListener(mMessageClickedHandler);
 
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -58,7 +64,7 @@ public class PayeeActivity extends Activity
 		super.onResume();
 		
 		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, null);
+		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
@@ -66,6 +72,17 @@ public class PayeeActivity extends Activity
 		listPayees.setAdapter(adapter);
 	}
 		
+	// Message Handler for our listAccounts List View clicks
+	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+	    {
+	    	cursor.moveToPosition(position);
+	    	Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
+	    	i.putExtra("PayeeId", cursor.getString(C_ID));
+	    	i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
+	    	startActivity(i);
+	    }
+	};
 	// Called first time the user clicks on the menu button
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
