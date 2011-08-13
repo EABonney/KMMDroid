@@ -155,6 +155,9 @@ public class AccountsActivity extends Activity
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));
 				break;
+			case R.id.itemPayees:
+				startActivity(new Intent(this, PayeeActivity.class));
+				break;
 		}
 		
 		return true;
