@@ -86,7 +86,7 @@ public class ViewTransactionActivity extends Activity
 		
 		//Run the query on the database to get the transactions.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, selectionArgs, null, null, strOrderBy);
-		//startManagingCursor(cursor);
+		startManagingCursor(cursor);
 		
 		// Set up the adapter
 		adapter = new SimpleCursorAdapter(this, R.layout.splits_row, cursor, FROM, TO);

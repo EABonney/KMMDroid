@@ -34,7 +34,15 @@
 		</activity>
 		
 		<activity android:name=".AccountsActivity"
-				  android:label="@string/titleAcconts">
+				  android:label="@string/titleAccounts">
+		</activity>
+		
+		<activity android:name=".PayeeActivity"
+				  android:label="@string/titlePayees">
+		</activity>
+		
+		<activity android:name=".PayeeTransactionsActivity"
+				  android:label="@string/titlePayeeTransactions">
 		</activity>
     </application>
 </manifest>

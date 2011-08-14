@@ -5,7 +5,7 @@
     <item android:title="@string/titleNew" android:id="@+id/itemNew"></item>
     <item android:title="@string/titleEdit" android:id="@+id/itemEdit"></item>
     <item android:title="@string/titleDelete" android:id="@+id/itemDelete"></item><item android:title="@string/titlePrefs" android:icon="@android:drawable/ic_menu_preferences" android:id="@+id/itemPrefs"></item>
-    <item android:title="@string/titleHome" android:id="@+id/itemHome" android:icon="@drawable/home_view"></item><item android:title="@string/titleAccounts" android:id="@+id/itemAccounts" android:icon="@drawable/accounts_view"></item>
+    <item android:title="@string/titleHome" android:id="@+id/itemHome" android:icon="@drawable/home_view"></item>
     <item android:title="@string/titleCategories" android:id="@+id/itemCategories" android:icon="@drawable/categories_view"></item>
     <item android:title="@string/titlePayees" android:id="@+id/itemPayees" android:icon="@drawable/payees_view"></item>
     
