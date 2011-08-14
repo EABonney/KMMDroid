@@ -104,6 +104,9 @@ public class PayeeActivity extends Activity
 			case R.id.itemAccounts:
 				startActivity(new Intent(this, AccountsActivity.class));
 				break;
+			case R.id.itemCategories:
+				startActivity(new Intent(this, CategoriesActivity.class));
+				break;
 		}
 		
 		return true;

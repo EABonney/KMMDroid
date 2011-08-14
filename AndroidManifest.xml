@@ -44,5 +44,9 @@
 		<activity android:name=".PayeeTransactionsActivity"
 				  android:label="@string/titlePayeeTransactions">
 		</activity>
+		
+		<activity android:name=".CategoriesActivity"
+				  android:label="@string/titleCategories">
+		</activity>
     </application>
 </manifest>
