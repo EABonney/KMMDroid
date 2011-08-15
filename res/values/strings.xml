@@ -4,8 +4,8 @@
     <string name="titleWelcome">Welcome</string>
     <string name="titleStartNew">Start a new KMyMoney database</string>
     <string name="titleOpenDatabase">Open a current KMyMoney database</string>
-    <string name="titleDefaultDbLocation">Default Db location</string>
-    <string name="summaryDefaultDbLocation">Default Db location</string>
+    <string name="titleOpenLastUsed">Open Last Used</string>
+    <string name="summaryOpenLastUsed">Open last used file on return?</string>
     <string name="titleFileChooser">Choose a File</string>
     <string name="titleDatabaseName">Please enter a database name</string>
     <string name="titleButtonOK">Ok</string>

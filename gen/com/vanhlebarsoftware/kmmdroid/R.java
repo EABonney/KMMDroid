@@ -117,7 +117,7 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
-        public static final int summaryDefaultDbLocation=0x7f050005;
+        public static final int summaryOpenLastUsed=0x7f050005;
         public static final int titleAccounts=0x7f050018;
         public static final int titleButtonCancel=0x7f050009;
         public static final int titleButtonDelete=0x7f05000b;
@@ -125,7 +125,6 @@ public final class R {
         public static final int titleButtonOK=0x7f050008;
         public static final int titleCategories=0x7f050019;
         public static final int titleDatabaseName=0x7f050007;
-        public static final int titleDefaultDbLocation=0x7f050004;
         public static final int titleDelete=0x7f05001d;
         public static final int titleEdit=0x7f05001c;
         public static final int titleFileChooser=0x7f050006;
@@ -134,6 +133,7 @@ public final class R {
         public static final int titleNew=0x7f05001b;
         public static final int titleNewDatabase=0x7f05000c;
         public static final int titleOpenDatabase=0x7f050003;
+        public static final int titleOpenLastUsed=0x7f050004;
         public static final int titlePayeeTransactions=0x7f05001e;
         public static final int titlePayees=0x7f05001a;
         public static final int titlePrefs=0x7f050017;
