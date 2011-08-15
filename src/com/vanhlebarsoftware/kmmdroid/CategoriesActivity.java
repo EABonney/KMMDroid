@@ -124,6 +124,9 @@ public class CategoriesActivity extends Activity
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));
 				break;
+			case R.id.itemPrefs:
+				startActivity(new Intent(this, PrefsActivity.class));
+				break;
 		}
 		
 		return true;

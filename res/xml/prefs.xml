@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-    <EditTextPreference
+    <CheckBoxPreference
     	android:summary="@string/summaryOpenLastUsed"
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
-    </EditTextPreference>
+    </CheckBoxPreference>
     
 </PreferenceScreen>

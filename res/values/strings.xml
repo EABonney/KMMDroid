@@ -6,6 +6,8 @@
     <string name="titleOpenDatabase">Open a current KMyMoney database</string>
     <string name="titleOpenLastUsed">Open Last Used</string>
     <string name="summaryOpenLastUsed">Open last used file on return?</string>
+    <string name="titleLastUsedFile">Last used file location.</string>
+    <string name="summaryLastUsedFile">Location of the last used file</string>
     <string name="titleFileChooser">Choose a File</string>
     <string name="titleDatabaseName">Please enter a database name</string>
     <string name="titleButtonOK">Ok</string>

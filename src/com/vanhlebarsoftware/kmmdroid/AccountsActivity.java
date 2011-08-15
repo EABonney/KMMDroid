@@ -161,6 +161,9 @@ public class AccountsActivity extends Activity
 			case R.id.itemCategories:
 				startActivity(new Intent(this, CategoriesActivity.class));
 				break;
+			case R.id.itemPrefs:
+				startActivity(new Intent(this, PrefsActivity.class));
+				break;
 		}
 		
 		return true;

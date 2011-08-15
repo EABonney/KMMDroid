@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -132,6 +133,32 @@ public class LedgerActivity extends Activity
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.ledger_menu, menu);
+		return true;
+	}
+	
+	// Called when an options item is clicked
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.itemHome:
+				startActivity(new Intent(this, HomeActivity.class));
+				break;
+			case R.id.itemAccounts:
+				startActivity(new Intent(this, AccountsActivity.class));
+				break;
+			case R.id.itemPayees:
+				startActivity(new Intent(this, PayeeActivity.class));
+				break;
+			case R.id.itemCategories:
+				startActivity(new Intent(this, CategoriesActivity.class));
+				break;
+			case R.id.itemPrefs:
+				startActivity(new Intent(this, PrefsActivity.class));
+				break;
+		}
+		
 		return true;
 	}
 }

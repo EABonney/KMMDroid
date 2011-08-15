@@ -23,12 +23,20 @@ public class WelcomeActivity extends Activity implements OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.welcome);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // See if the user has set the preference to start up with the last used database
+        if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        {
+        	KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
+			startActivity(new Intent(this, HomeActivity.class));
+			finish();
+        }
+        
         // Find our views
+        setContentView(R.layout.welcome);
         startNew = (TextView) findViewById(R.id.titleStartNew);
         openDb = (TextView) findViewById(R.id.titleOpenDatabase);
         
