@@ -33,4 +33,18 @@
     <string name="titleEdit">Edit</string>
     <string name="titleDelete">Delete</string>
     <string name="titlePayeeTransactions">Payee Transactions</string>
+    <string name="titleCreateModPayee">Create New Payee</string>
+    <string name="titlePayeeDefaultAccount">Default Account</string>
+    <string name="titlePayeeMatching">Matching</string>
+    <string name="titlePayeeAddress">Address: </string>
+    <string name="titlePayeePostalCode">Postal Code: </string>
+    <string name="titlePayeeTelephone">Telephone: </string>
+    <string name="titlePayeeEmail">Email: </string>
+    <string name="titlePayeeNotes">Notes: </string>
+    <string name="payeeMatching">Transaction Matching</string>
+    <string name="payeeNoMatching">No matching</string>
+    <string name="payeeMatchonName">Match on Payee name</string>
+    <string name="titlePayeeUseDefault">Use the default account for this new 
+    									transaction with this payee</string>
+    <string name="titlePayeeDefaultCategory">Default category</string>
 </resources>

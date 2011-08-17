@@ -55,7 +55,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	
 	public void openDB()
 	{
-		db = SQLiteDatabase.openDatabase(fullPath, null, 0);
+		db = SQLiteDatabase.openDatabase(fullPath, null, 1);
 		dbOpen = true;
 	}
 	

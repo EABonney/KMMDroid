@@ -29,7 +29,7 @@ public class LedgerActivity extends Activity
 	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name FROM " +
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N')" +
 					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber FROM" +
-					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' ORDER BY postDate DESC LIMIT 50";
+					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' ORDER BY postDate DESC";
 	static final String[] FROM = { "valueFormatted", "postDate", "name" };
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails  };
 	String AccountID = null;

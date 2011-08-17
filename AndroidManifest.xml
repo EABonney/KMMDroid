@@ -40,9 +40,20 @@
 		<activity android:name=".PayeeActivity"
 				  android:label="@string/titlePayees">
 		</activity>
-		
 		<activity android:name=".PayeeTransactionsActivity"
 				  android:label="@string/titlePayeeTransactions">
+		</activity>
+		<activity android:name=".CreateModifyPayeeActivity"
+				  android:label="@string/titleCreateModPayee">
+		</activity>
+		<activity android:name=".PayeeAddressActivity"
+				  android:label="@string/titlePayeeAddress">
+		</activity>
+		<activity android:name=".PayeeDefaultAccountActivity"
+				  android:label="@string/titlePayeeDefaultAccount">
+		</activity>
+		<activity android:name=".PayeeMatchingActivity"
+				  android:label="@string/titlePayeeMatching">
 		</activity>
 		
 		<activity android:name=".CategoriesActivity"

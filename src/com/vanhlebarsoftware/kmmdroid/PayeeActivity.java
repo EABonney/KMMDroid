@@ -16,6 +16,9 @@ import android.widget.AdapterView.OnItemClickListener;
 public class PayeeActivity extends Activity
 {
 	private static final String TAG = "PayeeActivity";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_DELETE = 3;
 	private static final int C_PAYEENAME = 0;
 	private static final int C_ID = 1;
 	private static final String dbTable = "kmmPayees";
@@ -110,6 +113,11 @@ public class PayeeActivity extends Activity
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
+			case R.id.itemNew:
+				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
+				i.putExtra("Activity", ACTION_NEW);
+				startActivity(i);
+				break;				
 		}
 		
 		return true;
