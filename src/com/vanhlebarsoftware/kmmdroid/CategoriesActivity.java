@@ -24,9 +24,9 @@ public class CategoriesActivity extends Activity
 	private static final int C_ID = 2;
 	private static final String dbTable = "kmmAccounts";
 	private static final String[] dbColumns = { "accountName", "balanceFormatted", "id AS _id"};
-	private static final String strSelection = "(parentId='AStd::Expense' OR parentId='AStd::Revenue') AND " +
+	private static final String strSelection = "(accountTypeString='Expense' OR accountTypeString='Income') AND " +
 			"(balance != '0/1')";
-	private static final String strOrderBy = "parentID, accountName ASC";
+	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName", "balanceFormatted" };
 	static final int[] TO = { R.id.crAccountName, R.id.crAccountBalance };
 	KMMDroidApp KMMDapp;

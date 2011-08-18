@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,7 +44,7 @@ public class HomeActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        
+		Log.d(TAG, "onCreate");
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         

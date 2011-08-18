@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ public class WelcomeActivity extends Activity implements OnClickListener
         	KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
 			startActivity(new Intent(this, HomeActivity.class));
 			finish();
-        }
+    	}
         
         // Find our views
         setContentView(R.layout.welcome);
@@ -41,7 +42,7 @@ public class WelcomeActivity extends Activity implements OnClickListener
         openDb = (TextView) findViewById(R.id.titleOpenDatabase);
         
         // Set the onClickListener events
-        startNew.setOnClickListener(this);
+		startNew.setOnClickListener(this);
         openDb.setOnClickListener(this);
     }
     

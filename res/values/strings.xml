@@ -47,4 +47,6 @@
     <string name="titlePayeeUseDefault">Use the default account for this new 
     									transaction with this payee</string>
     <string name="titlePayeeDefaultCategory">Default category</string>
+    <string name="titlePayeeDefaultIncome">Income</string>
+    <string name="titlePayeeDefaultExpense">Expense</string>
 </resources>
