@@ -1,6 +1,8 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
@@ -114,9 +117,33 @@ public class PayeeActivity extends Activity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemNew:
-				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
-				i.putExtra("Activity", ACTION_NEW);
-				startActivity(i);
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+				alert.setTitle("Create a new payee");
+				alert.setMessage("Payee Name");
+
+				// Set an EditText view to get user input 
+				final EditText input = new EditText(this);
+				alert.setView(input);
+
+				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+				  String value = input.getText().toString();
+				  // Do something with value!
+					Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
+					i.putExtra("Activity", ACTION_NEW);
+					i.putExtra("PayeeName", value);
+					startActivity(i);
+				  }
+				});
+
+				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				  public void onClick(DialogInterface dialog, int whichButton) {
+				    // Canceled.
+				  }
+				});
+
+				alert.show();
 				break;				
 		}
 		

@@ -57,6 +57,7 @@ public final class R {
         public static final int hrAccountBalance=0x7f07000d;
         public static final int hrAccountName=0x7f07000c;
         public static final int itemAccounts=0x7f070046;
+        public static final int itemCancel=0x7f070048;
         public static final int itemCategories=0x7f070044;
         public static final int itemDelete=0x7f070041;
         public static final int itemEdit=0x7f070040;
@@ -64,6 +65,7 @@ public final class R {
         public static final int itemNew=0x7f07003f;
         public static final int itemPayees=0x7f070045;
         public static final int itemPrefs=0x7f070042;
+        public static final int itemsave=0x7f070047;
         public static final int listAccountsView=0x7f070000;
         public static final int listCategoriesView=0x7f070005;
         public static final int listHomeView=0x7f07000b;
@@ -143,9 +145,12 @@ public final class R {
         public static final int home_menu=0x7f060002;
         public static final int ledger_menu=0x7f060003;
         public static final int payees_menu=0x7f060004;
+        public static final int save_menu=0x7f060005;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
+        public static final int itemCancel=0x7f050031;
+        public static final int itemSave=0x7f050030;
         public static final int payeeMatching=0x7f050029;
         public static final int payeeMatchonName=0x7f05002b;
         public static final int payeeNoMatching=0x7f05002a;

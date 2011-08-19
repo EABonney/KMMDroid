@@ -49,4 +49,6 @@
     <string name="titlePayeeDefaultCategory">Default category</string>
     <string name="titlePayeeDefaultIncome">Income</string>
     <string name="titlePayeeDefaultExpense">Expense</string>
+    <string name="itemSave">Save</string>
+    <string name="itemCancel">Cancel</string>
 </resources>

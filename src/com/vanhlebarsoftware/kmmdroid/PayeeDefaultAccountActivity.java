@@ -148,4 +148,29 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 				break;
 		}		
 	}
+	
+	public boolean getUseDefaults()
+	{
+		return checkboxDefaultEnabled.isChecked();
+	}
+	
+	public boolean getUseIncome()
+	{
+		return checkboxInc.isChecked();
+	}
+	
+	public boolean getUseExpense()
+	{
+		return checkboxExp.isChecked();
+	}
+	
+	public long getIncomeAccount()
+	{
+		return spinIncome.getSelectedItemId();
+	}
+	
+	public long getExpenseAccount()
+	{
+		return spinExpense.getSelectedItemId();
+	}
 }
