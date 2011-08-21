@@ -51,4 +51,16 @@
     <string name="titlePayeeDefaultExpense">Expense</string>
     <string name="itemSave">Save</string>
     <string name="itemCancel">Cancel</string>
+    <string name="summaryPayeeReassign">The transactions associated with the selected payee needs to be 
+    	re-assigned to a different payee before the selected payee can be deleted. Please select
+    	a payee from the list below.</string>
+    <string name="titlePayeesAvailable">Available payees:</string>
+    <string name="titleReassignPayee">Reassign Payee</string>
+    <string name="delete">Delete</string>
+    <string name="deletemsg">Are you sure you want to delete payee: </string>
+    <string name="error">Error!</string>
+    <string name="unableToReassign">Unable to reassign this Payee. Your payee was NOT deleted!</string>
+	<string name="unableToDelete">Unable to delete your record for the following reason: </string>
+	<string name="createNewPayee">Create a new payee</string>
+	<string name="msgPayeeName">Payee name:</string>
 </resources>

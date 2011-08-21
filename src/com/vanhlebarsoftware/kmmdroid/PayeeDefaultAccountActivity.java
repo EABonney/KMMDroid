@@ -14,9 +14,6 @@ import android.widget.Spinner;
 public class PayeeDefaultAccountActivity extends Activity implements OnCheckedChangeListener
 {
 	private static final String TAG = "PayeeDefaultAccountActivity";
-	private static final int C_ACCOUNTNAME = 0;
-	private static final int C_BALANCE = 1;
-	private static final int C_ID = 2;
 	private static final String dbTable = "kmmAccounts";
 	private static final String[] dbColumns = { "accountName", "id AS _id"};
 	private static final String strSelectionInc = "accountTypeString='Income' AND (balance != '0/1')";

@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
+import android.util.Log;
 
 public class PayeeActivity extends Activity
 {
@@ -29,6 +30,8 @@ public class PayeeActivity extends Activity
 	private static final String strOrderBy = "name ASC";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { R.id.prPayeeName };
+	private String selectedPayeeId = null;
+	private String selectedPayeeName = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listPayees;
@@ -83,12 +86,15 @@ public class PayeeActivity extends Activity
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	cursor.moveToPosition(position);
-	    	Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
-	    	i.putExtra("PayeeId", cursor.getString(C_ID));
-	    	i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
-	    	startActivity(i);
+	    	selectedPayeeId = cursor.getString(C_ID);
+	    	selectedPayeeName = cursor.getString(C_PAYEENAME);
+	    	//Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
+	    	//i.putExtra("PayeeId", cursor.getString(C_ID));
+	    	//i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
+	    	//startActivity(i);
 	    }
 	};
+	
 	// Called first time the user clicks on the menu button
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -119,14 +125,14 @@ public class PayeeActivity extends Activity
 			case R.id.itemNew:
 				AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-				alert.setTitle("Create a new payee");
-				alert.setMessage("Payee Name");
+				alert.setTitle(getString(R.string.createNewPayee));
+				alert.setMessage(getString(R.string.msgPayeeName));
 
 				// Set an EditText view to get user input 
 				final EditText input = new EditText(this);
 				alert.setView(input);
 
-				alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichButton) {
 				  String value = input.getText().toString();
 				  // Do something with value!
@@ -137,16 +143,35 @@ public class PayeeActivity extends Activity
 				  }
 				});
 
-				alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				alert.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
 				  public void onClick(DialogInterface dialog, int whichButton) {
 				    // Canceled.
 				  }
 				});
 
 				alert.show();
-				break;				
+				break;	
+			case R.id.itemDelete:
+				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
+				alertDel.setTitle(R.string.delete);
+				alertDel.setMessage(getString(R.string.deletemsg) + " " + selectedPayeeName + "?");
+
+				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						Intent i = new Intent(getBaseContext(), PayeeReassignActivity.class);
+						i.putExtra("PayeeToDelete", selectedPayeeId);
+						startActivity(i);							
+					}
+				});
+				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+						Log.d(TAG, "User cancelled delete.");
+					}
+					});				
+				alertDel.show();
+				break;
 		}
-		
 		return true;
 	}
 }

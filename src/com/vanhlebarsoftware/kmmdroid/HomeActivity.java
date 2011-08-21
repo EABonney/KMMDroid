@@ -91,7 +91,7 @@ public class HomeActivity extends Activity
 	    	Intent i = new Intent(getBaseContext(), LedgerActivity.class);
 	    	i.putExtra("AccountId", cursor.getString(C_ID));
 	    	i.putExtra("AccountName", cursor.getString(C_ACCOUNTNAME));
-	    	i.putExtra("Balance", C_BALANCE);
+	    	i.putExtra("Balance", cursor.getString(C_BALANCE));
 	    	startActivity(i);
 	    }
 	};

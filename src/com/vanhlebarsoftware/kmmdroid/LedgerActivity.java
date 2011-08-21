@@ -30,11 +30,11 @@ public class LedgerActivity extends Activity
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N')" +
 					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber FROM" +
 					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' ORDER BY postDate DESC";
-	static final String[] FROM = { "valueFormatted", "postDate", "name" };
-	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails  };
+	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
+	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
 	String AccountID = null;
 	String AccountName = null;
-	String Balance = null;
+	static float Balance = 0;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
 	KMMDroidApp KMMDapp;
@@ -69,7 +69,7 @@ public class LedgerActivity extends Activity
         Bundle extras = getIntent().getExtras();
         AccountID = extras.getString("AccountId");
         AccountName = extras.getString("AccountName");
-        Balance = extras.getString("Balance");
+        Balance = Float.valueOf(extras.getString("Balance"));
 	}
 
 	@Override
@@ -117,15 +117,26 @@ public class LedgerActivity extends Activity
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
 	static final ViewBinder VIEW_BINDER = new ViewBinder() {
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			if(view.getId() != R.id.lrAmount)
+			//if(view.getId() != R.id.lrAmount)
+				//return false;
+
+			switch (view.getId() )
+			{
+			case R.id.lrAmount:
+				// Format the Amount properly.
+				((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
+				return true;
+			case R.id.lrBalance:
+				// Insert the balance amount.
+				((TextView) view).setText(String.format("%,(.2f", Float.valueOf(Balance)));
+				Balance = calculateBalance(cursor.getString(columnIndex-1));
+				return true;
+			default:
 				return false;
-			
-			// Format the Amount properly.
-			((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
-			
-			return true;
+			}
 		}
 	};
+
 	
 	// Called first time the user clicks on the menu button
 	@Override
@@ -160,5 +171,10 @@ public class LedgerActivity extends Activity
 		}
 		
 		return true;
+	}
+	
+	private static float calculateBalance(String amount)
+	{
+		return Balance - Float.valueOf(amount);		
 	}
 }
