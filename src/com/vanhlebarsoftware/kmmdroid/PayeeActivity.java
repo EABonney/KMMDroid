@@ -2,6 +2,7 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AlphabetIndexer;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
 import android.util.Log;
@@ -22,7 +25,6 @@ public class PayeeActivity extends Activity
 	private static final String TAG = "PayeeActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int ACTION_DELETE = 3;
 	private static final int C_PAYEENAME = 0;
 	private static final int C_ID = 1;
 	private static final String dbTable = "kmmPayees";
@@ -32,6 +34,7 @@ public class PayeeActivity extends Activity
 	static final int[] TO = { R.id.prPayeeName };
 	private String selectedPayeeId = null;
 	private String selectedPayeeName = null;
+	boolean payeeSelected = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listPayees;
@@ -49,7 +52,8 @@ public class PayeeActivity extends Activity
         
         // Find our views
         listPayees = (ListView) findViewById(R.id.listPayeesView);
-
+		listPayees.setFastScrollEnabled(true);
+		
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
         listPayees.setOnItemClickListener(mMessageClickedHandler);
@@ -72,13 +76,24 @@ public class PayeeActivity extends Activity
 	{
 		super.onResume();
 		
+		// Make sure the edit and delete buttons are not visible and no payee is selected.
+		// This is to control the menu items.
+		selectedPayeeId = null;
+		selectedPayeeName = null;
+		payeeSelected = false;
+		
 		//Get all the accounts to be displayed.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.payee_row, cursor, FROM, TO);
-		listPayees.setAdapter(adapter);
+		//adapter = new SimpleCursorAdapter(this, R.layout.payee_row, cursor, FROM, TO);
+		listPayees.setAdapter(
+				new KMMDCursorAdapter(
+						getApplicationContext(),
+						android.R.layout.simple_list_item_1,
+						cursor, FROM,
+						new int[] {android.R.id.text1}));
 	}
 		
 	// Message Handler for our listAccounts List View clicks
@@ -88,6 +103,7 @@ public class PayeeActivity extends Activity
 	    	cursor.moveToPosition(position);
 	    	selectedPayeeId = cursor.getString(C_ID);
 	    	selectedPayeeName = cursor.getString(C_PAYEENAME);
+	    	payeeSelected = true;
 	    	//Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
 	    	//i.putExtra("PayeeId", cursor.getString(C_ID));
 	    	//i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
@@ -103,7 +119,23 @@ public class PayeeActivity extends Activity
 		inflater.inflate(R.menu.payees_menu, menu);
 		return true;
 	}
-	
+
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu)
+	{
+	    if (payeeSelected)
+	    {
+	    	menu.getItem(1).setVisible(true);
+	    	menu.getItem(2).setVisible(true);
+	    }
+	    else
+	    {
+	    	menu.getItem(1).setVisible(false);
+	    	menu.getItem(2).setVisible(false);	    	
+	    }
+	    return true;
+	}
+
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -151,6 +183,13 @@ public class PayeeActivity extends Activity
 
 				alert.show();
 				break;	
+			case R.id.itemEdit:
+				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
+				i.putExtra("Activity", ACTION_EDIT);
+				i.putExtra("PayeeId", selectedPayeeId);
+				i.putExtra("PayeeName", selectedPayeeName);
+				startActivity(i);
+				break;
 			case R.id.itemDelete:
 				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
 				alertDel.setTitle(R.string.delete);
@@ -173,5 +212,35 @@ public class PayeeActivity extends Activity
 				break;
 		}
 		return true;
+	}
+	
+	class KMMDCursorAdapter extends SimpleCursorAdapter implements SectionIndexer
+	{
+		AlphabetIndexer alphaIndexer;
+		
+		public KMMDCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to)
+		{
+			super(context, layout, c, from, to);
+			alphaIndexer = new AlphabetIndexer(c, cursor.getColumnIndex("name"), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			
+		}
+
+		public int getPositionForSection(int section)
+		{
+			// TODO Auto-generated method stub
+			return alphaIndexer.getPositionForSection(section);
+		}
+
+		public int getSectionForPosition(int position)
+		{
+			// TODO Auto-generated method stub
+			return alphaIndexer.getSectionForPosition(position);
+		}
+
+		public Object[] getSections() 
+		{
+			// TODO Auto-generated method stub
+			return alphaIndexer.getSections();
+		}
 	}
 }

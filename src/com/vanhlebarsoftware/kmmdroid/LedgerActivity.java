@@ -128,8 +128,8 @@ public class LedgerActivity extends Activity
 				return true;
 			case R.id.lrBalance:
 				// Insert the balance amount.
-				((TextView) view).setText(String.format("%,(.2f", Float.valueOf(Balance)));
-				Balance = calculateBalance(cursor.getString(columnIndex-1));
+				//((TextView) view).setText(String.format("%,(.2f", Float.valueOf(Balance)));
+				//Balance = calculateBalance(cursor.getString(columnIndex-1));
 				return true;
 			default:
 				return false;

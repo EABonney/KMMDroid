@@ -1,8 +1,10 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -26,10 +28,23 @@ public class CreateModifyPayeeActivity extends TabActivity
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_DELETE = 3;
+	private static final int PAYEE_ID = 0;
+	private static final int PAYEE_NAME = 1;
+	private static final int PAYEE_REFERENCE = 2;
+	private static final int PAYEE_EMAIL = 3;
+	private static final int PAYEE_STREET = 4;
+	private static final int PAYEE_CITY = 5;
+	private static final int PAYEE_ZIPCODE = 6;
+	private static final int PAYEE_STATE = 7;
+	private static final int PAYEE_PHONE = 8;
+	private static final int PAYEE_NOTES = 9;
+	private static final int PAYEE_DEFAULTACCOUNTID = 10;
+	private static final int PAYEE_MATCHDATA = 11;
+	private static final int PAYEE_MATCHIGNORECASE = 12;
+	private static final int PAYEE_MATCHKEYS = 13;
 	private static final String dbTable = "kmmPayees";
-	private static final String[] dbColumns = { "id AS _id"};
-	private static final String strOrderBy = "id DESC";
 	private int Action = 0;
+	private String payeeId = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	TextView payeeName;
@@ -50,6 +65,10 @@ public class CreateModifyPayeeActivity extends TabActivity
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Activity");
         payeeName.setText(extras.getString("PayeeName"));
+        
+        // If we are editing then we need to retrieve the payeeId
+        if (Action == ACTION_EDIT)
+        	payeeId = extras.getString("PayeeId");
         
         //Resources res = getResources(); // Resource object to get Drawables
         tabHost = getTabHost();  // The activity TabHost
@@ -78,6 +97,8 @@ public class CreateModifyPayeeActivity extends TabActivity
         if( Action == ACTION_EDIT )
         {
         	intent = new Intent().setClass(this, PayeeTransactionsActivity.class);
+        	intent.putExtra("PayeeId", payeeId);
+        	intent.putExtra("PayeeName", extras.getString("PayeeName"));
         	spec = tabHost.newTabSpec("payeetransactions").setIndicator("Transactions")
                       .setContent(intent);
         	tabHost.addTab(spec);
@@ -105,6 +126,58 @@ public class CreateModifyPayeeActivity extends TabActivity
 	protected void onResume()
 	{
 		super.onResume();
+		
+		// See if we are editing and if so pull the data into the forms.
+		if ( Action == ACTION_EDIT )
+		{
+			final String[] dbColumns = { "*" };
+			final String strSelection = "id=?";
+			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { payeeId }, null, null, null);
+			startManagingCursor(cursor);
+			
+			// If we returned anything other than just one record we have issues.
+			if ( cursor.getCount() == 0 )
+			{
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+				alert.setTitle(getString(R.string.error));
+				alert.setMessage(getString(R.string.payeeNotFound));
+
+				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					finish();
+				  }
+				});
+				alert.show();
+			}
+			
+			if ( cursor.getCount() > 1)
+			{
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+				alert.setTitle(getString(R.string.error));
+				alert.setMessage(getString(R.string.payeeNotFound));
+
+				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {
+					finish();
+				  }
+				});
+				alert.show();
+			}
+			
+			cursor.moveToFirst();
+			// We have the correct payeeId to edit. Populate the fields now.
+			// Populate the Address elements
+			getTabHost().setCurrentTab(0);
+			Activity payeeAddress = this.getCurrentActivity();
+			((PayeeAddressActivity) payeeAddress).putPayeeAddress(cursor.getString(PAYEE_STREET));
+			((PayeeAddressActivity) payeeAddress).putPayeePostalCode(cursor.getString(PAYEE_ZIPCODE));
+			((PayeeAddressActivity) payeeAddress).putPayeePhone(cursor.getString(PAYEE_PHONE));
+			((PayeeAddressActivity) payeeAddress).putPayeeEmail(cursor.getString(PAYEE_EMAIL));
+			((PayeeAddressActivity) payeeAddress).putPayeeNotes(cursor.getString(PAYEE_NOTES));
+			
+		}
 		
 	}
 	
@@ -186,12 +259,23 @@ public class CreateModifyPayeeActivity extends TabActivity
 				valuesPayee.put("matchIgnoreCase", "Y");
 				valuesPayee.put("matchKeys", "");
 				
-				// Attempt to insert the newly created Payee.
-				try {
-					KMMDapp.db.insertOrThrow(dbTable, null, valuesPayee);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					Log.d(TAG, "Insert error: " + e.getMessage());
+				switch (Action)
+				{
+					case ACTION_NEW:
+						// Attempt to insert the newly created Payee.
+						try 
+						{
+							KMMDapp.db.insertOrThrow(dbTable, null, valuesPayee);
+						} 
+						catch (SQLException e) 
+						{
+							// TODO Auto-generated catch block
+							Log.d(TAG, "Insert error: " + e.getMessage());
+						}
+						break;
+					case ACTION_EDIT:
+						KMMDapp.db.update(dbTable, valuesPayee, "id=?", new String[] { payeeId });
+						break;
 				}
 				finish();
 				break;
@@ -204,6 +288,8 @@ public class CreateModifyPayeeActivity extends TabActivity
 	
 	private String createPayeeId()
 	{
+		final String[] dbColumns = { "id AS _id"};
+		final String strOrderBy = "id DESC";
 		// Run a query to get the Payee ids so we can create a new one.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
 		startManagingCursor(cursor);

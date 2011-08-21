@@ -51,13 +51,14 @@ public final class R {
         public static final int buttonOk=0x7f070015;
         public static final int checkboxPayeeDefaultExpense=0x7f070025;
         public static final int checkboxPayeeDefaultIncome=0x7f070023;
+        public static final int close=0x7f070048;
         public static final int crAccountBalance=0x7f070007;
         public static final int crAccountName=0x7f070006;
         public static final int editDatabaseName=0x7f070014;
         public static final int hrAccountBalance=0x7f07000d;
         public static final int hrAccountName=0x7f07000c;
         public static final int itemAccounts=0x7f070047;
-        public static final int itemCancel=0x7f070049;
+        public static final int itemCancel=0x7f07004a;
         public static final int itemCategories=0x7f070045;
         public static final int itemDelete=0x7f070042;
         public static final int itemEdit=0x7f070041;
@@ -65,7 +66,7 @@ public final class R {
         public static final int itemNew=0x7f070040;
         public static final int itemPayees=0x7f070046;
         public static final int itemPrefs=0x7f070043;
-        public static final int itemsave=0x7f070048;
+        public static final int itemsave=0x7f070049;
         public static final int listAccountsView=0x7f070000;
         public static final int listCategoriesView=0x7f070005;
         public static final int listHomeView=0x7f07000b;
@@ -151,6 +152,7 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f050000;
+        public static final int close=0x7f05003e;
         public static final int createNewPayee=0x7f05003a;
         public static final int delete=0x7f050035;
         public static final int deletemsg=0x7f050036;
@@ -160,7 +162,9 @@ public final class R {
         public static final int msgPayeeName=0x7f05003b;
         public static final int payeeMatching=0x7f050029;
         public static final int payeeMatchonName=0x7f05002b;
+        public static final int payeeMoreThanOne=0x7f05003d;
         public static final int payeeNoMatching=0x7f05002a;
+        public static final int payeeNotFound=0x7f05003c;
         public static final int summaryLastUsedFile=0x7f050007;
         public static final int summaryOpenLastUsed=0x7f050005;
         public static final int summaryPayeeReassign=0x7f050032;

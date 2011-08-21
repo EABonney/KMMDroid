@@ -136,6 +136,13 @@ public class HomeActivity extends Activity
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
+			case R.id.close:
+		    	//Intent i = new Intent(getBaseContext(), WelcomeActivity.class);
+		    	//i.putExtra("ClosedDB", true);
+				//startActivity(i);
+				KMMDapp.db.close();
+				finish();
+				break;
 		}
 		
 		return true;

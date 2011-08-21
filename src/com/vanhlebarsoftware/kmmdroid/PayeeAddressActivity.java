@@ -52,4 +52,29 @@ public class PayeeAddressActivity extends Activity
 	{
 		return payeeNotes.getText().toString();
 	}
+	
+	public void putPayeeAddress(String address)
+	{
+		payeeAddress.setText(address);
+	}
+	
+	public void putPayeePostalCode(String postalcode)
+	{
+		payeePostalCode.setText(postalcode);
+	}
+	
+	public void putPayeePhone(String phone)
+	{
+		payeePhone.setText(phone);
+	}
+	
+	public void putPayeeEmail(String email)
+	{
+		payeeEmail.setText(email);
+	}
+	
+	public void putPayeeNotes(String notes)
+	{
+		payeeNotes.setText(notes);
+	}
 }

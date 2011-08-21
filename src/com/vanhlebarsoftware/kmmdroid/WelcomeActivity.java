@@ -15,6 +15,7 @@ public class WelcomeActivity extends Activity implements OnClickListener
 {
 	@SuppressWarnings("unused")
 	private static final String TAG = "WelcomeActivity";
+	boolean closedDB = false;
 	TextView startNew;
 	TextView openDb;
 	Context context;
@@ -28,13 +29,14 @@ public class WelcomeActivity extends Activity implements OnClickListener
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
-        // See if the user has set the preference to start up with the last used database
-        if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
-        {
-        	KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
-			startActivity(new Intent(this, HomeActivity.class));
-			finish();
-    	}
+
+       	// See if the user has set the preference to start up with the last used database
+       	if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+       	{
+       		KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
+       		startActivity(new Intent(this, HomeActivity.class));
+       		finish();
+       	}
         
         // Find our views
         setContentView(R.layout.welcome);

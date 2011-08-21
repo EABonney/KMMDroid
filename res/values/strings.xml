@@ -63,4 +63,7 @@
 	<string name="unableToDelete">Unable to delete your record for the following reason: </string>
 	<string name="createNewPayee">Create a new payee</string>
 	<string name="msgPayeeName">Payee name:</string>
+	<string name="payeeNotFound">Payee not found!</string>
+	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
+	<string name="close">Close File</string>
 </resources>
