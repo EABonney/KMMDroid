@@ -66,4 +66,5 @@
 	<string name="payeeNotFound">Payee not found!</string>
 	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
 	<string name="close">Close File</string>
+	<string name="titleCreateModCategory">Create new category</string>
 </resources>
