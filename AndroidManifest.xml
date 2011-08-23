@@ -63,6 +63,9 @@
 		<activity android:name=".CategoriesActivity"
 				  android:label="@string/titleCategories">
 		</activity>
+		<activity android:name=".CreateModifyCategoriesActivity"
+				  android:label="@string/titleCreateModCategory">
+		</activity>
 		
 		<activity android:name=".PrefsActivity"
 				  android.label=".@string/titlePrefs">

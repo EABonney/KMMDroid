@@ -67,4 +67,14 @@
 	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
 	<string name="close">Close File</string>
 	<string name="titleCreateModCategory">Create new category</string>
+	<string name="titleCategoryName">Name: </string>
+	<string name="titleOpeningInfo">Opening information</string>
+	<string name="titleCategoryType">Type: </string>
+	<string name="titleCategoryCurrency">Currency: </string>
+	<string name="titleCategoryDate">Date: </string>
+	<string name="titleCategoryBalance">Balance: </string>
+	<string name="titleCategoryOptions">Options</string>
+	<string name="titleCategoryCheckNumber">Last check number: </string>
+	<string name="titleCategoryNotes">Notes: </string>
+	<string name="titleCategoryPriceEntry">Price entry: </string>
 </resources>

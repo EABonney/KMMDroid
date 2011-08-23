@@ -42,9 +42,12 @@ public class CreateModifyPayeeActivity extends TabActivity
 	private static final int PAYEE_MATCHDATA = 11;
 	private static final int PAYEE_MATCHIGNORECASE = 12;
 	private static final int PAYEE_MATCHKEYS = 13;
+	private static final int AC_EXPENSE = 13;
+	private static final int AC_INCOME = 12;
 	private static final String dbTable = "kmmPayees";
 	private int Action = 0;
 	private String payeeId = null;
+	private boolean returnFromDelete = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	TextView payeeName;
@@ -127,58 +130,102 @@ public class CreateModifyPayeeActivity extends TabActivity
 	{
 		super.onResume();
 		
-		// See if we are editing and if so pull the data into the forms.
-		if ( Action == ACTION_EDIT )
+		if(!returnFromDelete)
 		{
-			final String[] dbColumns = { "*" };
-			final String strSelection = "id=?";
-			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { payeeId }, null, null, null);
-			startManagingCursor(cursor);
-			
-			// If we returned anything other than just one record we have issues.
-			if ( cursor.getCount() == 0 )
+			// See if we are editing and if so pull the data into the forms.
+			if ( Action == ACTION_EDIT )
 			{
-				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+				final String[] dbColumns = { "*" };
+				final String strSelection = "id=?";
+				cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { payeeId }, null, null, null);
+				startManagingCursor(cursor);
+			
+				// If we returned anything other than just one record we have issues.
+				if ( cursor.getCount() == 0 )
+				{
+					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-				alert.setTitle(getString(R.string.error));
-				alert.setMessage(getString(R.string.payeeNotFound));
+					alert.setTitle(getString(R.string.error));
+					alert.setMessage(getString(R.string.payeeNotFound));
 
-				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					finish();
-				  }
-				});
-				alert.show();
+					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							finish();
+						}
+					});
+					alert.show();
+				}
+			
+				if ( cursor.getCount() > 1)
+				{
+					AlertDialog.Builder alert = new AlertDialog.Builder(this);
+					
+					alert.setTitle(getString(R.string.error));
+					alert.setMessage(getString(R.string.payeeNotFound));
+
+					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							finish();
+						}
+					});
+					alert.show();
+				}
+			
+				cursor.moveToFirst();
+				// We have the correct payeeId to edit. Populate the fields now.
+				// Populate the Address elements
+				getTabHost().setCurrentTab(0);
+				Activity payeeAddress = this.getCurrentActivity();
+				((PayeeAddressActivity) payeeAddress).putPayeeAddress(cursor.getString(PAYEE_STREET));
+				((PayeeAddressActivity) payeeAddress).putPayeePostalCode(cursor.getString(PAYEE_ZIPCODE));
+				((PayeeAddressActivity) payeeAddress).putPayeePhone(cursor.getString(PAYEE_PHONE));
+				((PayeeAddressActivity) payeeAddress).putPayeeEmail(cursor.getString(PAYEE_EMAIL));
+				((PayeeAddressActivity) payeeAddress).putPayeeNotes(cursor.getString(PAYEE_NOTES));
+
+				// Populate the default account elements.
+				getTabHost().setCurrentTab(1);
+				Activity payeeDefaults = this.getCurrentActivity();
+				int pos = 0;
+				switch( getAccountType( cursor.getString(PAYEE_DEFAULTACCOUNTID)) )
+				{
+					case AC_INCOME:
+						Log.d(TAG, "AC_INCOME");
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(true);
+						pos = getListViewPos(cursor.getString(PAYEE_DEFAULTACCOUNTID), AC_INCOME);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(true);
+						((PayeeDefaultAccountActivity) payeeDefaults).putIncomeAccount(pos);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(false);
+						break;
+					case AC_EXPENSE:
+						Log.d(TAG, "AC_EXPENSE");
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(true);
+						pos = getListViewPos(cursor.getString(PAYEE_DEFAULTACCOUNTID), AC_EXPENSE);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(true);
+						((PayeeDefaultAccountActivity) payeeDefaults).putExpenseAccount(pos);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(false);
+						break;
+					default:
+						Log.d(TAG, "Default");
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(false);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(false);
+						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(false);
+						break;
+				}
+			
+				// Popluate the default matching tab.
+				getTabHost().setCurrentTab(2);
+				Activity payeeMatching = this.getCurrentActivity();
+				((PayeeMatchingActivity) payeeMatching).putMatchingType(cursor.getInt(PAYEE_MATCHDATA));
+				
+				// Make sure the 1st tab is displayed to the user.
+				getTabHost().setCurrentTab(0);
 			}
-			
-			if ( cursor.getCount() > 1)
-			{
-				AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-				alert.setTitle(getString(R.string.error));
-				alert.setMessage(getString(R.string.payeeNotFound));
-
-				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-					finish();
-				  }
-				});
-				alert.show();
-			}
-			
-			cursor.moveToFirst();
-			// We have the correct payeeId to edit. Populate the fields now.
-			// Populate the Address elements
-			getTabHost().setCurrentTab(0);
-			Activity payeeAddress = this.getCurrentActivity();
-			((PayeeAddressActivity) payeeAddress).putPayeeAddress(cursor.getString(PAYEE_STREET));
-			((PayeeAddressActivity) payeeAddress).putPayeePostalCode(cursor.getString(PAYEE_ZIPCODE));
-			((PayeeAddressActivity) payeeAddress).putPayeePhone(cursor.getString(PAYEE_PHONE));
-			((PayeeAddressActivity) payeeAddress).putPayeeEmail(cursor.getString(PAYEE_EMAIL));
-			((PayeeAddressActivity) payeeAddress).putPayeeNotes(cursor.getString(PAYEE_NOTES));
-			
 		}
-		
+		else
+		{
+			returnFromDelete = false;
+			finish();
+		}
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -197,9 +244,8 @@ public class CreateModifyPayeeActivity extends TabActivity
 		switch (item.getItemId())
 		{
 			case R.id.itemsave:
-				String name, address, postalcode, phone, email, notes;
+				String name, address, postalcode, phone, email, notes, accountInc, accountExp;
 				boolean usedefault, useInc, useExp;
-				long accountInc, accountExp;
 				int matchingType;
 				
 				// Get the Address elements
@@ -226,7 +272,11 @@ public class CreateModifyPayeeActivity extends TabActivity
 				Activity payeeMatching = this.getCurrentActivity();
 				matchingType = ((PayeeMatchingActivity) payeeMatching).getMatchingType();
 				
-				String id = createPayeeId();
+				String id = null;
+				if (Action == ACTION_NEW)
+					id = createPayeeId();
+				else
+					id = payeeId;
 				
 				// Create the ContentValue pairs for the insert query.
 				ContentValues valuesPayee = new ContentValues();
@@ -255,6 +305,9 @@ public class CreateModifyPayeeActivity extends TabActivity
 						valuesPayee.put("defaultAccountId", accountInc);
 					if ( useExp )
 						valuesPayee.put("defaultAccountId", accountExp);
+					
+					Log.d(TAG, "accontInc: " + accountInc + 
+							" accountExp: " + accountExp);
 				}
 				valuesPayee.put("matchIgnoreCase", "Y");
 				valuesPayee.put("matchKeys", "");
@@ -272,12 +325,35 @@ public class CreateModifyPayeeActivity extends TabActivity
 							// TODO Auto-generated catch block
 							Log.d(TAG, "Insert error: " + e.getMessage());
 						}
+						increasePayeeId();
 						break;
 					case ACTION_EDIT:
 						KMMDapp.db.update(dbTable, valuesPayee, "id=?", new String[] { payeeId });
 						break;
 				}
 				finish();
+				break;
+			case R.id.itemDelete:
+				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
+				alertDel.setTitle(R.string.delete);
+				alertDel.setMessage(getString(R.string.deletemsg) + " " + payeeName.getText().
+						toString() + "?");
+
+				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						Intent i = new Intent(getBaseContext(), PayeeReassignActivity.class);
+						i.putExtra("PayeeToDelete", payeeId);
+						returnFromDelete = true;
+						startActivity(i);							
+					}
+				});
+				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+						Log.d(TAG, "User cancelled delete.");
+					}
+					});				
+				alertDel.show();
 				break;
 			case R.id.itemCancel:
 				finish();
@@ -286,19 +362,21 @@ public class CreateModifyPayeeActivity extends TabActivity
 		return true;
 	}
 	
+// ************************************************************************************************
+// ******************************* Helper Functions ***********************************************
+	
 	private String createPayeeId()
 	{
-		final String[] dbColumns = { "id AS _id"};
-		final String strOrderBy = "id DESC";
+		final String[] dbColumns = { "hiPayeeId"};
+		final String strOrderBy = "hiPayeeId DESC";
 		// Run a query to get the Payee ids so we can create a new one.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
+		cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
 		startManagingCursor(cursor);
 		
-		// We need to skip over the "USER" payee.
-		cursor.moveToPosition(1);
+		cursor.moveToFirst();
 
 		// Since id is in P000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = Integer.parseInt(cursor.getString(0).substring(1).toString());
+		int lastId = cursor.getInt(0);
 		lastId = lastId +1;
 		String nextId = Integer.toString(lastId);
 		
@@ -313,5 +391,73 @@ public class CreateModifyPayeeActivity extends TabActivity
 		newId = newId + nextId;
 		
 		return newId;
+	}
+	
+	private void increasePayeeId()
+	{
+		final String[] dbColumns = { "hiPayeeId" };
+		final String strOrderBy = "hiPayeeId DESC";
+		
+		cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
+		startManagingCursor(cursor);
+		cursor.moveToFirst();
+		
+		int id = cursor.getInt(0);
+		id = id + 1;
+		
+		ContentValues values = new ContentValues();
+		values.put("hiPayeeId", id);
+		
+		KMMDapp.db.update("kmmFileInfo", values, null, null);
+	}
+	
+	private int getAccountType(String account)
+	{
+		Log.d(TAG, "getAccountType, account: " + account);
+		if( account == null )
+			return 0;
+		else
+		{
+			Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountType" }, "id=?", 
+				new String[] { account }, null, null, null);
+			startManagingCursor(c);
+			c.moveToFirst();
+
+			return Integer.parseInt(c.getString(0));
+
+		}
+	}
+	
+	private int getListViewPos(String name, int type)
+	{
+		Log.d(TAG, "getListViewPos");
+		int i = 0;
+		String strType = null;
+		switch (type)
+		{
+			case AC_INCOME:
+				strType = "Income";
+				break;
+			case AC_EXPENSE:
+				strType = "Expense";
+				break;
+		}
+		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id" }, 
+									"accountType=? AND (balance != '0/1')", new String[] { strType },
+									null, null, "accountName ASC");
+		startManagingCursor(c);
+		
+		if(c.getCount() > 0)
+		{
+			for(i=0; name != c.getString(0); i++)
+			{
+				Log.d(TAG, "name: " + name + " cursorName: " + c.getString(0));
+				c.moveToNext();
+			}
+		}
+		else
+			i = 0;
+		
+		return i;
 	}
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -172,6 +173,7 @@ public class PayeeReassignActivity extends Activity implements OnItemSelectedLis
 		}
 		catch (Exception e)
 		{
+			Log.d(TAG, "Error thrown by deleting payee: " + e.getMessage());
 			// TODO Auto-generated catch block
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(getString(R.string.error));

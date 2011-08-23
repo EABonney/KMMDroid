@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -21,6 +23,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName" };
 	static final int[] TO = { android.R.id.text1 };
+	String strIncAccountSelected = null;
+	String strExpAccountSelected = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursorInc;
 	Cursor cursorExp;
@@ -58,6 +62,10 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
         spinExpense.setEnabled(false);
         checkboxInc.setEnabled(false);
         checkboxExp.setEnabled(false);
+        
+        // Set the OnItemSelectedListeners for the spinners.
+        spinIncome.setOnItemSelectedListener(new PayeeDefaultOnItemSelectedListener());
+        spinExpense.setOnItemSelectedListener(new PayeeDefaultOnItemSelectedListener());
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -161,13 +169,69 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		return checkboxExp.isChecked();
 	}
 	
-	public long getIncomeAccount()
+	public String getIncomeAccount()
 	{
-		return spinIncome.getSelectedItemId();
+		return strIncAccountSelected;
 	}
 	
-	public long getExpenseAccount()
+	public String getExpenseAccount()
 	{
-		return spinExpense.getSelectedItemId();
+		return strExpAccountSelected;
+	}
+	
+	public void putUseDefaults(boolean b)
+	{
+		checkboxDefaultEnabled.setChecked(b);
+	}
+	
+	public void putUseIncome(boolean b)
+	{
+		checkboxInc.setChecked(b);
+		checkboxInc.setEnabled(b);
+	}
+	
+	public void putUseExpense(boolean b)
+	{
+		checkboxExp.setChecked(b);
+		checkboxExp.setEnabled(b);
+	}
+	
+	public void putIncomeAccount(int position)
+	{
+		spinIncome.setSelection(position);
+	}
+	
+	public void putExpenseAccount(int position)
+	{
+		spinExpense.setSelection(position);
+	}
+	
+	public class PayeeDefaultOnItemSelectedListener implements OnItemSelectedListener
+	{
+		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
+		{
+			Cursor c = (Cursor) parent.getAdapter().getItem(pos);
+			
+			// TODO Auto-generated method stub
+			switch ( parent.getId() )
+			{
+				case R.id.payeeDefaultIncome:
+					Log.d(TAG, "Default Income account selected.");
+					strIncAccountSelected = c.getString(1);
+					break;
+				case R.id.payeeDefaultExpense:
+					Log.d(TAG, "Default Expense account selected");
+					strExpAccountSelected = c.getString(1);
+					break;
+				default:
+					Log.d(TAG, "Somehow it thinks we did not select an account but we did!");
+					break;
+			}
+		}
+
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			// do nothing.
+		}		
 	}
 }

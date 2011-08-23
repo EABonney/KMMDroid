@@ -34,7 +34,6 @@ public class PayeeActivity extends Activity
 	static final int[] TO = { R.id.prPayeeName };
 	private String selectedPayeeId = null;
 	private String selectedPayeeName = null;
-	boolean payeeSelected = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listPayees;
@@ -80,7 +79,6 @@ public class PayeeActivity extends Activity
 		// This is to control the menu items.
 		selectedPayeeId = null;
 		selectedPayeeName = null;
-		payeeSelected = false;
 		
 		//Get all the accounts to be displayed.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
@@ -103,7 +101,11 @@ public class PayeeActivity extends Activity
 	    	cursor.moveToPosition(position);
 	    	selectedPayeeId = cursor.getString(C_ID);
 	    	selectedPayeeName = cursor.getString(C_PAYEENAME);
-	    	payeeSelected = true;
+			Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
+			i.putExtra("Activity", ACTION_EDIT);
+			i.putExtra("PayeeId", selectedPayeeId);
+			i.putExtra("PayeeName", selectedPayeeName);
+			startActivity(i);
 	    	//Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
 	    	//i.putExtra("PayeeId", cursor.getString(C_ID));
 	    	//i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
@@ -120,7 +122,7 @@ public class PayeeActivity extends Activity
 		return true;
 	}
 
-	@Override
+/*	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
 	{
 	    if (payeeSelected)
@@ -134,7 +136,7 @@ public class PayeeActivity extends Activity
 	    	menu.getItem(2).setVisible(false);	    	
 	    }
 	    return true;
-	}
+	}*/
 
 	// Called when an options item is clicked
 	@Override
@@ -183,7 +185,7 @@ public class PayeeActivity extends Activity
 
 				alert.show();
 				break;	
-			case R.id.itemEdit:
+			/*case R.id.itemEdit:
 				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
 				i.putExtra("Activity", ACTION_EDIT);
 				i.putExtra("PayeeId", selectedPayeeId);
@@ -209,7 +211,7 @@ public class PayeeActivity extends Activity
 					}
 					});				
 				alertDel.show();
-				break;
+				break;*/
 		}
 		return true;
 	}
