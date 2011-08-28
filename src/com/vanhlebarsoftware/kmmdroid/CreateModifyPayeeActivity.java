@@ -423,6 +423,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 			startManagingCursor(c);
 			c.moveToFirst();
 
+			Log.d(TAG, "getAcountType Return: " + c.getString(0));
 			return Integer.parseInt(c.getString(0));
 
 		}
@@ -430,7 +431,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 	
 	private int getListViewPos(String name, int type)
 	{
-		Log.d(TAG, "getListViewPos");
+		Log.d(TAG, "getListViewPos: " + name);
 		int i = 0;
 		String strType = null;
 		switch (type)
@@ -443,21 +444,28 @@ public class CreateModifyPayeeActivity extends TabActivity
 				break;
 		}
 		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id" }, 
-									"accountType=? AND (balance != '0/1')", new String[] { strType },
+									"accountTypeString=? AND (balance != '0/1')", new String[] { strType },
 									null, null, "accountName ASC");
 		startManagingCursor(c);
+		c.moveToFirst();
 		
 		if(c.getCount() > 0)
 		{
-			for(i=0; name != c.getString(0); i++)
+			Log.d(TAG, "name: " + name + " cursorName: " + c.getString(1));
+			while(!name.equals(c.getString(1)))
 			{
-				Log.d(TAG, "name: " + name + " cursorName: " + c.getString(0));
+				Log.d(TAG, "name: " + name + " cursorName: " + c.getString(1));
 				c.moveToNext();
+				i++;
 			}
 		}
 		else
+		{
+			Log.d(TAG, "getListViewPos query returned no accounts!");
 			i = 0;
+		}
 		
+		Log.d(TAG, "getListViewPos returning: " + String.valueOf(i));
 		return i;
 	}
 }

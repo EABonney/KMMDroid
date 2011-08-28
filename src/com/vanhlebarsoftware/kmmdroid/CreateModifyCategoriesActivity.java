@@ -4,9 +4,11 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TabHost;
-import android.widget.TextView;
 
 public class CreateModifyCategoriesActivity extends TabActivity
 {
@@ -44,6 +46,8 @@ public class CreateModifyCategoriesActivity extends TabActivity
                       .setContent(intent);
         tabHost.addTab(spec);
         
+        tabHost.setCurrentTab(0);
+        
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
 
@@ -58,5 +62,32 @@ public class CreateModifyCategoriesActivity extends TabActivity
 	public void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+	}
+	
+	// Called first time the user clicks on the menu button
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.save_menu, menu);
+		return true;
+	}
+	
+	// Called when an options item is clicked
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.itemsave:
+				break;
+		}
+		return true;
 	}
 }

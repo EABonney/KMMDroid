@@ -67,9 +67,15 @@
 	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
 	<string name="close">Close File</string>
 	<string name="titleCreateModCategory">Create new category</string>
+	<string name="titleCategoryGeneral">General Category</string>
+	<string name="titleCategoryHierarchy">Category Hierarchy</string>
 	<string name="titleCategoryName">Name: </string>
 	<string name="titleOpeningInfo">Opening information</string>
 	<string name="titleCategoryType">Type: </string>
+	<string-array name="arrayTypes">
+		<item>Income</item>
+		<item>Expense</item>
+	</string-array>
 	<string name="titleCategoryCurrency">Currency: </string>
 	<string name="titleCategoryDate">Date: </string>
 	<string name="titleCategoryBalance">Balance: </string>
@@ -77,4 +83,5 @@
 	<string name="titleCategoryCheckNumber">Last check number: </string>
 	<string name="titleCategoryNotes">Notes: </string>
 	<string name="titleCategoryPriceEntry">Price entry: </string>
+	<string name="titleSubAccount">This account is a sub-account of:</string>
 </resources>

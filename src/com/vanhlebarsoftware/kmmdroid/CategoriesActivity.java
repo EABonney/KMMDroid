@@ -29,6 +29,7 @@ public class CategoriesActivity extends Activity
 	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName", "balanceFormatted" };
 	static final int[] TO = { R.id.crAccountName, R.id.crAccountBalance };
+	private String accountType = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listCategories;
@@ -84,6 +85,8 @@ public class CategoriesActivity extends Activity
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	cursor.moveToPosition(position);
+			Intent i = new Intent(getBaseContext(), CreateModifyCategoriesActivity.class);
+			startActivity(i);
 	    }
 	};
 	
@@ -127,8 +130,23 @@ public class CategoriesActivity extends Activity
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
+			case R.id.itemNew:
+				startActivity(new Intent(this, CreateModifyCategoriesActivity.class));
+				break;
 		}
 		
 		return true;
+	}
+	
+// *********************************************************************************************
+// ************************************ Helper Functions ***************************************
+	public void putAccountType(String name)
+	{
+		accountType = name;
+	}
+	
+	public String getAccountType()
+	{
+		return accountType;
 	}
 }

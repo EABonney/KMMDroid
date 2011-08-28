@@ -25,6 +25,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	static final int[] TO = { android.R.id.text1 };
 	String strIncAccountSelected = null;
 	String strExpAccountSelected = null;
+	int IncSpinnerPos = 0;
+	int ExpSpinnerPos = 0;
 	KMMDroidApp KMMDapp;
 	Cursor cursorInc;
 	Cursor cursorExp;
@@ -100,6 +102,10 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		//adapter.setViewBinder(VIEW_BINDER);
 		spinIncome.setAdapter(adapterInc);
 		spinExpense.setAdapter(adapterExp);
+		
+		// Set the spinners location.
+		spinIncome.setSelection(IncSpinnerPos);
+		spinExpense.setSelection(ExpSpinnerPos);
 	}
 
 	public void onCheckedChanged(CompoundButton btn, boolean arg1) 
@@ -198,12 +204,12 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	
 	public void putIncomeAccount(int position)
 	{
-		spinIncome.setSelection(position);
+		IncSpinnerPos = position;
 	}
 	
 	public void putExpenseAccount(int position)
 	{
-		spinExpense.setSelection(position);
+		ExpSpinnerPos = position;
 	}
 	
 	public class PayeeDefaultOnItemSelectedListener implements OnItemSelectedListener

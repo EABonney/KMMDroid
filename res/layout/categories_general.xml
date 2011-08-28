@@ -54,7 +54,7 @@
     	android:layout_width="wrap_content"
 		android:layout_below="@+id/titleOpeningInfo"
 		android:layout_toRightOf="@+id/titleCategoryType"
-    	android:id="@+id/categoryType" 
+    	android:id="@+id/categoryType"
     />
 	<TextView
     	android:layout_width="wrap_content"
