@@ -264,30 +264,34 @@ public class CreateModifyCategoriesActivity extends TabActivity
 					getTabHost().setCurrentTab(1);
 					Activity categoryHierarchy = this.getCurrentActivity();
 					parentId = ((CategoriesHierarchyActivity) categoryHierarchy).getParentAccount();
-					id = createAccountId();
 					
 					// Create the ContentValue pairs and then insert the new account.
 					ContentValues valuesCategory = new ContentValues();
+					if(Action == ACTION_NEW)
+						id = createAccountId();
+					else
+						id = strCategoryId;
+					
 					valuesCategory.put("id", id);
-					valuesCategory.put("institutionId", "");
 					valuesCategory.put("parentId", parentId);
-					valuesCategory.put("lastReconciled", "");
-					valuesCategory.put("lastModified", "");
-					valuesCategory.put("openingDate", "");
-					valuesCategory.put("accountNumber", "");
 					valuesCategory.put("accountType", accountType);
 					valuesCategory.put("accountTypeString", accountTypeString);
-					valuesCategory.put("isStockAccount", "N");
 					valuesCategory.put("accountName", accountName);
 					valuesCategory.put("description", description);
 					valuesCategory.put("currencyId", currencyId);
-					valuesCategory.put("balance", "0/100");
-					valuesCategory.put("balanceFormatted", "0.00");
-					valuesCategory.put("transactionCount", transactionCount);
 					
 					switch(Action)
 					{
 						case ACTION_NEW:
+							valuesCategory.put("balance", "0/100");
+							valuesCategory.put("balanceFormatted", "0.00");
+							valuesCategory.put("transactionCount", transactionCount);
+							valuesCategory.put("isStockAccount", "N");
+							valuesCategory.put("lastReconciled", "");
+							valuesCategory.put("lastModified", "");
+							valuesCategory.put("openingDate", "");
+							valuesCategory.put("accountNumber", "");
+							valuesCategory.put("institutionId", "");
 							try 
 							{
 								KMMDapp.db.insertOrThrow(dbTable, null, valuesCategory);
@@ -301,8 +305,9 @@ public class CreateModifyCategoriesActivity extends TabActivity
 							break;
 						case ACTION_EDIT:
 						try {
-							Log.d(TAG, "updating categoryId: " + id);
-							KMMDapp.db.update(dbTable, valuesCategory, "id=?", new String[] { id });
+							int effected = 0;
+							effected = KMMDapp.db.update(dbTable, valuesCategory, "id=?", new String[] { id });
+							Log.d(TAG, "rows effected: " + String.valueOf(effected));
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							Log.d(TAG, "Did NOT update categoryId: " + id);
