@@ -19,16 +19,20 @@ public class CategoriesActivity extends Activity
 {
 	@SuppressWarnings("unused")
 	private static final String TAG = "CategoriesActivity";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private static final int C_ACCOUNTNAME = 0;
 	private static final int C_BALANCE = 1;
 	private static final int C_ID = 2;
 	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balanceFormatted", "id AS _id"};
+	private static final String[] dbColumns = { "accountName", "balanceFormatted", "id AS _id" };
 	private static final String strSelection = "(accountTypeString='Expense' OR accountTypeString='Income') AND " +
 			"(balance != '0/1')";
 	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName", "balanceFormatted" };
 	static final int[] TO = { R.id.crAccountName, R.id.crAccountBalance };
+	private static String strCategoryId = null;
+	private static String strCategoryName = null;
 	private String accountType = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
@@ -85,7 +89,12 @@ public class CategoriesActivity extends Activity
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	cursor.moveToPosition(position);
+	    	strCategoryId = cursor.getString(C_ID);
+	    	strCategoryName = cursor.getString(C_ACCOUNTNAME);
 			Intent i = new Intent(getBaseContext(), CreateModifyCategoriesActivity.class);
+			i.putExtra("Action", ACTION_EDIT);
+			i.putExtra("categoryId", strCategoryId);
+			i.putExtra("categoryName", strCategoryName);
 			startActivity(i);
 	    }
 	};
@@ -131,7 +140,9 @@ public class CategoriesActivity extends Activity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemNew:
-				startActivity(new Intent(this, CreateModifyCategoriesActivity.class));
+				Intent i = new Intent(this, CreateModifyCategoriesActivity.class);
+				i.putExtra("Action", ACTION_NEW);
+				startActivity(i);
 				break;
 		}
 		

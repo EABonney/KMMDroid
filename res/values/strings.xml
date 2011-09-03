@@ -84,4 +84,6 @@
 	<string name="titleCategoryNotes">Notes: </string>
 	<string name="titleCategoryPriceEntry">Price entry: </string>
 	<string name="titleSubAccount">This account is a sub-account of:</string>
+	<string name="accountNameNotEntered">You must enter a name for this account!</string>
+	<string name="categoryNotFound">Category not found!</string>
 </resources>

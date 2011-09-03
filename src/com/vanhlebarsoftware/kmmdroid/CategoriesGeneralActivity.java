@@ -1,7 +1,5 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import com.vanhlebarsoftware.kmmdroid.CategoriesHierarchyActivity.CategoryHierarchyOnItemSelectedListener;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,17 +17,18 @@ public class CategoriesGeneralActivity extends Activity
 {
 	private static final String TAG = "CategoriesGeneralActivity";
 	private static final String[] dbColumns = { "name", "ISOcode AS _id"};
-	private static final String strSelectionType = "accountTypeString='Expense' AND (balance != '0/1')";
 	private static final String strOrderBy = "name ASC";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
+	private static final int AC_EXPENSE = 13;
+	private static final int AC_INCOME = 12;
+	private static int currencyPos = 0;
+	private static int categoryTypePos = 0;
+	String strCurrency = null;
 	EditText editCategoryName;
-	EditText editCategoryBalance;
-	EditText editCategoryCheckNumber;
 	EditText editCategoryNotes;
 	Spinner spinCategoryType;
 	Spinner spinCategoryCurrency;
-	DatePicker dateCategoryOpenDate;
 	Cursor cursorCurrency;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
@@ -46,15 +45,13 @@ public class CategoriesGeneralActivity extends Activity
         
         // Find our views.
         editCategoryName = (EditText) findViewById(R.id.categoryName);
-        editCategoryBalance = (EditText) findViewById(R.id.categoryBalance);
-        editCategoryCheckNumber = (EditText) findViewById(R.id.categoryCheckNumber);
         editCategoryNotes = (EditText) findViewById(R.id.categoryNotes);
         spinCategoryType = (Spinner) findViewById(R.id.categoryType);
         spinCategoryCurrency = (Spinner) findViewById(R.id.categoryCurrency);
-        dateCategoryOpenDate = (DatePicker) findViewById(R.id.categoryDate);
         
         // Set the OnItemSelectedListeners for the spinners.
         spinCategoryType.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
+        spinCategoryCurrency.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -74,32 +71,85 @@ public class CategoriesGeneralActivity extends Activity
 		
 		// Set up the adapters
 		adapterCurrency = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCurrency, FROM, TO);
-		adapterCurrency.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		adapterTypes = ArrayAdapter.createFromResource(this, R.array.arrayTypes, android.R.layout.simple_spinner_dropdown_item);
+		adapterCurrency.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		adapterTypes = ArrayAdapter.createFromResource(this, R.array.arrayTypes, android.R.layout.simple_spinner_item);
+		adapterTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		
 		spinCategoryCurrency.setAdapter(adapterCurrency);
 		spinCategoryType.setAdapter(adapterTypes);
+		
+		// Set the spinner to the correct type.
+		if(CreateModifyCategoriesActivity.strType == null)		
+			spinCategoryType.setSelection(0);
+		else if(CreateModifyCategoriesActivity.strType.equalsIgnoreCase("Income"))
+			spinCategoryType.setSelection(0);
+		else
+			spinCategoryType.setSelection(1);
+		
+		// Set the currency Spinner
+		spinCategoryCurrency.setSelection(currencyPos);
 	}
 	
 	public class CategoryGeneralOnItemSelectedListener implements OnItemSelectedListener
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-			
-			//Activity parentCategoryActivity = 
-			// TODO Auto-generated method stub
-			/*switch ( parent.getId() )
+			switch(parent.getId())
 			{
-				default:
-					Log.d(TAG, "Somehow it thinks we did not select an account but we did!");
+				case R.id.categoryType:
+					CreateModifyCategoriesActivity.strType = parent.getItemAtPosition(pos).toString();
+					CreateModifyCategoriesActivity.inValidateParentId = true;
 					break;
-			}*/
+				case R.id.categoryCurrency:
+					Cursor c = (Cursor) parent.getAdapter().getItem(pos);
+					strCurrency = c.getString(1);
+					break;
+			}
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
 			// TODO Auto-generated method stub
 			// do nothing.
 		}		
+	}
+	
+	// ************************************************************************************************
+	// ******************************* Helper Functions ***********************************************
+	public String getCategoryName()
+	{
+		return editCategoryName.getText().toString();
+	}
+	
+	public String getCategoryCurrency()
+	{
+		return strCurrency;
+	}
+	
+
+	public String getNotes()
+	{
+		return editCategoryNotes.getText().toString();
+	}
+	
+	public void putCategoryName(String name)
+	{
+		editCategoryName.setText(name);
+	}
+	
+	public void putCategoryType(int pos)
+	{
+		categoryTypePos = pos;
+		CreateModifyCategoriesActivity.strType = spinCategoryType.getItemAtPosition(pos).toString();
+		CreateModifyCategoriesActivity.inValidateParentId = true;
+	}
+	
+	public void putCurrency(int pos)
+	{
+		currencyPos = pos;
+	}
+	
+	public void putNotes(String notes)
+	{
+		editCategoryNotes.setText(notes);
 	}
 }

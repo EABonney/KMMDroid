@@ -75,79 +75,11 @@
 		android:layout_toRightOf="@+id/titleCategoryCurrency"
     	android:id="@+id/categoryCurrency" 
     />
-	<TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:width="100sp"
-    	android:gravity="center_vertical"
-    	android:layout_below="@+id/categoryCurrency"
-    	android:text="@string/titleCategoryDate"
-    	android:id="@+id/titleCategoryDate"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    />
-	<DatePicker
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_toRightOf="@+id/titleCategoryDate"
-		android:layout_below="@+id/categoryCurrency"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="18dp"
-		android:id="@+id/categoryDate"
-	/>
-	<TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:width="100sp"
-    	android:gravity="center_vertical"
-    	android:layout_below="@+id/categoryDate"
-    	android:text="@string/titleCategoryBalance"
-    	android:id="@+id/titleCategoryBalance"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    />
-	<EditText 
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/categoryDate"
-		android:layout_toRightOf="@+id/titleCategoryBalance"
-		android:id="@+id/categoryBalance"
-		android:inputType="numberDecimal"
-	/>
-	
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:textSize="15sp"
-		android:layout_below="@id/categoryBalance"
-		android:id="@+id/titleCategoryOptions"
-		android:text="@string/titleCategoryOptions"
-	/>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:textSize="15sp"
-		android:layout_below="@id/titleCategoryOptions"
-		android:id="@+id/titleCategoryCheckNumber"
-		android:text="@string/titleCategoryCheckNumber"
-	/>	
-	<EditText 
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/titleCategoryOptions"
-		android:layout_toRightOf="@+id/titleCategoryCheckNumber"
-		android:id="@+id/categoryCheckNumber"
-		android:inputType="number"
-	/>
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:width="100sp"
-    	android:layout_below="@+id/categoryCheckNumber"
+    	android:layout_below="@+id/categoryCurrency"
     	android:gravity="center_vertical"
     	android:text="@string/titleCategoryNotes"
     	android:id="@+id/titleCategoryNotes"
@@ -158,23 +90,12 @@
 	<EditText 
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/categoryCheckNumber"
+		android:layout_below="@+id/categoryCurrency"
 		android:layout_toRightOf="@+id/titleCategoryNotes"
 		android:id="@+id/categoryNotes"
 		android:inputType="textMultiLine"
 		android:gravity="top"
-		android:height="300sp"
-	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:width="100sp"
-    	android:layout_below="@+id/categoryNotes"
-    	android:text="@string/titleCategoryPriceEntry"
-    	android:id="@+id/titleCategoryPriceEntry"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    />	
+		android:height="200sp"
+	/>	
 </RelativeLayout>
 </ScrollView>

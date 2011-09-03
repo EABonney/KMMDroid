@@ -96,8 +96,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		// Set up the adapter
 		adapterInc = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorInc, FROM, TO);
 		adapterExp = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorExp, FROM, TO);
-		adapterInc.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		adapterExp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapterInc.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		adapterExp.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		
 		//adapter.setViewBinder(VIEW_BINDER);
 		spinIncome.setAdapter(adapterInc);
