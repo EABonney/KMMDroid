@@ -89,9 +89,8 @@ public class PayeeActivity extends Activity
 		listPayees.setAdapter(
 				new KMMDCursorAdapter(
 						getApplicationContext(),
-						android.R.layout.simple_list_item_1,
-						cursor, FROM,
-						new int[] {android.R.id.text1}));
+						R.layout.payee_row,
+						cursor, FROM, TO));
 	}
 		
 	// Message Handler for our listAccounts List View clicks
@@ -106,10 +105,6 @@ public class PayeeActivity extends Activity
 			i.putExtra("PayeeId", selectedPayeeId);
 			i.putExtra("PayeeName", selectedPayeeName);
 			startActivity(i);
-	    	//Intent i = new Intent(getBaseContext(), PayeeTransactionsActivity.class);
-	    	//i.putExtra("PayeeId", cursor.getString(C_ID));
-	    	//i.putExtra("PayeeName", cursor.getString(C_PAYEENAME));
-	    	//startActivity(i);
 	    }
 	};
 	
@@ -121,22 +116,6 @@ public class PayeeActivity extends Activity
 		inflater.inflate(R.menu.payees_menu, menu);
 		return true;
 	}
-
-/*	@Override
-	public boolean onPrepareOptionsMenu (Menu menu)
-	{
-	    if (payeeSelected)
-	    {
-	    	menu.getItem(1).setVisible(true);
-	    	menu.getItem(2).setVisible(true);
-	    }
-	    else
-	    {
-	    	menu.getItem(1).setVisible(false);
-	    	menu.getItem(2).setVisible(false);	    	
-	    }
-	    return true;
-	}*/
 
 	// Called when an options item is clicked
 	@Override
@@ -185,33 +164,6 @@ public class PayeeActivity extends Activity
 
 				alert.show();
 				break;	
-			/*case R.id.itemEdit:
-				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
-				i.putExtra("Activity", ACTION_EDIT);
-				i.putExtra("PayeeId", selectedPayeeId);
-				i.putExtra("PayeeName", selectedPayeeName);
-				startActivity(i);
-				break;
-			case R.id.itemDelete:
-				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
-				alertDel.setTitle(R.string.delete);
-				alertDel.setMessage(getString(R.string.deletemsg) + " " + selectedPayeeName + "?");
-
-				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						Intent i = new Intent(getBaseContext(), PayeeReassignActivity.class);
-						i.putExtra("PayeeToDelete", selectedPayeeId);
-						startActivity(i);							
-					}
-				});
-				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						// Canceled.
-						Log.d(TAG, "User cancelled delete.");
-					}
-					});				
-				alertDel.show();
-				break;*/
 		}
 		return true;
 	}
