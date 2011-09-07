@@ -87,4 +87,12 @@
 	<string name="accountNameNotEntered">You must enter a name for this account!</string>
 	<string name="categoryNotFound">Category not found!</string>
 	<string name="titleCreateModAccount">Create New Account</string>
+	<string name="titleNewInstitution">New Institution</string>
+	<string name="titleInstitutionName">Name: </string>
+	<string name="titleInstitutionStreet">Street: </string>
+	<string name="titleInstitutionCity">City: </string>
+	<string name="titleInstitutionPostalCode">Postal Code: </string>
+	<string name="titleInstitutionPhone">Telephone/Fax: </string>
+	<string name="titleInstitutionRoutingNumber">Routing Number: </string>
+	<string name="titleInstitutionBIC">BIC: </string>
 </resources>
