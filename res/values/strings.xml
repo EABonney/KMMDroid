@@ -86,7 +86,7 @@
 	<string name="titleSubAccount">This account is a sub-account of:</string>
 	<string name="accountNameNotEntered">You must enter a name for this account!</string>
 	<string name="categoryNotFound">Category not found!</string>
-	<string name="titleCreateModAccount">Create New Account</string>
+	<string name="titleCreateModAccount">New Account Setup</string>
 	<string name="titleNewInstitution">New Institution</string>
 	<string name="titleInstitutionName">Name: </string>
 	<string name="titleInstitutionStreet">Street: </string>
@@ -95,4 +95,20 @@
 	<string name="titleInstitutionPhone">Telephone/Fax: </string>
 	<string name="titleInstitutionRoutingNumber">Routing Number: </string>
 	<string name="titleInstitutionBIC">BIC: </string>
+	<string name="titleAccountInstructions">If this account is managed by an institution please select
+		the institution from the list. If the institution does not exist yet, please choose the New
+		Institution button to create it. Otherwise, leave this field empty. Enter the account number used
+		by the institution to identify the account.
+	</string>
+	<string name="titleAccountInstitution">Institution</string>
+	<string name="buttonNewInstitution">New Institution</string>
+	<string name="titleAccountNumber">Account number</string>
+	<string name="titleAccountIBAN">IBAN</string>
+	<string name="titleAccountInstructions2">Enter the name of the account under which it is known within
+		KMyMoney. Select the type for the new account. Enter the date the account was opened and its
+		currency.
+	</string>
+	<string name="titleAccountName">Account name</string>
+	<string name="titleAccountType">Account type</string>
+	<string name="titleAccountCurrency">Currency</string>
 </resources>

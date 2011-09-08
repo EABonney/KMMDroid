@@ -34,4 +34,42 @@
 		android:layout_toRightOf="@+id/titleAccountName"
 		android:id="@+id/accountName"
 	/>
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/accountName"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountType"
+    	android:id="@+id/titleAccountType"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:layout_below="@id/accountName"
+    	android:layout_toRightOf="@id/titleAccountType"
+    	android:id="@+id/accountType"
+    />
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/accountType"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountCurrency"
+    	android:id="@+id/titleAccountCurrency"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:layout_below="@id/accountType"
+    	android:layout_toRightOf="@id/titleAccountCurrency"
+    	android:id="@+id/accountCurrency"
+    />
 </RelativeLayout>

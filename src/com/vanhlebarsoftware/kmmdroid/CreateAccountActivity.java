@@ -2,7 +2,7 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.TabActivity;
 
-public class CreateModifyAccountsActivity extends TabActivity
+public class CreateAccountActivity extends TabActivity
 {
 
 }
