@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+    <TextView
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountInstructions2"
+    	android:id="@+id/titleAccountInstructions2"
+    	android:textSize="10sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />	
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/titleAccountInstructions2"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountName"
+    	android:id="@+id/titleAccountName"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+	<EditText 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/titleAccountInstructions2"
+		android:layout_toRightOf="@+id/titleAccountName"
+		android:id="@+id/accountName"
+	/>
+</RelativeLayout>
