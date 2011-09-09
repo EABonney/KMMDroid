@@ -111,4 +111,8 @@
 	<string name="titleAccountName">Account name</string>
 	<string name="titleAccountType">Account type</string>
 	<string name="titleAccountCurrency">Currency</string>
+	<string name="buttonSetDate">Set Opening Date</string>
+	<string name="titleAccountOpenDate">Opening date</string>
+	<string name="titleAccountOpenBalance">Opening balance</string>
+	<string name="titleAccountPreferred">Preferred account</string>
 </resources>
