@@ -115,4 +115,18 @@
 	<string name="titleAccountOpenDate">Opening date</string>
 	<string name="titleAccountOpenBalance">Opening balance</string>
 	<string name="titleAccountPreferred">Preferred account</string>
+	<string name="titleAccountSubAccount">Subaccount of</string>
+	<string name="titleCreateAccounts">Create Accounts</string>
+	<string name="titleCreateAccountInstitution">Create Institution</string>
+	<string name="titleCreateAccountAccount">Create Account</string>
+	<string name="titleCreateAccountParent">Create Parent</string>
+	<string-array name="arrayAccountTypes">
+		<item>Asset</item>
+		<item>Checking</item>
+		<item>Equity</item>
+		<item>Liability</item>
+		<item>Savings</item>
+		<item></item>
+		
+	</string-array>
 </resources>

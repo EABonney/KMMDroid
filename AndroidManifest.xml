@@ -63,6 +63,19 @@
 		<activity android:name=".CategoriesActivity"
 				  android:label="@string/titleCategories">
 		</activity>
+		<activity android:name=".CreateAccountActivity"
+				  android:label="@string/titleCreateAccounts">
+		</activity>
+		<activity android:name=".CreateAccountInstitutionActivity"
+				  android:label="@string/titleCreateAccountInstitution">
+		</activity>
+		<activity android:name=".CreateAccountAccountActivity"
+				  android:label="@string/titleCreateAccountAccount">
+		</activity>
+		<activity android:name=".CreateAccountParentActivity"
+				  android:label="@string/titleCreateAccountParent">
+		</activity>
+		
 		<activity android:name=".CreateModifyCategoriesActivity"
 				  android:label="@string/titleCreateModCategory">
 		</activity>
