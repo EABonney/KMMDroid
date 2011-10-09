@@ -87,6 +87,7 @@
 	<string name="accountNameNotEntered">You must enter a name for this account!</string>
 	<string name="categoryNotFound">Category not found!</string>
 	<string name="titleCreateModAccount">New Account Setup</string>
+	<string name="titleEditModAccount">Edit Account</string>
 	<string name="titleNewInstitution">New Institution</string>
 	<string name="titleInstitutionName">Name: </string>
 	<string name="titleInstitutionStreet">Street: </string>
@@ -97,9 +98,10 @@
 	<string name="titleInstitutionBIC">BIC: </string>
 	<string name="titleAccountInstructions">If this account is managed by an institution please select
 		the institution from the list. If the institution does not exist yet, please choose the New
-		Institution button to create it. Otherwise, leave this field empty. Enter the account number used
-		by the institution to identify the account.
+		Institution button to create it. Otherwise, check the box below to create an account with out an
+		institution. Enter the account number used by the institution to identify the account.
 	</string>
+	<string name="titleNoInstitution">No institution</string>
 	<string name="titleAccountInstitution">Institution</string>
 	<string name="buttonNewInstitution">New Institution</string>
 	<string name="titleAccountNumber">Account number</string>
@@ -126,7 +128,8 @@
 		<item>Equity</item>
 		<item>Liability</item>
 		<item>Savings</item>
-		<item></item>
-		
 	</string-array>
+	<string name="titleCreateModifyInstitution">Create Institution</string>
+	<string name="accountNotSupported">Currently this account type is not able to be edited in KMM for Droid. It will be add
+		eventually. We apologize for the limitation right now. Thanks for understanding.</string>
 </resources>

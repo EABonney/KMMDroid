@@ -4,6 +4,7 @@
 		  android:id="@+id/prPayeeName" 
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
+		  android:height="30sp"
 		  android:gravity="center_vertical"
           android:textSize="12sp"
 		  android:textColor="@android:color/black"/>

@@ -15,10 +15,19 @@
     	android:textColor="@android:color/white"
     	android:paddingLeft="10sp"
     />	
+	<CheckBox 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:width="125sp"
+		android:layout_below="@+id/titleAccountInstructions"
+		android:text="@string/titleNoInstitution" 
+		android:id="@+id/checkboxNoInstitution"
+		android:state_enabled="false"
+	/>  
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/titleAccountInstructions"
+    	android:layout_below="@id/checkboxNoInstitution"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titleAccountInstitution"
@@ -30,7 +39,7 @@
 	<Spinner
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/titleAccountInstructions"
+		android:layout_below="@id/checkboxNoInstitution"
 		android:layout_toRightOf="@+id/titleAccountInstitution"
 		android:id="@+id/accountInstitution"
 	/>

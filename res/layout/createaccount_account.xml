@@ -116,6 +116,7 @@
 		android:layout_below="@+id/accountOpenDate"
 		android:layout_toRightOf="@+id/titleAccountOpenBalance"
 		android:id="@+id/accountOpenBalance"
+		android:text="0.00"
 	/>
 	<CheckBox 
 		android:layout_width="fill_parent" 

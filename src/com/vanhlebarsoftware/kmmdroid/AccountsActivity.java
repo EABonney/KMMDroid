@@ -8,15 +8,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.util.Log;
 
 public class AccountsActivity extends Activity
 {
 	private static final String TAG = "AccountsActivity";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	// Define our Account Type Constants
 	private static final int AT_CHECKING = 1;
 	private static final int AT_SAVINGS = 2;
@@ -30,10 +35,11 @@ public class AccountsActivity extends Activity
 	private static final String[] dbColumns = { "accountName", "balanceFormatted", "accountTypeString",
 												"accountType", "id AS _id"};
 	private static final String strSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability' OR " +
-											   "parentId='AStd::Equity') AND (balance != '0/1')";
+											   "parentId='AStd::Equity')"; //AND (balance != '0/1')";
 	private static final String strOrderBy = "parentID, accountName ASC";
 	static final String[] FROM = { "accountName", "accountTypeString", "balanceFormatted", "accountType" };
 	static final int[] TO = { R.id.arAccountName, R.id.arAccountType, R.id.arAccountBalance, R.id.arIcon };
+	private String strAccountId = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listAccounts;
@@ -54,7 +60,7 @@ public class AccountsActivity extends Activity
 
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
-        //listAccounts.setOnItemClickListener(mMessageClickedHandler);
+        listAccounts.setOnItemClickListener(mMessageClickedHandler);
 
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -83,6 +89,19 @@ public class AccountsActivity extends Activity
 		adapter.setViewBinder(VIEW_BINDER);
 		listAccounts.setAdapter(adapter);
 	}
+	
+	// Message Handler for our listAccounts List View clicks
+	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+	    {
+	    	cursor.moveToPosition(position);
+	    	strAccountId = cursor.getString(4);
+			Intent i = new Intent(getBaseContext(), CreateModifyAccountActivity.class);
+			i.putExtra("Action", ACTION_EDIT);
+			i.putExtra("AccountId", strAccountId);
+			startActivity(i);
+	    }
+	};
 	
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
 	static final ViewBinder VIEW_BINDER = new ViewBinder() {
@@ -165,7 +184,9 @@ public class AccountsActivity extends Activity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemNew:
-				startActivity(new Intent(this, CreateAccountActivity.class));
+				Intent i = new Intent(getBaseContext(), CreateModifyAccountActivity.class);
+				i.putExtra("Action", ACTION_NEW);
+				startActivity(i);
 				break;
 		}
 		

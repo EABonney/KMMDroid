@@ -84,18 +84,22 @@ public class CreateModifyInstitutionActivity extends Activity
 		
 		if( !returnFromDelete )
 		{
-			// Get the attributes for the selected institution and populate the views.
-			Cursor cursor = KMMDapp.db.query("kmmInstitutions", new String[] { "*" }, null, null, null, null, null);
-			startManagingCursor(cursor);
-			cursor.moveToFirst();
+			if(Action == ACTION_EDIT)
+			{
+				// Get the attributes for the selected institution and populate the views.
+				Cursor cursor = KMMDapp.db.query("kmmInstitutions", new String[] { "*" }, "id=?", 
+						new String[] { "instId" }, null, null, null);
+				startManagingCursor(cursor);
+				cursor.moveToFirst();
 		
-			instName.setText(cursor.getString(INSTUTION_NAME));
-			instBIC.setText(cursor.getString(INSTUTION_MANAGER));
-			instRoutingNumber.setText(cursor.getString(INSTUTION_ROUTINGCODE));
-			instStreet.setText(cursor.getString(INSTUTION_ADDRESSSTREET));
-			instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
-			instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
-			instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+				instName.setText(cursor.getString(INSTUTION_NAME));
+				instBIC.setText(cursor.getString(INSTUTION_MANAGER));
+				instRoutingNumber.setText(cursor.getString(INSTUTION_ROUTINGCODE));
+				instStreet.setText(cursor.getString(INSTUTION_ADDRESSSTREET));
+				instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
+				instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
+				instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+			}
 		}
 		else
 		{

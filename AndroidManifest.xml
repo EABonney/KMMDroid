@@ -63,7 +63,7 @@
 		<activity android:name=".CategoriesActivity"
 				  android:label="@string/titleCategories">
 		</activity>
-		<activity android:name=".CreateAccountActivity"
+		<activity android:name=".CreateModifyAccountActivity"
 				  android:label="@string/titleCreateAccounts">
 		</activity>
 		<activity android:name=".CreateAccountInstitutionActivity"
@@ -85,6 +85,11 @@
 		<activity android:name=".CategoriesHierarchyActivity"
 				  android:label="@string/titleCategoryHierarchy">
 		</activity>
+		
+		<activity android:name=".CreateModifyInstitutionActivity"
+				  android:label="@string/titleCreateModifyInstitution">
+		</activity>
+	
 		<activity android:name=".PrefsActivity"
 				  android.label=".@string/titlePrefs">
 		</activity>
