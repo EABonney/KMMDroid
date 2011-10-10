@@ -1,5 +1,7 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import com.vanhlebarsoftware.kmmdroid.PayeeActivity.KMMDCursorAdapter;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,25 +21,24 @@ import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemClickListener;
-import android.util.Log;
 
-public class PayeeActivity extends Activity
+public class InstitutionsActivity extends Activity
 {
-	private static final String TAG = "PayeeActivity";
+	private static final String TAG = "InstitutionsActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int C_PAYEENAME = 0;
 	private static final int C_ID = 1;
-	private static final String dbTable = "kmmPayees";
+	private static final String dbTable = "kmmInstitutions";
 	private static final String[] dbColumns = { "name", "id AS _id"};
 	private static final String strOrderBy = "name ASC";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { R.id.prPayeeName };
-	private String selectedPayeeId = null;
-	private String selectedPayeeName = null;
+	private String selectedInstitutionId = null;
+	private String selectedInstitutionName = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
-	ListView listPayees;
+	ListView listInstitutions;
 	SimpleCursorAdapter adapter;
 	
 	/* Called when the activity is first created. */
@@ -44,19 +46,19 @@ public class PayeeActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.payee);
+        setContentView(R.layout.institutions);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
-        listPayees = (ListView) findViewById(R.id.listPayeesView);
-		listPayees.setFastScrollEnabled(true);
-		
-    	// Now hook into listAccounts ListView and set its onItemClickListener member
+        listInstitutions = (ListView) findViewById(R.id.listInstitutionsView);
+        listInstitutions.setFastScrollEnabled(true);
+        
+    	// Now hook into listInstitutions ListView and set its onItemClickListener member
     	// to our class handler object.
-        listPayees.setOnItemClickListener(mMessageClickedHandler);
-
+        listInstitutions.setOnItemClickListener(mMessageClickedHandler);
+        
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
@@ -69,7 +71,7 @@ public class PayeeActivity extends Activity
 	{
 		super.onDestroy();
 	}
-	
+
 	@Override
 	protected void onResume()
 	{
@@ -77,8 +79,8 @@ public class PayeeActivity extends Activity
 		
 		// Make sure the edit and delete buttons are not visible and no payee is selected.
 		// This is to control the menu items.
-		selectedPayeeId = null;
-		selectedPayeeName = null;
+		selectedInstitutionId = null;
+		selectedInstitutionName = null;
 		
 		//Get all the accounts to be displayed.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
@@ -86,24 +88,25 @@ public class PayeeActivity extends Activity
 		
 		// Set up the adapter
 		//adapter = new SimpleCursorAdapter(this, R.layout.payee_row, cursor, FROM, TO);
-		listPayees.setAdapter(
+		listInstitutions.setAdapter(
 				new KMMDCursorAdapter(
 						getApplicationContext(),
 						R.layout.payee_row,
 						cursor, FROM, TO));
 	}
-		
+	
 	// Message Handler for our listAccounts List View clicks
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	cursor.moveToPosition(position);
-	    	selectedPayeeId = cursor.getString(C_ID);
-	    	selectedPayeeName = cursor.getString(C_PAYEENAME);
-			Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
-			i.putExtra("Activity", ACTION_EDIT);
-			i.putExtra("PayeeId", selectedPayeeId);
-			i.putExtra("PayeeName", selectedPayeeName);
+	    	selectedInstitutionId = cursor.getString(C_ID);
+	    	selectedInstitutionName = cursor.getString(C_PAYEENAME);
+	    	Log.d(TAG, "institutionId: " + selectedInstitutionId);
+			Intent i = new Intent(getBaseContext(), CreateModifyInstitutionActivity.class);
+			i.putExtra("Action", ACTION_EDIT);
+			i.putExtra("instId", selectedInstitutionId);
+			i.putExtra("InstitutionName", selectedInstitutionName);
 			startActivity(i);
 	    }
 	};
@@ -113,10 +116,10 @@ public class PayeeActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.payees_menu, menu);
+		inflater.inflate(R.menu.institutions_menu, menu);
 		return true;
 	}
-
+	
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -129,43 +132,19 @@ public class PayeeActivity extends Activity
 			case R.id.itemAccounts:
 				startActivity(new Intent(this, AccountsActivity.class));
 				break;
+			case R.id.itemPayees:
+				startActivity(new Intent(this, PayeeActivity.class));
+				break;
 			case R.id.itemCategories:
 				startActivity(new Intent(this, CategoriesActivity.class));
-				break;
-			case R.id.itemInstitutions:
-				startActivity(new Intent(this, InstitutionsActivity.class));
 				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemNew:
-				AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-				alert.setTitle(getString(R.string.createNewPayee));
-				alert.setMessage(getString(R.string.msgPayeeName));
-
-				// Set an EditText view to get user input 
-				final EditText input = new EditText(this);
-				alert.setView(input);
-
-				alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int whichButton) {
-				  String value = input.getText().toString();
-				  // Do something with value!
-					Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
-					i.putExtra("Activity", ACTION_NEW);
-					i.putExtra("PayeeName", value);
-					startActivity(i);
-				  }
-				});
-
-				alert.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
-				  public void onClick(DialogInterface dialog, int whichButton) {
-				    // Canceled.
-				  }
-				});
-
-				alert.show();
+				Intent i = new Intent(getBaseContext(), CreateModifyInstitutionActivity.class);
+				i.putExtra("Action", ACTION_NEW);
+				startActivity(i);
 				break;	
 		}
 		return true;

@@ -23,6 +23,6 @@
     	</item>
     <item 
     	android:id="@+id/itemInstitutions" 
-    	android:title="@string/titleInstitutions">
+    	android:title="@string/titleInstitutions" android:icon="@drawable/institutions_view">
     </item>
 </menu>

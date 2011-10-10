@@ -89,7 +89,11 @@
 		<activity android:name=".CreateModifyInstitutionActivity"
 				  android:label="@string/titleCreateModifyInstitution">
 		</activity>
-	
+		
+		<activity android:name=".InstitutionsActivity"
+				  android:label="@string/titleInstitutions">
+		</activity>
+		
 		<activity android:name=".PrefsActivity"
 				  android.label=".@string/titlePrefs">
 		</activity>

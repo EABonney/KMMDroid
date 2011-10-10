@@ -8,6 +8,6 @@
     <item android:title="@string/titlePayees" android:id="@+id/itemPayees" android:icon="@drawable/payees_view"></item>
     <item 
     	android:id="@+id/itemInstitutions" 
-    	android:title="@string/titleInstitutions">
+    	android:title="@string/titleInstitutions" android:icon="@drawable/institutions_view">
     </item>    
 </menu>

@@ -32,17 +32,18 @@ public final class R {
         public static final int ic_tab_grey=0x7f02000e;
         public static final int ic_tab_white=0x7f02000f;
         public static final int icon=0x7f020010;
-        public static final int kmymoney=0x7f020011;
-        public static final int kmymoney1=0x7f020012;
-        public static final int ledgers_view=0x7f020013;
-        public static final int newacct=0x7f020014;
-        public static final int payees_tab_address=0x7f020015;
-        public static final int payees_tab_default=0x7f020016;
-        public static final int payees_tab_matching=0x7f020017;
-        public static final int payees_tab_transactions=0x7f020018;
-        public static final int payees_view=0x7f020019;
-        public static final int titlelabel_background=0x7f02001a;
-        public static final int titlelabel_background_orig=0x7f02001b;
+        public static final int institutions_view=0x7f020011;
+        public static final int kmymoney=0x7f020012;
+        public static final int kmymoney1=0x7f020013;
+        public static final int ledgers_view=0x7f020014;
+        public static final int newacct=0x7f020015;
+        public static final int payees_tab_address=0x7f020016;
+        public static final int payees_tab_default=0x7f020017;
+        public static final int payees_tab_matching=0x7f020018;
+        public static final int payees_tab_transactions=0x7f020019;
+        public static final int payees_view=0x7f02001a;
+        public static final int titlelabel_background=0x7f02001b;
+        public static final int titlelabel_background_orig=0x7f02001c;
     }
     public static final class id {
         public static final int accountCurrency=0x7f080019;
@@ -210,9 +211,10 @@ public final class R {
         public static final int accounts_menu=0x7f070000;
         public static final int categories_menu=0x7f070001;
         public static final int home_menu=0x7f070002;
-        public static final int ledger_menu=0x7f070003;
-        public static final int payees_menu=0x7f070004;
-        public static final int save_menu=0x7f070005;
+        public static final int institutions_menu=0x7f070003;
+        public static final int ledger_menu=0x7f070004;
+        public static final int payees_menu=0x7f070005;
+        public static final int save_menu=0x7f070006;
     }
     public static final class string {
         public static final int accountNameNotEntered=0x7f05004d;

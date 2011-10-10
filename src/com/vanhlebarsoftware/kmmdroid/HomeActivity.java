@@ -133,6 +133,9 @@ public class HomeActivity extends Activity
 			case R.id.itemCategories:
 				startActivity(new Intent(this, CategoriesActivity.class));
 				break;
+			case R.id.itemInstitutions:
+				startActivity(new Intent(this, InstitutionsActivity.class));
+				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;

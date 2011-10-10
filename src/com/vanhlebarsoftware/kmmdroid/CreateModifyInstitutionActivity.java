@@ -86,19 +86,25 @@ public class CreateModifyInstitutionActivity extends Activity
 		{
 			if(Action == ACTION_EDIT)
 			{
+				Log.d(TAG, "instId: " + instId);
 				// Get the attributes for the selected institution and populate the views.
 				Cursor cursor = KMMDapp.db.query("kmmInstitutions", new String[] { "*" }, "id=?", 
-						new String[] { "instId" }, null, null, null);
+						new String[] { instId }, null, null, null);
 				startManagingCursor(cursor);
-				cursor.moveToFirst();
+				if( cursor.getCount() == 1)
+				{
+					cursor.moveToFirst();
 		
-				instName.setText(cursor.getString(INSTUTION_NAME));
-				instBIC.setText(cursor.getString(INSTUTION_MANAGER));
-				instRoutingNumber.setText(cursor.getString(INSTUTION_ROUTINGCODE));
-				instStreet.setText(cursor.getString(INSTUTION_ADDRESSSTREET));
-				instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
-				instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
-				instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+					instName.setText(cursor.getString(INSTUTION_NAME));
+					instBIC.setText(cursor.getString(INSTUTION_MANAGER));
+					instRoutingNumber.setText(cursor.getString(INSTUTION_ROUTINGCODE));
+					instStreet.setText(cursor.getString(INSTUTION_ADDRESSSTREET));
+					instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
+					instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
+					instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+				}
+				else
+					Log.d(TAG, "Error! Nothing returned from our query!");
 			}
 		}
 		else
@@ -120,10 +126,21 @@ public class CreateModifyInstitutionActivity extends Activity
 	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
 	{
+		int rows = 0;
+		
 		// Can't delete if we are creating a new item.
-		if( Action == ACTION_NEW )
+		// Can't delete if we have any accounts that are associated with this institution.
+		if( Action == ACTION_EDIT )
+		{
+			Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "id" }, 
+				"institutionId=?", new String[] { instId }, null, null, null);
+			startManagingCursor(c);
+			rows = c.getCount();
+			c.deactivate();
+		}
+		if( Action == ACTION_NEW || rows > 0 )
 			menu.getItem(1).setVisible(false);
-
+		
 		return true;
 	}
 
