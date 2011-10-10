@@ -21,6 +21,8 @@
     	android:icon="@drawable/payees_view"
     	android:title="@string/titlePayees">
     	</item>
-    
-    
+    <item 
+    	android:id="@+id/itemInstitutions" 
+    	android:title="@string/titleInstitutions">
+    </item>
 </menu>

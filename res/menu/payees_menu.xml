@@ -7,6 +7,8 @@
     <item android:title="@string/titleHome" android:id="@+id/itemHome" android:icon="@drawable/home_view"></item>
     <item android:title="@string/titleAccounts" android:id="@+id/itemAccounts" android:icon="@drawable/accounts_view"></item>
     <item android:title="@string/titleCategories" android:id="@+id/itemCategories" android:icon="@drawable/categories_view"></item>
-    
-    
+    <item 
+    	android:id="@+id/itemInstitutions" 
+    	android:title="@string/titleInstitutions">
+    </item>
 </menu>

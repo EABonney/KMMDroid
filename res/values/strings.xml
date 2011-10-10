@@ -132,4 +132,5 @@
 	<string name="titleCreateModifyInstitution">Create Institution</string>
 	<string name="accountNotSupported">Currently this account type is not able to be edited in KMM for Droid. It will be add
 		eventually. We apologize for the limitation right now. Thanks for understanding.</string>
+	<string name="titleInstitutions">Institutions</string>
 </resources>
