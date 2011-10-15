@@ -113,7 +113,7 @@
 	<string name="titleAccountName">Account name</string>
 	<string name="titleAccountType">Account type</string>
 	<string name="titleAccountCurrency">Currency</string>
-	<string name="buttonSetDate">Set Opening Date</string>
+	<string name="buttonSetDate">Set Date</string>
 	<string name="titleAccountOpenDate">Opening date</string>
 	<string name="titleAccountOpenBalance">Opening balance</string>
 	<string name="titleAccountPreferred">Preferred account</string>
@@ -133,4 +133,25 @@
 	<string name="accountNotSupported">Currently this account type is not able to be edited in KMM for Droid. It will be add
 		eventually. We apologize for the limitation right now. Thanks for understanding.</string>
 	<string name="titleInstitutions">Institutions</string>
+	<string name="titleCreateModifyTransactions">New Transaction</string>
+	<string-array name="TransactionTypes">
+		<item>Deposit</item>
+		<item>Transfer</item>
+		<item>Withdrawal</item>
+	</string-array>
+	<string name="titleTransactionType">Transaction Type: </string>
+	<string name="titlePayeeToFrom">Pay to: </string>
+	<string name="titleCategory">Category: </string>
+	<string name="titleNumber">Number: </string>
+	<string name="titleDate">Date: </string>
+	<string name="titleAmount">Amount: </string>
+	<string-array name="TransactionStatus">
+		<item>Reconciled</item>
+		<item>Cleared</item>
+		<item>Not reconciled</item>
+	</string-array>
+	<string name="titleStatus">Status: </string>
+	<string name="buttonSplit">Splits</string>
+	<string name="titleMemo">Memo: </string>
+	<string name="buttonChooseCategory">Choose a category</string>
 </resources>

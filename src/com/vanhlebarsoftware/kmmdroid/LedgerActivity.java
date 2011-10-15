@@ -16,7 +16,6 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
 import android.util.Log;
 
-@SuppressWarnings("unused")
 public class LedgerActivity extends Activity
 {
 	private static final String TAG = "LedgerActivity";
@@ -153,6 +152,9 @@ public class LedgerActivity extends Activity
 	{
 		switch (item.getItemId())
 		{
+			case R.id.itemNew:
+				startActivity(new Intent(this, CreateModifyTransactionActivity.class));
+				break;
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));
 				break;
