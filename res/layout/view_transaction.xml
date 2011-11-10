@@ -133,24 +133,4 @@
    		android:layout_width="fill_parent"
    		android:id="@+id/listSplits">    
    	</ListView>
-    <LinearLayout 
-    	android:orientation="horizontal"
-    	android:gravity="bottom"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent">
-    	<Button 
-    		android:text="@string/titleButtonEdit"
-	    	android:id="@+id/buttonEdit"
-    		android:layout_width="fill_parent"
-    		android:layout_height="wrap_content"
-	    	android:layout_weight="1">
-    	</Button>
-	    <Button
-    		android:text="@string/titleButtonDelete"
-    		android:id="@+id/buttonDelete"
-	    	android:layout_width="fill_parent"
-    		android:layout_height="wrap_content"
-    		android:layout_weight="1">
-	    </Button>
-	</LinearLayout>
 </LinearLayout>

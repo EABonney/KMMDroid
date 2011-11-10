@@ -146,12 +146,13 @@
 	<string name="titleDate">Date: </string>
 	<string name="titleAmount">Amount: </string>
 	<string-array name="TransactionStatus">
-		<item>Reconciled</item>
-		<item>Cleared</item>
 		<item>Not reconciled</item>
+		<item>Cleared</item>
+		<item>Reconciled</item>
 	</string-array>
 	<string name="titleStatus">Status: </string>
 	<string name="buttonSplit">Splits</string>
 	<string name="titleMemo">Memo: </string>
 	<string name="buttonChooseCategory">Choose a category</string>
+	<string name="titleDeleteTransaction">Do you really want to delete this transaction?</string>
 </resources>

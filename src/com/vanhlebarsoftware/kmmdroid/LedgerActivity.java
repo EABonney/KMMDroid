@@ -19,6 +19,8 @@ import android.util.Log;
 public class LedgerActivity extends Activity
 {
 	private static final String TAG = "LedgerActivity";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private static final int C_TRANSID = 0;
 	private static final int C_PAYEEID = 1;
 	private static final int C_AMOUNT = 2;
@@ -153,7 +155,10 @@ public class LedgerActivity extends Activity
 		switch (item.getItemId())
 		{
 			case R.id.itemNew:
-				startActivity(new Intent(this, CreateModifyTransactionActivity.class));
+				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
+				i.putExtra("Action", ACTION_NEW);
+				i.putExtra("accountUsed", AccountID);
+				startActivity(i);
 				break;
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));

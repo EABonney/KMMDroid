@@ -1,9 +1,19 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.StringTokenizer;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -14,6 +24,8 @@ import android.widget.SimpleCursorAdapter.ViewBinder;
 public class ViewTransactionActivity extends Activity
 {
 	private static final String TAG = "ViewTransactionActivity";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private static final String dbTable = "kmmSplits, kmmAccounts";
 	private static final String[] dbColumns = { "splitId", "transactionId AS _id", "valueFormatted", "memo",
 												"accountId", "id", "checkNumber", "accountName" };
@@ -94,6 +106,79 @@ public class ViewTransactionActivity extends Activity
 		listSplits.setAdapter(adapter); 
 	}
 	
+	// Called first time the user clicks on the menu button
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.edit_menu, menu);
+		return true;
+	}
+	
+	// Called when an options item is clicked
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case R.id.itemEdit:
+				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
+				i.putExtra("Action", ACTION_EDIT);
+				i.putExtra("transId", TransID);
+				startActivity(i);
+				finish();
+				break;
+			case R.id.itemDelete:
+				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
+				alertDel.setTitle(R.string.delete);
+				alertDel.setMessage(getString(R.string.titleDeleteTransaction));
+
+				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Update the accounts balance.
+						Cursor cur = KMMDapp.db.query("kmmSplits", new String[] { "accountId", "valueFormatted" }, "transactionId=? AND splitId=0",
+								new String[] { TransID }, null, null, null);
+						startManagingCursor(cur);
+						cur.moveToFirst();
+						updateAccount(cur.getString(0), cur.getString(1));
+						
+						// Delete the transaction from the transactions table.
+						KMMDapp.db.delete("kmmTransactions", "id=?", new String[] { TransID });
+						
+						// Delete the splits for the selected transaction from the splits table
+						int splitsDeleted = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { TransID });						
+						
+						// Update the number of splits inside kmmFileInfo table.
+						Cursor c = KMMDapp.db.query("kmmFileInfo", new String[] { "transactions", "splits" }, null, null, null, null, null);
+						startManagingCursor(c);
+						c.moveToFirst();
+						int trans = c.getInt(0);
+						int splits = c.getInt(1);
+						ContentValues values = new ContentValues();
+						values.put("transactions", (trans - 1));
+						values.put("splits", (splits - splitsDeleted));
+						KMMDapp.db.update("kmmFileInfo", values, null, null);
+						
+						// Update the number of transactions for the accounts used.
+						c.close();
+						cur.close();
+						finish();
+					}
+				});
+				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+						Log.d(TAG, "User cancelled delete.");
+					}
+					});				
+				alertDel.show();
+				break;
+			case R.id.itemCancel:
+				finish();
+				break;
+		}
+		return true;
+	}
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
 	static final ViewBinder VIEW_BINDER = new ViewBinder() {
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
@@ -106,4 +191,32 @@ public class ViewTransactionActivity extends Activity
 			return true;
 		}
 	};
+	
+	// **************************************************************************************************
+	// ************************************ Helper methods **********************************************
+	private String createBalance(String formattedValue)
+	{
+		StringTokenizer split = new StringTokenizer(formattedValue, ".");
+		String dollars = split.nextToken();
+		String cents = split.nextToken();
+		String balance = dollars + cents;
+		String denominator = "/100";
+		return balance + denominator;
+	}
+	
+	private void updateAccount( String accountId, String transValue)
+	{
+		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted" }, "id=?", new String[] { accountId }, null, null, null);
+		startManagingCursor(c);
+		c.moveToFirst();
+		float balance = Float.valueOf(c.getString(0));
+		float tValue = Float.valueOf(transValue);
+		float newBalance = balance - tValue;
+
+		ContentValues values = new ContentValues();
+		values.put("balanceFormatted", String.valueOf(newBalance));
+		values.put("balance", createBalance(String.valueOf(newBalance)));
+		
+		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
+	}
 }

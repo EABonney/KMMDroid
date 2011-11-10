@@ -64,8 +64,6 @@ public final class R {
         public static final int arIcon=0x7f080001;
         public static final int buttonCancel=0x7f08005d;
         public static final int buttonChooseCategory=0x7f080043;
-        public static final int buttonDelete=0x7f080084;
-        public static final int buttonEdit=0x7f080083;
         public static final int buttonNewInstitution=0x7f080024;
         public static final int buttonOk=0x7f08005c;
         public static final int buttonSetDate=0x7f08001a;
@@ -81,7 +79,7 @@ public final class R {
         public static final int checkboxNoInstitution=0x7f080021;
         public static final int checkboxPayeeDefaultExpense=0x7f08006c;
         public static final int checkboxPayeeDefaultIncome=0x7f08006a;
-        public static final int close=0x7f08008e;
+        public static final int close=0x7f08008f;
         public static final int crAccountBalance=0x7f080011;
         public static final int crAccountName=0x7f080010;
         public static final int date=0x7f080048;
@@ -96,16 +94,17 @@ public final class R {
         public static final int institutionPostalCode=0x7f080034;
         public static final int institutionRoutingNumber=0x7f080038;
         public static final int institutionStreet=0x7f080030;
-        public static final int itemAccounts=0x7f08008d;
-        public static final int itemCancel=0x7f080091;
-        public static final int itemCategories=0x7f08008a;
-        public static final int itemDelete=0x7f080090;
-        public static final int itemHome=0x7f080089;
-        public static final int itemInstitutions=0x7f08008c;
-        public static final int itemNew=0x7f080087;
-        public static final int itemPayees=0x7f08008b;
-        public static final int itemPrefs=0x7f080088;
-        public static final int itemsave=0x7f08008f;
+        public static final int itemAccounts=0x7f08008b;
+        public static final int itemCancel=0x7f08008e;
+        public static final int itemCategories=0x7f080088;
+        public static final int itemDelete=0x7f08008d;
+        public static final int itemEdit=0x7f08008c;
+        public static final int itemHome=0x7f080087;
+        public static final int itemInstitutions=0x7f08008a;
+        public static final int itemNew=0x7f080085;
+        public static final int itemPayees=0x7f080089;
+        public static final int itemPrefs=0x7f080086;
+        public static final int itemsave=0x7f080090;
         public static final int listAccountsView=0x7f080000;
         public static final int listCategoriesView=0x7f080005;
         public static final int listHomeView=0x7f080051;
@@ -175,7 +174,7 @@ public final class R {
         public static final int titleMemo=0x7f08004d;
         public static final int titleNewInstitution=0x7f08002c;
         public static final int titleNumber=0x7f080045;
-        public static final int titleOpenDatabase=0x7f080086;
+        public static final int titleOpenDatabase=0x7f080084;
         public static final int titleOpeningInfo=0x7f080008;
         public static final int titlePayeeAddress=0x7f08005f;
         public static final int titlePayeeEmail=0x7f080065;
@@ -183,7 +182,7 @@ public final class R {
         public static final int titlePayeePostalCode=0x7f080061;
         public static final int titlePayeeTelephone=0x7f080063;
         public static final int titlePayeeToFrom=0x7f08003e;
-        public static final int titleStartNew=0x7f080085;
+        public static final int titleStartNew=0x7f080083;
         public static final int titleStatus=0x7f08004b;
         public static final int titleTransactionType=0x7f08003c;
         public static final int titleViewTransaction=0x7f08007b;
@@ -233,11 +232,12 @@ public final class R {
     public static final class menu {
         public static final int accounts_menu=0x7f070000;
         public static final int categories_menu=0x7f070001;
-        public static final int home_menu=0x7f070002;
-        public static final int institutions_menu=0x7f070003;
-        public static final int ledger_menu=0x7f070004;
-        public static final int payees_menu=0x7f070005;
-        public static final int save_menu=0x7f070006;
+        public static final int edit_menu=0x7f070002;
+        public static final int home_menu=0x7f070003;
+        public static final int institutions_menu=0x7f070004;
+        public static final int ledger_menu=0x7f070005;
+        public static final int payees_menu=0x7f070006;
+        public static final int save_menu=0x7f070007;
     }
     public static final class string {
         public static final int accountNameNotEntered=0x7f05004d;
@@ -307,6 +307,7 @@ public final class R {
         public static final int titleDatabaseName=0x7f050009;
         public static final int titleDate=0x7f050074;
         public static final int titleDelete=0x7f05001f;
+        public static final int titleDeleteTransaction=0x7f05007a;
         public static final int titleEdit=0x7f05001e;
         public static final int titleEditModAccount=0x7f050050;
         public static final int titleFileChooser=0x7f050008;

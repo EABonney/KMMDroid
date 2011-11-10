@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="2"
-      android:versionName="0.1.7.0"
+      android:versionName="0.1.7.1"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
