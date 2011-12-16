@@ -147,6 +147,9 @@ public class CategoriesActivity extends Activity
 				i.putExtra("Action", ACTION_NEW);
 				startActivity(i);
 				break;
+			case R.id.itemAbout:
+				startActivity(new Intent(this, AboutActivity.class));
+				break;
 		}
 		
 		return true;

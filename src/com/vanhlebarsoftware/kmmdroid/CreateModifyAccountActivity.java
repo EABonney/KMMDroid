@@ -217,6 +217,7 @@ public class CreateModifyAccountActivity extends TabActivity
 				((CreateAccountAccountActivity) accountAccount).putCurrency(cursor.getString(C_CURRENCYID));
 				((CreateAccountAccountActivity) accountAccount).putOpeningDate(cursor.getString(C_OPENINGDATE));
 				((CreateAccountAccountActivity) accountAccount).putOpeningBalance(cursor.getString(C_BALANCEFORMATTED));
+				((CreateAccountAccountActivity) accountAccount).putTransactionCount(String.valueOf(cursor.getInt(C_TRANSACTIONCOUNT)));
 				// Get the KeyValuePairs for this id.
 				kmmKVP = KMMDapp.db.query("kmmKeyValuePairs", new String[] { "kvpData" },
 						"kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'", new String[] { cursor.getString(C_ID) },
@@ -362,6 +363,8 @@ public class CreateModifyAccountActivity extends TabActivity
 							try 
 							{
 								KMMDapp.db.insertOrThrow("kmmAccounts", null, valuesAccount);
+								KMMDapp.updateFileInfo("hiAccountId", 1);
+								KMMDapp.updateFileInfo("accounts", 1);
 							} 
 							catch (SQLException e)
 							{
@@ -422,11 +425,13 @@ public class CreateModifyAccountActivity extends TabActivity
 							break;
 					}
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.itemDelete:
 				KMMDapp.db.delete("kmmKeyValuePairs", "kvpId=?", new String [] { accountId });
 				int rows = KMMDapp.db.delete("kmmAccounts", "id=?", new String[] { accountId });
+				KMMDapp.updateFileInfo("accounts", -1);
 				if( rows != 1 )
 				{
 					Log.d(TAG, "There was an error deleting your category!");
@@ -446,6 +451,7 @@ public class CreateModifyAccountActivity extends TabActivity
 				else
 				{
 					returnFromDelete = true;
+					KMMDapp.updateFileInfo("lastModified", 0);
 					finish();
 				}
 				break;

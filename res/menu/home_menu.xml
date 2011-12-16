@@ -25,4 +25,8 @@
     	android:id="@+id/itemInstitutions" 
     	android:title="@string/titleInstitutions" android:icon="@drawable/institutions_view">
     </item>
+    <item 
+    	android:id="@+id/itemAbout" 
+    	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
+    </item>
 </menu>

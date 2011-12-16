@@ -11,5 +11,9 @@
     	android:id="@+id/itemPayees" 
     	android:icon="@drawable/payees_view"
     	android:title="@string/titlePayees">
-    	</item>
+    </item>
+    <item 
+    	android:id="@+id/itemAbout" 
+    	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
+    </item>
 </menu>

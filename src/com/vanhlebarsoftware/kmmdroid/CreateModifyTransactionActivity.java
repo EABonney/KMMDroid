@@ -5,13 +5,11 @@ import java.util.Calendar;
 import java.util.StringTokenizer;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -71,6 +69,7 @@ public class CreateModifyTransactionActivity extends Activity
 	private String transId = null;
 	private boolean anySplits = false;
 	private String accountUsed = null;
+	private int numOfSplits;
 	ArrayList<Split> Splits;
 	Spinner spinTransType;
 	Spinner spinPayee;
@@ -78,6 +77,7 @@ public class CreateModifyTransactionActivity extends Activity
 	Spinner spinStatus;
 	Button buttonSetDate;
 	Button buttonChooseCategory;
+	Button buttonSplits;
 	EditText transDate;
 	EditText editCategory;
 	EditText editMemo;
@@ -113,6 +113,7 @@ public class CreateModifyTransactionActivity extends Activity
         editCkNumber = (EditText) findViewById(R.id.checkNumber);
         buttonSetDate = (Button) findViewById(R.id.buttonSetDate);
         buttonChooseCategory = (Button) findViewById(R.id.buttonChooseCategory);
+        buttonSplits = (Button) findViewById(R.id.buttonSplit);
        
         // Get the action the user is doing.
         Bundle extras = getIntent().getExtras();
@@ -145,6 +146,18 @@ public class CreateModifyTransactionActivity extends Activity
 				spinCategory.setVisibility(0);
 				spinCategory.performClick();
 				buttonChooseCategory.setVisibility(4);
+			}
+		});
+        
+        buttonSplits.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				// TODO Auto-generated method stub
+				Intent i = new Intent(getBaseContext(), CreateModifySplitsActivity.class);
+				i.putExtra("Action", Action);
+				i.putExtra("TransAmount", editAmount.getText().toString());
+				startActivity(i);
 			}
 		});
         
@@ -215,24 +228,38 @@ public class CreateModifyTransactionActivity extends Activity
 			// load the transaction details into the form.
 			editMemo.setText(transaction.getString(T_MEMO));
 			convertDate(transaction.getString(T_POSTDATE));
-			editCkNumber.setText(Splits.get(0).checkNumber);
-			spinPayee.setSelection(setPayee(Splits.get(0).payeeId));
+			editCkNumber.setText(Splits.get(0).getCheckNumber());
+			spinPayee.setSelection(setPayee(Splits.get(0).getPayeeId()));
 			
 			// See if we have only used one category or if we have multiple.
 			if( Splits.size() == 2 )
 			{
 				Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?",
-											new String[] { Splits.get(1).accountId }, null, null, null);
+											new String[] { Splits.get(1).getAccountId() }, null, null, null);
 				startManagingCursor(c);
 				c.moveToFirst();
 				editCategory.setText(c.getString(0));
 				iNumberofPasses = 0;
-				intTransStatus = Integer.valueOf(Splits.get(0).reconcileFlag);
+				intTransStatus = Integer.valueOf(Splits.get(0).getReconcileFlag());
 
 				c.close();
+				numOfSplits = 2;
+				anySplits = false;
+			}
+			else
+			{
+				// need to put the splits into the KMMDapp.Splits object so user may edit the split details.
+				KMMDapp.splitsInit();
+				for(int i = 1; i < Splits.size(); i++)
+					KMMDapp.Splits.add(Splits.get(i));
+				
+				editCategory.setText(R.string.splitTransaction);
+				buttonChooseCategory.setEnabled(false);
+				numOfSplits = Splits.size();
+				anySplits = true;
 			}
 			
-			float amount = Float.valueOf(Splits.get(0).valueFormatted);
+			float amount = Float.valueOf(Splits.get(0).getValueFormatted());
 			if( amount < 0 )
 			{
 				intTransType = WITHDRAW;
@@ -246,8 +273,34 @@ public class CreateModifyTransactionActivity extends Activity
 	        updateDisplay();
 		}
 		else
+		{
 			iNumberofPasses = 0;
 			
+			// See if we have any splits from the Split Entry screen.
+			if(!KMMDapp.Splits.isEmpty())
+			{
+				editCategory.setText(R.string.splitTransaction);
+				buttonChooseCategory.setEnabled(false);
+				numOfSplits = KMMDapp.Splits.size();
+				anySplits = true;
+				if( KMMDapp.flSplitsTotal != 0  )
+				{
+					float tmp = 0;
+					if( KMMDapp.flSplitsTotal < 0 )
+						tmp = KMMDapp.flSplitsTotal * -1;
+					else
+						tmp = KMMDapp.flSplitsTotal;
+					editAmount.setText(String.valueOf(tmp));
+				}
+			}
+			else
+			{
+				editCategory.setText("");
+				buttonChooseCategory.setEnabled(true);
+				numOfSplits = 2;
+				anySplits = false;
+			}
+		}	
 		// Set the default items for the type and status spinners.
 		spinTransType.setSelection(intTransType);
 		spinStatus.setSelection(intTransStatus);
@@ -302,52 +355,82 @@ public class CreateModifyTransactionActivity extends Activity
 					id = transId;
 				valuesTrans.put("id", id);
 				
-				// Create the splits information to be entered.
-				int numOfSplits = 0;
-				if( !anySplits )
-					numOfSplits = 2;
-				
-				for( int i=0; i < numOfSplits; i++)
+				// Create the splits information to be saved.			
+				for( int i=0; i <= numOfSplits; i++)
 				{
-					String value = null, formatted = null;
-					if( (intTransType == 2 && i == 0) || (intTransType == 0 && i > 0) )
+					String value = null, formatted = null, memo = null;
+					if(i == 0)
 					{
-						value = "-" + createBalance(editAmount.getText().toString());
-						formatted = "-" + editAmount.getText().toString();
+						if( intTransType == WITHDRAW )
+						{
+							value = "-" + createBalance(editAmount.getText().toString());
+							formatted = "-" + editAmount.getText().toString();
+						}
+						else
+						{
+							value = createBalance(editAmount.getText().toString());
+							formatted = editAmount.getText().toString();							
+						}
+						memo = editMemo.getText().toString();
 					}
 					else
 					{
-						value = createBalance(editAmount.getText().toString());
-						formatted = editAmount.getText().toString();
+						// If we have splits grab the relevant information from the KMMDapp.Splits object.
+						if( anySplits )
+						{
+							value = createBalance(KMMDapp.Splits.get(i-1).getValueFormatted());
+							formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
+							memo = KMMDapp.Splits.get(i-1).getMemo();
+							accountUsed = KMMDapp.Splits.get(i-1).getAccountId();
+						}
+						else
+						{
+							if( intTransType == WITHDRAW )
+							{
+								value = createBalance(editAmount.getText().toString());
+								formatted = editAmount.getText().toString();								
+							}
+							else
+							{
+								value = "-" + createBalance(editAmount.getText().toString());
+								formatted = "-" + editAmount.getText().toString();								
+							}
+							memo = editMemo.getText().toString();
+							accountUsed = strTransCategoryId;
+						}
 					}
-						
+					// Create the actual split for the transaction to be saved.
 					Splits.add(new Split(id, "N", i, strTransPayeeId, "", "", "0", value, formatted, value, formatted,
-										 "", "", editMemo.getText().toString(), accountUsed, editCkNumber.getText().toString(),
+										 "", "", memo, accountUsed, editCkNumber.getText().toString(),
 										 formatDate(transDate.getText().toString()), ""));
-					accountUsed = strTransCategoryId;
 				}
 				switch (Action)
 				{
 					case ACTION_NEW:
 						KMMDapp.db.insertOrThrow("kmmTransactions", null, valuesTrans);
-						increaseId();
+						KMMDapp.updateFileInfo("hiTransactionId", 1);
+						KMMDapp.updateFileInfo("transactions", 1);
+						//increaseId();
 						// Insert the splits for this transaction
 						for(int i=0; i < Splits.size(); i++)
 						{
 							Split s = Splits.get(i);
-							s.dump();
+							//s.dump();
 							s.commitSplit(false);
+							updateAccount(s.getAccountId(), s.getValueFormatted());
 						}
-						increaseSplits(Splits.size());
-						updateAccount( Splits.get(0).accountId, Splits.get(0).valueFormatted );
+						KMMDapp.updateFileInfo("splits", Splits.size());
+						//increaseSplits(Splits.size());
 						break;
 					case ACTION_EDIT:
 						KMMDapp.db.update("kmmInstitutions", valuesTrans, "id=?", new String[] { transId });
 						break;
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.itemCancel:
+				KMMDapp.splitsDestroy();
 				finish();
 				break;
 		}
@@ -435,108 +518,6 @@ public class CreateModifyTransactionActivity extends Activity
 		}		
 	}
 	
-	private class Split
-	{
-		private String transactionId;
-		private String txType;
-		private int splitId;
-		private String payeeId;
-		private String reconcileDate;
-		private String action;
-		private String reconcileFlag;
-		private String value;
-		private String valueFormatted;
-		private String shares;
-		private String sharesFormatted;
-		private String price;
-		private String priceFormatted;
-		private String memo;
-		private String accountId;
-		private String checkNumber;
-		private String postDate;
-		private String bankId;
-		
-		// Constructor used for creating new Splits.
-		Split(String tId, String tType, int sId, String pId, String rDate, String a, String rFlag,
-				String v, String vFormatted, String s, String sFormatted, String p, String pFormatted,
-				String m, String aId, String ckNumber, String pDate, String bId)
-		{
-			this.transactionId = tId;
-			this.txType = tType;
-			this.splitId = sId;
-			this.payeeId = pId;
-			this.reconcileDate = rDate;
-			this.action = a;
-			this.reconcileFlag = rFlag;
-			this.value = v;
-			this.valueFormatted = vFormatted;
-			this.shares = s;
-			this.sharesFormatted = sFormatted;
-			this.price = p;
-			this.priceFormatted = pFormatted;
-			this.memo = m;
-			this.accountId = aId;
-			this.checkNumber = ckNumber;
-			this.postDate = pDate;
-			this.bankId = bId;
-		}
-		
-		public boolean commitSplit(boolean updating)
-		{
-			// create the ContentValue pairs
-			ContentValues valuesSplit = new ContentValues();
-			valuesSplit.put("transactionId", transactionId);
-			valuesSplit.put("txType", txType);
-			valuesSplit.put("splitId", splitId);
-			valuesSplit.put("payeeId", payeeId);
-			valuesSplit.put("reconcileDate", reconcileDate);
-			valuesSplit.put("action", action);
-			valuesSplit.put("reconcileFlag", reconcileFlag);
-			valuesSplit.put("value", value);
-			valuesSplit.put("valueFormatted", valueFormatted);
-			valuesSplit.put("shares", shares);
-			valuesSplit.put("sharesFormatted", sharesFormatted);
-			valuesSplit.put("price", price);
-			valuesSplit.put("priceFormatted", priceFormatted);
-			valuesSplit.put("memo", memo);
-			valuesSplit.put("accountId", accountId);
-			valuesSplit.put("checkNumber", checkNumber);
-			valuesSplit.put("postDate", postDate);
-			valuesSplit.put("bankId", bankId);
-			
-			if( updating )
-			{
-				KMMDapp.db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { transactionId, String.valueOf(splitId) });
-			}
-			else
-			{
-				KMMDapp.db.insertOrThrow("kmmSplits", null, valuesSplit);
-			}
-			
-			return true;
-		}
-		
-	
-		public void dump()
-		{
-			Log.d(TAG, "transactionId: " + transactionId);
-			Log.d(TAG, "txType: " + txType);
-			Log.d(TAG, "splitId: " + splitId);
-			Log.d(TAG, "payeeId: " + payeeId);
-			Log.d(TAG, "reconcileDate: " + reconcileDate);
-			Log.d(TAG, "value: " + value);
-			Log.d(TAG, "valueFormatted: " + valueFormatted);
-			Log.d(TAG, "shares: " + shares);
-			Log.d(TAG, "sharesFormatted: " + sharesFormatted);
-			Log.d(TAG, "price: " + price);
-			Log.d(TAG, "priceFormatted: " + priceFormatted);
-			Log.d(TAG, "memo: " + memo);
-			Log.d(TAG, "accountId: " + accountId);
-			Log.d(TAG, "checkNumber: " + checkNumber);
-			Log.d(TAG, "postDate: " + postDate);
-			Log.d(TAG, "bankId: " + bankId);
-		}
-	}
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
 	private String createId()
@@ -628,18 +609,25 @@ public class CreateModifyTransactionActivity extends Activity
 	
 	private void updateAccount( String accountId, String transValue)
 	{
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted" }, "id=?", new String[] { accountId }, null, null, null);
+		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
 		startManagingCursor(c);
 		c.moveToFirst();
+		
+		// Update the current balance for this account.
 		float balance = Float.valueOf(c.getString(0));
 		float tValue = Float.valueOf(transValue);
 		float newBalance = balance + tValue;
 
+		// Update the number of transactions used for this account.
+		int Count = c.getInt(1) + 1;
+		
 		ContentValues values = new ContentValues();
 		values.put("balanceFormatted", String.valueOf(newBalance));
 		values.put("balance", createBalance(String.valueOf(newBalance)));
+		values.put("transactionCount", Count);
 		
 		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
+		c.close();
 	}
 	
 	private ArrayList<Split> getSplits(String transId)

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 
 public class CategoriesGeneralActivity extends Activity
 {
@@ -29,6 +30,7 @@ public class CategoriesGeneralActivity extends Activity
 	EditText editCategoryNotes;
 	Spinner spinCategoryType;
 	Spinner spinCategoryCurrency;
+	TextView txtTotTrans;
 	Cursor cursorCurrency;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
@@ -48,6 +50,7 @@ public class CategoriesGeneralActivity extends Activity
         editCategoryNotes = (EditText) findViewById(R.id.categoryNotes);
         spinCategoryType = (Spinner) findViewById(R.id.categoryType);
         spinCategoryCurrency = (Spinner) findViewById(R.id.categoryCurrency);
+        txtTotTrans = (TextView) findViewById(R.id.titleAccountTransactions);
         
         // Set the OnItemSelectedListeners for the spinners.
         spinCategoryType.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
@@ -151,5 +154,10 @@ public class CategoriesGeneralActivity extends Activity
 	public void putNotes(String notes)
 	{
 		editCategoryNotes.setText(notes);
+	}
+	
+	public void putTransactionCount(String strCount)
+	{
+		txtTotTrans.setText(txtTotTrans.getText().toString() + " " + strCount);
 	}
 }

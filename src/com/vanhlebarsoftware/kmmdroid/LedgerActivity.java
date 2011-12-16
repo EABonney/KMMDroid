@@ -178,6 +178,9 @@ public class LedgerActivity extends Activity
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
+			case R.id.itemAbout:
+				startActivity(new Intent(this, AboutActivity.class));
+				break;
 		}
 		
 		return true;

@@ -167,6 +167,9 @@ public class PayeeActivity extends Activity
 
 				alert.show();
 				break;	
+			case R.id.itemAbout:
+				startActivity(new Intent(this, AboutActivity.class));
+				break;
 		}
 		return true;
 	}

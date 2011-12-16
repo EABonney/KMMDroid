@@ -146,6 +146,9 @@ public class HomeActivity extends Activity
 				KMMDapp.db.close();
 				finish();
 				break;
+			case R.id.itemAbout:
+				startActivity(new Intent(this, AboutActivity.class));
+				break;
 		}
 		
 		return true;

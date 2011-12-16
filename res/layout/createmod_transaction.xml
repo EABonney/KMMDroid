@@ -166,6 +166,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/date"
 		android:layout_toRightOf="@+id/titleAmount"
+		android:inputType="numberSigned|numberDecimal"
 		android:id="@+id/amount"
 	/>
     <TextView

@@ -175,6 +175,8 @@ public class CreateModifyInstitutionActivity extends Activity
 						try 
 						{
 							KMMDapp.db.insertOrThrow("kmmInstitutions", null, valuesInst);
+							KMMDapp.updateFileInfo("hiInstitutionId", 1);
+							KMMDapp.updateFileInfo("institutions", 1);
 						} 
 						catch (SQLException e) 
 						{
@@ -187,6 +189,7 @@ public class CreateModifyInstitutionActivity extends Activity
 						KMMDapp.db.update("kmmInstitutions", valuesInst, "id=?", new String[] { instId });
 						break;
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.itemDelete:
@@ -198,7 +201,9 @@ public class CreateModifyInstitutionActivity extends Activity
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						KMMDapp.db.delete("kmmInstitutions", "id=?", new String[] { instId });
+						KMMDapp.updateFileInfo("institutions", -1);
 						returnFromDelete = true;
+						KMMDapp.updateFileInfo("lastModified", 0);
 						finish();
 					}
 				});

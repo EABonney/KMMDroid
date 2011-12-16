@@ -139,6 +139,7 @@ public class PayeeReassignActivity extends Activity implements OnItemSelectedLis
 				{
 					deletePayee();
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.buttonCancel:
@@ -169,6 +170,7 @@ public class PayeeReassignActivity extends Activity implements OnItemSelectedLis
 		try 
 		{
 			KMMDapp.db.delete(dbTable, "id=?", new String[] { payeeToDeleteId });
+			KMMDapp.updateFileInfo("payees", -1);
 			adapter.notifyDataSetInvalidated();
 		}
 		catch (Exception e)

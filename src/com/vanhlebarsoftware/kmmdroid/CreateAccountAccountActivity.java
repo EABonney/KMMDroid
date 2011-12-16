@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TextView;
 
 public class CreateAccountAccountActivity extends Activity
 {
@@ -48,6 +49,7 @@ public class CreateAccountAccountActivity extends Activity
 	Spinner spinType;
 	Spinner spinCurrency;
 	CheckBox checkPreferred;
+	TextView txtTotTrans;
 	Cursor cursorCurrency;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
@@ -70,6 +72,7 @@ public class CreateAccountAccountActivity extends Activity
         openBalance = (EditText) findViewById(R.id.accountOpenBalance);
         checkPreferred = (CheckBox) findViewById(R.id.checkboxAccountPreferred);
         buttonDate = (Button) findViewById(R.id.buttonSetDate);
+        txtTotTrans = (TextView) findViewById(R.id.titleAccountTransactions);
         
         // Set our OnClickListener events
         buttonDate.setOnClickListener(new View.OnClickListener() 
@@ -372,5 +375,10 @@ public class CreateAccountAccountActivity extends Activity
 	public void putPreferredAccount(boolean preferred)
 	{
 		checkPreferred.setChecked(preferred);
+	}
+	
+	public void putTransactionCount(String strCount)
+	{
+		txtTotTrans.setText(txtTotTrans.getText().toString() + " " + strCount);
 	}
 }

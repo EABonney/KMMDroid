@@ -97,5 +97,16 @@
 		android:gravity="top"
 		android:height="200sp"
 	/>	
+	<TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/categoryNotes"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountTransactions"
+    	android:id="@+id/titleAccountTransactions"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp">	
+	</TextView>
 </RelativeLayout>
 </ScrollView>

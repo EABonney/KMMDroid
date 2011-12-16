@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+<RelativeLayout
 	android:orientation="horizontal"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
@@ -127,4 +131,16 @@
 		android:id="@+id/checkboxAccountPreferred"
 		android:state_enabled="false"
 	/>  
+	<TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/checkboxAccountPreferred"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountTransactions"
+    	android:id="@+id/titleAccountTransactions"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp">	
+	</TextView>
 </RelativeLayout>
+</ScrollView>

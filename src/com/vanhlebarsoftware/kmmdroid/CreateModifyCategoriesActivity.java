@@ -175,7 +175,8 @@ public class CreateModifyCategoriesActivity extends TabActivity
 				pos = getCurrencyPos(cursor.getString(C_CURRENCYID));
 				((CategoriesGeneralActivity) categoryGeneral).putCurrency(pos);
 				((CategoriesGeneralActivity) categoryGeneral).putNotes(cursor.getString(C_DESCRIPTION));
-
+				((CategoriesGeneralActivity) categoryGeneral).putTransactionCount(String.valueOf(cursor.getInt(C_TRANSACTIONCOUNT)));
+				
 				getTabHost().setCurrentTab(1);
 				Activity categoryHierarchy = this.getCurrentActivity();
 				((CategoriesHierarchyActivity) categoryHierarchy).putParentAccount(cursor.getString(C_PARENTID));
@@ -295,6 +296,8 @@ public class CreateModifyCategoriesActivity extends TabActivity
 							try 
 							{
 								KMMDapp.db.insertOrThrow(dbTable, null, valuesCategory);
+								KMMDapp.updateFileInfo("hiAccountId", 1);
+								KMMDapp.updateFileInfo("accounts", 1);
 							} 
 							catch (SQLException e)
 							{
@@ -315,10 +318,12 @@ public class CreateModifyCategoriesActivity extends TabActivity
 							break;
 					}
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.itemDelete:
 				int rows = KMMDapp.db.delete(dbTable, "id=?", new String[] { strCategoryId });
+				KMMDapp.updateFileInfo("accounts", -1);
 				if( rows != 1)
 				{
 					Log.d(TAG, "There was an error deleting your category!");
@@ -338,6 +343,7 @@ public class CreateModifyCategoriesActivity extends TabActivity
 				else
 				{
 					returnFromDelete = true;
+					KMMDapp.updateFileInfo("lastModified", 0);
 					finish();
 				}
 				break;

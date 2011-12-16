@@ -319,6 +319,8 @@ public class CreateModifyPayeeActivity extends TabActivity
 						try 
 						{
 							KMMDapp.db.insertOrThrow(dbTable, null, valuesPayee);
+							KMMDapp.updateFileInfo("hiPayeeId", 1);
+							KMMDapp.updateFileInfo("payees", 1);
 						} 
 						catch (SQLException e) 
 						{
@@ -331,6 +333,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 						KMMDapp.db.update(dbTable, valuesPayee, "id=?", new String[] { payeeId });
 						break;
 				}
+				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
 				break;
 			case R.id.itemDelete:

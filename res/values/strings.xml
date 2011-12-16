@@ -51,6 +51,7 @@
     <string name="titlePayeeDefaultExpense">Expense</string>
     <string name="itemSave">Save</string>
     <string name="itemCancel">Cancel</string>
+    <string name="itemClearAll">Clear All</string>
     <string name="summaryPayeeReassign">The transactions associated with the selected payee needs to be 
     	re-assigned to a different payee before the selected payee can be deleted. Please select
     	a payee from the list below.</string>
@@ -118,6 +119,7 @@
 	<string name="titleAccountOpenBalance">Opening balance</string>
 	<string name="titleAccountPreferred">Preferred account</string>
 	<string name="titleAccountSubAccount">Subaccount of</string>
+	<string name="titleAccountTransactions">Total Transactions: </string>
 	<string name="titleCreateAccounts">Create Accounts</string>
 	<string name="titleCreateAccountInstitution">Create Institution</string>
 	<string name="titleCreateAccountAccount">Create Account</string>
@@ -155,4 +157,32 @@
 	<string name="titleMemo">Memo: </string>
 	<string name="buttonChooseCategory">Choose a category</string>
 	<string name="titleDeleteTransaction">Do you really want to delete this transaction?</string>
+	<string name="titleSumofSplits">Sum of splits: </string>
+	<string name="titleUnassigned">Unassigned: </string>
+	<string name="titleTransactionAmount">Transaction amount: </string>
+	<string name="titleCreateModifySplits">Splits</string>
+	<string name="itemInsertRow">New Split</string>
+	<string name="splitTransaction">- Split Transaction -</string>
+	<string name="titleAbout">About</string>
+	<string name="itemVersion">Version: </string>
+	<string name="itemFileVersion">File Version: </string>
+	<string name="itemFileCreated">Created: </string>
+	<string name="itemLastModified">Last modified:</string>
+	<string name="itemNumInstitutions"># of Institutions: </string>
+	<string name="itemNumAccounts"># of Accounts: </string>
+	<string name="itemNumPayees"># of Payees: </string>
+	<string name="itemNumTransactions"># of Transactions: </string>
+	<string name="itemNumSplits"># of Splits: </string>
+	<string name="itemNumSecurities"># of Securities: </string>
+	<string name="itemNumPrices"># of Prices: </string>
+	<string name="itemNumCurrencies"># of Currencies: </string>
+	<string name="itemNumSchedules"># of Schedules: </string>
+	<string name="itemNumReports"># of Reports: </string>
+	<string name="itemNumKVPS"># of KVPS: </string>
+	<string name="itemNumBudgets"># of Budgets: </string>
+	<string name="splitsNotBalanced">Your transaction is not balanced! If you would like to make the transaction amount equal your splits
+		total press "OK". Press "Cancel" to go back and edit your splits.</string>
+	<string name="titleSplitConfirmation">Splits unbalanced</string>
+	<string name="titleSplitsMessage">You have an amount left unassigned. Click Ok to have the transaction automatically balanced or
+		click Cancel to go back and edit your splits.</string>
 </resources>
