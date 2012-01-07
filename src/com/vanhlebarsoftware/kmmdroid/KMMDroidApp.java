@@ -30,6 +30,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
 		Splits = new ArrayList<Split>();
+		Splits.clear();
 	}
 	
 	@Override

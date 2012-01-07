@@ -1,12 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.content.ContentValues;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class Split
 {
 	private static final String TAG = "ClassSplit";
-	private KMMDroidApp KMMDapp;
 	private String transactionId;
 	private String txType;
 	private int splitId;
@@ -51,8 +52,9 @@ public class Split
 		this.bankId = bId;
 	}
 	
-	public boolean commitSplit(boolean updating)
+	public boolean commitSplit(boolean updating, SQLiteDatabase db)
 	{
+	
 		// create the ContentValue pairs
 		ContentValues valuesSplit = new ContentValues();
 		valuesSplit.put("transactionId", transactionId);
@@ -76,11 +78,12 @@ public class Split
 		
 		if( updating )
 		{
-			KMMDapp.db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { transactionId, String.valueOf(splitId) });
+			db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { transactionId, String.valueOf(splitId) });
 		}
 		else
 		{
-			KMMDapp.db.insertOrThrow("kmmSplits", null, valuesSplit);
+			Log.d(TAG, valuesSplit.toString());
+			db.insertOrThrow("kmmSplits", null, valuesSplit);
 		}
 		
 		return true;

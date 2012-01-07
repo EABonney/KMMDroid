@@ -220,57 +220,75 @@ public class CreateModifyTransactionActivity extends Activity
 		
 		if( Action == ACTION_EDIT )
 		{
-			Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { transId }, null, null, null);
-			startManagingCursor(transaction);
-			transaction.moveToFirst();
-			Splits = getSplits(transId);
-			
-			// load the transaction details into the form.
-			editMemo.setText(transaction.getString(T_MEMO));
-			convertDate(transaction.getString(T_POSTDATE));
-			editCkNumber.setText(Splits.get(0).getCheckNumber());
-			spinPayee.setSelection(setPayee(Splits.get(0).getPayeeId()));
-			
-			// See if we have only used one category or if we have multiple.
-			if( Splits.size() == 2 )
+			// If we are coming back from splits entry screen follow this path.
+			if(!KMMDapp.Splits.isEmpty())
 			{
-				Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?",
-											new String[] { Splits.get(1).getAccountId() }, null, null, null);
-				startManagingCursor(c);
-				c.moveToFirst();
-				editCategory.setText(c.getString(0));
-				iNumberofPasses = 0;
-				intTransStatus = Integer.valueOf(Splits.get(0).getReconcileFlag());
-
-				c.close();
-				numOfSplits = 2;
-				anySplits = false;
-			}
-			else
-			{
-				// need to put the splits into the KMMDapp.Splits object so user may edit the split details.
-				KMMDapp.splitsInit();
-				for(int i = 1; i < Splits.size(); i++)
-					KMMDapp.Splits.add(Splits.get(i));
-				
+				setupSplitInfo();
 				editCategory.setText(R.string.splitTransaction);
 				buttonChooseCategory.setEnabled(false);
-				numOfSplits = Splits.size();
-				anySplits = true;
-			}
-			
-			float amount = Float.valueOf(Splits.get(0).getValueFormatted());
-			if( amount < 0 )
-			{
-				intTransType = WITHDRAW;
-				amount = amount * -1;		//change the sign of the amount for the form only.
+				spinPayee.setSelection(setPayee(strTransPayeeId));
+				iNumberofPasses = 0;
+				Log.d(TAG, "OnResume Action == ACTION_EDIT");
 			}
 			else
-				intTransType = DEPOSIT;
-			editAmount.setText(String.valueOf(amount));
+			{
+				// if we are not coming back from splits entry screen follow this path.
+				Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { transId }, null, null, null);
+				startManagingCursor(transaction);
+				transaction.moveToFirst();
+				Splits = getSplits(transId);
 			
-			transaction.close();
-	        updateDisplay();
+				// load the transaction details into the form.
+				editMemo.setText(transaction.getString(T_MEMO));
+				convertDate(transaction.getString(T_POSTDATE));
+				editCkNumber.setText(Splits.get(0).getCheckNumber());
+				strTransPayeeId = Splits.get(0).getPayeeId();
+				spinPayee.setSelection(setPayee(strTransPayeeId));
+			
+				// See if we have only used one category or if we have multiple.
+				if( Splits.size() == 2 )
+				{
+					Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?",
+											new String[] { Splits.get(1).getAccountId() }, null, null, null);
+					startManagingCursor(c);
+					c.moveToFirst();
+					editCategory.setText(c.getString(0));
+					iNumberofPasses = 0;
+					intTransStatus = Integer.valueOf(Splits.get(0).getReconcileFlag());
+
+					c.close();
+					numOfSplits = 2;
+					anySplits = false;
+				}
+				else
+				{
+					// need to put the splits into the KMMDapp.Splits object so user may edit the split details.
+					KMMDapp.splitsInit();
+					for(int i = 1; i < Splits.size(); i++)
+						KMMDapp.Splits.add(Splits.get(i));
+				
+					editCategory.setText(R.string.splitTransaction);
+					buttonChooseCategory.setEnabled(false);
+					numOfSplits = Splits.size();
+					anySplits = true;
+				}
+			
+				float amount = Float.valueOf(Splits.get(0).getValueFormatted());
+				if( amount < 0 )
+				{
+					intTransType = WITHDRAW;
+					amount = amount * -1;		//change the sign of the amount for the form only.
+				}
+				else
+					intTransType = DEPOSIT;
+				editAmount.setText(String.valueOf(amount));
+				
+				// Need to populate the Account used for this transaction.
+				accountUsed = Splits.get(0).getAccountId();
+			
+				transaction.close();
+				updateDisplay();
+			}
 		}
 		else
 		{
@@ -279,19 +297,7 @@ public class CreateModifyTransactionActivity extends Activity
 			// See if we have any splits from the Split Entry screen.
 			if(!KMMDapp.Splits.isEmpty())
 			{
-				editCategory.setText(R.string.splitTransaction);
-				buttonChooseCategory.setEnabled(false);
-				numOfSplits = KMMDapp.Splits.size();
-				anySplits = true;
-				if( KMMDapp.flSplitsTotal != 0  )
-				{
-					float tmp = 0;
-					if( KMMDapp.flSplitsTotal < 0 )
-						tmp = KMMDapp.flSplitsTotal * -1;
-					else
-						tmp = KMMDapp.flSplitsTotal;
-					editAmount.setText(String.valueOf(tmp));
-				}
+				setupSplitInfo();
 			}
 			else
 			{
@@ -356,7 +362,7 @@ public class CreateModifyTransactionActivity extends Activity
 				valuesTrans.put("id", id);
 				
 				// Create the splits information to be saved.			
-				for( int i=0; i <= numOfSplits; i++)
+				for( int i=0; i < numOfSplits; i++)
 				{
 					String value = null, formatted = null, memo = null;
 					if(i == 0)
@@ -411,20 +417,24 @@ public class CreateModifyTransactionActivity extends Activity
 						KMMDapp.updateFileInfo("hiTransactionId", 1);
 						KMMDapp.updateFileInfo("transactions", 1);
 						//increaseId();
-						// Insert the splits for this transaction
-						for(int i=0; i < Splits.size(); i++)
-						{
-							Split s = Splits.get(i);
-							//s.dump();
-							s.commitSplit(false);
-							updateAccount(s.getAccountId(), s.getValueFormatted());
-						}
 						KMMDapp.updateFileInfo("splits", Splits.size());
 						//increaseSplits(Splits.size());
 						break;
 					case ACTION_EDIT:
-						KMMDapp.db.update("kmmInstitutions", valuesTrans, "id=?", new String[] { transId });
+						KMMDapp.db.update("kmmTransactions", valuesTrans, "id=?", new String[] { transId });
+						// Delete all the splits for this transaction first, getting the number or rows deleted.
+						int rowsDel = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { transId });
+						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
+						//KMMDapp.db.update("kmmInstitutions", valuesTrans, "id=?", new String[] { transId });
 						break;
+				}
+				// Insert the splits for this transaction
+				for(int i=0; i < Splits.size(); i++)
+				{
+					Split s = Splits.get(i);
+					//s.dump();
+					s.commitSplit(false, KMMDapp.db);
+					updateAccount(s.getAccountId(), s.getValueFormatted());
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				finish();
@@ -466,7 +476,7 @@ public class CreateModifyTransactionActivity extends Activity
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
 			Log.d(TAG, "Inside onItemSelected");
-			if( iNumberofPasses > 2 )
+			if( iNumberofPasses > 3 )
 			{
 				switch( parent.getId())
 				{
@@ -508,7 +518,7 @@ public class CreateModifyTransactionActivity extends Activity
 						break;
 				}
 			}
-				if( iNumberofPasses < 3 )
+				if( iNumberofPasses < 4 )
 					iNumberofPasses = iNumberofPasses + 1;
 		}
 
@@ -709,5 +719,24 @@ public class CreateModifyTransactionActivity extends Activity
 			}
 		}
 		return i;
+	}
+	
+	private void setupSplitInfo()
+	{
+		// need to take into account the actual accounts entry as well as the splits.
+		numOfSplits = KMMDapp.Splits.size() + 1;
+		anySplits = true;
+		if( KMMDapp.flSplitsTotal != 0  )
+		{
+			float tmp = 0;
+			if( KMMDapp.flSplitsTotal < 0 )
+				tmp = KMMDapp.flSplitsTotal * -1;
+			else
+				tmp = KMMDapp.flSplitsTotal;
+			editAmount.setText(String.valueOf(tmp));
+		}
+		
+		// Clear the Splits ArrayList out.
+		Splits.clear();
 	}
 }

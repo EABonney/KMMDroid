@@ -27,9 +27,10 @@ public class LedgerActivity extends Activity
 	private static final int C_MEMO = 3;
 	private static final int C_DATE = 4;
 	private static final int C_PAYEE = 5;
-	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name FROM " +
+	private static final int C_STATUS = 6;
+	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name, reconcileFlag FROM " +
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N')" +
-					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber FROM" +
+					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber, reconcileFlag FROM" +
 					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' ORDER BY postDate DESC";
 	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
@@ -111,6 +112,7 @@ public class LedgerActivity extends Activity
 	    	i.putExtra("Memo", cursor.getString(C_MEMO));
 	    	i.putExtra("Amount", cursor.getString(C_AMOUNT));
 	    	i.putExtra("TransID", cursor.getString(C_TRANSID));
+	    	i.putExtra("Status", cursor.getString(C_STATUS));
 	    	startActivity(i);
 	    }
 	};

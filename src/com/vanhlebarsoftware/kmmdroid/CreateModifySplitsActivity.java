@@ -1,5 +1,7 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -30,12 +32,14 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	static final String[] FROM = { "accountName" };
 	private int Action = ACTION_NEW;
 	String strCategoryName = null;
+	String strAccountId = null;
 	String strTranAmount = null;
 	String strLabelTotal =null;
 	String strLabelSumofSplits = null;
 	String strLabelUnassigned = null;
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
+	ArrayList<String> AccountIdList;
 	TextView txtSumSplits;
 	TextView txtUnassigned;
 	TextView txtTransAmount;
@@ -96,6 +100,9 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         if( strTranAmount.isEmpty() )
         	strTranAmount = "0.00";
         updateTotals();
+        
+        //Initialize our array list.
+        AccountIdList = new ArrayList<String>();
 	}
 	
 	@Override
@@ -164,6 +171,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		{
 			case R.id.itemInsertRow:
 				insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
+				AccountIdList.add(strAccountId);
+				strAccountId = null;
 				updateTotals();
 				break;
 			case R.id.itemClearAll:
@@ -176,6 +185,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				break;
 			case R.id.itemDelete:
 				tableSplits.removeViewAt(rowClicked);
+				AccountIdList.remove(rowClicked - 1);
 				rowClicked = 0;
 				intInsertRowAt = intInsertRowAt - 1;
 				updateTotals();
@@ -225,6 +235,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				case R.id.splitCategory:
 					Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 					strCategoryName = c.getString(0).toString();
+					strAccountId = c.getString(1).toString();
 					//c.close();
 					break;
 				default:
@@ -382,7 +393,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	
 	private void saveSplits()
 	{
-		String strCategory = null;
+		//String strCategory = null;
 		String strMemo = null;
 		String strAmount = null;
 		// See if we need clear out the KMMDapp.Splits ArrayList
@@ -393,13 +404,14 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		{
 			TableRow row = (TableRow) tableSplits.getChildAt(i);
 			EditText e = (EditText) row.getChildAt(0);
-			strCategory = e.getText().toString();
+			//strCategory = e.getText().toString();
 			e = (EditText) row.getChildAt(1);
 			strMemo = e.getText().toString();
 			e = (EditText) row.getChildAt(2);
 			strAmount = e.getText().toString();
 			// Create the split in the Splits Array.
-			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", "", strAmount, "", strAmount, "", strAmount, strMemo, strCategory, "", "", ""));
+			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", "", strAmount, "", strAmount, "", strAmount, 
+					strMemo, AccountIdList.get(i-1), "", "", ""));
 		}
 	}
 }

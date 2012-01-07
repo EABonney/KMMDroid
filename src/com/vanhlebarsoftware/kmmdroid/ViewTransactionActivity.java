@@ -35,6 +35,7 @@ public class ViewTransactionActivity extends Activity
 	static final int[] TO = { R.id.splitsAccountName, R.id.splitsMemo, R.id.splitsAmount  };
 	String Description = null;
 	String TransID = null;
+	String strStatus = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
@@ -44,6 +45,7 @@ public class ViewTransactionActivity extends Activity
 	TextView textAmount;
 	TextView textMemo;
 	TextView textDescription;
+	TextView textStatus;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -62,6 +64,7 @@ public class ViewTransactionActivity extends Activity
         textAmount = (TextView) findViewById(R.id.vtAmount);
         textMemo = (TextView) findViewById(R.id.vtMemo);
         textDescription = (TextView) findViewById(R.id.vtDescription);
+        textStatus = (TextView) findViewById(R.id.vtStatus);
         
     	// Now hook into listTransactions ListView and set its onItemClickListener member
     	// to our class handler object.
@@ -80,6 +83,7 @@ public class ViewTransactionActivity extends Activity
 		textAmount.setText(String.format("%,(.2f", Float.valueOf(extras.getString("Amount"))));
         textMemo.setText(extras.getString("Memo"));
         TransID = extras.getString("TransID");
+        strStatus = extras.getString("Status");
 	}
 
 	@Override
@@ -104,6 +108,17 @@ public class ViewTransactionActivity extends Activity
 		adapter = new SimpleCursorAdapter(this, R.layout.splits_row, cursor, FROM, TO);
 		adapter.setViewBinder(VIEW_BINDER);
 		listSplits.setAdapter(adapter); 
+		
+		// Set the status of the transaction
+		Log.d(TAG, "Status: " + strStatus);
+		if(strStatus.contentEquals("0"))
+			textStatus.setText(R.string.notreconciled);
+		else if(strStatus.contentEquals("1"))
+			textStatus.setText(R.string.cleared);
+		else if(strStatus.contentEquals("2"))
+			textStatus.setText(R.string.reconciled);
+		else
+			textStatus.setText("Error!!");
 	}
 	
 	// Called first time the user clicks on the menu button

@@ -147,10 +147,13 @@
 	<string name="titleNumber">Number: </string>
 	<string name="titleDate">Date: </string>
 	<string name="titleAmount">Amount: </string>
+	<string name="notreconciled">Not reconciled</string>
+	<string name="cleared">Cleared</string>
+	<string name="reconciled">Reconciled</string>
 	<string-array name="TransactionStatus">
-		<item>Not reconciled</item>
-		<item>Cleared</item>
-		<item>Reconciled</item>
+		<item>@string/notreconciled</item>
+		<item>@string/cleared</item>
+		<item>@string/reconciled</item>
 	</string-array>
 	<string name="titleStatus">Status: </string>
 	<string name="buttonSplit">Splits</string>
