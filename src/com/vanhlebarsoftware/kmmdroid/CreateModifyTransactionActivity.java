@@ -71,6 +71,7 @@ public class CreateModifyTransactionActivity extends Activity
 	private String accountUsed = null;
 	private int numOfSplits;
 	ArrayList<Split> Splits;
+	ArrayList<Split> OrigSplits;
 	Spinner spinTransType;
 	Spinner spinPayee;
 	Spinner spinCategory;
@@ -184,6 +185,7 @@ public class CreateModifyTransactionActivity extends Activity
         
         // Initialize our Splits ArrayList.
         Splits = new ArrayList<Split>();
+        OrigSplits = new ArrayList<Split>();
 	}
 	
 	@Override
@@ -259,6 +261,9 @@ public class CreateModifyTransactionActivity extends Activity
 					c.close();
 					numOfSplits = 2;
 					anySplits = false;
+					
+					// Populate the category used for this split only.
+					strTransCategoryId = Splits.get(1).getAccountId();
 				}
 				else
 				{
@@ -267,6 +272,7 @@ public class CreateModifyTransactionActivity extends Activity
 					for(int i = 1; i < Splits.size(); i++)
 						KMMDapp.Splits.add(Splits.get(i));
 				
+					iNumberofPasses = 0;
 					editCategory.setText(R.string.splitTransaction);
 					buttonChooseCategory.setEnabled(false);
 					numOfSplits = Splits.size();
@@ -281,11 +287,16 @@ public class CreateModifyTransactionActivity extends Activity
 				}
 				else
 					intTransType = DEPOSIT;
+				
 				editAmount.setText(String.valueOf(amount));
 				
 				// Need to populate the Account used for this transaction.
 				accountUsed = Splits.get(0).getAccountId();
 			
+				// Make a copy of the original transactions split for later use if we modify anything.
+				for(int i=0; i < Splits.size(); i++)
+					OrigSplits.add(Splits.get(i));
+				
 				transaction.close();
 				updateDisplay();
 			}
@@ -338,6 +349,9 @@ public class CreateModifyTransactionActivity extends Activity
 		switch (item.getItemId())
 		{
 			case R.id.itemsave:
+				// ensure that the Splits Array is clean before starting.
+				Splits.clear();
+				
 				// create the ContentValue pairs
 				ContentValues valuesTrans = new ContentValues();
 				valuesTrans.put("txType", "N");
@@ -425,18 +439,22 @@ public class CreateModifyTransactionActivity extends Activity
 						// Delete all the splits for this transaction first, getting the number or rows deleted.
 						int rowsDel = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { transId });
 						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
-						//KMMDapp.db.update("kmmInstitutions", valuesTrans, "id=?", new String[] { transId });
+						// Need to update the account by pulling out all the Original Splits information.
+						for(int i=0; i < OrigSplits.size(); i++)
+							updateAccount(OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
 						break;
-				}
+				}		
 				// Insert the splits for this transaction
 				for(int i=0; i < Splits.size(); i++)
 				{
 					Split s = Splits.get(i);
-					//s.dump();
 					s.commitSplit(false, KMMDapp.db);
-					updateAccount(s.getAccountId(), s.getValueFormatted());
+					updateAccount(s.getAccountId(), s.getValueFormatted(), 1);
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
+				// Need to clean up the OrigSplits and Splits arrays for future use.
+				Splits.clear();
+				OrigSplits.clear();
 				finish();
 				break;
 			case R.id.itemCancel:
@@ -617,7 +635,7 @@ public class CreateModifyTransactionActivity extends Activity
 		KMMDapp.db.update("kmmFileInfo", values, null, null);
 	}
 	
-	private void updateAccount( String accountId, String transValue)
+	private void updateAccount( String accountId, String transValue, int nChange)
 	{
 		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
 		startManagingCursor(c);
@@ -625,11 +643,14 @@ public class CreateModifyTransactionActivity extends Activity
 		
 		// Update the current balance for this account.
 		float balance = Float.valueOf(c.getString(0));
-		float tValue = Float.valueOf(transValue);
+		
+		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
+		float tValue = Float.valueOf(transValue) * nChange;
+		
 		float newBalance = balance + tValue;
 
 		// Update the number of transactions used for this account.
-		int Count = c.getInt(1) + 1;
+		int Count = c.getInt(1) + nChange;
 		
 		ContentValues values = new ContentValues();
 		values.put("balanceFormatted", String.valueOf(newBalance));

@@ -7,6 +7,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +25,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateModifySplitsActivity extends Activity implements OnClickListener
+public class CreateModifySplitsActivity extends Activity implements OnClickListener, TextWatcher
 {
 	private static final String TAG = "CreateModifySplitsActivity";
 	private static final int ACTION_NEW = 1;
@@ -39,6 +41,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	String strLabelUnassigned = null;
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
+	boolean needUpdateRows = false;
 	ArrayList<String> AccountIdList;
 	TextView txtSumSplits;
 	TextView txtUnassigned;
@@ -131,6 +134,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			for(int i=0; i < KMMDapp.Splits.size(); i++)
 			{
 				String strCategory = getCategoryName(KMMDapp.Splits.get(i).getAccountId());
+				AccountIdList.add(KMMDapp.Splits.get(i).getAccountId());
 				insertNewRow(strCategory, KMMDapp.Splits.get(i).getMemo(), KMMDapp.Splits.get(i).getValueFormatted());
 			}
 		}
@@ -170,10 +174,15 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		switch (item.getItemId())
 		{
 			case R.id.itemInsertRow:
-				insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
-				AccountIdList.add(strAccountId);
+				if( rowClicked == 0 )
+					AccountIdList.add(strAccountId);
+				else
+					AccountIdList.set(rowClicked - 1, strAccountId);
+				
 				strAccountId = null;
+				insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
 				updateTotals();
+				needUpdateRows = false;
 				break;
 			case R.id.itemClearAll:
 				for(int i = intInsertRowAt; i > 1; i--)
@@ -194,6 +203,20 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				finish();
 				break;
 			case R.id.itemsave:
+				// See if we need to update the rows because user has not "inserted a new row yet"
+				if( needUpdateRows )
+				{
+					if( rowClicked == 0 )
+						AccountIdList.add(strAccountId);
+					else
+						AccountIdList.set(rowClicked - 1, strAccountId);
+					
+					strAccountId = null;					
+					insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
+					updateTotals();
+					needUpdateRows = false;					
+				}
+				
 				float amount = updateTotals();
 				if( amount != 0 )
 				{
@@ -279,11 +302,27 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					break;
 				}
 			}
+			needUpdateRows = true;
 		}
 		else
 			Toast.makeText(getApplicationContext(), "Have an issue!", Toast.LENGTH_LONG).show();
 	}
-	
+
+	public void afterTextChanged(Editable arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+			int arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+		// TODO Auto-generated method stub
+		
+	}
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
 	private int setCategory(String categoryName)
@@ -361,9 +400,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		c.close();
 		return name;
 	}
-	
-	// **************************************************************************************************
-	// ************************************ Helper methods **********************************************
+
 	private float updateTotals()
 	{
 		float flSumofSplits = 0;

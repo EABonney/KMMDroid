@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="@string/itemSave" android:icon="@android:drawable/ic_menu_save" android:id="@+id/itemsave"></item>
 	<item android:title="@string/itemCancel" android:id="@+id/itemCancel" android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>    
-	<item android:title="@string/itemInsertRow" android:id="@+id/itemInsertRow"></item>
+	<item android:title="@string/itemInsertRow" android:id="@+id/itemInsertRow" android:icon="@android:drawable/ic_menu_add"></item>
     <item android:title="@string/delete" android:icon="@android:drawable/ic_menu_delete" android:id="@+id/itemDelete"></item>
     <item android:title="@string/itemClearAll" android:id="@+id/itemClearAll"></item>
     <item 

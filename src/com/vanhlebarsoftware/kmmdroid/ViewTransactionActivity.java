@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import android.app.Activity;
@@ -26,6 +27,24 @@ public class ViewTransactionActivity extends Activity
 	private static final String TAG = "ViewTransactionActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
+	private static int C_TRANSACTIONID = 0;
+	private static int C_TXTYPE = 1;
+	private static int C_SPLITID = 2;
+	private static int C_PAYEEID = 3;
+	private static int C_RECONCILEDATE = 4;
+	private static int C_ACTION = 5;
+	private static int C_RECONCILEFLAG = 6;
+	private static int C_VALUE = 7;
+	private static int C_VALUEFORMATTED = 8;
+	private static int C_SHARES = 9;
+	private static int C_SHARESFORMATTED = 10;
+	private static int C_PRICE = 11;
+	private static int C_PRICEFORMATTED = 12;
+	private static int C_MEMO = 13;
+	private static int C_ACCOUNTID = 14;
+	private static int C_CHECKNUMBER = 15;
+	private static int C_POSTDATE = 16;
+	private static int C_BANKID = 17;
 	private static final String dbTable = "kmmSplits, kmmAccounts";
 	private static final String[] dbColumns = { "splitId", "transactionId AS _id", "valueFormatted", "memo",
 												"accountId", "id", "checkNumber", "accountName" };
@@ -36,6 +55,7 @@ public class ViewTransactionActivity extends Activity
 	String Description = null;
 	String TransID = null;
 	String strStatus = null;
+	ArrayList<Split> Splits;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
@@ -110,7 +130,6 @@ public class ViewTransactionActivity extends Activity
 		listSplits.setAdapter(adapter); 
 		
 		// Set the status of the transaction
-		Log.d(TAG, "Status: " + strStatus);
 		if(strStatus.contentEquals("0"))
 			textStatus.setText(R.string.notreconciled);
 		else if(strStatus.contentEquals("1"))
@@ -151,12 +170,15 @@ public class ViewTransactionActivity extends Activity
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						// Update the accounts balance.
-						Cursor cur = KMMDapp.db.query("kmmSplits", new String[] { "accountId", "valueFormatted" }, "transactionId=? AND splitId=0",
-								new String[] { TransID }, null, null, null);
-						startManagingCursor(cur);
-						cur.moveToFirst();
-						updateAccount(cur.getString(0), cur.getString(1));
+						//Cursor cur = KMMDapp.db.query("kmmSplits", new String[] { "accountId", "valueFormatted" }, "transactionId=? AND splitId=0",
+						//		new String[] { TransID }, null, null, null);
+						//startManagingCursor(cur);
+						//cur.moveToFirst();
+						//updateAccount(cur.getString(0), cur.getString(1), -1);
 						
+						// Get our splits details.
+						Splits = getSplits(TransID);
+											
 						// Delete the transaction from the transactions table.
 						KMMDapp.db.delete("kmmTransactions", "id=?", new String[] { TransID });
 						
@@ -169,14 +191,20 @@ public class ViewTransactionActivity extends Activity
 						c.moveToFirst();
 						int trans = c.getInt(0);
 						int splits = c.getInt(1);
-						ContentValues values = new ContentValues();
-						values.put("transactions", (trans - 1));
-						values.put("splits", (splits - splitsDeleted));
-						KMMDapp.db.update("kmmFileInfo", values, null, null);
+						//ContentValues values = new ContentValues();
+						//values.put("transactions", (trans - 1));
+						//values.put("splits", (splits - splitsDeleted));
+						//KMMDapp.db.update("kmmFileInfo", values, null, null);
+						KMMDapp.updateFileInfo("transactions", (trans - 1));
+						KMMDapp.updateFileInfo("splits", (splits - splitsDeleted));
+						
+						// Need to update the accounts for the transaction that was just deleted.
+						for(int i=0; i < Splits.size(); i++)
+							updateAccount(Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
 						
 						// Update the number of transactions for the accounts used.
 						c.close();
-						cur.close();
+						//cur.close();
 						finish();
 					}
 				});
@@ -219,19 +247,56 @@ public class ViewTransactionActivity extends Activity
 		return balance + denominator;
 	}
 	
-	private void updateAccount( String accountId, String transValue)
+	private void updateAccount( String accountId, String transValue, int nChange)
 	{
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted" }, "id=?", new String[] { accountId }, null, null, null);
+		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
 		startManagingCursor(c);
 		c.moveToFirst();
+		
+		// Update the current balance for this account.
 		float balance = Float.valueOf(c.getString(0));
-		float tValue = Float.valueOf(transValue);
-		float newBalance = balance - tValue;
+		
+		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
+		float tValue = Float.valueOf(transValue) * nChange;
+		
+		float newBalance = balance + tValue;
 
+		// Update the number of transactions used for this account.
+		int Count = c.getInt(1) + nChange;
+		
 		ContentValues values = new ContentValues();
 		values.put("balanceFormatted", String.valueOf(newBalance));
 		values.put("balance", createBalance(String.valueOf(newBalance)));
+		values.put("transactionCount", Count);
 		
 		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
+		c.close();
+	}
+	
+	private ArrayList<Split> getSplits(String transId)
+	{
+		ArrayList<Split> splits = new ArrayList<Split>();
+		
+		Cursor cursor = KMMDapp.db.query("kmmSplits", new String[] { "*" }, "transactionId=?", new String[] { transId }, null, null, "splitId ASC");
+		startManagingCursor(cursor);
+		cursor.moveToFirst();
+		
+		// put all the splits information into the ArrayList and then return that as a single object
+		while( !cursor.isAfterLast() )
+		{
+			splits.add(new Split(cursor.getString(C_TRANSACTIONID), cursor.getString(C_TXTYPE),
+								 cursor.getInt(C_SPLITID), cursor.getString(C_PAYEEID),
+								 cursor.getString(C_RECONCILEDATE), cursor.getString(C_ACTION),
+								 cursor.getString(C_RECONCILEFLAG), cursor.getString(C_VALUE),
+								 cursor.getString(C_VALUEFORMATTED), cursor.getString(C_SHARES),
+								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
+								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
+								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
+								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return splits;
 	}
 }
