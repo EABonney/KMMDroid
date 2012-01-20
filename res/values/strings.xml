@@ -188,4 +188,10 @@
 	<string name="titleSplitConfirmation">Splits unbalanced</string>
 	<string name="titleSplitsMessage">You have an amount left unassigned. Click Ok to have the transaction automatically balanced or
 		click Cancel to go back and edit your splits.</string>
+	<string name="titleSchedules">Schedules</string>
+	<string name="titlesrDescription">Description</string>
+	<string name="titlesrPayee">Payee</string>
+	<string name="titlesrFrequency">Frequency</string>
+	<string name="titlesrNextDueDate">Next Due Date</string>
+	<string name="titlesrAmount">Amount</string>
 </resources>

@@ -101,7 +101,7 @@ public final class R {
         public static final int checkboxNoInstitution=0x7f080034;
         public static final int checkboxPayeeDefaultExpense=0x7f080089;
         public static final int checkboxPayeeDefaultIncome=0x7f080087;
-        public static final int close=0x7f0800ad;
+        public static final int close=0x7f0800b4;
         public static final int crAccountBalance=0x7f080024;
         public static final int crAccountName=0x7f080023;
         public static final int date=0x7f080065;
@@ -117,27 +117,29 @@ public final class R {
         public static final int institutionPostalCode=0x7f080047;
         public static final int institutionRoutingNumber=0x7f08004b;
         public static final int institutionStreet=0x7f080043;
-        public static final int itemAbout=0x7f0800a8;
-        public static final int itemAccounts=0x7f0800a9;
-        public static final int itemCancel=0x7f0800ac;
-        public static final int itemCategories=0x7f0800a5;
-        public static final int itemClearAll=0x7f0800b0;
-        public static final int itemDelete=0x7f0800ab;
-        public static final int itemEdit=0x7f0800aa;
-        public static final int itemHome=0x7f0800a4;
-        public static final int itemInsertRow=0x7f0800af;
-        public static final int itemInstitutions=0x7f0800a7;
-        public static final int itemNew=0x7f0800a2;
-        public static final int itemPayees=0x7f0800a6;
-        public static final int itemPrefs=0x7f0800a3;
-        public static final int itemsave=0x7f0800ae;
+        public static final int itemAbout=0x7f0800af;
+        public static final int itemAccounts=0x7f0800b0;
+        public static final int itemCancel=0x7f0800b3;
+        public static final int itemCategories=0x7f0800ac;
+        public static final int itemClearAll=0x7f0800b8;
+        public static final int itemDelete=0x7f0800b2;
+        public static final int itemEdit=0x7f0800b1;
+        public static final int itemHome=0x7f0800ab;
+        public static final int itemInsertRow=0x7f0800b7;
+        public static final int itemInstitutions=0x7f0800ae;
+        public static final int itemNew=0x7f0800a9;
+        public static final int itemPayees=0x7f0800ad;
+        public static final int itemPrefs=0x7f0800aa;
+        public static final int itemSchedules=0x7f0800b5;
+        public static final int itemsave=0x7f0800b6;
         public static final int listAccountsView=0x7f080012;
         public static final int listCategoriesView=0x7f080017;
         public static final int listHomeView=0x7f08006e;
         public static final int listInstitutionsView=0x7f080071;
         public static final int listPayeeTransView=0x7f080090;
         public static final int listPayeesView=0x7f08007b;
-        public static final int listSplits=0x7f08009f;
+        public static final int listSchedules=0x7f080096;
+        public static final int listSplits=0x7f0800a6;
         public static final int listTransactions=0x7f080073;
         public static final int lrAmount=0x7f080076;
         public static final int lrBalance=0x7f080077;
@@ -166,9 +168,14 @@ public final class R {
         public static final int splitCategory=0x7f080055;
         public static final int splitEntryRow=0x7f080054;
         public static final int splitMemo=0x7f080056;
-        public static final int splitsAccountName=0x7f080095;
-        public static final int splitsAmount=0x7f080097;
-        public static final int splitsMemo=0x7f080096;
+        public static final int splitsAccountName=0x7f08009c;
+        public static final int splitsAmount=0x7f08009e;
+        public static final int splitsMemo=0x7f08009d;
+        public static final int srAmount=0x7f08009b;
+        public static final int srDescription=0x7f080097;
+        public static final int srFrequency=0x7f080099;
+        public static final int srNextDueDate=0x7f08009a;
+        public static final int srPayee=0x7f080098;
         public static final int status=0x7f080069;
         public static final int titleAccountCurrency=0x7f08002b;
         public static final int titleAccountIBAN=0x7f08003a;
@@ -206,7 +213,7 @@ public final class R {
         public static final int titleMemo=0x7f08006a;
         public static final int titleNewInstitution=0x7f08003f;
         public static final int titleNumber=0x7f080062;
-        public static final int titleOpenDatabase=0x7f0800a1;
+        public static final int titleOpenDatabase=0x7f0800a8;
         public static final int titleOpeningInfo=0x7f08001a;
         public static final int titlePayeeAddress=0x7f08007c;
         public static final int titlePayeeEmail=0x7f080082;
@@ -214,17 +221,18 @@ public final class R {
         public static final int titlePayeePostalCode=0x7f08007e;
         public static final int titlePayeeTelephone=0x7f080080;
         public static final int titlePayeeToFrom=0x7f08005b;
-        public static final int titleStartNew=0x7f0800a0;
+        public static final int titleSchedules=0x7f080095;
+        public static final int titleStartNew=0x7f0800a7;
         public static final int titleStatus=0x7f080068;
         public static final int titleTransactionType=0x7f080059;
-        public static final int titleViewTransaction=0x7f080098;
+        public static final int titleViewTransaction=0x7f08009f;
         public static final int transactionType=0x7f08005a;
-        public static final int vtAmount=0x7f08009d;
-        public static final int vtDate=0x7f08009a;
-        public static final int vtDescription=0x7f080099;
-        public static final int vtMemo=0x7f08009e;
-        public static final int vtNumber=0x7f08009c;
-        public static final int vtStatus=0x7f08009b;
+        public static final int vtAmount=0x7f0800a4;
+        public static final int vtDate=0x7f0800a1;
+        public static final int vtDescription=0x7f0800a0;
+        public static final int vtMemo=0x7f0800a5;
+        public static final int vtNumber=0x7f0800a3;
+        public static final int vtStatus=0x7f0800a2;
     }
     public static final class layout {
         public static final int about=0x7f030000;
@@ -259,9 +267,11 @@ public final class R {
         public static final int payee_row=0x7f03001d;
         public static final int payee_transactions=0x7f03001e;
         public static final int payee_transactions_row=0x7f03001f;
-        public static final int splits_row=0x7f030020;
-        public static final int view_transaction=0x7f030021;
-        public static final int welcome=0x7f030022;
+        public static final int schedules=0x7f030020;
+        public static final int schedules_rows=0x7f030021;
+        public static final int splits_row=0x7f030022;
+        public static final int view_transaction=0x7f030023;
+        public static final int welcome=0x7f030024;
     }
     public static final class menu {
         public static final int accounts_menu=0x7f070000;
@@ -272,7 +282,8 @@ public final class R {
         public static final int ledger_menu=0x7f070005;
         public static final int payees_menu=0x7f070006;
         public static final int save_menu=0x7f070007;
-        public static final int splits_menu=0x7f070008;
+        public static final int schedules_menu=0x7f070008;
+        public static final int splits_menu=0x7f070009;
     }
     public static final class string {
         public static final int accountNameNotEntered=0x7f05004e;
@@ -409,6 +420,7 @@ public final class R {
         public static final int titlePayeesAvailable=0x7f050034;
         public static final int titlePrefs=0x7f050019;
         public static final int titleReassignPayee=0x7f050035;
+        public static final int titleSchedules=0x7f05009a;
         public static final int titleSplitConfirmation=0x7f050098;
         public static final int titleSplitsMessage=0x7f050099;
         public static final int titleStartNew=0x7f050002;
@@ -420,6 +432,11 @@ public final class R {
         public static final int titleUnassigned=0x7f050081;
         public static final int titleViewTransaction=0x7f050011;
         public static final int titleWelcome=0x7f050001;
+        public static final int titlesrAmount=0x7f05009f;
+        public static final int titlesrDescription=0x7f05009b;
+        public static final int titlesrFrequency=0x7f05009d;
+        public static final int titlesrNextDueDate=0x7f05009e;
+        public static final int titlesrPayee=0x7f05009c;
         public static final int unableToDelete=0x7f05003a;
         public static final int unableToReassign=0x7f050039;
         public static final int vtlabel_Amount=0x7f050016;
