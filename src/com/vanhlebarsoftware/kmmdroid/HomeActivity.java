@@ -149,6 +149,9 @@ public class HomeActivity extends Activity
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
 				break;
+			case R.id.itemDropbox:
+				startActivity(new Intent(this, DropboxActivity.class));
+				break;
 		}
 		
 		return true;

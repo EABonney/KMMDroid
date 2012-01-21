@@ -29,4 +29,8 @@
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
     </item>
+    <item
+    	android:id="@+id/itemDropbox"
+    	android:title="@string/titleDropbox">
+    </item>
 </menu>

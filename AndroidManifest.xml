@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="2"
-      android:versionName="0.1.7.4"
+      android:versionName="0.1.9.0"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application android:icon="@drawable/kmymoney" 
     	android:label="@string/app_name"
@@ -109,5 +110,21 @@
 		<activity android:name=".AboutActivity"
 				  android:label="@string/titleAbout">
 		</activity>	
+		<activity
+				  android:name=".DropboxActivity"
+				  android:label="@string/titleDropbox">
+		</activity>
+    	<activity
+      			  android:name="com.dropbox.client2.android.AuthActivity"
+      			  android:launchMode="singleTask"
+      			  android:configChanges="orientation|keyboard">
+      			  <intent-filter>
+        		  <!-- Change this to be db- followed by your app key -->
+        		  <data android:scheme="db-eqz0w6paff0sku9" />
+        		  <action android:name="android.intent.action.VIEW" />
+        		  <category android:name="android.intent.category.BROWSABLE"/>
+        		  <category android:name="android.intent.category.DEFAULT" />
+      			  </intent-filter>
+    	</activity>
     </application>
 </manifest>

@@ -6,5 +6,9 @@
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
     </CheckBoxPreference>
-    
+    <CheckBoxPreference 
+    	android:summary="@string/summaryLinkToDropbox"
+    	android:key="linkToDropbox"
+    	android:title="@string/titleLinkToDropbox">
+    </CheckBoxPreference>
 </PreferenceScreen>

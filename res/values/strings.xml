@@ -6,6 +6,8 @@
     <string name="titleOpenDatabase">Open a current KMyMoney database</string>
     <string name="titleOpenLastUsed">Open Last Used</string>
     <string name="summaryOpenLastUsed">Open last used file on return?</string>
+    <string name="titleLinkToDropbox">Link to Dropbox</string>
+    <string name="summaryLinkToDropbox">Would you like to link KMMDroid with your Dropbox account?</string>
     <string name="titleLastUsedFile">Last used file location.</string>
     <string name="summaryLastUsedFile">Location of the last used file</string>
     <string name="titleFileChooser">Choose a File</string>
@@ -188,4 +190,7 @@
 	<string name="titleSplitConfirmation">Splits unbalanced</string>
 	<string name="titleSplitsMessage">You have an amount left unassigned. Click Ok to have the transaction automatically balanced or
 		click Cancel to go back and edit your splits.</string>
+	<string name="buttonLogin">Login</string>
+	<string name="buttonLogout">Logout</string>
+	<string name="titleDropbox">Dropbox</string>
 </resources>
