@@ -312,10 +312,7 @@ public final class R {
         public static final int buttonNewInstitution=0x7f05005f;
         public static final int buttonSetDate=0x7f050066;
         public static final int buttonSplit=0x7f05007e;
-<<<<<<< HEAD
-=======
         public static final int buttonSubmit=0x7f0500a7;
->>>>>>> AddCashRequirements
         public static final int categoryNotFound=0x7f050051;
         public static final int cleared=0x7f05007b;
         public static final int close=0x7f050041;
@@ -357,10 +354,7 @@ public final class R {
         public static final int summaryOpenLastUsed=0x7f050007;
         public static final int summaryPayeeReassign=0x7f050035;
         public static final int titleAbout=0x7f050088;
-<<<<<<< HEAD
-=======
         public static final int titleAccount=0x7f0500a4;
->>>>>>> AddCashRequirements
         public static final int titleAccountCurrency=0x7f050065;
         public static final int titleAccountIBAN=0x7f050061;
         public static final int titleAccountInstitution=0x7f05005e;
@@ -376,18 +370,12 @@ public final class R {
         public static final int titleAccountType=0x7f050064;
         public static final int titleAccounts=0x7f05001c;
         public static final int titleAmount=0x7f050079;
-<<<<<<< HEAD
-=======
         public static final int titleBegDate=0x7f0500a5;
->>>>>>> AddCashRequirements
         public static final int titleButtonCancel=0x7f05000d;
         public static final int titleButtonDelete=0x7f05000f;
         public static final int titleButtonEdit=0x7f05000e;
         public static final int titleButtonOK=0x7f05000c;
-<<<<<<< HEAD
-=======
         public static final int titleCashRequirements=0x7f0500a2;
->>>>>>> AddCashRequirements
         public static final int titleCategories=0x7f05001d;
         public static final int titleCategory=0x7f050076;
         public static final int titleCategoryBalance=0x7f05004a;
@@ -417,10 +405,7 @@ public final class R {
         public static final int titleDeleteTransaction=0x7f050081;
         public static final int titleEdit=0x7f050020;
         public static final int titleEditModAccount=0x7f050053;
-<<<<<<< HEAD
-=======
         public static final int titleEndDate=0x7f0500a6;
->>>>>>> AddCashRequirements
         public static final int titleFileChooser=0x7f05000a;
         public static final int titleHome=0x7f050011;
         public static final int titleInstitutionBIC=0x7f05005b;
@@ -438,18 +423,12 @@ public final class R {
         public static final int titleNewDatabase=0x7f050010;
         public static final int titleNewInstitution=0x7f050054;
         public static final int titleNoInstitution=0x7f05005d;
-<<<<<<< HEAD
-=======
         public static final int titleNoSchedules=0x7f0500a8;
->>>>>>> AddCashRequirements
         public static final int titleNumber=0x7f050077;
         public static final int titleOpenDatabase=0x7f050005;
         public static final int titleOpenLastUsed=0x7f050006;
         public static final int titleOpeningInfo=0x7f050046;
-<<<<<<< HEAD
-=======
         public static final int titleOptions=0x7f0500a3;
->>>>>>> AddCashRequirements
         public static final int titlePayeeAddress=0x7f050026;
         public static final int titlePayeeDefaultAccount=0x7f050024;
         public static final int titlePayeeDefaultCategory=0x7f05002f;
@@ -467,10 +446,7 @@ public final class R {
         public static final int titlePayeesAvailable=0x7f050036;
         public static final int titlePrefs=0x7f05001b;
         public static final int titleReassignPayee=0x7f050037;
-<<<<<<< HEAD
-=======
         public static final int titleSchedules=0x7f05009c;
->>>>>>> AddCashRequirements
         public static final int titleSplitConfirmation=0x7f05009a;
         public static final int titleSplitsMessage=0x7f05009b;
         public static final int titleStartNew=0x7f050004;
@@ -482,14 +458,11 @@ public final class R {
         public static final int titleUnassigned=0x7f050083;
         public static final int titleViewTransaction=0x7f050013;
         public static final int titleWelcome=0x7f050003;
-<<<<<<< HEAD
-=======
         public static final int titlesrAmount=0x7f0500a1;
         public static final int titlesrDescription=0x7f05009d;
         public static final int titlesrFrequency=0x7f05009f;
         public static final int titlesrNextDueDate=0x7f0500a0;
         public static final int titlesrPayee=0x7f05009e;
->>>>>>> AddCashRequirements
         public static final int unableToDelete=0x7f05003c;
         public static final int unableToReassign=0x7f05003b;
         public static final int vtlabel_Amount=0x7f050018;
