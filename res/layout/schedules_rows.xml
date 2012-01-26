@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#62B1F6">
+
+    <TableRow>
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		  	android:id="@+id/srDescription" 
+		  	android:height="30sp"
+		  	android:gravity="center_vertical"
+          	android:textSize="12sp"
+		  	android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:gravity="center"
+			android:text="    "
+			android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		  	android:id="@+id/srPayee" 
+		  	android:height="30sp"
+		  	android:gravity="center_vertical"
+          	android:textSize="12sp"
+		  	android:textColor="@android:color/black" />
+    </TableRow>
+    <TableRow>
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		  	android:id="@+id/srFrequency" 
+		  	android:height="30sp"
+		  	android:gravity="center_vertical"
+          	android:textSize="12sp"
+		  	android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:gravity="center"
+			android:text="    "
+			android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		  	android:id="@+id/srNextDueDate" 
+		  	android:height="30sp"
+		  	android:gravity="center_vertical"
+          	android:textSize="12sp"
+		  	android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:gravity="center"
+			android:text="    "
+			android:textColor="@android:color/black" />
+    	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+		  	android:id="@+id/srAmount" 
+		  	android:height="30sp"
+		  	android:gravity="center_vertical"
+          	android:textSize="12sp"
+		  	android:textColor="@android:color/black" />
+    </TableRow>
+</TableLayout>

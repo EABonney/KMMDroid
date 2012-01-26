@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
+	<item 
+		android:title="@string/titleHome"
+		android:id="@+id/itemHome"
+		android:icon="@drawable/home_view">
+	</item>
     <item 
     	android:id="@+id/itemPrefs"
     	android:icon="@android:drawable/ic_menu_preferences"
     	android:title="@string/titlePrefs">
-    </item>
-    <item 
-    	android:title="@string/close"
-    	android:id="@+id/close"
-    	android:icon="@android:drawable/ic_menu_close_clear_cancel">
     </item>
     <item 
     	android:id="@+id/itemAccounts" 
@@ -25,23 +25,15 @@
     	android:id="@+id/itemPayees" 
     	android:icon="@drawable/payees_view"
     	android:title="@string/titlePayees">
-    </item>
+    	</item>
     <item 
     	android:id="@+id/itemInstitutions" 
     	android:title="@string/titleInstitutions"
     	android:icon="@drawable/institutions_view">
     </item>
     <item 
-    	android:id="@+id/itemSchedules"
-    	android:title="@string/titleSchedules">
-    </item>
-    <item 
-    	android:id="@+id/itemCashRequirments"
-    	android:title="@string/titleCashRequirements">
-    </item>
-    <item 
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout"
     	android:icon="@android:drawable/ic_menu_help">
-    </item>
+    </item>  
 </menu>

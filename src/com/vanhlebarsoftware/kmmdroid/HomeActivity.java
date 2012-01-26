@@ -146,6 +146,12 @@ public class HomeActivity extends Activity
 				KMMDapp.db.close();
 				finish();
 				break;
+			case R.id.itemSchedules:
+				startActivity(new Intent(this, SchedulesActivity.class));
+				break;
+			case R.id.itemCashRequirments:
+				startActivity(new Intent(this, CashRequirementsOptionsActivity.class));
+				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
 				break;
