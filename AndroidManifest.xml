@@ -113,5 +113,13 @@
 		<activity android:name=".SchedulesActivity"
 			      android:label="@string/titleSchedules">
 		</activity>
+		
+		<activity android:name=".CashRequirementsActivity"
+				  android:label="@string/titleCashRequirements">
+		</activity>
+		
+		<activity android:name=".CashRequirementsOptionsActivity"
+				  android:label="@string/titleOptions">
+		</activity>
     </application>
 </manifest>

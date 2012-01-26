@@ -194,4 +194,11 @@
 	<string name="titlesrFrequency">Frequency</string>
 	<string name="titlesrNextDueDate">Next Due Date</string>
 	<string name="titlesrAmount">Amount</string>
+	<string name="titleCashRequirements">Cash Required</string>
+	<string name="titleOptions">Options</string>
+	<string name="titleAccount">Account: </string>
+	<string name="titleBegDate">Beginning Date: </string>
+	<string name="titleEndDate">Ending Date: </string>
+	<string name="buttonSubmit">Submit</string>
+	<string name="titleNoSchedules">Sorry but your search returned no schedules.</string>
 </resources>

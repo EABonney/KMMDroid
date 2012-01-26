@@ -36,6 +36,10 @@
     	android:title="@string/titleSchedules">
     </item>
     <item 
+    	android:id="@+id/itemCashRequirments"
+    	android:title="@string/titleCashRequirements">
+    </item>
+    <item 
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout"
     	android:icon="@android:drawable/ic_menu_help">
