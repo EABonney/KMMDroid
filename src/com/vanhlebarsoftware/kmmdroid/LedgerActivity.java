@@ -1,15 +1,25 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -29,16 +39,18 @@ public class LedgerActivity extends Activity
 	private static final int C_PAYEE = 5;
 	private static final int C_STATUS = 6;
 	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name, reconcileFlag FROM " +
-					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N')" +
+					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
+					"AND postDate <= ? AND postDate >= ?" +
 					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber, reconcileFlag FROM" +
-					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' ORDER BY postDate DESC";
+					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' AND postDate <= ? AND postDate >= ?";
 	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
 	String AccountID = null;
 	String AccountName = null;
-	static float Balance = 0;
+	long Balance = 0;
+	ArrayList<Transaction> Transactions;
 	Cursor cursor;
-	SimpleCursorAdapter adapter;
+	TransactionAdapter adapter;
 	KMMDroidApp KMMDapp;
 	ListView listTransactions;
 	TextView textTitleLedger;
@@ -71,7 +83,9 @@ public class LedgerActivity extends Activity
         Bundle extras = getIntent().getExtras();
         AccountID = extras.getString("AccountId");
         AccountName = extras.getString("AccountName");
-        Balance = Float.valueOf(extras.getString("Balance"));
+        Balance = Transaction.convertToPennies(extras.getString("Balance"));
+        
+        Transactions = new ArrayList<Transaction>();
 	}
 
 	@Override
@@ -84,62 +98,92 @@ public class LedgerActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-
+		Calendar today = Calendar.getInstance();
+		long balance = Balance;
+		Cursor curBalance = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted" }, "id=?", new String[] { AccountID },
+											null, null, null);
+		startManagingCursor(curBalance);
+		curBalance.moveToFirst();
+		balance = Transaction.convertToPennies(curBalance.getString(0));
+		
+		// Get today's date and then subtract one year to limit the rows in our view.
+		String strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
+							String.valueOf(today.get(Calendar.DAY_OF_MONTH));
+		Log.d(TAG, today.toString());
+		today.add(Calendar.YEAR, -1);
+		Calendar lastyear = (Calendar) today.clone();
+		String strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
+				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
+		
 		// Display the Account we are looking at in the TextView TitleLedger
 		textTitleLedger.setText(AccountName);
 
 		// Put the AccountID into a String array
-		String[] selectionArgs = { AccountID };
+		Log.d(TAG, "strToday: " + strToday);
+		Log.d(TAG, "strLastYear: " + strLastYear);
+		String[] selectionArgs = { AccountID, strToday, strLastYear };
 		
 		//Run the query on the database to get the transactions.
 		cursor = KMMDapp.db.rawQuery(sql, selectionArgs);
 		startManagingCursor(cursor);
+		Log.d(TAG, "Cursor Size: " + cursor.getCount());
+		
+		// Load up our transactions into our ArrayList
+		// This probably is extremely ineffecient, may want to review this better.
+		Transaction trans = null;
+		cursor.moveToFirst();
+		// Make sure Transactions are empty.
+		Transactions.clear();
+		
+		for(int i=0; i < cursor.getCount(); i++)
+		{
+			trans = new Transaction(cursor.getString(C_AMOUNT), cursor.getString(C_PAYEE), cursor.getString(C_DATE), cursor.getString(C_MEMO), 
+									cursor.getString(C_TRANSID), cursor.getString(C_STATUS));
+			Transactions.add(trans);
+
+			cursor.moveToNext();
+		}
+		
+		// Ensure that we are in date order.
+		TransactionComparator comparator = new TransactionComparator();
+		Collections.sort(Transactions, comparator);	
+		
+		// Calc the balances now.
+		for(int i = Transactions.size() - 1; i >= 0; i--)
+		{
+			if(i == Transactions.size() - 1)
+				Transactions.get(i).setBalance(balance);
+			else if (i == 0)
+				balance = Transactions.get(i).calcBalance(balance, 0);
+			else
+				balance = Transactions.get(i).calcBalance(balance, Transactions.get(i+1).getAmount());
+		}
 		
 		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.ledger_row, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
+		adapter = new TransactionAdapter(this, R.layout.ledger_row, Transactions);
 		listTransactions.setAdapter(adapter); 
+		
+		listTransactions.setSelection(Transactions.size());
+		
+		// Close the cursor to free up memory.
+		cursor.close();
 	}
 	
 	// Message Handler for our listTransactions List View clicks
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	cursor.moveToPosition(position);
 	    	Intent i = new Intent(getBaseContext(), ViewTransactionActivity.class);
-	    	i.putExtra("Description", cursor.getString(C_PAYEE));
-	    	i.putExtra("Date", cursor.getString(C_DATE));
-	    	i.putExtra("Memo", cursor.getString(C_MEMO));
-	    	i.putExtra("Amount", cursor.getString(C_AMOUNT));
-	    	i.putExtra("TransID", cursor.getString(C_TRANSID));
-	    	i.putExtra("Status", cursor.getString(C_STATUS));
+	    	Transaction trans = Transactions.get(position);
+	    	i.putExtra("Description", trans.getPayee());
+	    	i.putExtra("Date", trans.formatDateString());
+	    	i.putExtra("Memo", trans.getMemo());
+	    	i.putExtra("Amount", Transaction.convertToDollars(trans.getAmount()));
+	    	i.putExtra("TransID", trans.getTransId());
+	    	i.putExtra("Status", trans.getStatus());	    	
 	    	startActivity(i);
 	    }
 	};
-	
-	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	static final ViewBinder VIEW_BINDER = new ViewBinder() {
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			//if(view.getId() != R.id.lrAmount)
-				//return false;
-
-			switch (view.getId() )
-			{
-			case R.id.lrAmount:
-				// Format the Amount properly.
-				((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
-				return true;
-			case R.id.lrBalance:
-				// Insert the balance amount.
-				//((TextView) view).setText(String.format("%,(.2f", Float.valueOf(Balance)));
-				//Balance = calculateBalance(cursor.getString(columnIndex-1));
-				return true;
-			default:
-				return false;
-			}
-		}
-	};
-
 	
 	// Called first time the user clicks on the menu button
 	@Override
@@ -188,8 +232,54 @@ public class LedgerActivity extends Activity
 		return true;
 	}
 	
-	private static float calculateBalance(String amount)
+	private class TransactionAdapter extends ArrayAdapter<Transaction>
 	{
-		return Balance - Float.valueOf(amount);		
+		private ArrayList<Transaction> items;
+		private Context context;
+		
+		public TransactionAdapter(Context context, int textViewResourceId, ArrayList<Transaction> items)
+		{
+			super(context, textViewResourceId, items);
+			this.context = context;
+			this.items = items;
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View view = convertView;
+			if(view == null)
+			{
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.ledger_row, null);
+			}
+			
+			Transaction item = items.get(position);
+			// Load the items into the view now for this schedule.
+			if(item != null)
+			{
+				TextView DatePaid = (TextView) view.findViewById(R.id.lrDate);
+				TextView Payee = (TextView) view.findViewById(R.id.lrDetails);
+				TextView Amount = (TextView) view.findViewById(R.id.lrAmount);
+				TextView Balance = (TextView) view.findViewById(R.id.lrBalance);
+				
+				DatePaid.setText(item.formatDateString());
+				Payee.setText(item.getPayee());
+				Amount.setText(Transaction.convertToDollars(item.getAmount()));
+				Balance.setText(Transaction.convertToDollars(item.getBalance()));
+			}
+			else
+				Log.d(TAG, "Never got a Schedule!");
+			
+			return view;
+		}
+	}
+	
+	public class TransactionComparator implements Comparator<Transaction>
+	{
+		public int compare(Transaction arg0, Transaction arg1) 
+		{
+			// TODO Auto-generated method stub
+			return arg0.getDate().compareTo(arg1.getDate());
+		}
 	}
 }

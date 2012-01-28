@@ -100,7 +100,7 @@ public class ViewTransactionActivity extends Activity
         Bundle extras = getIntent().getExtras();
         textDescription.setText(extras.getString("Description"));
         textDate.setText(extras.getString("Date"));
-		textAmount.setText(String.format("%,(.2f", Float.valueOf(extras.getString("Amount"))));
+		textAmount.setText(extras.getString("Amount"));
         textMemo.setText(extras.getString("Memo"));
         TransID = extras.getString("TransID");
         strStatus = extras.getString("Status");

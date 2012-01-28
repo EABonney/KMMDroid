@@ -25,7 +25,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateModifySplitsActivity extends Activity implements OnClickListener, TextWatcher
+public class CreateModifySplitsActivity extends Activity implements OnClickListener
 {
 	private static final String TAG = "CreateModifySplitsActivity";
 	private static final int ACTION_NEW = 1;
@@ -39,6 +39,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	String strLabelTotal =null;
 	String strLabelSumofSplits = null;
 	String strLabelUnassigned = null;
+	String strOrigCategoryId = null;
+	String strOrigMemo = null;
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
 	boolean needUpdateRows = false;
@@ -79,9 +81,23 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
         strTranAmount = extras.getString("TransAmount");
+        strOrigCategoryId = extras.getString("CategoryId");
+        strOrigMemo = extras.getString("Memo");
         
-        // Set the OnItemSelectedListeners for the spinners.
+        // Set the OnItemSelectedListeners for the spinners and OnChangeEvents.
         spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
+        editSplitAmount.addTextChangedListener(new TextWatcher()
+        {
+        	public void afterTextChanged(Editable arg0) {}
+
+        	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+        			int arg3) {}
+
+        	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3)
+        	{
+        		needUpdateRows = true;
+        	}        	
+        });
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -102,10 +118,11 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         // check to see if strTranAmount is empty (user didn't enter an amount yet) if so make it 0.00
         if( strTranAmount.isEmpty() )
         	strTranAmount = "0.00";
-        updateTotals();
+        updateTotals(false);
         
         //Initialize our array list.
         AccountIdList = new ArrayList<String>();
+        
 	}
 	
 	@Override
@@ -130,14 +147,28 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		
 		if(Action == ACTION_EDIT)
 		{
-			// Create the rows for the splits that need to be displayed
-			for(int i=0; i < KMMDapp.Splits.size(); i++)
+			// If KMMDapp.Splits.size() == 0 we didn't have any splits originally but now the user wants to add some.
+			// So let's add the original category as the first row.
+			if(KMMDapp.Splits.size() == 0)
 			{
-				String strCategory = getCategoryName(KMMDapp.Splits.get(i).getAccountId());
-				AccountIdList.add(KMMDapp.Splits.get(i).getAccountId());
-				insertNewRow(strCategory, KMMDapp.Splits.get(i).getMemo(), KMMDapp.Splits.get(i).getValueFormatted());
+				insertNewRow(getCategoryName(strOrigCategoryId), strOrigMemo, strTranAmount);
+				AccountIdList.add(strOrigCategoryId);
+			}
+			else
+			{
+				// Create the rows for the splits that need to be displayed
+				for(int i=0; i < KMMDapp.Splits.size(); i++)
+				{
+					String strCategory = getCategoryName(KMMDapp.Splits.get(i).getAccountId());
+					AccountIdList.add(KMMDapp.Splits.get(i).getAccountId());
+					insertNewRow(strCategory, KMMDapp.Splits.get(i).getMemo(), KMMDapp.Splits.get(i).getValueFormatted());
+				}
 			}
 		}
+		
+        // Set up the footer correctly.
+		updateTotals(false);
+        txtTransAmount.setText(strLabelTotal + " " + strTranAmount);
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -181,7 +212,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				
 				strAccountId = null;
 				insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
-				updateTotals();
+				updateTotals(false);
 				needUpdateRows = false;
 				break;
 			case R.id.itemClearAll:
@@ -190,14 +221,14 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					tableSplits.removeViewAt(intInsertRowAt - 1);
 					intInsertRowAt = intInsertRowAt - 1;
 				}
-				updateTotals();
+				updateTotals(false);
 				break;
 			case R.id.itemDelete:
 				tableSplits.removeViewAt(rowClicked);
 				AccountIdList.remove(rowClicked - 1);
 				rowClicked = 0;
 				intInsertRowAt = intInsertRowAt - 1;
-				updateTotals();
+				updateTotals(false);
 				break;
 			case R.id.itemCancel:
 				finish();
@@ -213,11 +244,11 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					
 					strAccountId = null;					
 					insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
-					updateTotals();
+					updateTotals(false);
 					needUpdateRows = false;					
 				}
 				
-				float amount = updateTotals();
+				long amount = updateTotals(false);
 				if( amount != 0 )
 				{
 					AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
@@ -227,7 +258,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							saveSplits();
-							KMMDapp.flSplitsTotal = updateTotals();
+							KMMDapp.flSplitsTotal = updateTotals(true);
 							finish();
 						}
 					});
@@ -268,14 +299,12 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}
 	
 	public void onClick(View v) 
 	{
-		// TODO Auto-generated method stub
 		View p = (View) v.getParent().getParent();
 		if( p instanceof TableLayout )
 		{
@@ -308,21 +337,6 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			Toast.makeText(getApplicationContext(), "Have an issue!", Toast.LENGTH_LONG).show();
 	}
 
-	public void afterTextChanged(Editable arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-			int arg3) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-		// TODO Auto-generated method stub
-		
-	}
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
 	private int setCategory(String categoryName)
@@ -401,11 +415,11 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		return name;
 	}
 
-	private float updateTotals()
+	private long updateTotals(boolean bfinal)
 	{
-		float flSumofSplits = 0;
-		float flUnassigned = 0;
-		float flTotal = Float.valueOf(strTranAmount);
+		long lSumofSplits = 0;
+		long lUnassigned = 0;
+		long lTotal = Transaction.convertToPennies(strTranAmount);
 		
 		// Calculate the sum of all splits entered.
 		if( tableSplits.getChildCount() > 2 )
@@ -414,18 +428,26 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			{
 				TableRow row = (TableRow) tableSplits.getChildAt(i);
 				EditText splitAmount = (EditText) row.getChildAt(2);
-				flSumofSplits = flSumofSplits + Float.valueOf(splitAmount.getText().toString());
+				lSumofSplits = lSumofSplits + Transaction.convertToPennies(splitAmount.getText().toString());
 			}
 		}
 		
-		flUnassigned = flTotal - flSumofSplits;
+		lUnassigned = lTotal - lSumofSplits;
 		
 		// Finally append the new values to the TextViews.
-		txtSumSplits.setText(strLabelSumofSplits + " " + String.valueOf(flSumofSplits));
-		txtUnassigned.setText(strLabelUnassigned + " " + String.valueOf(flUnassigned));
-		txtTransAmount.setText(strLabelTotal + " " + String.valueOf(flTotal));
+		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits));
+		txtUnassigned.setText(strLabelUnassigned + " " + Transaction.convertToDollars(lUnassigned));
+		//txtTransAmount.setText(strLabelTotal + " " + Transaction.convertToDollars(lTotal));
 		
-		return flSumofSplits;
+		Log.d(TAG, "lSumofSplits: " + String.valueOf(lSumofSplits));
+		Log.d(TAG, "lUnassigned: " + String.valueOf(lUnassigned));
+		Log.d(TAG, "lTotal: " + String.valueOf(lTotal));
+		
+		// If we are finished with our editing and we are out of balance we need to return the new sum of the transaction.
+		if(bfinal)
+			return lSumofSplits;
+		else
+			return lUnassigned;
 	}
 	
 	private void saveSplits()

@@ -21,7 +21,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	private String fullPath = null;
 	private boolean dbOpen = false;
 	public ArrayList<Split> Splits;	
-	public float flSplitsTotal = 0;
+	public long flSplitsTotal = 0;
 	
 	@Override
 	public void onCreate()

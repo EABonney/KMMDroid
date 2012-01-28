@@ -158,6 +158,8 @@ public class CreateModifyTransactionActivity extends Activity
 				Intent i = new Intent(getBaseContext(), CreateModifySplitsActivity.class);
 				i.putExtra("Action", Action);
 				i.putExtra("TransAmount", editAmount.getText().toString());
+				i.putExtra("Memo", editMemo.getText().toString());
+				i.putExtra("CategoryId", strTransCategoryId);
 				startActivity(i);
 			}
 		});
@@ -627,14 +629,6 @@ public class CreateModifyTransactionActivity extends Activity
 		return balance + denominator;
 	}
 	
-	private void increaseSplits(int numOfSplits)
-	{
-		ContentValues values = new ContentValues();
-		values.put("splits", numOfSplits);
-		
-		KMMDapp.db.update("kmmFileInfo", values, null, null);
-	}
-	
 	private void updateAccount( String accountId, String transValue, int nChange)
 	{
 		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
@@ -642,19 +636,19 @@ public class CreateModifyTransactionActivity extends Activity
 		c.moveToFirst();
 		
 		// Update the current balance for this account.
-		float balance = Float.valueOf(c.getString(0));
+		long balance = Transaction.convertToPennies(c.getString(0));
 		
 		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
-		float tValue = Float.valueOf(transValue) * nChange;
+		long tValue = Transaction.convertToPennies(transValue) * nChange;
 		
-		float newBalance = balance + tValue;
+		long newBalance = balance + tValue;
 
 		// Update the number of transactions used for this account.
 		int Count = c.getInt(1) + nChange;
 		
 		ContentValues values = new ContentValues();
-		values.put("balanceFormatted", String.valueOf(newBalance));
-		values.put("balance", createBalance(String.valueOf(newBalance)));
+		values.put("balanceFormatted",Transaction.convertToDollars(newBalance));
+		values.put("balance", createBalance(Transaction.convertToDollars(newBalance)));
 		values.put("transactionCount", Count);
 		
 		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
@@ -749,12 +743,12 @@ public class CreateModifyTransactionActivity extends Activity
 		anySplits = true;
 		if( KMMDapp.flSplitsTotal != 0  )
 		{
-			float tmp = 0;
+			long tmp = 0;
 			if( KMMDapp.flSplitsTotal < 0 )
 				tmp = KMMDapp.flSplitsTotal * -1;
 			else
 				tmp = KMMDapp.flSplitsTotal;
-			editAmount.setText(String.valueOf(tmp));
+			editAmount.setText(Transaction.convertToDollars((tmp)));
 		}
 		
 		// Clear the Splits ArrayList out.

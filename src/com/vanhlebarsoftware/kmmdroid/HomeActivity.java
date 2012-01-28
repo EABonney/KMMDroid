@@ -103,7 +103,7 @@ public class HomeActivity extends Activity
 				return false;
 			
 			// Format the Amount properly.
-			((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
+			((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
 			
 			return true;
 		}
