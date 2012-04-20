@@ -89,6 +89,16 @@ public class CreateModifyCategoriesActivity extends TabActivity
         spec = tabHost.newTabSpec("hierarchy").setIndicator("Hierarchy")
                       .setContent(intent);
         tabHost.addTab(spec);
+
+        if( Action == ACTION_EDIT )
+        {
+        	intent = new Intent().setClass(this, TransactionsTabActivity.class);
+        	intent.putExtra("CategoryName", strCategoryName);
+        	intent.putExtra("CategoryId", strCategoryId);
+        	spec = tabHost.newTabSpec("payeetransactions").setIndicator("Transactions")
+                      .setContent(intent);
+        	tabHost.addTab(spec);
+        }
         
         tabHost.setCurrentTab(0);
         

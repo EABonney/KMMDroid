@@ -140,10 +140,10 @@ public class HomeActivity extends Activity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.close:
-		    	//Intent i = new Intent(getBaseContext(), WelcomeActivity.class);
-		    	//i.putExtra("ClosedDB", true);
-				//startActivity(i);
-				KMMDapp.db.close();
+				KMMDapp.closeDB();
+		    	Intent i = new Intent(getBaseContext(), WelcomeActivity.class);
+				i.putExtra("Closing", true);
+		    	startActivity(i);
 				finish();
 				break;
 			case R.id.itemSchedules:

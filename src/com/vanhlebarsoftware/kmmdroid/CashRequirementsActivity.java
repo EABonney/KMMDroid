@@ -231,19 +231,21 @@ public class CashRequirementsActivity extends Activity
 		String strDates[] = null;
 		
 		// Setup our Dates.
-		Calendar calStart = new GregorianCalendar();
-		Calendar calEnd = new GregorianCalendar();
-		Calendar calScheduleStart = new GregorianCalendar();
-		Calendar calNextPaymentDate = new GregorianCalendar();
+		// Since the Month of a Calendar object is zero based, ie January = 0, we need to substract one from the SQL date returned.
+		GregorianCalendar calStart = new GregorianCalendar();
+		GregorianCalendar calEnd = new GregorianCalendar();
+		GregorianCalendar calScheduleStart = new GregorianCalendar();
+		GregorianCalendar calNextPaymentDate = new GregorianCalendar();
 		strDates = strStart.split("-");
-		calStart.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]), Integer.valueOf(strDates[2]));
+		calStart.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]) - 1, Integer.valueOf(strDates[2]));
 		strDates = strEnd.split("-");
-		calEnd.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]), Integer.valueOf(strDates[2]));
+		calEnd.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]) - 1, Integer.valueOf(strDates[2]));
 		strDates = scheduleStartDate.split("-");
-		calScheduleStart.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]), Integer.valueOf(strDates[2]));
+		calScheduleStart.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]) - 1, Integer.valueOf(strDates[2]));
 		strDates = nextPaymentDate.split("-");
-		calNextPaymentDate.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]), Integer.valueOf(strDates[2]));
-		Calendar date = (Calendar) calNextPaymentDate.clone();
+		calNextPaymentDate.set(Integer.valueOf(strDates[0]), Integer.valueOf(strDates[1]) - 1, Integer.valueOf(strDates[2]));
+		GregorianCalendar date = (GregorianCalendar) calNextPaymentDate.clone();
+		calNextPaymentDate.setLenient(false);
 		
 		switch (occurence)
 		{
@@ -256,7 +258,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 1);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_WEEKLY:
@@ -264,7 +266,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 7);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}			
 				break;
 			case OCCUR_FORTNIGHTLY:
@@ -273,7 +275,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 14);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYTHREEWEEKS:
@@ -281,7 +283,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 21);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYTHIRTYDAYS:
@@ -289,7 +291,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 30);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_MONTHLY:
@@ -297,7 +299,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.MONTH, 1);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYFOURWEEKS:
@@ -305,7 +307,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 28);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYEIGHTWEEKS:
@@ -313,7 +315,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 56);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}				
 				break;
 			case OCCUR_EVERYOTHERMONTH:
@@ -321,7 +323,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.MONTH, 2);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYTHREEMONTHS:
@@ -330,7 +332,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.MONTH, 3);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_TWICEYEARLY:
@@ -338,7 +340,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.MONTH, 6);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_EVERYOTHERYEAR:
@@ -346,7 +348,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.YEAR, 2);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}				
 				break;
 			case OCCUR_EVERYFOURMONTHS:
@@ -354,7 +356,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.MONTH, 4);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			case OCCUR_YEARLY:
@@ -362,7 +364,7 @@ public class CashRequirementsActivity extends Activity
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.YEAR, 1);
-					date = (Calendar) calNextPaymentDate.clone();
+					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				break;
 			default:
@@ -581,7 +583,8 @@ public class CashRequirementsActivity extends Activity
 		
 		private String formatDateString()
 		{
-			return String.valueOf(this.DueDate.get(Calendar.MONTH)) + "/" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH)) +
+			Log.d(TAG, "Date: " + DueDate.toString());
+			return String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) + "/" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH)) +
 					"/" + String.valueOf(this.DueDate.get(Calendar.YEAR));
 		}
 	}

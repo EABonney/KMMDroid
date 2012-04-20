@@ -10,18 +10,21 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class PayeeTransactionsActivity extends Activity
+public class TransactionsTabActivity extends Activity
 {
 	private static final String TAG = "PayeeActivity";
 	private static final String dbTable = "kmmSplits, kmmAccounts";
 	private static final String[] dbColumns = { "splitId", "transactionId AS _id", "valueFormatted",
 												"accountId", "postDate", "id", "accountName" };
-	private static final String strSelection = "(accountId = id) AND payeeId = ? AND splitId = 0";
+	private static final String strSelectionPayee = "(accountId = id) AND payeeId = ? AND splitId = 0 AND txType = 'N'";
+	private static final String strSelectionCategory = "(accountId = id) AND accountId = ? AND txType = 'N'";
 	private static final String strOrderBy = "postDate ASC";
 	static final String[] FROM = { "postDate", "accountName", "valueFormatted" };
 	static final int[] TO = { R.id.ptrDate, R.id.ptrAccount, R.id.ptrAmount };
 	String PayeeId = null;
 	String PayeeName = null;
+	String CategoryId = null;
+	String CategoryName = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listPayeeTrans;
@@ -54,6 +57,8 @@ public class PayeeTransactionsActivity extends Activity
         Bundle extras = getIntent().getExtras();
         PayeeId = extras.getString("PayeeId");
         PayeeName = extras.getString("PayeeName");
+        CategoryId = extras.getString("CategoryId");
+        CategoryName = extras.getString("CategoryName");
 	}
 	
 	@Override
@@ -66,12 +71,21 @@ public class PayeeTransactionsActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-
-		// Put the PayeeId into a String array
-		String[] selectionArgs = { PayeeId };
-		
+	
 		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, selectionArgs, null, null, strOrderBy);
+		if(PayeeId != null)
+		{
+			// Put the PayeeId into a String array
+			String[] selectionArgs = { PayeeId };
+			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelectionPayee, selectionArgs, null, null, strOrderBy);
+		}
+		else if(CategoryId != null)
+		{
+			// Put the PayeeId into a String array
+			String[] selectionArgs = { CategoryId };
+			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelectionCategory, selectionArgs, null, null, strOrderBy);
+		}
+		
 		startManagingCursor(cursor);
 		
 		// Set up the adapter

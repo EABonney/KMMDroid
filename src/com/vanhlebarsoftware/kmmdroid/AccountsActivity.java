@@ -112,7 +112,7 @@ public class AccountsActivity extends Activity
 			{
 				case R.id.arAccountBalance:
 					// Format the Amount properly.
-					((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
+					((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
 					break;
 				case R.id.arIcon:
 					// Set the correct icon based on accountType

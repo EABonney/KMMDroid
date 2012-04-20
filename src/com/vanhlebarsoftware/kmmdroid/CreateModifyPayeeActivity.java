@@ -99,7 +99,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 
         if( Action == ACTION_EDIT )
         {
-        	intent = new Intent().setClass(this, PayeeTransactionsActivity.class);
+        	intent = new Intent().setClass(this, TransactionsTabActivity.class);
         	intent.putExtra("PayeeId", payeeId);
         	intent.putExtra("PayeeName", extras.getString("PayeeName"));
         	spec = tabHost.newTabSpec("payeetransactions").setIndicator("Transactions")

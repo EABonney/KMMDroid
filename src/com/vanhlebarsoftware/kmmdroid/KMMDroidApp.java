@@ -62,8 +62,15 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	
 	public void openDB()
 	{
+		Log.d(TAG, "fullPath: " + fullPath);
 		db = SQLiteDatabase.openDatabase(fullPath, null, 0);
 		dbOpen = true;
+	}
+	
+	public void closeDB()
+	{
+		db.close();
+		dbOpen = false;
 	}
 	
 	public void setFullPath(String path)

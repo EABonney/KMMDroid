@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
@@ -47,6 +49,7 @@ public class LedgerActivity extends Activity
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
 	String AccountID = null;
 	String AccountName = null;
+	boolean bChangeBackground = false;
 	long Balance = 0;
 	ArrayList<Transaction> Transactions;
 	Cursor cursor;
@@ -109,11 +112,13 @@ public class LedgerActivity extends Activity
 		// Get today's date and then subtract one year to limit the rows in our view.
 		String strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
 							String.valueOf(today.get(Calendar.DAY_OF_MONTH));
-		Log.d(TAG, today.toString());
 		today.add(Calendar.YEAR, -1);
 		Calendar lastyear = (Calendar) today.clone();
 		String strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
 				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
+		
+		Log.d(TAG, "strToday: " + strToday);
+		Log.d(TAG, "strLastYear: " + strLastYear);
 		
 		// Display the Account we are looking at in the TextView TitleLedger
 		textTitleLedger.setText(AccountName);
@@ -261,6 +266,18 @@ public class LedgerActivity extends Activity
 				TextView Payee = (TextView) view.findViewById(R.id.lrDetails);
 				TextView Amount = (TextView) view.findViewById(R.id.lrAmount);
 				TextView Balance = (TextView) view.findViewById(R.id.lrBalance);
+				LinearLayout row = (LinearLayout) view.findViewById(R.id.row);
+
+				if(bChangeBackground)
+				{
+					row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+					bChangeBackground = false;
+				}
+				else
+				{
+					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+					bChangeBackground = true;
+				}
 				
 				DatePaid.setText(item.formatDateString());
 				Payee.setText(item.getPayee());
@@ -278,7 +295,6 @@ public class LedgerActivity extends Activity
 	{
 		public int compare(Transaction arg0, Transaction arg1) 
 		{
-			// TODO Auto-generated method stub
 			return arg0.getDate().compareTo(arg1.getDate());
 		}
 	}

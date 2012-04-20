@@ -41,7 +41,7 @@
 		<activity android:name=".PayeeActivity"
 				  android:label="@string/titlePayees">
 		</activity>
-		<activity android:name=".PayeeTransactionsActivity"
+		<activity android:name=".TransactionsTabActivity"
 				  android:label="@string/titlePayeeTransactions">
 		</activity>
 		<activity android:name=".CreateModifyPayeeActivity"

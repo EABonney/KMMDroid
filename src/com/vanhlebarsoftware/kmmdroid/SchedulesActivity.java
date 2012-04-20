@@ -1,12 +1,16 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -24,7 +28,7 @@ public class SchedulesActivity extends Activity
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listSchedules;
-	SimpleCursorAdapter adapter;
+	ScheduleCursorAdapter adapter;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -62,7 +66,7 @@ public class SchedulesActivity extends Activity
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.schedules_rows, cursor, FROM, TO);
+		adapter = new ScheduleCursorAdapter(this, R.layout.schedules_rows, cursor, FROM, TO);
 		listSchedules.setAdapter(adapter); 
 	}
 	
@@ -105,5 +109,53 @@ public class SchedulesActivity extends Activity
 		}
 		
 		return true;
+	}
+	
+	public class ScheduleCursorAdapter extends SimpleCursorAdapter
+	{
+		private Cursor c;
+		private Context context;
+		
+		public ScheduleCursorAdapter(Context context, int layout, Cursor c,
+				String[] from, int[] to)
+		{
+			super(context, layout, c, from, to);
+			this.c = c;
+			this.context = context;
+		}
+		
+		public View getView(int pos, View inView, ViewGroup parent)
+		{
+			View view = inView;
+			TextView txtDesc;
+			TextView txtOccurence;
+			TextView txtNextPaymentDue;
+			TextView txtAmount;
+			TextView txtPayee;
+			
+			if(view == null)
+			{
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.schedules_rows, null);
+			}
+			
+			this.c.moveToPosition(pos);
+			
+			// Find our views
+			txtDesc = (TextView) view.findViewById(R.id.srDescription);
+			txtOccurence = (TextView) view.findViewById(R.id.srFrequency);
+			txtNextPaymentDue = (TextView) view.findViewById(R.id.srNextDueDate);
+			txtAmount = (TextView) view.findViewById(R.id.srAmount);
+			txtPayee = (TextView) view.findViewById(R.id.srPayee);
+			
+			// load up the current record.
+			txtDesc.setText(this.c.getString(1));
+			txtOccurence.setText(this.c.getString(2));
+			txtNextPaymentDue.setText(this.c.getString(3));
+			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.c.getString(6))));
+			txtPayee.setText(this.c.getString(7));
+			
+			return view;
+		}
 	}
 }

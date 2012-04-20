@@ -158,7 +158,7 @@ public class Transaction
 	
 	public String formatDateString()
 	{
-		return String.valueOf(this.Date.get(Calendar.YEAR) + "-" + String.valueOf(this.Date.get(Calendar.MONTH) + 1) + "-" 
+		return String.valueOf(this.Date.get(Calendar.YEAR) + "-" + String.valueOf(this.Date.get(Calendar.MONTH)) + "-" 
 					+ String.valueOf(this.Date.get(Calendar.DAY_OF_MONTH)));
 	}
 	

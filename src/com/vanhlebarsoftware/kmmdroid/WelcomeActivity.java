@@ -6,18 +6,19 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class WelcomeActivity extends Activity implements OnClickListener
+public class WelcomeActivity extends Activity
 {
 	@SuppressWarnings("unused")
 	private static final String TAG = "WelcomeActivity";
 	boolean closedDB = false;
-	TextView startNew;
-	TextView openDb;
 	Context context;
 	KMMDroidApp KMMDapp;
 	
@@ -29,43 +30,74 @@ public class WelcomeActivity extends Activity implements OnClickListener
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
-
-       	// See if the user has set the preference to start up with the last used database
-       	if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
-       	{
-       		KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
-       		startActivity(new Intent(this, HomeActivity.class));
-       		finish();
-       	}
+        Bundle extras = getIntent().getExtras();
+        boolean Closing = false;
+        
+        if( extras != null)
+        {
+        	if(!extras.isEmpty())
+        		Closing = extras.getBoolean("Closing");
+        }
+        
+        if( !Closing )
+        {
+        	// See if the user has set the preference to start up with the last used database
+        	if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        	{
+        		KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
+        		startActivity(new Intent(this, HomeActivity.class));
+        		finish();
+        	}
+        }
         
         // Find our views
         setContentView(R.layout.welcome);
-        startNew = (TextView) findViewById(R.id.titleStartNew);
-        openDb = (TextView) findViewById(R.id.titleOpenDatabase);
-        
-        // Set the onClickListener events
-		startNew.setOnClickListener(this);
-        openDb.setOnClickListener(this);
     }
     
-    // Called when the TextView's are clicked
-    public void onClick(View v)
-    {
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+	}
+	
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		
+	}
+    
+	// Called first time the user clicks on the menu button
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.welcome_menu, menu);
+		return true;
+	}
+    
+	// Called when an options item is clicked
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
     	Intent i = null;
     	
-    	switch (v.getId())
-    	{
-    		case R.id.titleStartNew:
+		switch (item.getItemId())
+		{
+			case R.id.itemNew:
     			i = new Intent(this, NewDatabaseActivity.class);
     			startActivityForResult(i, 0);
-    			break;
-    		case R.id.titleOpenDatabase:
+				break;
+			case R.id.itemOpen:
     			i = new Intent(this, FileChooser.class);
     			startActivityForResult(i, 0);
-    			break;
-    	}
-    }
-    
+				break;
+			case R.id.itemRecent:
+				break;
+		}
+		
+		return true;
+	}
     @Override
     protected void onActivityResult(int pRequestCode, int resultCode, Intent data)
     {
@@ -74,10 +106,12 @@ public class WelcomeActivity extends Activity implements OnClickListener
     	if( resultCode != -1)
     	{
     		String fromActivity = data.getStringExtra("FromActivity");
+    		Log.d(TAG, "result: " + fromActivity.toString());
     		
     		if( fromActivity.equalsIgnoreCase("FileChooser") )
     		{
     			String path = data.getStringExtra("FullPath");
+    			Log.d(TAG, "Full Path: " + path);
     			KMMDapp.setFullPath(path);
     			i = new Intent(this, HomeActivity.class);
     			startActivity(i);

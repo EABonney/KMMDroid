@@ -66,6 +66,8 @@
 	<string name="msgPayeeName">Payee name:</string>
 	<string name="payeeNotFound">Payee not found!</string>
 	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
+	<string name="menuOpen">Open</string>
+	<string name="menuRecent">Recent</string>
 	<string name="close">Close File</string>
 	<string name="titleCreateModCategory">Create new category</string>
 	<string name="titleCategoryGeneral">General Category</string>
