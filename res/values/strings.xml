@@ -203,4 +203,5 @@
 	<string name="titleEndDate">Ending Date: </string>
 	<string name="buttonSubmit">Submit</string>
 	<string name="titleNoSchedules">Sorry but your search returned no schedules.</string>
+	<string name="titleBasicHomeWidget">KMyMoney for Droid</string>
 </resources>
