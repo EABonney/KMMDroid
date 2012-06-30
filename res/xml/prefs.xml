@@ -6,5 +6,21 @@
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
     </CheckBoxPreference>
+	
     
+    <PreferenceCategory 
+        android:title="@string/titlePreferenceHomeWidget">
+			<ListPreference 
+			    android:key="accountUsed"
+			    android:title="Account to use for schedules"
+			    android:dialogTitle="Select and account">
+    		</ListPreference>
+    		<ListPreference
+    		    android:title="@string/titleUpdateFrequency"
+    		    android:key="updateFrequency"
+    		    android:summary="@string/summaryFrequency"
+    		    android:entries="@array/UpdateFrequency"
+    		    android:entryValues="@array/UpdateFreqValues">    
+    		</ListPreference>
+	</PreferenceCategory>    
 </PreferenceScreen>

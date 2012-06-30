@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.UriMatcher;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,14 +14,51 @@ import android.util.Log;
 public class KMMDProvider extends ContentProvider 
 {
 	private static final String TAG = KMMDProvider.class.getSimpleName();
-	public static final Uri CONTENT_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/account");
-	public static final String SINGLE_RECORD_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
-	public static final String MULTIPLE_RECORDS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
-	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balanceFormatted", "id AS _id"};
-	private static final String strSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability') AND " +
+	public static final Uri CONTENT_ACCOUNT_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/account");
+	public static final Uri CONTENT_SCHEDULE_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/schedule");
+	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
+	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
+	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
+	public static final String SCHEDULES_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedules";
+	
+	/*********************************************************************************************************************
+	 * Parameters used for querying the Accounts table 
+	 *********************************************************************************************************************/
+	private static final String accountsTable = "kmmAccounts";
+	private static final String[] accountsColumns = { "accountName", "balanceFormatted", "id AS _id"};
+	private static final String accountsSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability') AND " +
 			"(balance != '0/1')";
-	private static final String strOrderBy = "parentID, accountName ASC";
+	private static final String accountsSingleSelection = "id=?";
+	private static final String accountsOrderBy = "parentID, accountName ASC";
+	
+	/*********************************************************************************************************************
+	 * Parameters used for querying the schedules table
+	 ********************************************************************************************************************/
+	private static final String schedulesTable = "kmmSchedules, kmmSplits";
+	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
+												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted" };
+	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
+												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
+												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
+	private static final String schedulesOrderBy = "nextPaymentDue ASC";
+	private String dbTable = null;
+	private String[] dbColumns = null;
+	private String dbSelection = null;
+	private String dbOrderBy = null;
+	private String accountUsed = null;
+	private static final String authority = "com.vanhlebarsoftware.kmmdroid.kmmdprovider";
+	private static final int ACCOUNTS = 1;
+	private static final int ACCOUNTS_ID = 2;
+	private static final int SCHEDULES = 3;
+	private static final int SCHEDULES_ID = 4;
+	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+	static
+	{
+		sURIMatcher.addURI(authority, "account", ACCOUNTS);
+		sURIMatcher.addURI(authority, "account/*", ACCOUNTS_ID);
+		sURIMatcher.addURI(authority, "schedule", SCHEDULES);
+		sURIMatcher.addURI(authority, "schedule/*", SCHEDULES_ID);
+	}
 	public SharedPreferences prefs;
 	SQLiteDatabase db;
 	
@@ -34,7 +72,20 @@ public class KMMDProvider extends ContentProvider
 	@Override
 	public String getType(Uri uri) 
 	{
-		return this.getId(uri) < 0 ? MULTIPLE_RECORDS_MIME_TYPE : SINGLE_RECORD_MIME_TYPE;
+		int match = sURIMatcher.match(uri);
+		switch(match)
+		{
+		case ACCOUNTS:
+			return ACCOUNTS_MIME_TYPE;
+		case ACCOUNTS_ID:
+			return ACCOUNT_MIME_TYPE;
+		case SCHEDULES:
+			return SCHEDULES_MIME_TYPE;
+		case SCHEDULES_ID:
+			return SCHEDULE_MIME_TYPE;
+		default:
+			return null;
+		}
 	}
 
 	@Override
@@ -64,6 +115,7 @@ public class KMMDProvider extends ContentProvider
 		
 		// Get the path to the database the user wants to use for this widget.
 		String path = prefs.getString("Full Path", "");
+		accountUsed = prefs.getString("accountUsed", "");
 		Log.d(TAG, "Database path: " + path);
 		
 		// Hack - if database path is empty do nothing.
@@ -81,15 +133,42 @@ public class KMMDProvider extends ContentProvider
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) 
 	{
-		long id = this.getId(uri);
+		String id = null;
+		Log.d(TAG, "Starting query on CONTENT_URI: " + uri.toString());
+		// See which content uri is requested.
+		int match = sURIMatcher.match(uri);
+		switch(match)
+		{
+			case ACCOUNTS:
+				dbTable = accountsTable;
+				dbColumns = accountsColumns;
+				dbSelection = accountsSelection;
+				dbOrderBy = accountsOrderBy;
+				break;
+			case ACCOUNTS_ID:
+				dbTable = accountsTable;
+				dbColumns = accountsColumns;
+				dbSelection = accountsSingleSelection;
+				dbOrderBy = accountsOrderBy;
+				id = this.getId(uri);
+				break;
+			case SCHEDULES:
+				dbTable = schedulesTable;
+				dbColumns = schedulesColumns;
+				dbSelection = schedulesSelection + "'" + accountUsed + "'";
+				dbOrderBy = schedulesOrderBy;
+				break;
+			case SCHEDULES_ID:
+				break;
+			default:
+				break;
+		}
 		
-		if(id < 0)
+		if(id == null)
 		{
 			if(db.isOpen())
 			{
-				Log.d(TAG, "Running query for all accounts");
-				//return db.query("kmmAccounts", projection, selection, selectionArgs, null, null, sortOrder);
-				return db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
+				return db.query(dbTable, dbColumns, dbSelection, null, null, null, dbOrderBy);
 			}
 			else
 			{	
@@ -98,7 +177,15 @@ public class KMMDProvider extends ContentProvider
 			}
 		}
 		else
-			return db.query("kmmAccounts=" + id, projection, selection, null, null, null, null);
+		{
+			if(db.isOpen())
+				return db.query(dbTable, dbColumns, dbSelection, new String[] { id }, null, null, null);
+			else
+			{
+				Log.d(TAG, "Database is not open!");
+				return null;
+			}
+		}
 	}
 
 	@Override
@@ -108,21 +195,36 @@ public class KMMDProvider extends ContentProvider
 		return 0;
 	}
 
-	private long getId(Uri uri)
+	private String getId(Uri uri)
 	{
 		String lastPathSegment = uri.getLastPathSegment();
 		
-		if(lastPathSegment != null)
+		int match = sURIMatcher.match(uri);
+		Log.d(TAG, "Matcher returned: " + match);
+		switch(match)
+		{
+		case ACCOUNTS:
+			return null;
+		case ACCOUNTS_ID:
+			return lastPathSegment;
+		case SCHEDULES:
+			return null;
+		case SCHEDULES_ID:
+			return lastPathSegment;
+		default:
+			return null;
+		}		
+		
+		/*if(!lastPathSegment.equals("account") || !lastPathSegment.equals("schedule"))
 		{
 			try
 			{
-				return Long.parseLong(lastPathSegment);
+				return lastPathSegment;
 			}
 			catch(NumberFormatException e)
 			{
 				// at least we tried
 			}
-		}
-		return -1;
+		}*/
 	}
 }

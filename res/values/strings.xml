@@ -204,4 +204,41 @@
 	<string name="buttonSubmit">Submit</string>
 	<string name="titleNoSchedules">Sorry but your search returned no schedules.</string>
 	<string name="titleBasicHomeWidget">KMyMoney for Droid</string>
+	<string name="titlePreferenceHomeWidget">Home Widget</string>
+	<string name="titleUpdateFrequency">Update frequence</string>
+	<string name="summaryFrequency">Choose an update frequency</string>
+	<string name="TenSeconds">10 seconds</string>
+	<string name="FifteenSeconds">15 seconds</string>
+	<string name="ThirtySeconds">30 seconds</string>
+	<string name="OneMinute">1 minute</string>
+	<string name="FiveMinutes">5 minutes</string>
+	<string name="TenMinutes">10 minutes</string>
+	<string name="FifteenMinutes">15 minutes</string>
+	<string name="TwentyMinutes">20 minutes</string>
+	<string name="ThirtyMinutes">30 minutes</string>
+	<string name="AutoUpdate">Upon KMyMoney modification</string>
+	<string-array name="UpdateFrequency">
+	    <item>@string/TenSeconds</item>
+	    <item>@string/FifteenSeconds</item>
+	    <item>@string/ThirtySeconds</item>
+	    <item>@string/OneMinute</item>
+	    <item>@string/FiveMinutes</item>
+	    <item>@string/TenMinutes</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/TwentyMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/AutoUpdate</item>
+	</string-array>
+	<string-array name="UpdateFreqValues">
+	    <item>"10000"</item>
+	    <item>"15000"</item>
+	    <item>"30000"</item>
+	    <item>"60000"</item>
+	    <item>"300000"</item>
+	    <item>"600000"</item>
+	    <item>"900000"</item>
+	    <item>"1200000"</item>
+	    <item>"1800000"</item>
+	    <item>"0"</item>
+	</string-array>
 </resources>

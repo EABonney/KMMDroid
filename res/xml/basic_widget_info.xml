@@ -2,8 +2,8 @@
 <appwidget-provider
 	xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/basichomewidget"
-    android:minWidth="288dip"
-    android:minHeight="200dip"
+    android:minWidth="250dp"
+    android:minHeight="180dp"
     android:label="@string/titleBasicHomeWidget"
     android:updatePeriodMillis="1800000">
 </appwidget-provider>
