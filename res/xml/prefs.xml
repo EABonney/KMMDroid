@@ -13,14 +13,15 @@
 			<ListPreference 
 			    android:key="accountUsed"
 			    android:title="Account to use for schedules"
-			    android:dialogTitle="Select and account">
+			    android:dialogTitle="@string/titleSelectanAccount">
     		</ListPreference>
     		<ListPreference
     		    android:title="@string/titleUpdateFrequency"
     		    android:key="updateFrequency"
     		    android:summary="@string/summaryFrequency"
     		    android:entries="@array/UpdateFrequency"
-    		    android:entryValues="@array/UpdateFreqValues">    
+    		    android:entryValues="@array/UpdateFreqValues" android:dialogTitle="@string/titleChooseFrequency">    
     		</ListPreference>
+    		<ListPreference android:key="displayWeeks" android:title="@string/titleDisplayFrequency" android:summary="@string/summaryDisplayFrequency" android:entries="@array/WeeksToDisplay" android:entryValues="@array/WeeksToDisplayValues"/>
 	</PreferenceCategory>    
 </PreferenceScreen>

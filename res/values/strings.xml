@@ -241,4 +241,24 @@
 	    <item>"1800000"</item>
 	    <item>"0"</item>
 	</string-array>
+	<string name="titleSelectanAccount">Select an Account</string>
+	<string name="titleChooseFrequency">Choose a frequency</string>
+	<string name="titleDisplayFrequency">Display Frequency</string>
+	<string name="summaryDisplayFrequency">Number of weeks to display</string>
+	<string name="OneWeek">One Week</string>
+	<string name="TwoWeeks">Two Weeks</string>
+	<string name="ThreeWeeks">Three Weeks</string>
+	<string name="FourWeeks">Four Weeks</string>
+	<string-array name="WeeksToDisplay">
+	    <item>@string/OneWeek</item>
+	    <item>@string/TwoWeeks</item>
+	    <item>@string/ThreeWeeks</item>
+	    <item>@string/FourWeeks</item>
+	</string-array>
+	<string-array name="WeeksToDisplayValues">
+	    <item>"1"</item>
+	    <item>"2"</item>
+	    <item>"3"</item>
+	    <item>"4"</item>
+	</string-array>
 </resources>

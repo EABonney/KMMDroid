@@ -24,7 +24,7 @@
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
 		android:layout_weight="1"
-		android:gravity="left"
+		android:gravity="right"
 		android:id="@+id/hrAccountName"
 		android:textColor="@android:color/black" />		
   	<TextView
@@ -63,6 +63,13 @@
 		android:gravity="right"
 		android:id="@+id/scheduleAmount1"
 		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount1"
+		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End first schedule row -->
 
@@ -92,6 +99,13 @@
 		android:gravity="right"
 		android:id="@+id/scheduleAmount2"
 		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount2"
+		android:textColor="@android:color/black" />
   </LinearLayout>
   <!-- End second schedule row -->
   
@@ -120,6 +134,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount3"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount3"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End third schedule row -->
@@ -150,6 +171,13 @@
 		android:gravity="right"
 		android:id="@+id/scheduleAmount4"
 		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount4"
+		android:textColor="@android:color/black" />
   </LinearLayout>
   <!-- End fourth schedule row -->
   
@@ -179,6 +207,13 @@
 		android:gravity="right"
 		android:id="@+id/scheduleAmount5"
 		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount5"
+		android:textColor="@android:color/black" />
   </LinearLayout>
   <!-- End fifth schedule row -->
   
@@ -207,6 +242,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount6"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount6"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End sixth schedule row -->
@@ -236,6 +278,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount7"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount7"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End seventh schedule row -->
@@ -265,6 +314,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount8"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount8"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End eightth schedule row -->
@@ -294,6 +350,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount9"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount9"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End nineth schedule row -->
@@ -323,6 +386,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount10"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount10"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End tenth schedule row -->
@@ -352,6 +422,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount11"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount11"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End eleventh schedule row -->
@@ -381,6 +458,13 @@
 		android:layout_weight="1"
 		android:gravity="right"
 		android:id="@+id/scheduleAmount12"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount12"
 		android:textColor="@android:color/black" /> 
   </LinearLayout>
   <!-- End twelveth schedule row -->
