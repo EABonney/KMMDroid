@@ -46,7 +46,7 @@ public class WelcomeActivity extends Activity
         // See if the user has a preferance set for the update interval of home widgets, if so set it.
         if(!KMMDapp.getAutoUpdate())
         {
-        	String value = KMMDapp.prefs.getString("updateFrequency", "");
+        	String value = KMMDapp.prefs.getString("updateFrequency", "0");
         	KMMDapp.setRepeatingAlarm(value);
         }
         

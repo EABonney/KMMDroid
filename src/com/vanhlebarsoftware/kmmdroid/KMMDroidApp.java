@@ -25,7 +25,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	private String fullPath = null;
 	private boolean dbOpen = false;
 	private boolean serviceRunning = false;
-	private boolean autoUpdate = false;
+	private boolean autoUpdate = true;
 	public ArrayList<Split> Splits;	
 	public long flSplitsTotal = 0;
 	
@@ -35,7 +35,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		super.onCreate();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
-		String value = this.prefs.getString("updateFrequency", "");
+		String value = this.prefs.getString("updateFrequency", "0");
 		if(value.equals("Auto"))
 			this.setAutoUpdate(true);
 		else
