@@ -9,6 +9,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 public class KMMDProvider extends ContentProvider 
@@ -46,6 +47,7 @@ public class KMMDProvider extends ContentProvider
 	private String dbSelection = null;
 	private String dbOrderBy = null;
 	private String accountUsed = null;
+	private String path = null;
 	private static final String authority = "com.vanhlebarsoftware.kmmdroid.kmmdprovider";
 	private static final int ACCOUNTS = 1;
 	private static final int ACCOUNTS_ID = 2;
@@ -59,8 +61,9 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "schedule", SCHEDULES);
 		sURIMatcher.addURI(authority, "schedule/*", SCHEDULES_ID);
 	}
+	private boolean firstRun = true;
 	public SharedPreferences prefs;
-	SQLiteDatabase db;
+	SQLiteDatabase db = null;
 	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) 
@@ -114,19 +117,10 @@ public class KMMDProvider extends ContentProvider
 		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
 		
 		// Get the path to the database the user wants to use for this widget.
-		String path = prefs.getString("Full Path", "");
-		accountUsed = prefs.getString("accountUsed", "");
+		path = prefs.getString("Full Path", "");
+
 		Log.d(TAG, "Database path: " + path);
-		
-		// Hack - if database path is empty do nothing.
-		if(!path.isEmpty())
-		{
-			Log.d(TAG, "Attempting to open database.");
-			db = SQLiteDatabase.openDatabase(path, null, 0);
-		}
-		else
-			Log.d(TAG, "There is no database to be opened!");
-        
+		       
 		return false;
 	}
 
@@ -134,6 +128,36 @@ public class KMMDProvider extends ContentProvider
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) 
 	{
 		String id = null;
+		
+		// We need to open the database.
+		if(firstRun)
+		{
+			if(!path.isEmpty())
+			{
+				Log.d(TAG, "Attempting to open database.");
+				db = SQLiteDatabase.openDatabase(path, null, 0);
+			}
+			else
+				Log.d(TAG, "No database to open!!!!");
+			
+			firstRun = false;
+		}
+		
+		// Need to get the prefs for our application so we can update the account used..
+		Context context = getContext();
+		Context cont = null;
+		try 
+		{
+			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
+		} 
+		catch (NameNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+		accountUsed = prefs.getString("accountUsed", "");
+		Log.d(TAG, "accountUsed: " + accountUsed);
 		Log.d(TAG, "Starting query on CONTENT_URI: " + uri.toString());
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);

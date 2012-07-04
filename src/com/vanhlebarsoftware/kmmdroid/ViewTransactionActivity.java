@@ -205,6 +205,12 @@ public class ViewTransactionActivity extends Activity
 						// Update the number of transactions for the accounts used.
 						c.close();
 						//cur.close();
+						// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
+						if(KMMDapp.getAutoUpdate())
+						{
+							Intent intent = new Intent(KMMDService.DATA_CHANGED);
+							sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
+						}
 						finish();
 					}
 				});

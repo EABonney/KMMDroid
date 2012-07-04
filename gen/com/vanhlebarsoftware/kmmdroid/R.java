@@ -361,20 +361,18 @@ public final class R {
         public static final int welcome_menu=0x7f07000a;
     }
     public static final class string {
-        public static final int AutoUpdate=0x7f0500b8;
-        public static final int FifteenMinutes=0x7f0500b5;
-        public static final int FifteenSeconds=0x7f0500b0;
-        public static final int FiveMinutes=0x7f0500b3;
-        public static final int FourWeeks=0x7f0500c0;
-        public static final int OneMinute=0x7f0500b2;
-        public static final int OneWeek=0x7f0500bd;
-        public static final int TenMinutes=0x7f0500b4;
-        public static final int TenSeconds=0x7f0500af;
-        public static final int ThirtyMinutes=0x7f0500b7;
-        public static final int ThirtySeconds=0x7f0500b1;
-        public static final int ThreeWeeks=0x7f0500bf;
-        public static final int TwentyMinutes=0x7f0500b6;
-        public static final int TwoWeeks=0x7f0500be;
+        public static final int AutoUpdate=0x7f0500b6;
+        public static final int FifteenMinutes=0x7f0500b0;
+        public static final int FourHours=0x7f0500b4;
+        public static final int FourWeeks=0x7f0500be;
+        public static final int None=0x7f0500af;
+        public static final int OneHour=0x7f0500b2;
+        public static final int OneWeek=0x7f0500bb;
+        public static final int SixHours=0x7f0500b5;
+        public static final int ThirtyMinutes=0x7f0500b1;
+        public static final int ThreeWeeks=0x7f0500bd;
+        public static final int TwoHours=0x7f0500b3;
+        public static final int TwoWeeks=0x7f0500bc;
         public static final int accountNameNotEntered=0x7f050052;
         public static final int accountNotSupported=0x7f050073;
         public static final int app_key=0x7f050000;
@@ -421,10 +419,14 @@ public final class R {
         public static final int payeeMoreThanOne=0x7f050040;
         public static final int payeeNoMatching=0x7f05002c;
         public static final int payeeNotFound=0x7f05003f;
+        public static final int receive_home_update_notifications_permission_description=0x7f0500c2;
+        public static final int receive_home_update_notifications_permission_label=0x7f0500c1;
         public static final int reconciled=0x7f05007e;
+        public static final int send_home_update_notifications_permission_description=0x7f0500c0;
+        public static final int send_home_update_notifications_permission_label=0x7f0500bf;
         public static final int splitTransaction=0x7f050089;
         public static final int splitsNotBalanced=0x7f05009b;
-        public static final int summaryDisplayFrequency=0x7f0500bc;
+        public static final int summaryDisplayFrequency=0x7f0500ba;
         public static final int summaryFrequency=0x7f0500ae;
         public static final int summaryLastUsedFile=0x7f050009;
         public static final int summaryOpenLastUsed=0x7f050007;
@@ -466,7 +468,7 @@ public final class R {
         public static final int titleCategoryOptions=0x7f05004d;
         public static final int titleCategoryPriceEntry=0x7f050050;
         public static final int titleCategoryType=0x7f050049;
-        public static final int titleChooseFrequency=0x7f0500ba;
+        public static final int titleChooseFrequency=0x7f0500b8;
         public static final int titleCreateAccountAccount=0x7f050070;
         public static final int titleCreateAccountInstitution=0x7f05006f;
         public static final int titleCreateAccountParent=0x7f050071;
@@ -481,7 +483,7 @@ public final class R {
         public static final int titleDate=0x7f05007a;
         public static final int titleDelete=0x7f050021;
         public static final int titleDeleteTransaction=0x7f050083;
-        public static final int titleDisplayFrequency=0x7f0500bb;
+        public static final int titleDisplayFrequency=0x7f0500b9;
         public static final int titleEdit=0x7f050020;
         public static final int titleEditModAccount=0x7f050055;
         public static final int titleEndDate=0x7f0500a8;
@@ -527,7 +529,7 @@ public final class R {
         public static final int titlePrefs=0x7f05001b;
         public static final int titleReassignPayee=0x7f050037;
         public static final int titleSchedules=0x7f05009e;
-        public static final int titleSelectanAccount=0x7f0500b9;
+        public static final int titleSelectanAccount=0x7f0500b7;
         public static final int titleSplitConfirmation=0x7f05009c;
         public static final int titleSplitsMessage=0x7f05009d;
         public static final int titleStartNew=0x7f050004;

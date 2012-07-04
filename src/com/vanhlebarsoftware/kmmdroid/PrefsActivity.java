@@ -1,6 +1,11 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.Calendar;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -67,5 +72,26 @@ public class PrefsActivity extends PreferenceActivity
 		
 		Accounts.setEntries(entries);
 		Accounts.setEntryValues(entryValues);
+	}
+	
+	@Override
+	protected void onPause() 
+	{
+		super.onPause();
+		String value = KMMDapp.prefs.getString("updateFrequency", "");
+		if(value.equals("Auto"))
+			KMMDapp.setAutoUpdate(true);
+		else
+			KMMDapp.setAutoUpdate(false);
+		
+		if(KMMDapp.getAutoUpdate())
+		{
+			//Cancel any alarm we might have setup at this point.
+			KMMDapp.setRepeatingAlarm("0");
+			Intent intent = new Intent(KMMDService.DATA_CHANGED);
+			sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);			
+		}
+		else		
+			KMMDapp.setRepeatingAlarm(value);
 	}
 }

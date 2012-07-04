@@ -457,6 +457,12 @@ public class CreateModifyTransactionActivity extends Activity
 				// Need to clean up the OrigSplits and Splits arrays for future use.
 				Splits.clear();
 				OrigSplits.clear();
+				// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
+				if(KMMDapp.getAutoUpdate())
+				{
+					Intent intent = new Intent(KMMDService.DATA_CHANGED);
+					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
+				}
 				finish();
 				break;
 			case R.id.itemCancel:

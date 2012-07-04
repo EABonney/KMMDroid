@@ -207,39 +207,33 @@
 	<string name="titlePreferenceHomeWidget">Home Widget</string>
 	<string name="titleUpdateFrequency">Update frequence</string>
 	<string name="summaryFrequency">Choose an update frequency</string>
-	<string name="TenSeconds">10 seconds</string>
-	<string name="FifteenSeconds">15 seconds</string>
-	<string name="ThirtySeconds">30 seconds</string>
-	<string name="OneMinute">1 minute</string>
-	<string name="FiveMinutes">5 minutes</string>
-	<string name="TenMinutes">10 minutes</string>
+	<string name="None">None</string>
 	<string name="FifteenMinutes">15 minutes</string>
-	<string name="TwentyMinutes">20 minutes</string>
 	<string name="ThirtyMinutes">30 minutes</string>
+	<string name="OneHour">1 hour</string>
+	<string name="TwoHours">2 hours</string>
+	<string name="FourHours">4 hours</string>
+	<string name="SixHours">6 hours</string>
 	<string name="AutoUpdate">Upon KMyMoney modification</string>
 	<string-array name="UpdateFrequency">
-	    <item>@string/TenSeconds</item>
-	    <item>@string/FifteenSeconds</item>
-	    <item>@string/ThirtySeconds</item>
-	    <item>@string/OneMinute</item>
-	    <item>@string/FiveMinutes</item>
-	    <item>@string/TenMinutes</item>
+	    <item>@string/None</item>
 	    <item>@string/FifteenMinutes</item>
-	    <item>@string/TwentyMinutes</item>
 	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
 	    <item>@string/AutoUpdate</item>
 	</string-array>
 	<string-array name="UpdateFreqValues">
-	    <item>"10000"</item>
-	    <item>"15000"</item>
-	    <item>"30000"</item>
-	    <item>"60000"</item>
-	    <item>"300000"</item>
-	    <item>"600000"</item>
-	    <item>"900000"</item>
-	    <item>"1200000"</item>
-	    <item>"1800000"</item>
 	    <item>"0"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"Auto"</item>
 	</string-array>
 	<string name="titleSelectanAccount">Select an Account</string>
 	<string name="titleChooseFrequency">Choose a frequency</string>
@@ -261,4 +255,8 @@
 	    <item>"3"</item>
 	    <item>"4"</item>
 	</string-array>
+	<string name="send_home_update_notifications_permission_label">Send Home Widgets Notifications</string>
+	<string name="send_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="receive_home_update_notifications_permission_label">Receive Home Widgets Notifications</string>
+	<string name="receive_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
 </resources>
