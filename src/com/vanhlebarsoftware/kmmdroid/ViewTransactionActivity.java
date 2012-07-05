@@ -200,8 +200,10 @@ public class ViewTransactionActivity extends Activity
 						
 						// Need to update the accounts for the transaction that was just deleted.
 						for(int i=0; i < Splits.size(); i++)
-							updateAccount(Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
-						
+						{
+							Log.d(TAG, "Split amount: " + Splits.get(i).getValueFormatted());
+							Account.updateAccount(KMMDapp.db, Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
+						}
 						// Update the number of transactions for the accounts used.
 						c.close();
 						//cur.close();
@@ -242,43 +244,7 @@ public class ViewTransactionActivity extends Activity
 	};
 	
 	// **************************************************************************************************
-	// ************************************ Helper methods **********************************************
-	private String createBalance(String formattedValue)
-	{
-		StringTokenizer split = new StringTokenizer(formattedValue, ".");
-		String dollars = split.nextToken();
-		String cents = split.nextToken();
-		String balance = dollars + cents;
-		String denominator = "/100";
-		return balance + denominator;
-	}
-	
-	private void updateAccount( String accountId, String transValue, int nChange)
-	{
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
-		startManagingCursor(c);
-		c.moveToFirst();
-		
-		// Update the current balance for this account.
-		float balance = Float.valueOf(c.getString(0));
-		
-		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
-		float tValue = Float.valueOf(transValue) * nChange;
-		
-		float newBalance = balance + tValue;
-
-		// Update the number of transactions used for this account.
-		int Count = c.getInt(1) + nChange;
-		
-		ContentValues values = new ContentValues();
-		values.put("balanceFormatted", String.valueOf(newBalance));
-		values.put("balance", createBalance(String.valueOf(newBalance)));
-		values.put("transactionCount", Count);
-		
-		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
-		c.close();
-	}
-	
+	// ************************************ Helper methods **********************************************	
 	private ArrayList<Split> getSplits(String transId)
 	{
 		ArrayList<Split> splits = new ArrayList<Split>();

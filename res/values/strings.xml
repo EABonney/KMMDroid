@@ -259,4 +259,6 @@
 	<string name="send_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
 	<string name="receive_home_update_notifications_permission_label">Receive Home Widgets Notifications</string>
 	<string name="receive_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="descriptionRefresh">Refresh</string>
+	<string name="descriptionAddTransaction">Add Transaction</string>
 </resources>

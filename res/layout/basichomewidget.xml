@@ -20,6 +20,22 @@
 		android:contentDescription="@string/app_name"
 		android:src="@drawable/homewidget_icon" >
 	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_refresh"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@android:drawable/stat_notify_sync" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_addTransaction"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionAddTransaction"
+	    android:src="@android:drawable/ic_menu_add" >
+	</ImageView>
 	<TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"

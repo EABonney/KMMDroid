@@ -385,12 +385,12 @@ public class CreateModifyTransactionActivity extends Activity
 					{
 						if( intTransType == WITHDRAW )
 						{
-							value = "-" + createBalance(editAmount.getText().toString());
+							value = "-" + Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
 							formatted = "-" + editAmount.getText().toString();
 						}
 						else
 						{
-							value = createBalance(editAmount.getText().toString());
+							value = Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
 							formatted = editAmount.getText().toString();							
 						}
 						memo = editMemo.getText().toString();
@@ -400,7 +400,7 @@ public class CreateModifyTransactionActivity extends Activity
 						// If we have splits grab the relevant information from the KMMDapp.Splits object.
 						if( anySplits )
 						{
-							value = createBalance(KMMDapp.Splits.get(i-1).getValueFormatted());
+							value = Account.createBalance(Transaction.convertToPennies(KMMDapp.Splits.get(i-1).getValueFormatted()));
 							formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
 							memo = KMMDapp.Splits.get(i-1).getMemo();
 							accountUsed = KMMDapp.Splits.get(i-1).getAccountId();
@@ -409,12 +409,12 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							if( intTransType == WITHDRAW )
 							{
-								value = createBalance(editAmount.getText().toString());
+								value = Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
 								formatted = editAmount.getText().toString();								
 							}
 							else
 							{
-								value = "-" + createBalance(editAmount.getText().toString());
+								value = "-" + Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
 								formatted = "-" + editAmount.getText().toString();								
 							}
 							memo = editMemo.getText().toString();
@@ -443,7 +443,7 @@ public class CreateModifyTransactionActivity extends Activity
 						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
 						// Need to update the account by pulling out all the Original Splits information.
 						for(int i=0; i < OrigSplits.size(); i++)
-							updateAccount(OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
+							Account.updateAccount(KMMDapp.db, OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
 						break;
 				}		
 				// Insert the splits for this transaction
@@ -451,7 +451,7 @@ public class CreateModifyTransactionActivity extends Activity
 				{
 					Split s = Splits.get(i);
 					s.commitSplit(false, KMMDapp.db);
-					updateAccount(s.getAccountId(), s.getValueFormatted(), 1);
+					Account.updateAccount(KMMDapp.db, s.getAccountId(), s.getValueFormatted(), 1);
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				// Need to clean up the OrigSplits and Splits arrays for future use.
@@ -642,42 +642,6 @@ public class CreateModifyTransactionActivity extends Activity
 		values.put("transactions", id);
 		
 		KMMDapp.db.update("kmmFileInfo", values, null, null);		
-	}
-	
-	private String createBalance(String formattedValue)
-	{
-		StringTokenizer split = new StringTokenizer(formattedValue, ".");
-		String dollars = split.nextToken();
-		String cents = split.nextToken();
-		String balance = dollars + cents;
-		String denominator = "/100";
-		return balance + denominator;
-	}
-	
-	private void updateAccount( String accountId, String transValue, int nChange)
-	{
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null, null, null);
-		startManagingCursor(c);
-		c.moveToFirst();
-		
-		// Update the current balance for this account.
-		long balance = Transaction.convertToPennies(c.getString(0));
-		
-		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
-		long tValue = Transaction.convertToPennies(transValue) * nChange;
-		
-		long newBalance = balance + tValue;
-
-		// Update the number of transactions used for this account.
-		int Count = c.getInt(1) + nChange;
-		
-		ContentValues values = new ContentValues();
-		values.put("balanceFormatted",Transaction.convertToDollars(newBalance));
-		values.put("balance", createBalance(Transaction.convertToDollars(newBalance)));
-		values.put("transactionCount", Count);
-		
-		KMMDapp.db.update("kmmAccounts", values, "id=?", new String[] { accountId });
-		c.close();
 	}
 	
 	private ArrayList<Split> getSplits(String transId)

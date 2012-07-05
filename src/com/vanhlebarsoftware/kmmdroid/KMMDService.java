@@ -22,6 +22,8 @@ public class KMMDService extends Service
 {
 	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private static final String TAG = KMMDService.class.getSimpleName();
 	private boolean runFlag = false;
 	private KMMDUpdater kmmdUpdater;
@@ -234,7 +236,25 @@ public class KMMDService extends Service
 					break;
 				}
 			}
-				
+			
+			// Setup the onClick response to the various buttons on the widget
+			// Start application by clicking on the icon
+			Intent intent = new Intent(getBaseContext(), WelcomeActivity.class);
+			PendingIntent pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
+			views.setOnClickPendingIntent(R.id.kmmd_icon, pendingIntent);
+			
+			// Refresh icon
+			intent = new Intent(getBaseContext(), KMMDService.class);
+			pendingIntent = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+			views.setOnClickPendingIntent(R.id.kmmd_refresh, pendingIntent);
+			
+			// New transaction Icon
+			intent = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
+			intent.putExtra("Action", ACTION_NEW);
+			intent.putExtra("accountUsed", accountUsed);
+			pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
+			views.setOnClickPendingIntent(R.id.kmmd_addTransaction, pendingIntent);
+			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
 	}
