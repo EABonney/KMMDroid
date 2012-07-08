@@ -29,29 +29,65 @@ public class Schedule
 	private static final int OCCUR_EVERYFOURMONTHS = 8192;
 	private static final int OCCUR_YEARLY = 16384;
 	
-	private static final int C_DESCRIPTION = 1;
-	private static final int C_OCCURENCE = 2;
-	private static final int C_OCCURENCESTRING = 3;
-	private static final int C_OCCURENCEMULTIPLIER = 4;
-	private static final int C_NEXTPAYMENTDUE = 5;
-	private static final int C_STARTDATE = 6;
-	private static final int C_ENDDATE = 7;
-	private static final int C_LASTPAYMENT = 8;
-	private static final int C_VALUEFORMATTED = 9;
+	public static final int C_ID = 0;
+	public static final int C_DESCRIPTION = 1;
+	public static final int C_OCCURENCE = 2;
+	public static final int C_OCCURENCESTRING = 3;
+	public static final int C_OCCURENCEMULTIPLIER = 4;
+	public static final int C_NEXTPAYMENTDUE = 5;
+	public static final int C_STARTDATE = 6;
+	public static final int C_ENDDATE = 7;
+	public static final int C_LASTPAYMENT = 8;
+	public static final int C_VALUEFORMATTED = 9;
 	
+	private String id;
 	private String Description;
 	private Calendar DueDate;
+	private Calendar EndDate;
 	private long nAmount;		//Holds the amount of this transaction in pennies.
 	private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 								//Held in pennies.
+	private int occurence;
+	private int occurenceMultiplier;
 	
 	// Constructor for a Schedule
 	Schedule(String Desc, Calendar dueDate, String strAmt)
 	{
+		this.id = null;
+		this.occurence = 0;
+		this.occurenceMultiplier = 0;
 		this.Description = Desc;
 		this.DueDate = dueDate;
+		this.EndDate = null;
 		this.nAmount = convertToPennies(strAmt);
 		this.nBalance = 0;
+	}
+	
+	Schedule(Cursor c)
+	{
+		String[] date = {null, null, null};
+		c.moveToFirst();
+		
+		this.id = c.getString(C_ID);
+		this.occurence = c.getInt(C_OCCURENCE);
+		this.occurenceMultiplier = c.getInt(C_OCCURENCEMULTIPLIER);
+		this.Description = c.getString(C_DESCRIPTION);
+		this.nAmount = convertToPennies(c.getString(C_VALUEFORMATTED));
+		this.nBalance = 0;
+		if(c.getString(C_NEXTPAYMENTDUE) != null)
+		{
+			this.DueDate = Calendar.getInstance();
+			date = c.getString(C_NEXTPAYMENTDUE).split("-");			
+			this.DueDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		
+		if(c.getString(C_ENDDATE) != null)
+		{
+			this.EndDate = Calendar.getInstance();
+			date = c.getString(C_ENDDATE).split("-");
+			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+		}
 	}
 	
 	public String getDescription()
@@ -74,6 +110,50 @@ public class Schedule
 		return nBalance;
 	}
 	
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+	
+	public String getId()
+	{
+		return this.id;
+	}
+	
+	public void setOccurence(int occurence)
+	{
+		this.occurence = occurence;
+	}
+	
+	public int getOccurence()
+	{
+		return this.occurence;
+	}
+	
+	public void setOccurenceMultiplier(int multiplier)
+	{
+		this.occurenceMultiplier = multiplier;
+	}
+	
+	public int getOccurenceMultiplier()
+	{
+		return this.occurenceMultiplier;
+	}
+	
+	public void setEndDate(String end)
+	{	
+		if(end != null)
+		{
+			this.EndDate = Calendar.getInstance();
+			String[] date = end.split("-");
+			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+		}
+	}
+	
+	public Calendar getEndDate()
+	{
+		return this.EndDate;
+	}
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html
@@ -228,6 +308,11 @@ public class Schedule
 			for(int d=0; d < dueDates.size(); d++)
 			{
 				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED));
+				// Add the id, occurence, occurenceMultiplier and enddate for this schedule
+				schd.setId(c.getString(C_ID));
+				schd.setOccurence(c.getInt(C_OCCURENCE));
+				schd.setOccurenceMultiplier(c.getInt(C_OCCURENCEMULTIPLIER));
+				schd.setEndDate(c.getString(C_ENDDATE));
 				Schedules.add(schd);
 				schd = null;
 			}
@@ -449,5 +534,95 @@ public class Schedule
 				}
 		}
 		return 0;
+	}
+	
+	public boolean isPastDue()
+	{
+		GregorianCalendar calToday = new GregorianCalendar();
+		
+		return this.DueDate.before(calToday);
+	}
+	
+	public void skipSchedule()
+	{
+		this.advanceDueDate(Schedule.getOccurence(this.occurence, this.occurenceMultiplier));
+	}
+	
+	private void advanceDueDate(int occurenceRate)
+	{
+		
+		switch (occurenceRate)
+		{
+			case OCCUR_ONCE:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate = this.EndDate;
+				break;
+			case OCCUR_DAILY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 1);
+				break;
+			case OCCUR_WEEKLY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 7);			
+				break;
+			case OCCUR_FORTNIGHTLY:
+			case OCCUR_EVERYOTHERWEEK:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 14);
+				break;
+			case OCCUR_EVERYTHREEWEEKS:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 21);
+				break;
+			case OCCUR_EVERYTHIRTYDAYS:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 30);
+				break;
+			case OCCUR_MONTHLY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.MONTH, 1);
+				break;
+			case OCCUR_EVERYFOURWEEKS:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 28);
+				break;
+			case OCCUR_EVERYEIGHTWEEKS:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 56);				
+				break;
+			case OCCUR_EVERYOTHERMONTH:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.MONTH, 2);
+				break;
+			case OCCUR_EVERYTHREEMONTHS:
+			case OCCUR_QUARTERLY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.MONTH, 3);
+				break;
+			case OCCUR_TWICEYEARLY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.MONTH, 6);
+				break;
+			case OCCUR_EVERYOTHERYEAR:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.YEAR, 2);				
+				break;
+			case OCCUR_EVERYFOURMONTHS:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.MONTH, 4);
+				break;
+			case OCCUR_YEARLY:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.YEAR, 1);
+				break;
+			default:
+				break;
+		}		
+	}
+	
+	public String getDatabaseFormattedString()
+	{
+		return String.valueOf(this.DueDate.get(Calendar.YEAR)) + "-" + String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) +
+				"-" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH));
 	}
 }

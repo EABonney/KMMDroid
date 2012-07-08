@@ -41,6 +41,10 @@ public class KMMDProvider extends ContentProvider
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
+	private static final String[] schedulesSingleSelectionColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
+		"nextPaymentDue", "startDate", "endDate", "lastPayment" };
+	private static final String scheduleSingleSelection = "kmmSchedules.id = kmmSplits.transactionId" +
+			" AND kmmSplits.splitId = 0 AND kmmSchedules.Id=?";
 	private static final String schedulesOrderBy = "nextPaymentDue ASC";
 	private String dbTable = null;
 	private String[] dbColumns = null;
@@ -118,8 +122,6 @@ public class KMMDProvider extends ContentProvider
 		
 		// Get the path to the database the user wants to use for this widget.
 		path = prefs.getString("Full Path", "");
-
-		Log.d(TAG, "Database path: " + path);
 		       
 		return false;
 	}
@@ -133,10 +135,7 @@ public class KMMDProvider extends ContentProvider
 		if(firstRun)
 		{
 			if(!path.isEmpty())
-			{
-				Log.d(TAG, "Attempting to open database.");
 				db = SQLiteDatabase.openDatabase(path, null, 0);
-			}
 			else
 				Log.d(TAG, "No database to open!!!!");
 			
@@ -157,8 +156,7 @@ public class KMMDProvider extends ContentProvider
 		}
 		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
 		accountUsed = prefs.getString("accountUsed", "");
-		Log.d(TAG, "accountUsed: " + accountUsed);
-		Log.d(TAG, "Starting query on CONTENT_URI: " + uri.toString());
+
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
 		switch(match)
@@ -183,6 +181,11 @@ public class KMMDProvider extends ContentProvider
 				dbOrderBy = schedulesOrderBy;
 				break;
 			case SCHEDULES_ID:
+				dbTable = schedulesTable;
+				dbColumns = schedulesColumns;
+				dbSelection = scheduleSingleSelection;
+				dbOrderBy = schedulesOrderBy;	
+				id = this.getId(uri);
 				break;
 			default:
 				break;
@@ -213,10 +216,42 @@ public class KMMDProvider extends ContentProvider
 	}
 
 	@Override
-	public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) 
+	public int update(Uri uri, ContentValues contentvalues, String selection, String[] selectionArgs) 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		String id = null;
+		
+		// We need to open the database.
+		if(firstRun)
+		{
+			if(!path.isEmpty())
+			{
+				db = SQLiteDatabase.openDatabase(path, null, 0);
+			}
+			else
+				Log.d(TAG, "No database to open!!!!");
+			
+			firstRun = false;
+		}
+		
+		// See which content uri is requested.
+		int match = sURIMatcher.match(uri);
+		switch(match)
+		{
+			case ACCOUNTS:
+				break;
+			case ACCOUNTS_ID:
+				break;
+			case SCHEDULES:
+				break;
+			case SCHEDULES_ID:
+				dbTable = "kmmSchedules";
+				dbSelection = "id=?";
+				break;
+			default:
+				break;
+		}
+		
+		return db.update(dbTable, contentvalues, dbSelection, selectionArgs);
 	}
 
 	private String getId(Uri uri)
@@ -224,6 +259,7 @@ public class KMMDProvider extends ContentProvider
 		String lastPathSegment = uri.getLastPathSegment();
 		
 		int match = sURIMatcher.match(uri);
+		Log.d(TAG, "Uri provided to getId(): " + uri.toString());
 		Log.d(TAG, "Matcher returned: " + match);
 		switch(match)
 		{
@@ -238,17 +274,5 @@ public class KMMDProvider extends ContentProvider
 		default:
 			return null;
 		}		
-		
-		/*if(!lastPathSegment.equals("account") || !lastPathSegment.equals("schedule"))
-		{
-			try
-			{
-				return lastPathSegment;
-			}
-			catch(NumberFormatException e)
-			{
-				// at least we tried
-			}
-		}*/
 	}
 }

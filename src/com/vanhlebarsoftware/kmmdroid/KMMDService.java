@@ -8,14 +8,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
+import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 public class KMMDService extends Service
@@ -35,12 +36,6 @@ public class KMMDService extends Service
 		super.onCreate();
 		this.kmmdApp = (KMMDroidApp) getApplication();
 		this.kmmdUpdater = new KMMDUpdater();
-		
-		// See if we have already set up the repeating alarm for our service. If we have not then set it up.
-		//kmmdApp.setRepeatingAlarm();
-
-		//this.kmmdUpdater.start();
-		Log.d(TAG, "onCreated");
 	}
 
 	@Override
@@ -51,18 +46,28 @@ public class KMMDService extends Service
 		this.kmmdUpdater.interrupt();
 		this.kmmdUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
-		Log.d(TAG, "onDestroyed");
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
 		super.onStartCommand(intent, flags, startId);
+		
+		// See if we are starting the service with any extras in the intent.
+        Bundle extras = intent.getExtras();
+        String skippedScheduleId = null;
+        if(extras != null)
+        {
+        	Log.d(TAG, "onStartCommand skipScheduleId: " + extras.getString("skipScheduleId"));
+        	skippedScheduleId = extras.getString("skipScheduleId");
+        }
+        if(skippedScheduleId != null)
+        	skipSchedule(skippedScheduleId);
+   
 		this.runFlag = true;
 		this.kmmdApp.setServiceRunning(true);
 		this.kmmdUpdater.start();
-		//updateHomeWidgets();
-		Log.d(TAG, "onStarted");
+
 		return START_NOT_STICKY;
 	}
 
@@ -79,9 +84,10 @@ public class KMMDService extends Service
 	private String FormatDate(Calendar date)
 	{
 		String formattedDate = null;
-		
+		String year = String.valueOf(date.get(Calendar.YEAR));
+		year = year.substring(2);
 		formattedDate = (date.get(Calendar.MONTH) + 1) + "/" + String.valueOf(date.get(Calendar.DAY_OF_MONTH)) +
-				"/" + String.valueOf(date.get(Calendar.YEAR));
+				"/" + year;
 		
 		return formattedDate;
 	}
@@ -90,6 +96,7 @@ public class KMMDService extends Service
 	{
 		Cursor c = null;
 		String strBal = null;
+		int lastRow = 0;
 		RemoteViews views = new RemoteViews(getPackageName(), R.layout.basichomewidget);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 		ComponentName thisAppWidget = new ComponentName(getPackageName(), BasicHomeWidget.class.getName());
@@ -99,11 +106,9 @@ public class KMMDService extends Service
 		String accountUsed = kmmdApp.prefs.getString("accountUsed", "");
 		String weeksToDisplay = kmmdApp.prefs.getString("displayWeeks", "1");
 		
-		Log.d(TAG, "Starting to update Home Widgets.........");
 		// Get our account and account balance from the database.
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountUsed);
 		c = getContentResolver().query(u, null, null, null, null);
-		Log.d(TAG, "Returned from KMMDProvider!");
 		c.moveToFirst();
 		views.setTextViewText(R.id.hrAccountName, c.getString(0));
 		strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)));
@@ -119,9 +124,6 @@ public class KMMDService extends Service
 		String strEndDate = String.valueOf(calEnd.get(Calendar.YEAR)) + "-" + String.valueOf(calEnd.get(Calendar.MONTH)+ 1) + "-"
 				+ String.valueOf(calEnd.get(Calendar.DAY_OF_MONTH));
 		
-		Log.d(TAG, "Start Date: " + strStartDate);
-		Log.d(TAG, "End Date: " + strEndDate);
-		
 		// Get our active schedules from the database.
 		c = getContentResolver().query(KMMDProvider.CONTENT_SCHEDULE_URI, null, null, null, null);
 		
@@ -132,11 +134,12 @@ public class KMMDService extends Service
 		// close our cursor as we no longer need it.
 		c.close();
 		
+		// Make sure we hide any unused rows.
+		lastRow = Schedules.size();
+		
 		// Loop through all the instances of this widget
 		for(int appWidgetId : appWidgetIds)
-		{
-			Log.d(TAG, "Updating widget: " + appWidgetId);
-			
+		{	
 			// Loop thru the returned ArrayList and populate the widgets rows.
 			Calendar Date = null;
 			String strDate = null;
@@ -153,8 +156,18 @@ public class KMMDService extends Service
 				strAmount = Transaction.convertToDollars(sch.getAmount());
 				strBalance = Transaction.convertToDollars(sch.getBalance());
 				
-				// Convert the Calendar object to a string formated: Month Day, Year (Jan 10, 2012)
+				// Convert the Calendar object to a string formated: Month Day, Year (1/10/12)
 				strDate = FormatDate(Date);
+				
+				// See if the current schedule is past due, if so change the text color.
+				if(sch.isPastDue())
+					setPastDueColor(i, views);
+				else
+					setNormalColor(i, views);
+
+				// Setup the basic Intent information for the onClick event of Skipping a schedule.
+				Intent intent = new Intent(getBaseContext(), KMMDService.class);
+				intent.putExtra("skipScheduleId", sch.getId());
 				
 				switch(i)
 				{
@@ -163,78 +176,146 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleName1, strDescription);
 					views.setTextViewText(R.id.scheduleAmount1, strAmount);
 					views.setTextViewText(R.id.BalanceAmount1, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule1");
+					PendingIntent pendingIntent1 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip1, pendingIntent1);
 					break;
 				case 2:
 					views.setTextViewText(R.id.scheduleDate2, strDate);
 					views.setTextViewText(R.id.scheduleName2, strDescription);
 					views.setTextViewText(R.id.scheduleAmount2, strAmount);
 					views.setTextViewText(R.id.BalanceAmount2, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule2");
+					PendingIntent pendingIntent2 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip2, pendingIntent2);
 					break;
 				case 3:
 					views.setTextViewText(R.id.scheduleDate3, strDate);
 					views.setTextViewText(R.id.scheduleName3, strDescription);
 					views.setTextViewText(R.id.scheduleAmount3, strAmount);
 					views.setTextViewText(R.id.BalanceAmount3, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule3");
+					PendingIntent pendingIntent3 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip3, pendingIntent3);
 					break;
 				case 4:
 					views.setTextViewText(R.id.scheduleDate4, strDate);
 					views.setTextViewText(R.id.scheduleName4, strDescription);
 					views.setTextViewText(R.id.scheduleAmount4, strAmount);
 					views.setTextViewText(R.id.BalanceAmount4, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule4");
+					PendingIntent pendingIntent4 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip4, pendingIntent4);
 					break;
 				case 5:
 					views.setTextViewText(R.id.scheduleDate5, strDate);
 					views.setTextViewText(R.id.scheduleName5, strDescription);
 					views.setTextViewText(R.id.scheduleAmount5, strAmount);
 					views.setTextViewText(R.id.BalanceAmount5, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule5");
+					PendingIntent pendingIntent5 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip5, pendingIntent5);
 					break;
 				case 6:
 					views.setTextViewText(R.id.scheduleDate6, strDate);
 					views.setTextViewText(R.id.scheduleName6, strDescription);
 					views.setTextViewText(R.id.scheduleAmount6, strAmount);
 					views.setTextViewText(R.id.BalanceAmount6, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule6");
+					PendingIntent pendingIntent6 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip6, pendingIntent6);
 					break;
 				case 7:
 					views.setTextViewText(R.id.scheduleDate7, strDate);
 					views.setTextViewText(R.id.scheduleName7, strDescription);
 					views.setTextViewText(R.id.scheduleAmount7, strAmount);
 					views.setTextViewText(R.id.BalanceAmount7, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule7");
+					PendingIntent pendingIntent7 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip7, pendingIntent7);
 					break;
 				case 8:
 					views.setTextViewText(R.id.scheduleDate8, strDate);
 					views.setTextViewText(R.id.scheduleName8, strDescription);
 					views.setTextViewText(R.id.scheduleAmount8, strAmount);
 					views.setTextViewText(R.id.BalanceAmount8, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule8");
+					PendingIntent pendingIntent8 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip8, pendingIntent8);
 					break;
 				case 9:
 					views.setTextViewText(R.id.scheduleDate9, strDate);
 					views.setTextViewText(R.id.scheduleName9, strDescription);
 					views.setTextViewText(R.id.scheduleAmount9, strAmount);
 					views.setTextViewText(R.id.BalanceAmount9, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule9");
+					PendingIntent pendingIntent9 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip9, pendingIntent9);
 					break;
 				case 10:
 					views.setTextViewText(R.id.scheduleDate10, strDate);
 					views.setTextViewText(R.id.scheduleName10, strDescription);
 					views.setTextViewText(R.id.scheduleAmount10, strAmount);
 					views.setTextViewText(R.id.BalanceAmount10, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule10");
+					PendingIntent pendingIntent10 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip10, pendingIntent10);
 					break;
 				case 11:
 					views.setTextViewText(R.id.scheduleDate11, strDate);
 					views.setTextViewText(R.id.scheduleName11, strDescription);
 					views.setTextViewText(R.id.scheduleAmount11, strAmount);
 					views.setTextViewText(R.id.BalanceAmount11, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule11");
+					PendingIntent pendingIntent11 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip11, pendingIntent11);
 					break;
 				case 12:
 					views.setTextViewText(R.id.scheduleDate12, strDate);
 					views.setTextViewText(R.id.scheduleName12, strDescription);
 					views.setTextViewText(R.id.scheduleAmount12, strAmount);
 					views.setTextViewText(R.id.BalanceAmount12, strBalance);
+					
+					// Skip scheduled transaction onClickEvent handler
+					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule12");
+					PendingIntent pendingIntent12 = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
+					views.setOnClickPendingIntent(R.id.kmmd_schSkip12, pendingIntent12);
 					break;
 				default:
 					// If we made it here we have to many to display so just skip the rest.
 					i = Schedules.size() + 1;
 					break;
 				}
+				Log.d(TAG, "Intent Scheduled: " + sch.getDescription() + " " + intent.getStringExtra("skipScheduleId"));
+			}
+	
+			// see if we filled all 12 rows, if we didn't then we need to hide them.
+			if(lastRow <= 12)
+			{
+				for(int i=lastRow+1; i<=12; i++)
+					hideRow(i, views);
 			}
 			
 			// Setup the onClick response to the various buttons on the widget
@@ -245,6 +326,7 @@ public class KMMDService extends Service
 			
 			// Refresh icon
 			intent = new Intent(getBaseContext(), KMMDService.class);
+			intent.setAction("com.vanhlebarsoftware.kmmdroid.Refresh");
 			pendingIntent = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_refresh, pendingIntent);
 			
@@ -266,7 +348,6 @@ public class KMMDService extends Service
 		String strDescription = null;
 		String strAmount = null;
 		
-		Log.d(TAG, "Clearing HomeWidget data...");
 		RemoteViews views = new RemoteViews(getPackageName(), R.layout.basichomewidget);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 		ComponentName thisAppWidget = new ComponentName(getPackageName(), BasicHomeWidget.class.getName());
@@ -280,83 +361,311 @@ public class KMMDService extends Service
 				switch(i)
 				{
 				case 1:
+					views.setViewVisibility(R.id.hwRowOne, View.VISIBLE);
 					views.setTextViewText(R.id.scheduleDate1, strDate);
 					views.setTextViewText(R.id.scheduleName1, strDescription);
 					views.setTextViewText(R.id.scheduleAmount1, strAmount);
 					views.setTextViewText(R.id.BalanceAmount1, strBalance);
+
 					break;
 				case 2:
+					views.setViewVisibility(R.id.hwRowTwo, View.VISIBLE);
 					views.setTextViewText(R.id.scheduleDate2, strDate);
 					views.setTextViewText(R.id.scheduleName2, strDescription);
 					views.setTextViewText(R.id.scheduleAmount2, strAmount);
 					views.setTextViewText(R.id.BalanceAmount2, strBalance);
 					break;
 				case 3:
+					views.setViewVisibility(R.id.hwRowThree, View.VISIBLE);
 					views.setTextViewText(R.id.scheduleDate3, strDate);
 					views.setTextViewText(R.id.scheduleName3, strDescription);
 					views.setTextViewText(R.id.scheduleAmount3, strAmount);
 					views.setTextViewText(R.id.BalanceAmount3, strBalance);
 					break;
 			case 4:
-				views.setTextViewText(R.id.scheduleDate4, strDate);
-				views.setTextViewText(R.id.scheduleName4, strDescription);
-				views.setTextViewText(R.id.scheduleAmount4, strAmount);
-				views.setTextViewText(R.id.BalanceAmount4, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowFour, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate4, strDate);
+					views.setTextViewText(R.id.scheduleName4, strDescription);
+					views.setTextViewText(R.id.scheduleAmount4, strAmount);
+					views.setTextViewText(R.id.BalanceAmount4, strBalance);
+					break;
 			case 5:
-				views.setTextViewText(R.id.scheduleDate5, strDate);
-				views.setTextViewText(R.id.scheduleName5, strDescription);
-				views.setTextViewText(R.id.scheduleAmount5, strAmount);
-				views.setTextViewText(R.id.BalanceAmount5, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowFive, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate5, strDate);
+					views.setTextViewText(R.id.scheduleName5, strDescription);
+					views.setTextViewText(R.id.scheduleAmount5, strAmount);
+					views.setTextViewText(R.id.BalanceAmount5, strBalance);
+					break;
 			case 6:
-				views.setTextViewText(R.id.scheduleDate6, strDate);
-				views.setTextViewText(R.id.scheduleName6, strDescription);
-				views.setTextViewText(R.id.scheduleAmount6, strAmount);
-				views.setTextViewText(R.id.BalanceAmount6, strBalance);
+					views.setViewVisibility(R.id.hwRowSix, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate6, strDate);
+					views.setTextViewText(R.id.scheduleName6, strDescription);
+					views.setTextViewText(R.id.scheduleAmount6, strAmount);
+					views.setTextViewText(R.id.BalanceAmount6, strBalance);
 				break;
 			case 7:
-				views.setTextViewText(R.id.scheduleDate7, strDate);
-				views.setTextViewText(R.id.scheduleName7, strDescription);
-				views.setTextViewText(R.id.scheduleAmount7, strAmount);
-				views.setTextViewText(R.id.BalanceAmount7, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowSeven, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate7, strDate);
+					views.setTextViewText(R.id.scheduleName7, strDescription);
+					views.setTextViewText(R.id.scheduleAmount7, strAmount);
+					views.setTextViewText(R.id.BalanceAmount7, strBalance);
+					break;
 			case 8:
-				views.setTextViewText(R.id.scheduleDate8, strDate);
-				views.setTextViewText(R.id.scheduleName8, strDescription);
-				views.setTextViewText(R.id.scheduleAmount8, strAmount);
-				views.setTextViewText(R.id.BalanceAmount8, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowEight, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate8, strDate);
+					views.setTextViewText(R.id.scheduleName8, strDescription);
+					views.setTextViewText(R.id.scheduleAmount8, strAmount);
+					views.setTextViewText(R.id.BalanceAmount8, strBalance);
+					break;
 			case 9:
-				views.setTextViewText(R.id.scheduleDate9, strDate);
-				views.setTextViewText(R.id.scheduleName9, strDescription);
-				views.setTextViewText(R.id.scheduleAmount9, strAmount);
-				views.setTextViewText(R.id.BalanceAmount9, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowNine, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate9, strDate);
+					views.setTextViewText(R.id.scheduleName9, strDescription);
+					views.setTextViewText(R.id.scheduleAmount9, strAmount);
+					views.setTextViewText(R.id.BalanceAmount9, strBalance);
+					break;
 			case 10:
-				views.setTextViewText(R.id.scheduleDate10, strDate);
-				views.setTextViewText(R.id.scheduleName10, strDescription);
-				views.setTextViewText(R.id.scheduleAmount10, strAmount);
-				views.setTextViewText(R.id.BalanceAmount10, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowTen, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate10, strDate);
+					views.setTextViewText(R.id.scheduleName10, strDescription);
+					views.setTextViewText(R.id.scheduleAmount10, strAmount);
+					views.setTextViewText(R.id.BalanceAmount10, strBalance);
+					break;
 			case 11:
-				views.setTextViewText(R.id.scheduleDate11, strDate);
-				views.setTextViewText(R.id.scheduleName11, strDescription);
-				views.setTextViewText(R.id.scheduleAmount11, strAmount);
-				views.setTextViewText(R.id.BalanceAmount11, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowEleven, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate11, strDate);
+					views.setTextViewText(R.id.scheduleName11, strDescription);
+					views.setTextViewText(R.id.scheduleAmount11, strAmount);
+					views.setTextViewText(R.id.BalanceAmount11, strBalance);
+					break;
 			case 12:
-				views.setTextViewText(R.id.scheduleDate12, strDate);
-				views.setTextViewText(R.id.scheduleName12, strDescription);
-				views.setTextViewText(R.id.scheduleAmount12, strAmount);
-				views.setTextViewText(R.id.BalanceAmount12, strBalance);
-				break;
+					views.setViewVisibility(R.id.hwRowTwelve, View.VISIBLE);
+					views.setTextViewText(R.id.scheduleDate12, strDate);
+					views.setTextViewText(R.id.scheduleName12, strDescription);
+					views.setTextViewText(R.id.scheduleAmount12, strAmount);
+					views.setTextViewText(R.id.BalanceAmount12, strBalance);
+					break;
 			default:
-				break;
+					break;
 			}
 		}
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
+	}
+	
+	private void hideRow(int row, RemoteViews view)
+	{	
+		switch(row)
+		{
+		case 1:
+			view.setViewVisibility(R.id.hwRowOne, View.INVISIBLE);
+			break;
+		case 2:
+			view.setViewVisibility(R.id.hwRowTwo, View.INVISIBLE);
+			break;
+		case 3:
+			view.setViewVisibility(R.id.hwRowThree, View.INVISIBLE);
+			break;
+		case 4:
+			view.setViewVisibility(R.id.hwRowFour, View.INVISIBLE);
+			break;
+		case 5:
+			view.setViewVisibility(R.id.hwRowFive, View.INVISIBLE);
+			break;
+		case 6:
+			view.setViewVisibility(R.id.hwRowSix, View.INVISIBLE);
+			break;
+		case 7:
+			view.setViewVisibility(R.id.hwRowSeven, View.INVISIBLE);
+			break;
+		case 8:
+			view.setViewVisibility(R.id.hwRowEight, View.INVISIBLE);
+			break;
+		case 9:
+			view.setViewVisibility(R.id.hwRowNine, View.INVISIBLE);
+			break;
+		case 10:
+			view.setViewVisibility(R.id.hwRowTen, View.INVISIBLE);
+			break;
+		case 11:
+			view.setViewVisibility(R.id.hwRowEleven, View.INVISIBLE);
+			break;
+		case 12:
+			view.setViewVisibility(R.id.hwRowTwelve, View.INVISIBLE);
+			break;
+		}
+	}
+	
+	private void setPastDueColor(int row, RemoteViews view)
+	{
+		switch(row)
+		{
+		case 1:
+			view.setTextColor(R.id.scheduleDate1, Color.RED);
+			view.setTextColor(R.id.scheduleName1, Color.RED);
+			view.setTextColor(R.id.scheduleAmount1, Color.RED);
+			view.setTextColor(R.id.BalanceAmount1, Color.RED);
+			break;
+		case 2:
+			view.setTextColor(R.id.scheduleDate2, Color.RED);
+			view.setTextColor(R.id.scheduleName2, Color.RED);
+			view.setTextColor(R.id.scheduleAmount2, Color.RED);
+			view.setTextColor(R.id.BalanceAmount2, Color.RED);
+			break;
+		case 3:
+			view.setTextColor(R.id.scheduleDate3, Color.RED);
+			view.setTextColor(R.id.scheduleName3, Color.RED);
+			view.setTextColor(R.id.scheduleAmount3, Color.RED);
+			view.setTextColor(R.id.BalanceAmount3, Color.RED);
+			break;
+		case 4:
+			view.setTextColor(R.id.scheduleDate4, Color.RED);
+			view.setTextColor(R.id.scheduleName4, Color.RED);
+			view.setTextColor(R.id.scheduleAmount4, Color.RED);
+			view.setTextColor(R.id.BalanceAmount4, Color.RED);
+			break;
+		case 5:
+			view.setTextColor(R.id.scheduleDate5, Color.RED);
+			view.setTextColor(R.id.scheduleName5, Color.RED);
+			view.setTextColor(R.id.scheduleAmount5, Color.RED);
+			view.setTextColor(R.id.BalanceAmount5, Color.RED);
+			break;
+		case 6:
+			view.setTextColor(R.id.scheduleDate6, Color.RED);
+			view.setTextColor(R.id.scheduleName6, Color.RED);
+			view.setTextColor(R.id.scheduleAmount6, Color.RED);
+			view.setTextColor(R.id.BalanceAmount6, Color.RED);
+			break;
+		case 7:
+			view.setTextColor(R.id.scheduleDate7, Color.RED);
+			view.setTextColor(R.id.scheduleName7, Color.RED);
+			view.setTextColor(R.id.scheduleAmount7, Color.RED);
+			view.setTextColor(R.id.BalanceAmount7, Color.RED);
+			break;
+		case 8:
+			view.setTextColor(R.id.scheduleDate8, Color.RED);
+			view.setTextColor(R.id.scheduleName8, Color.RED);
+			view.setTextColor(R.id.scheduleAmount8, Color.RED);
+			view.setTextColor(R.id.BalanceAmount8, Color.RED);
+			break;
+		case 9:
+			view.setTextColor(R.id.scheduleDate9, Color.RED);
+			view.setTextColor(R.id.scheduleName9, Color.RED);
+			view.setTextColor(R.id.scheduleAmount9, Color.RED);
+			view.setTextColor(R.id.BalanceAmount9, Color.RED);
+			break;
+		case 10:
+			view.setTextColor(R.id.scheduleDate10, Color.RED);
+			view.setTextColor(R.id.scheduleName10, Color.RED);
+			view.setTextColor(R.id.scheduleAmount10, Color.RED);
+			view.setTextColor(R.id.BalanceAmount10, Color.RED);
+			break;
+		case 11:
+			view.setTextColor(R.id.scheduleDate11, Color.RED);
+			view.setTextColor(R.id.scheduleName11, Color.RED);
+			view.setTextColor(R.id.scheduleAmount11, Color.RED);
+			view.setTextColor(R.id.BalanceAmount11, Color.RED);
+			break;
+		case 12:
+			view.setTextColor(R.id.scheduleDate12, Color.RED);
+			view.setTextColor(R.id.scheduleName12, Color.RED);
+			view.setTextColor(R.id.scheduleAmount12, Color.RED);
+			view.setTextColor(R.id.BalanceAmount12, Color.RED);
+			break;
+		}
+	}
+	
+	private void setNormalColor(int row, RemoteViews view)
+	{
+		switch(row)
+		{
+		case 1:
+			view.setTextColor(R.id.scheduleDate1, Color.BLACK);
+			view.setTextColor(R.id.scheduleName1, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount1, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount1, Color.BLACK);
+			break;
+		case 2:
+			view.setTextColor(R.id.scheduleDate2, Color.BLACK);
+			view.setTextColor(R.id.scheduleName2, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount2, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount2, Color.BLACK);
+			break;
+		case 3:
+			view.setTextColor(R.id.scheduleDate3, Color.BLACK);
+			view.setTextColor(R.id.scheduleName3, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount3, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount3, Color.BLACK);
+			break;
+		case 4:
+			view.setTextColor(R.id.scheduleDate4, Color.BLACK);
+			view.setTextColor(R.id.scheduleName4, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount4, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount4, Color.BLACK);
+			break;
+		case 5:
+			view.setTextColor(R.id.scheduleDate5, Color.BLACK);
+			view.setTextColor(R.id.scheduleName5, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount5, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount5, Color.BLACK);
+			break;
+		case 6:
+			view.setTextColor(R.id.scheduleDate6, Color.BLACK);
+			view.setTextColor(R.id.scheduleName6, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount6, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount6, Color.BLACK);
+			break;
+		case 7:
+			view.setTextColor(R.id.scheduleDate7, Color.BLACK);
+			view.setTextColor(R.id.scheduleName7, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount7, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount7, Color.BLACK);
+			break;
+		case 8:
+			view.setTextColor(R.id.scheduleDate8, Color.BLACK);
+			view.setTextColor(R.id.scheduleName8, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount8, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount8, Color.BLACK);
+			break;
+		case 9:
+			view.setTextColor(R.id.scheduleDate9, Color.BLACK);
+			view.setTextColor(R.id.scheduleName9, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount9, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount9, Color.BLACK);
+			break;
+		case 10:
+			view.setTextColor(R.id.scheduleDate10, Color.BLACK);
+			view.setTextColor(R.id.scheduleName10, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount10, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount10, Color.BLACK);
+			break;
+		case 11:
+			view.setTextColor(R.id.scheduleDate11, Color.BLACK);
+			view.setTextColor(R.id.scheduleName11, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount11, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount11, Color.BLACK);
+			break;
+		case 12:
+			view.setTextColor(R.id.scheduleDate12, Color.BLACK);
+			view.setTextColor(R.id.scheduleName12, Color.BLACK);
+			view.setTextColor(R.id.scheduleAmount12, Color.BLACK);
+			view.setTextColor(R.id.BalanceAmount12, Color.BLACK);
+			break;	
+		}		
+	}
+	
+	private void skipSchedule(String schToSkip)
+	{
+		
+		// Get our schedule that the user wants to skip from the database.
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schToSkip);
+		Cursor c = getContentResolver().query(u, null, null, null, null);
+
+		Schedule sch = new Schedule(c);
+		sch.skipSchedule();
+		ContentValues values = new ContentValues();
+		values.put("nextPaymentDue", sch.getDatabaseFormattedString());
+		getContentResolver().update(u, values, null, new String[] { sch.getId() });
 	}
 	/**************************************************************************************************************
 	 * Thread that will perform the actual updating of the home screen widgets
@@ -376,10 +685,8 @@ public class KMMDService extends Service
 			
 			while(kmmdService.runFlag)
 			{
-				Log.d(TAG, "KMMDService is running...");
 				clearHomeWidgets();
 				updateHomeWidgets();
-				Log.d(TAG, "KMMDUpdater ran");
 				stopSelf();
 			}
 		}
