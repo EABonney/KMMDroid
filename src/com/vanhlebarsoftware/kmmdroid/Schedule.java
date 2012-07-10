@@ -3,7 +3,6 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.GregorianCalendar;
 import android.database.Cursor;
 import android.util.Log;
@@ -40,27 +39,73 @@ public class Schedule
 	public static final int C_LASTPAYMENT = 8;
 	public static final int C_VALUEFORMATTED = 9;
 	
+	/***** Additional Contants to refer to ALL columns of a schedule cursor *****/
+	private static final int COL_ID = 0;
+	private static final int COL_DESCRIPTION = 1;
+	private static final int COL_TYPE = 2;
+	private static final int COL_TYPESTRING = 3;
+	private static final int COL_OCCURENCE = 4;
+	private static final int COL_OCCURENCEMULTIPLIER = 5;
+	private static final int COL_OCCURENCESTRING = 6;
+	private static final int COL_PAYMENTTYPE = 7;
+	private static final int COL_PAYMENTTYPESTRING = 8;
+	private static final int COL_STARTDATE = 9;
+	private static final int COL_ENDDATE = 10;
+	private static final int COL_FIXED = 11;
+	private static final int COL_AUTOENTER = 12;
+	private static final int COL_LASTPAYMENT = 13;
+	private static final int COL_NEXTPAYMENTDUE = 14;
+	private static final int COL_WEEKENDOPTION = 15;
+	private static final int COL_WEEKENDOPTIONSTRING = 16;
+	
+	/***** Elements of a specific Schedule *****/
 	private String id;
 	private String Description;
-	private Calendar DueDate;
+	private int Type;
+	private String TypeString;
+	private int occurence;
+	private int occurenceMultiplier;
+	private String occurenceString;
+	private int paymentType;
+	private String paymentTypeString;
+	private Calendar StartDate;
 	private Calendar EndDate;
+	private String Fixed;
+	private String AutoEnter;
+	private Calendar LastPaymentDate;
+	private Calendar DueDate;
+	private int WeekendOption;
+	private String WeekendOptionString;
 	private long nAmount;		//Holds the amount of this transaction in pennies.
 	private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 								//Held in pennies.
-	private int occurence;
-	private int occurenceMultiplier;
+	ArrayList<Split> Splits;	// All the actual details of a particular schedule
+
 	
 	// Constructor for a Schedule
 	Schedule(String Desc, Calendar dueDate, String strAmt)
 	{
 		this.id = null;
+		this.Description = Desc;
+		this.Type = 0;
+		this.TypeString = null;
 		this.occurence = 0;
 		this.occurenceMultiplier = 0;
-		this.Description = Desc;
-		this.DueDate = dueDate;
+		this.occurenceString = null;
+		this.paymentType = 0;
+		this.paymentTypeString = null;
+		this.StartDate = null;
 		this.EndDate = null;
+		this.Fixed = null;
+		this.AutoEnter = null;
+		this.LastPaymentDate = null;
+		this.DueDate = dueDate;
+		this.WeekendOption = 0;
+		this.WeekendOptionString = null;
+
 		this.nAmount = convertToPennies(strAmt);
 		this.nBalance = 0;
+		this.Splits = null;
 	}
 	
 	Schedule(Cursor c)
@@ -69,11 +114,24 @@ public class Schedule
 		c.moveToFirst();
 		
 		this.id = c.getString(C_ID);
+		this.Description = c.getString(C_DESCRIPTION);
+		this.Type = 0;
+		this.TypeString = null;
 		this.occurence = c.getInt(C_OCCURENCE);
 		this.occurenceMultiplier = c.getInt(C_OCCURENCEMULTIPLIER);
-		this.Description = c.getString(C_DESCRIPTION);
-		this.nAmount = convertToPennies(c.getString(C_VALUEFORMATTED));
-		this.nBalance = 0;
+		this.occurenceString = null;
+		this.paymentType = 0;
+		this.paymentTypeString = null;
+		this.StartDate = null;
+		if(c.getString(C_ENDDATE) != null)
+		{
+			this.EndDate = Calendar.getInstance();
+			date = c.getString(C_ENDDATE).split("-");
+			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+		}
+		this.Fixed = null;
+		this.AutoEnter = null;
+		this.LastPaymentDate = null;
 		if(c.getString(C_NEXTPAYMENTDUE) != null)
 		{
 			this.DueDate = Calendar.getInstance();
@@ -81,13 +139,78 @@ public class Schedule
 			this.DueDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 			date[0] = date[1] = date[2] = null;
 		}
+		this.WeekendOption = 0;
+		this.WeekendOptionString = null;
+		this.nAmount = convertToPennies(c.getString(C_VALUEFORMATTED));
+		this.nBalance = 0;
+		this.Splits = null;
+	}
+	
+	Schedule(Cursor curSchedule, Cursor curSplits)
+	{
+		// First poplulate the actual schedule details.
+		String[] date = {null, null, null};
+		curSchedule.moveToFirst();
 		
-		if(c.getString(C_ENDDATE) != null)
+		this.id = curSchedule.getString(COL_ID);
+		this.Description = curSchedule.getString(COL_DESCRIPTION);
+		this.Type = curSchedule.getInt(COL_TYPE);
+		this.TypeString = curSchedule.getString(COL_TYPESTRING);
+		this.occurence = curSchedule.getInt(COL_OCCURENCE);
+		this.occurenceMultiplier = curSchedule.getInt(COL_OCCURENCEMULTIPLIER);
+		this.occurenceString = curSchedule.getString(COL_OCCURENCESTRING);
+		this.paymentType = curSchedule.getInt(COL_PAYMENTTYPE);
+		this.paymentTypeString = curSchedule.getString(COL_PAYMENTTYPESTRING);
+		if(curSchedule.getString(COL_STARTDATE) != null)
+		{
+			this.StartDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_STARTDATE).split("-");
+			this.StartDate.set(Integer.valueOf(date[0]),  Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		else
+			this.StartDate = null;
+		if(curSchedule.getString(COL_ENDDATE) != null)
 		{
 			this.EndDate = Calendar.getInstance();
-			date = c.getString(C_ENDDATE).split("-");
+			date = curSchedule.getString(COL_ENDDATE).split("-");
 			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
 		}
+		else
+			this.EndDate = null;
+		this.Fixed = curSchedule.getString(COL_FIXED);
+		this.AutoEnter = curSchedule.getString(COL_AUTOENTER);
+		if(curSchedule.getString(COL_LASTPAYMENT) != null)
+		{
+			this.LastPaymentDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_LASTPAYMENT).split("-");
+			this.LastPaymentDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;		
+		}
+		else
+			this.LastPaymentDate = null;
+		if(curSchedule.getString(COL_NEXTPAYMENTDUE) != null)
+		{
+			this.DueDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_NEXTPAYMENTDUE).split("-");			
+			this.DueDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		else
+			this.DueDate = null;
+		this.WeekendOption = curSchedule.getInt(COL_WEEKENDOPTION);
+		this.WeekendOptionString = curSchedule.getString(COL_WEEKENDOPTIONSTRING);
+		
+		// We should only be using this particular Constructor for a "single" schedule instance, so nAmount and nBalance don't matter.
+		this.nAmount = 0;
+		this.nBalance = 0;
+		
+		// Now populate the Splits ArrayList from the supplied cursor.
+		this.Splits = new ArrayList<Split>();
+		//curSplits.moveToFirst();
+		for(int i=0; i < curSplits.getCount(); i++)
+			this.Splits.add(new Split(curSplits, i));
 	}
 	
 	public String getDescription()
@@ -548,7 +671,7 @@ public class Schedule
 		this.advanceDueDate(Schedule.getOccurence(this.occurence, this.occurenceMultiplier));
 	}
 	
-	private void advanceDueDate(int occurenceRate)
+	public void advanceDueDate(int occurenceRate)
 	{
 		
 		switch (occurenceRate)

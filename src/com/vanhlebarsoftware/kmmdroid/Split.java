@@ -1,12 +1,33 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class Split
 {
+	/****** Contants for Split columns supplied via a Cursor *****/
+	private static int C_TRANSACTIONID = 0;
+	private static int C_TXTYPE = 1;
+	private static int C_SPLITID = 2;
+	private static int C_PAYEEID = 3;
+	private static int C_RECONCILEDATE = 4;
+	private static int C_ACTION = 5;
+	private static int C_RECONCILEFLAG = 6;
+	private static int C_VALUE = 7;
+	private static int C_VALUEFORMATTED = 8;
+	private static int C_SHARES = 9;
+	private static int C_SHARESFORMATTED = 10;
+	private static int C_PRICE = 11;
+	private static int C_PRICEFORMATTED = 12;
+	private static int C_MEMO = 13;
+	private static int C_ACCOUNTID = 14;
+	private static int C_CHECKNUMBER = 15;
+	private static int C_POSTDATE = 16;
+	private static int C_BANKID = 17;
+	
 	private static final String TAG = "ClassSplit";
 	private String transactionId;
 	private String txType;
@@ -50,6 +71,32 @@ public class Split
 		this.checkNumber = ckNumber;
 		this.postDate = pDate;
 		this.bankId = bId;
+	}
+	
+	// Create a split from a provided Cursor that has queried the database for all columns.
+	Split( Cursor curSplit, int element )
+	{
+		// Move to the correct cursor element passed to us.
+		curSplit.moveToPosition(element);
+
+		this.transactionId = curSplit.getString(C_TRANSACTIONID);
+		this.txType = curSplit.getString(C_TXTYPE);
+		this.splitId = curSplit.getInt(C_SPLITID);
+		this.payeeId = curSplit.getString(C_PAYEEID);
+		this.reconcileDate = curSplit.getString(C_RECONCILEDATE);
+		this.action = curSplit.getString(C_ACTION);
+		this.reconcileFlag = curSplit.getString(C_RECONCILEFLAG);
+		this.value = curSplit.getString(C_VALUE);
+		this.valueFormatted = curSplit.getString(C_VALUEFORMATTED);
+		this.shares = curSplit.getString(C_SHARES);
+		this.sharesFormatted = curSplit.getString(C_SHARESFORMATTED);
+		this.price = curSplit.getString(C_PRICE);
+		this.priceFormatted = curSplit.getString(C_PRICEFORMATTED);
+		this.memo = curSplit.getString(C_MEMO);
+		this.accountId = curSplit.getString(C_ACCOUNTID);
+		this.checkNumber = curSplit.isNull(C_CHECKNUMBER) ? "" : curSplit.getString(C_CHECKNUMBER);
+		this.postDate = curSplit.getString(C_POSTDATE);
+		this.bankId = curSplit.getString(C_BANKID);
 	}
 	
 	public boolean commitSplit(boolean updating, SQLiteDatabase db)

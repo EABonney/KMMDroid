@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="2"
-      android:versionName="0.2.0.4"
+      android:versionName="0.2.0.5"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
 
