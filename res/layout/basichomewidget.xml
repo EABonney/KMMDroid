@@ -59,27 +59,10 @@
   <!-- First schedule row -->
   <LinearLayout
         android:id="@+id/hwRowOne"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent"> 
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter1"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip1"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView>
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -116,27 +99,10 @@
   <!-- Second schedule row -->
   <LinearLayout
         android:id="@+id/hwRowTwo"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter2"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip2"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -173,27 +139,10 @@
   <!-- third schedule row -->
   <LinearLayout
         android:id="@+id/hwRowThree"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
-		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter3"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip3"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
+		android:layout_width="fill_parent"> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -230,27 +179,10 @@
   <!-- Fourth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowFour"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter4"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip4"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -287,27 +219,10 @@
   <!-- Fifth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowFive"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
-		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter5"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip5"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
+		android:layout_width="fill_parent"> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -344,27 +259,10 @@
   <!-- Sixth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowSix"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter6"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip6"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -401,27 +299,10 @@
   <!-- Seventh schedule row -->
   <LinearLayout
         android:id="@+id/hwRowSeven"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter7"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip7"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -458,27 +339,10 @@
   <!-- Eightth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowEight"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter8"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip8"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -515,27 +379,10 @@
   <!-- Nineth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowNine"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter9"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip9"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -572,27 +419,10 @@
   <!-- tenth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowTen"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter10"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip10"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -629,27 +459,10 @@
   <!-- Eleventh schedule row -->
   <LinearLayout
         android:id="@+id/hwRowEleven"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter11"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip11"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -686,27 +499,10 @@
   <!-- Twelveth schedule row -->
   <LinearLayout
         android:id="@+id/hwRowTwelve"
+        android:clickable="true"
       	android:orientation="horizontal"
 		android:layout_height="wrap_content"
 		android:layout_width="fill_parent">
-	<ImageView 
-	    android:id="@+id/kmmd_schEnter12"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_enter" >
-	</ImageView>
-	<ImageView 
-	    android:id="@+id/kmmd_schSkip12"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-		android:paddingRight="5dp"
-	    android:clickable="true"
-	    android:contentDescription="@string/descriptionAddTransaction"
-	    android:src="@drawable/schedule_skip" >
-	</ImageView> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"

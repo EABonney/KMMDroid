@@ -86,10 +86,6 @@ public class ViewTransactionActivity extends Activity
         textDescription = (TextView) findViewById(R.id.vtDescription);
         textStatus = (TextView) findViewById(R.id.vtStatus);
         
-    	// Now hook into listTransactions ListView and set its onItemClickListener member
-    	// to our class handler object.
-        //listTransactions.setOnItemClickListener(mMessageClickedHandler);
-        
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
@@ -168,14 +164,7 @@ public class ViewTransactionActivity extends Activity
 				alertDel.setMessage(getString(R.string.titleDeleteTransaction));
 
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						// Update the accounts balance.
-						//Cursor cur = KMMDapp.db.query("kmmSplits", new String[] { "accountId", "valueFormatted" }, "transactionId=? AND splitId=0",
-						//		new String[] { TransID }, null, null, null);
-						//startManagingCursor(cur);
-						//cur.moveToFirst();
-						//updateAccount(cur.getString(0), cur.getString(1), -1);
-						
+					public void onClick(DialogInterface dialog, int whichButton) {					
 						// Get our splits details.
 						Splits = getSplits(TransID);
 											
@@ -191,10 +180,7 @@ public class ViewTransactionActivity extends Activity
 						c.moveToFirst();
 						int trans = c.getInt(0);
 						int splits = c.getInt(1);
-						//ContentValues values = new ContentValues();
-						//values.put("transactions", (trans - 1));
-						//values.put("splits", (splits - splitsDeleted));
-						//KMMDapp.db.update("kmmFileInfo", values, null, null);
+
 						KMMDapp.updateFileInfo("transactions", (trans - 1));
 						KMMDapp.updateFileInfo("splits", (splits - splitsDeleted));
 						
@@ -206,7 +192,7 @@ public class ViewTransactionActivity extends Activity
 						}
 						// Update the number of transactions for the accounts used.
 						c.close();
-						//cur.close();
+
 						// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
 						if(KMMDapp.getAutoUpdate())
 						{

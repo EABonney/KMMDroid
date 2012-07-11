@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -21,12 +23,12 @@ import android.widget.RemoteViews;
 
 public class KMMDService extends Service
 {
+	private static final String TAG = KMMDService.class.getSimpleName();
 	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
-	private static final String TAG = KMMDService.class.getSimpleName();
 	private boolean runFlag = false;
 	private KMMDUpdater kmmdUpdater;
 	private KMMDroidApp kmmdApp;
@@ -63,7 +65,9 @@ public class KMMDService extends Service
         	skippedScheduleId = extras.getString("skipScheduleId");
         }
         if(skippedScheduleId != null)
+        {
         	skipSchedule(skippedScheduleId);
+        }
    
 		this.runFlag = true;
 		this.kmmdApp.setServiceRunning(true);
@@ -166,12 +170,9 @@ public class KMMDService extends Service
 				else
 					setNormalColor(i, views);
 
-				// Setup the basic Intent information for the onClick event of Skipping a schedule.
-				Intent intent = new Intent(getBaseContext(), KMMDService.class);
-				intent.putExtra("skipScheduleId", sch.getId());
-				Intent intentEnter = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
-				intentEnter.putExtra("scheduleId", sch.getId());
-				intentEnter.putExtra("Action", ACTION_ENTER_SCHEDULE);
+				// Setup the intent for the first row to launch the ScheduleActions Dialog
+				Intent intentDialog = new Intent(getBaseContext(), ScheduleActionsActivity.class);
+				intentDialog.putExtra("Action", ACTION_ENTER_SCHEDULE);
 				
 				switch(i)
 				{
@@ -181,13 +182,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount1, strAmount);
 					views.setTextViewText(R.id.BalanceAmount1, strBalance);
 					
-					// Skip scheduled transaction and Enter transaction onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule1");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule1");
-					PendingIntent pendingIntent1 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch1 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip1, pendingIntent1);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter1, pendingIntentEnterSch1);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowOne");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog1 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowOne, pendingIntentDialog1);					
 					break;
 				case 2:
 					views.setTextViewText(R.id.scheduleDate2, strDate);
@@ -195,13 +195,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount2, strAmount);
 					views.setTextViewText(R.id.BalanceAmount2, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule2");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule2");
-					PendingIntent pendingIntent2 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch2 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip2, pendingIntent2);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter2, pendingIntentEnterSch2);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwo");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog2 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowTwo, pendingIntentDialog2);	
 					break;
 				case 3:
 					views.setTextViewText(R.id.scheduleDate3, strDate);
@@ -209,13 +208,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount3, strAmount);
 					views.setTextViewText(R.id.BalanceAmount3, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule3");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule3");
-					PendingIntent pendingIntent3 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch3 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip3, pendingIntent3);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter3, pendingIntentEnterSch3);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowThree");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog3 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowThree, pendingIntentDialog3);	
 					break;
 				case 4:
 					views.setTextViewText(R.id.scheduleDate4, strDate);
@@ -223,13 +221,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount4, strAmount);
 					views.setTextViewText(R.id.BalanceAmount4, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule4");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule4");
-					PendingIntent pendingIntent4 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch4 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip4, pendingIntent4);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter4, pendingIntentEnterSch4);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFour");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog4 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowFour, pendingIntentDialog4);	
 					break;
 				case 5:
 					views.setTextViewText(R.id.scheduleDate5, strDate);
@@ -237,13 +234,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount5, strAmount);
 					views.setTextViewText(R.id.BalanceAmount5, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule5");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule5");
-					PendingIntent pendingIntent5 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendintIntentEnterSch5 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip5, pendingIntent5);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter5, pendintIntentEnterSch5);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFive");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog5 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowFive, pendingIntentDialog5);	
 					break;
 				case 6:
 					views.setTextViewText(R.id.scheduleDate6, strDate);
@@ -251,13 +247,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount6, strAmount);
 					views.setTextViewText(R.id.BalanceAmount6, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule6");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule6");
-					PendingIntent pendingIntent6 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch6 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip6, pendingIntent6);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter6, pendingIntentEnterSch6);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSix");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog6 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowSix, pendingIntentDialog6);	
 					break;
 				case 7:
 					views.setTextViewText(R.id.scheduleDate7, strDate);
@@ -265,13 +260,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount7, strAmount);
 					views.setTextViewText(R.id.BalanceAmount7, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule7");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule7");
-					PendingIntent pendingIntent7 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch7 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip7, pendingIntent7);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter7, pendingIntentEnterSch7);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSeven");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog7 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowSeven, pendingIntentDialog7);	
 					break;
 				case 8:
 					views.setTextViewText(R.id.scheduleDate8, strDate);
@@ -279,13 +273,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount8, strAmount);
 					views.setTextViewText(R.id.BalanceAmount8, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule8");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule8");
-					PendingIntent pendingIntent8 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch8 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip8, pendingIntent8);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter8, pendingIntentEnterSch8);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEight");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog8 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowEight, pendingIntentDialog8);	
 					break;
 				case 9:
 					views.setTextViewText(R.id.scheduleDate9, strDate);
@@ -293,13 +286,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount9, strAmount);
 					views.setTextViewText(R.id.BalanceAmount9, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule9");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule9");
-					PendingIntent pendingIntent9 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch9 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip9, pendingIntent9);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter9, pendingIntentEnterSch9);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowNine");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog9 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowNine, pendingIntentDialog9);	
 					break;
 				case 10:
 					views.setTextViewText(R.id.scheduleDate10, strDate);
@@ -307,13 +299,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount10, strAmount);
 					views.setTextViewText(R.id.BalanceAmount10, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule10");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule10");
-					PendingIntent pendingIntent10 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch10 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip10, pendingIntent10);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter10, pendingIntentEnterSch10);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTen");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog10 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowTen, pendingIntentDialog10);	
 					break;
 				case 11:
 					views.setTextViewText(R.id.scheduleDate11, strDate);
@@ -321,13 +312,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount11, strAmount);
 					views.setTextViewText(R.id.BalanceAmount11, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule11");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule11");
-					PendingIntent pendingIntent11 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch11 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip11, pendingIntent11);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter11, pendingIntentEnterSch11);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEleven");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog11 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowEleven, pendingIntentDialog11);	
 					break;
 				case 12:
 					views.setTextViewText(R.id.scheduleDate12, strDate);
@@ -335,13 +325,12 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.scheduleAmount12, strAmount);
 					views.setTextViewText(R.id.BalanceAmount12, strBalance);
 					
-					// Skip scheduled transaction and Enter onClickEvent handler
-					intent.setAction("com.vanhlebarsoftware.kmmdroid.SkipSchedule12");
-					intentEnter.setAction("com.vanhlebarsoftware.kmmdroid.EnterSchedule12");
-					PendingIntent pendingIntent12 = PendingIntent.getService(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-					PendingIntent pendingIntentEnterSch12 = PendingIntent.getActivity(this.getBaseContext(), 0, intentEnter, PendingIntent.FLAG_CANCEL_CURRENT);
-					views.setOnClickPendingIntent(R.id.kmmd_schSkip12, pendingIntent12);
-					views.setOnClickPendingIntent(R.id.kmmd_schEnter12, pendingIntentEnterSch12);
+					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
+					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwelve");
+					intentDialog.putExtra("scheduleId", sch.getId());
+					intentDialog.putExtra("scheduleDescription", sch.getDescription());
+					PendingIntent pendingIntentDialog12 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					views.setOnClickPendingIntent(R.id.hwRowTwelve, pendingIntentDialog12);	
 				default:
 					// If we made it here we have to many to display so just skip the rest.
 					i = Schedules.size() + 1;
@@ -394,6 +383,10 @@ public class KMMDService extends Service
 		// Loop through all the instances of this widget
 		for(int appWidgetId : appWidgetIds)
 		{
+			// Need to update the Account used and the balance items.
+			views.setTextViewText(R.id.hrAccountName, strBalance);
+			views.setTextViewText(R.id.hrAccountBalance, strDescription);
+			
 			for(int i=1; i <= 12; i++)
 			{
 				switch(i)

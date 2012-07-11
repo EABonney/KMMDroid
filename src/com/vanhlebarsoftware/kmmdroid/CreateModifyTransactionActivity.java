@@ -533,6 +533,7 @@ public class CreateModifyTransactionActivity extends Activity
 	private void updateDisplay()
 	{
 		String strDay = null;
+		String strMonth = null;
 		switch(intDay)
 		{
 			case 0:
@@ -551,10 +552,30 @@ public class CreateModifyTransactionActivity extends Activity
 				strDay = String.valueOf(intDay);
 			break;
 		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strMonth = "0" + String.valueOf(intMonth + 1);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth + 1);
+				break;
+		}
+		
 		transDate.setText(
 				new StringBuilder()
 					// Month is 0 based so add 1
-					.append(intMonth + 1).append("-")
+					.append(strMonth).append("-")
 					.append(strDay).append("-")
 					.append(intYear));
 	}

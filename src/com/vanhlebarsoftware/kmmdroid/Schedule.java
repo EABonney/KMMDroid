@@ -745,7 +745,49 @@ public class Schedule
 	
 	public String getDatabaseFormattedString()
 	{
-		return String.valueOf(this.DueDate.get(Calendar.YEAR)) + "-" + String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) +
-				"-" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH));
+		String strDay = null;
+		int intDay = this.DueDate.get(Calendar.DAY_OF_MONTH);
+		String strMonth = null;
+		int intMonth = this.DueDate.get(Calendar.MONTH);
+
+		switch(intDay)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + String.valueOf(intDay);
+				break;
+			default:
+				strDay = String.valueOf(intDay);
+			break;
+		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strMonth = "0" + String.valueOf(intMonth + 1);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth + 1);
+				break;
+		}
+		
+		return String.valueOf(this.DueDate.get(Calendar.YEAR) + "-" + strMonth + "-" + strDay);
 	}
 }
