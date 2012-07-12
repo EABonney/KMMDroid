@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+  	<TextView
+  		android:layout_width="wrap_content"
+  		android:layout_height="wrap_content"
+  		android:paddingTop="15dp"
+  		android:paddingBottom="15dp"
+  		android:text="@string/homeConfigInstructions"
+  		android:id="@+id/homeConfigInstructions">
+  	</TextView>
+
+	<LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+    	
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingRight="25dp"
+	        android:layout_weight="1"
+	        android:id="@+id/homeConfigDatabaseTitle"
+	        android:text="@string/homeConfigDatabaseTitle" >
+	    </TextView>
+	    
+	    <Button
+	        android:id="@+id/homeConfigDatabaseBtn"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="3"
+	        android:text="@string/menuOpen" >
+	    </Button>
+	</LinearLayout>	
+	    	
+	<LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+    	
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingRight="25dp"
+	        android:layout_weight="1"
+	        android:id="@+id/homeConfigDefaultAccountTitle"
+	        android:text="@string/homeConfigDefaultAccountTitle" >
+	    </TextView>
+	    
+	    <Spinner
+	        android:id="@+id/homeConfigDefaultAccountSpinner"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="3" >
+	    </Spinner>
+	</LinearLayout>	
+	
+	<LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+    	
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingRight="25dp"
+	        android:layout_weight="1"
+	        android:id="@+id/homeConfigDefaultUpdateFreqTitle"
+	        android:text="@string/homeConfigDefaultUpdateFreqTitle" >
+	    </TextView>
+	    
+	    <Spinner
+	        android:id="@+id/homeConfigDefaultUpdateFreqSpinner"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="3" >
+	    </Spinner>
+	</LinearLayout>
+	
+	<LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal" >
+    	
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingRight="25dp"
+	        android:layout_weight="1"
+	        android:id="@+id/homeConfigNumWeeksDisplayTitle"
+	        android:text="@string/homeConfigNumWeeksDisplayTitle" >
+	    </TextView>
+	    
+	    <Spinner
+	        android:id="@+id/homeConfigNumWeeksDisplaySpinner"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="3" >
+	    </Spinner>
+	</LinearLayout>
+	
+	<Button
+		android:id="@+id/homeConfigSave"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="200dp"
+	    android:layout_marginLeft="260dp"
+	    android:text="@string/buttonSave" >
+	</Button>
+</LinearLayout>

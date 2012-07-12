@@ -384,12 +384,24 @@ public class CreateModifyTransactionActivity extends Activity
 						KMMDapp.updateFileInfo("hiTransactionId", 1);
 						KMMDapp.updateFileInfo("transactions", 1);
 						KMMDapp.updateFileInfo("splits", Splits.size());
-						//Need to advance the schedule to the next date and update the lastPayment date to the recorded date of the transaction.
+						//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
 						scheduleToEnter.advanceDueDate(Schedule.getOccurence(scheduleToEnter.getOccurence(), scheduleToEnter.getOccurenceMultiplier()));
 						ContentValues values = new ContentValues();
 						values.put("nextPaymentDue", scheduleToEnter.getDatabaseFormattedString());
+						values.put("startDate", scheduleToEnter.getDatabaseFormattedString());
 						values.put("lastPayment", formatDate(transDate.getText().toString()));
 						KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { scheduleToEnter.getId() });
+						//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in deskktop comes from.
+						for(int i=0; i < scheduleToEnter.Splits.size(); i++)
+						{
+							Split s = scheduleToEnter.Splits.get(i);
+							s.setPostDate(scheduleToEnter.getDatabaseFormattedString());
+							s.commitSplit(true, KMMDapp.db);
+						}	
+						//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schdule for the next payment due date.
+						values.clear();
+						values.put("postDate", scheduleToEnter.getDatabaseFormattedString());
+						KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { scheduleToEnter.getId() });						
 						break;
 				}		
 				// Insert the splits for this transaction
@@ -409,6 +421,8 @@ public class CreateModifyTransactionActivity extends Activity
 					Intent intent = new Intent(KMMDService.DATA_CHANGED);
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
+				// need to close the database as it is keeping it open here and causing issues.
+				KMMDapp.closeDB();
 				finish();
 				break;
 			case R.id.itemCancel:

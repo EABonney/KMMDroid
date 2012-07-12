@@ -1,11 +1,11 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 public class BasicHomeWidget extends AppWidgetProvider 
@@ -24,6 +24,19 @@ public class BasicHomeWidget extends AppWidgetProvider
 	@Override
 	public void onDisabled(Context context)
 	{
+		// When this get called I need to figure out how to set the preference 
+		// homeWidgetSetup = false.
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		ComponentName thisAppWidget = new ComponentName(context, BasicHomeWidget.class.getName());
+		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
+		
+		if(appWidgetIds.length < 1)
+		{
+			Log.d(TAG, "Removed the last widget!");
+			Intent intent = new Intent(context, KMMDService.class);
+			intent.putExtra("lastWidgetDeleted", true);
+			context.startService(intent);
+		}
 	}
 	
 	@Override

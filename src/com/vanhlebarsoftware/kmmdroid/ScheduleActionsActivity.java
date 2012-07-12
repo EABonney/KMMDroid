@@ -61,11 +61,30 @@ public class ScheduleActionsActivity extends Activity
         {
 
 			public void onClick(View arg0)
-			{
-				Intent intent = new Intent(getBaseContext(), KMMDService.class);
-				intent.putExtra("skipScheduleId", scheduleId);
-				startService(intent);
-				finish();
+			{					
+				AlertDialog.Builder alertDel = new AlertDialog.Builder(arg0.getContext());
+				alertDel.setTitle(R.string.skip);
+				alertDel.setMessage(getString(R.string.titleSkipSchedule));
+
+				alertDel.setPositiveButton(getString(R.string.titleButtonYes), new DialogInterface.OnClickListener() 
+				{
+					public void onClick(DialogInterface dialog, int whichButton)
+					{					
+						Intent intent = new Intent(getBaseContext(), KMMDService.class);
+						intent.putExtra("skipScheduleId", scheduleId);
+						startService(intent);
+						finish();
+					}
+				});
+				alertDel.setNegativeButton(getString(R.string.titleButtonNo), new DialogInterface.OnClickListener()
+				{
+					public void onClick(DialogInterface dialog, int whichButton) 
+					{
+						// Canceled.
+						finish();
+					}
+				});				
+				alertDel.show();
 			}
 		});
 	}

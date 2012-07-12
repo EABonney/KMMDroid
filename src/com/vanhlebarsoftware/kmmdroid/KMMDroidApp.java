@@ -36,7 +36,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
 		String value = this.prefs.getString("updateFrequency", "0");
-		if(value.equals("Auto"))
+		if(value.equals("-1"))
 			this.setAutoUpdate(true);
 		else
 			this.setAutoUpdate(false);

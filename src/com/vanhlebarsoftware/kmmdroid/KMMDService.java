@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -55,24 +56,44 @@ public class KMMDService extends Service
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
 		super.onStartCommand(intent, flags, startId);
+		Bundle extras = null;
+		boolean lastWidgetDeleted = false;
+		String skippedScheduleId = null;
 		
-		// See if we are starting the service with any extras in the intent.
-        Bundle extras = intent.getExtras();
-        String skippedScheduleId = null;
-        if(extras != null)
-        {
-        	Log.d(TAG, "onStartCommand skipScheduleId: " + extras.getString("skipScheduleId"));
-        	skippedScheduleId = extras.getString("skipScheduleId");
-        }
-        if(skippedScheduleId != null)
-        {
-        	skipSchedule(skippedScheduleId);
-        }
+		// If the user has not yet configured a widget properly do nothing.
+		if( this.kmmdApp.prefs.getBoolean("homeWidgetSetup", false) )
+			Log.d(TAG, "user had defined a widget.");
+		
+		if( this.kmmdApp.prefs.getBoolean("homeWidgetSetup", false) )
+		{
+			if( intent.hasExtra("lastWidgetDeleted") || intent.hasExtra("skipScheduleId") )
+			{
+				extras = intent.getExtras();
+				lastWidgetDeleted = extras.getBoolean("lastWidgetDeleted");
+				skippedScheduleId = extras.getString("skipScheduleId");
+			}
+			// See if we are telling the service we deleted the last widget.
+			// If so then update the preferences so the user can add another one later.
+			if(lastWidgetDeleted)
+			{
+				SharedPreferences.Editor editor = this.kmmdApp.prefs.edit();
+				editor.putBoolean("homeWidgetSetup", false);
+				editor.apply();
+			}
+			else
+			{
+				// See if we are starting the service with any extras in the intent.
+				if(skippedScheduleId != null)
+				{
+					skipSchedule(skippedScheduleId);
+				}
    
-		this.runFlag = true;
-		this.kmmdApp.setServiceRunning(true);
-		this.kmmdUpdater.start();
-
+				this.runFlag = true;
+				this.kmmdApp.setServiceRunning(true);
+				this.kmmdUpdater.start();
+			}
+		}
+		
 		return START_NOT_STICKY;
 	}
 
@@ -171,8 +192,12 @@ public class KMMDService extends Service
 					setNormalColor(i, views);
 
 				// Setup the intent for the first row to launch the ScheduleActions Dialog
+				String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
+				Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
 				Intent intentDialog = new Intent(getBaseContext(), ScheduleActionsActivity.class);
+				//intentDialog.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, String.valueOf(appWidgetId));
 				intentDialog.putExtra("Action", ACTION_ENTER_SCHEDULE);
+				intentDialog.setData(uri);
 				
 				switch(i)
 				{
@@ -186,7 +211,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowOne");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog1 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog1 = PendingIntent.getActivity(getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowOne, pendingIntentDialog1);					
 					break;
 				case 2:
@@ -199,7 +225,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwo");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog2 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog2 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowTwo, pendingIntentDialog2);	
 					break;
 				case 3:
@@ -212,7 +239,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowThree");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog3 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog3 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowThree, pendingIntentDialog3);	
 					break;
 				case 4:
@@ -225,7 +253,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFour");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog4 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog4 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowFour, pendingIntentDialog4);	
 					break;
 				case 5:
@@ -238,7 +267,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFive");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog5 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog5 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowFive, pendingIntentDialog5);	
 					break;
 				case 6:
@@ -251,7 +281,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSix");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog6 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog6 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowSix, pendingIntentDialog6);	
 					break;
 				case 7:
@@ -264,7 +295,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSeven");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog7 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog7 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowSeven, pendingIntentDialog7);	
 					break;
 				case 8:
@@ -277,7 +309,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEight");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog8 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog8 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowEight, pendingIntentDialog8);	
 					break;
 				case 9:
@@ -290,7 +323,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowNine");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog9 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog9 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowNine, pendingIntentDialog9);	
 					break;
 				case 10:
@@ -303,7 +337,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTen");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog10 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog10 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowTen, pendingIntentDialog10);	
 					break;
 				case 11:
@@ -316,7 +351,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEleven");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog11 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog11 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowEleven, pendingIntentDialog11);	
 					break;
 				case 12:
@@ -329,7 +365,8 @@ public class KMMDService extends Service
 					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwelve");
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
-					PendingIntent pendingIntentDialog12 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, PendingIntent.FLAG_CANCEL_CURRENT);
+					PendingIntent pendingIntentDialog12 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
+							PendingIntent.FLAG_CANCEL_CURRENT);
 					views.setOnClickPendingIntent(R.id.hwRowTwelve, pendingIntentDialog12);	
 				default:
 					// If we made it here we have to many to display so just skip the rest.
@@ -694,9 +731,24 @@ public class KMMDService extends Service
 
 		Schedule sch = new Schedule(c);
 		sch.skipSchedule();
+		
+		// Update the nextPaymentDue and startDates for the actual schedule
 		ContentValues values = new ContentValues();
 		values.put("nextPaymentDue", sch.getDatabaseFormattedString());
+		values.put("startDate", sch.getDatabaseFormattedString());
 		getContentResolver().update(u, values, null, new String[] { sch.getId() });
+		
+		// Update the postDate on the schedules transaction.
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schToSkip);	
+		values.clear();
+		values.put("postDate", sch.getDatabaseFormattedString());
+		getContentResolver().update(u, values, null, new String[] { sch.getId() });
+		
+		// Update the splits postDate for the schedule.
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, schToSkip);	
+		values.clear();		
+		values.put("postDate", sch.getDatabaseFormattedString());		
+		getContentResolver().update(u, values, null, new String[] { sch.getId() });			
 	}
 	/**************************************************************************************************************
 	 * Thread that will perform the actual updating of the home screen widgets

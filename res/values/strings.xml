@@ -233,7 +233,7 @@
 	    <item>"7200000"</item>
 	    <item>"14400000"</item>
 	    <item>"21600000"</item>
-	    <item>"Auto"</item>
+	    <item>"-1"</item>
 	</string-array>
 	<string name="titleSelectanAccount">Select an Account</string>
 	<string name="titleChooseFrequency">Choose a frequency</string>
@@ -266,4 +266,17 @@
 	<string name="buttonSkip">Skip</string>
 	<string name="scheduleDescription">What would you like to do with: </string>
 	<string name="titleSkipSchedule">Do you really want to skip this schedule?</string>
+	<string name="homeConfigInstructions">Please enter your preferences for this widget below.</string>
+	<string name="homeConfigDatabaseTitle">Select a file for this widget</string>
+	<string name="homeConfigDefaultAccountTitle">Default account for this widget</string>
+	<string name="homeConfigDefaultUpdateFreqTitle">How often to refresh this widget</string>
+	<string name="homeConfigNumWeeksDisplayTitle">Number of weeks to display</string>
+	<string name="titleHomeWidgetConfiguration">Widget Configuration</string>
+	<string name="buttonSave">Save</string>
+	<string name="skip">Skip schedule</string>
+	<string name="titleButtonYes">Yes</string>
+	<string name="titleButtonNo">No</string>
+	<string name="homeWidgetError">Error</string>
+	<string name="titleHomeWidgetError">For performance reasons we currently only allow one instance of
+	    the KMyMoney for Droid home widget.</string>
 </resources>

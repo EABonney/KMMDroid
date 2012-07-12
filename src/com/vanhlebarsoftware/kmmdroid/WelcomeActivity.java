@@ -43,11 +43,14 @@ public class WelcomeActivity extends Activity
         		Closing = extras.getBoolean("Closing");
         }
         
-        // See if the user has a preferance set for the update interval of home widgets, if so set it.
-        if(!KMMDapp.getAutoUpdate())
+        // See if the user has a home widget in use and a preferance set for the update interval of home widgets, if so set it.
+        if(KMMDapp.prefs.getBoolean("homeWidgetSetup", false))
         {
-        	String value = KMMDapp.prefs.getString("updateFrequency", "0");
-        	KMMDapp.setRepeatingAlarm(value);
+        	if(!KMMDapp.getAutoUpdate())
+        	{
+        		String value = KMMDapp.prefs.getString("updateFrequency", "0");
+        		KMMDapp.setRepeatingAlarm(value);
+        	}
         }
         
         if( !Closing )
