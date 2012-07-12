@@ -26,7 +26,7 @@ import android.widget.TextView;
 public class CashRequirementsActivity extends Activity
 {
 	public static final String TAG = "CashRequirementsActivity";
-	private static final int OCCUR_ONCE = 1;
+/*	private static final int OCCUR_ONCE = 1;
 	private static final int OCCUR_DAILY = 2;
 	private static final int OCCUR_WEEKLY = 4;
 	private static final int OCCUR_FORTNIGHTLY = 8;
@@ -43,6 +43,7 @@ public class CashRequirementsActivity extends Activity
 	private static final int OCCUR_QUARTERLY = 4096;
 	private static final int OCCUR_EVERYFOURMONTHS = 8192;
 	private static final int OCCUR_YEARLY = 16384;
+	*/
 	private static final int C_DESCRIPTION = 1;
 	private static final int C_OCCURENCE = 2;
 	private static final int C_OCCURENCESTRING = 3;
@@ -120,7 +121,7 @@ public class CashRequirementsActivity extends Activity
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { strAccountId }, null, null, strOrderBy, null);
 		startManagingCursor(cursor);
 		
-		BuildCashRequired(cursor);
+		Schedules = Schedule.BuildCashRequired(cursor, strStartDate, strEndDate, nBegBalance);
 		
 		if(Schedules.size() > 0)
 		{
@@ -188,7 +189,7 @@ public class CashRequirementsActivity extends Activity
 	 * 		isFinished()
 	 * 		isOverDue()
 	 */
-	private void BuildCashRequired(Cursor c)
+/*	private void BuildCashRequired(Cursor c)
 	{
 		Schedule schd = null;
 		ArrayList<Calendar> dueDates = new ArrayList<Calendar>();
@@ -198,7 +199,7 @@ public class CashRequirementsActivity extends Activity
 		// Loop over the dataset and expand each of the cases out the date the user entered.
 		for(int i=0; i < c.getCount(); i++)
 		{
-			dueDates = paymentDates(strStartDate, strEndDate, getOccurence(c.getInt(C_OCCURENCE), c.getInt(C_OCCURENCEMULTIPLIER)), c.getString(C_STARTDATE), c.getString(C_NEXTPAYMENTDUE));
+			dueDates = Schedule.paymentDates(strStartDate, strEndDate, Schedule.getOccurence(c.getInt(C_OCCURENCE), c.getInt(C_OCCURENCEMULTIPLIER)), c.getString(C_STARTDATE), c.getString(C_NEXTPAYMENTDUE));
 
 			// We now have all our payment dates for this schedule between the dates the user supplied.
 			// Let's create the Schedule class and add it to the ArrayList.
@@ -223,8 +224,8 @@ public class CashRequirementsActivity extends Activity
 			nBegBalance = Schedules.get(i).calcBalance(nBegBalance);
 		}
 	}
-	
-	private ArrayList<Calendar> paymentDates(String strStart, String strEnd, int occurence, String scheduleStartDate, String nextPaymentDate)
+*/	
+/*	private ArrayList<Calendar> paymentDates(String strStart, String strEnd, int occurence, String scheduleStartDate, String nextPaymentDate)
 	{
 		ArrayList<Calendar> Dates = new ArrayList<Calendar>();
 		Dates.clear();
@@ -424,7 +425,7 @@ public class CashRequirementsActivity extends Activity
 		}
 		return 0;
 	}
-	
+*/	
 	private String formatDate(String date)
 	{
 		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
@@ -436,168 +437,168 @@ public class CashRequirementsActivity extends Activity
 		.append(dates[1]).toString();
 	}
 	
-	private class Schedule
-	{
-		private String Description;
-		private Calendar DueDate;
-		private long nAmount;		//Holds the amount of this transaction in pennies.
-		private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
+//	private class Schedule
+//	{
+//		private String Description;
+//		private Calendar DueDate;
+//		private long nAmount;		//Holds the amount of this transaction in pennies.
+//		private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 									//Held in pennies.
 		
 		// Constructor for a Schedule
-		Schedule(String Desc, Calendar dueDate, String strAmt)
-		{
-			this.Description = Desc;
-			this.DueDate = dueDate;
-			this.nAmount = convertToPennies(strAmt);
-			this.nBalance = 0;
-		}
+//		Schedule(String Desc, Calendar dueDate, String strAmt)
+//		{
+//			this.Description = Desc;
+//			this.DueDate = dueDate;
+//			this.nAmount = convertToPennies(strAmt);
+//			this.nBalance = 0;
+//		}
 		
 		/********************************************************************************************
 		* Adapted from code found at currency : Java Glossary
 		* website: http://mindprod.com/jgloss/currency.html
 		********************************************************************************************/
-		private long convertToPennies(String numStr)
-		{
-			numStr = numStr.trim ();
-			// strip commas, spaces, + etc
-			StringBuffer b = new StringBuffer( numStr.length() );
-			boolean negative = false;
-			int decpl = -1;
-			for ( int i=0; i<numStr.length(); i++ )
-			{
-				char c = numStr.charAt( i );
-			    switch ( c )
-			    {
-			    	case '-' :
-			    		negative = true;
-			            break;
-			        case '.' :
-			        	if ( decpl == -1 )
-			            {
-			               decpl = 0;
-			            }
-			            else
-			            {
-			               throw new NumberFormatException( "more than one decimal point" );
-			            }
-			            break;
-			        case '0' :
-			        case '1' :
-			        case '2' :
-			        case '3' :
-			        case '4' :
-			        case '5' :
-			        case '6' :
-			        case '7' :
-			        case '8' :
-			        case '9' :
-			        	if ( decpl != -1 )
-			            {
-			               decpl++;
-			            }
-			            b.append(c);
-			            break;
-			        default:
-			        	// ignore junk chars
-			            break;
-			    }
-			    // end switch
-			}
-			// end for
-			if ( numStr.length() != b.length() )
-			{
-				numStr = b.toString();
-			}
-			if ( numStr.length() == 0 )
-			{
-				return 0;
-			}
-			long num = Long.parseLong( numStr );
-			if ( decpl == -1 || decpl == 0 )
-			{
-				num *= 100;
-			}
-			else if ( decpl == 1 )
-			{
-				num *= 10;
-			}
-			else if ( decpl == 2 )
-			{
-				/* it is fine as is */
-			}
-			else
-			{
-				throw new NumberFormatException( "wrong number of decimal places." );
-			}
-			if ( negative )
-			{
-				num = -num;
-			}
-			return num;
-		}
+//		private long convertToPennies(String numStr)
+//		{
+//			numStr = numStr.trim ();
+//			// strip commas, spaces, + etc
+//			StringBuffer b = new StringBuffer( numStr.length() );
+//			boolean negative = false;
+//			int decpl = -1;
+//			for ( int i=0; i<numStr.length(); i++ )
+//			{
+//				char c = numStr.charAt( i );
+//			    switch ( c )
+//			    {
+//			    	case '-' :
+//			    		negative = true;
+//			            break;
+//			        case '.' :
+//			        	if ( decpl == -1 )
+//			            {
+//			               decpl = 0;
+//			            }
+//			            else
+//			            {
+//			               throw new NumberFormatException( "more than one decimal point" );
+//			            }
+//			            break;
+//			        case '0' :
+//			        case '1' :
+//			        case '2' :
+//			        case '3' :
+//			        case '4' :
+//			        case '5' :
+//			        case '6' :
+//			        case '7' :
+//			        case '8' :
+//			        case '9' :
+//			        	if ( decpl != -1 )
+//			            {
+//			               decpl++;
+//			            }
+//			            b.append(c);
+//			            break;
+//			        default:
+//			        	// ignore junk chars
+//			            break;
+//			    }
+//			    // end switch
+//			}
+//			// end for
+//			if ( numStr.length() != b.length() )
+//			{
+//				numStr = b.toString();
+//			}
+//			if ( numStr.length() == 0 )
+//			{
+//				return 0;
+//			}
+//			long num = Long.parseLong( numStr );
+//			if ( decpl == -1 || decpl == 0 )
+//			{
+//				num *= 100;
+//			}
+//			else if ( decpl == 1 )
+//			{
+//				num *= 10;
+//			}
+//			else if ( decpl == 2 )
+//			{
+//				/* it is fine as is */
+//			}
+//			else
+//			{
+//				throw new NumberFormatException( "wrong number of decimal places." );
+//			}
+//			if ( negative )
+//			{
+//				num = -num;
+//			}
+//			return num;
+//		}
 
 		/********************************************************************************************
 		* Adapted from code found at currency : Java Glossary
 		* website: http://mindprod.com/jgloss/currency.html
 		********************************************************************************************/
-		private String convertToDollars(long pennies)
-		{
-			boolean negative;
-			if ( pennies < 0 )
-			{
-				pennies = -pennies;
-			    negative = true;
-			}
-			else
-				negative = false;
+//		private String convertToDollars(long pennies)
+//		{
+//			boolean negative;
+//			if ( pennies < 0 )
+//			{
+//				pennies = -pennies;
+//			    negative = true;
+//			}
+//			else
+//				negative = false;
 
-			String s = Long.toString( pennies );
-			String strNumber = String.format("%,d", (pennies / 100));
-			int len = s.length();
-			switch ( len )
-			{
-				case 1:
-			        s = "0.0" + s;
-			        break;
-			    case 2:
-			        s = "0." + s;
-			        break;
-			    default:
-			    	strNumber = strNumber + "." + s.substring(len-2, len);
-			        break;
-			} // end switch
-			
-			if ( negative )
-				strNumber = "(" + strNumber + ")";
+//			String s = Long.toString( pennies );
+//			String strNumber = String.format("%,d", (pennies / 100));
+//			int len = s.length();
+//			switch ( len )
+//			{
+//				case 1:
+//			        s = "0.0" + s;
+//			        break;
+//			    case 2:
+//			        s = "0." + s;
+//			        break;
+//			    default:
+//			    	strNumber = strNumber + "." + s.substring(len-2, len);
+//			        break;
+//			} // end switch
+//			
+//			if ( negative )
+//				strNumber = "(" + strNumber + ")";
 
-			return strNumber;
-		}
+//			return strNumber;
+//		}
 		
-		private long calcBalance(long nPrevBal)
-		{
-			this.nBalance = nPrevBal + this.nAmount;
-			
-			return this.nBalance; 
-		}
-		
-		private String formatDateString()
-		{
-			Log.d(TAG, "Date: " + DueDate.toString());
-			return String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) + "/" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH)) +
-					"/" + String.valueOf(this.DueDate.get(Calendar.YEAR));
-		}
-	}
+//		private long calcBalance(long nPrevBal)
+//		{
+//			this.nBalance = nPrevBal + this.nAmount;
+//			
+//			return this.nBalance; 
+//		}
+//		
+//		private String formatDateString()
+//		{
+//			Log.d(TAG, "Date: " + DueDate.toString());
+//			return String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) + "/" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH)) +
+//					"/" + String.valueOf(this.DueDate.get(Calendar.YEAR));
+//		}
+//	}
 	
-	public class ScheduleComparator implements Comparator<Schedule>
+/*	public class ScheduleComparator implements Comparator<Schedule>
 	{
 		public int compare(Schedule arg0, Schedule arg1) 
 		{
 			// TODO Auto-generated method stub
-			return arg0.DueDate.compareTo(arg1.DueDate);
+			return arg0.getDueDate().compareTo(arg1.getDueDate());
 		}
 	}
-	
+*/	
 	private class ScheduleAdapter extends ArrayAdapter<Schedule>
 	{
 		private ArrayList<Schedule> items;
@@ -629,10 +630,10 @@ public class CashRequirementsActivity extends Activity
 				TextView Balance = (TextView) view.findViewById(R.id.crBalance);
 				
 				DueDate.setText(item.formatDateString());
-				Description.setText(item.Description);
-				Log.d(TAG, item.Description + ": " + String.valueOf(item.nAmount));
-				Amount.setText(item.convertToDollars(item.nAmount));
-				Balance.setText(item.convertToDollars(item.nBalance));
+				Description.setText(item.getDescription());
+				Log.d(TAG, item.getDescription() + ": " + String.valueOf(item.getAmount()));
+				Amount.setText(item.convertToDollars(item.getAmount()));
+				Balance.setText(item.convertToDollars(item.getBalance()));
 			}
 			else
 				Log.d(TAG, "Never got a Schedule!");

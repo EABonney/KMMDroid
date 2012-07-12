@@ -203,4 +203,80 @@
 	<string name="titleEndDate">Ending Date: </string>
 	<string name="buttonSubmit">Submit</string>
 	<string name="titleNoSchedules">Sorry but your search returned no schedules.</string>
+	<string name="titleBasicHomeWidget">KMyMoney for Droid</string>
+	<string name="titlePreferenceHomeWidget">Home Widget</string>
+	<string name="titleUpdateFrequency">Update frequence</string>
+	<string name="summaryFrequency">Choose an update frequency</string>
+	<string name="None">None</string>
+	<string name="FifteenMinutes">15 minutes</string>
+	<string name="ThirtyMinutes">30 minutes</string>
+	<string name="OneHour">1 hour</string>
+	<string name="TwoHours">2 hours</string>
+	<string name="FourHours">4 hours</string>
+	<string name="SixHours">6 hours</string>
+	<string name="AutoUpdate">Upon KMyMoney modification</string>
+	<string-array name="UpdateFrequency">
+	    <item>@string/None</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
+	    <item>@string/AutoUpdate</item>
+	</string-array>
+	<string-array name="UpdateFreqValues">
+	    <item>"0"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"-1"</item>
+	</string-array>
+	<string name="titleSelectanAccount">Select an Account</string>
+	<string name="titleChooseFrequency">Choose a frequency</string>
+	<string name="titleDisplayFrequency">Display Frequency</string>
+	<string name="summaryDisplayFrequency">Number of weeks to display</string>
+	<string name="OneWeek">One Week</string>
+	<string name="TwoWeeks">Two Weeks</string>
+	<string name="ThreeWeeks">Three Weeks</string>
+	<string name="FourWeeks">Four Weeks</string>
+	<string-array name="WeeksToDisplay">
+	    <item>@string/OneWeek</item>
+	    <item>@string/TwoWeeks</item>
+	    <item>@string/ThreeWeeks</item>
+	    <item>@string/FourWeeks</item>
+	</string-array>
+	<string-array name="WeeksToDisplayValues">
+	    <item>"1"</item>
+	    <item>"2"</item>
+	    <item>"3"</item>
+	    <item>"4"</item>
+	</string-array>
+	<string name="send_home_update_notifications_permission_label">Send Home Widgets Notifications</string>
+	<string name="send_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="receive_home_update_notifications_permission_label">Receive Home Widgets Notifications</string>
+	<string name="receive_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="descriptionRefresh">Refresh</string>
+	<string name="descriptionAddTransaction">Add Transaction</string>
+	<string name="titleDialogScheduleActions">Enter or Skip</string>
+	<string name="buttonEnter">Enter</string>
+	<string name="buttonSkip">Skip</string>
+	<string name="scheduleDescription">What would you like to do with: </string>
+	<string name="titleSkipSchedule">Do you really want to skip this schedule?</string>
+	<string name="homeConfigInstructions">Please enter your preferences for this widget below.</string>
+	<string name="homeConfigDatabaseTitle">Select a file for this widget</string>
+	<string name="homeConfigDefaultAccountTitle">Default account for this widget</string>
+	<string name="homeConfigDefaultUpdateFreqTitle">How often to refresh this widget</string>
+	<string name="homeConfigNumWeeksDisplayTitle">Number of weeks to display</string>
+	<string name="titleHomeWidgetConfiguration">Widget Configuration</string>
+	<string name="buttonSave">Save</string>
+	<string name="skip">Skip schedule</string>
+	<string name="titleButtonYes">Yes</string>
+	<string name="titleButtonNo">No</string>
+	<string name="homeWidgetError">Error</string>
+	<string name="titleHomeWidgetError">For performance reasons we currently only allow one instance of
+	    the KMyMoney for Droid home widget.</string>
 </resources>

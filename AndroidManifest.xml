@@ -2,11 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="2"
-      android:versionName="0.1.9.0"
+      android:versionName="0.2.0.7"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS"
+        		android:label="@string/send_home_update_notifications_permission_label"
+        		android:description="@string/send_home_update_notifications_permission_description"
+        		android:permissionGroup="android.permission-group.PERSONAL_INFO"
+        		android:protectionLevel="normal">
+        
+    </permission>
+    <permission android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS"
+        		android:label="@string/receive_home_update_notifications_permission_label"
+        		android:description="@string/receive_home_update_notifications_permission_description"
+        		android:permissionGroup="android.permission-group.PERSONAL_INFO"
+        		android:protectionLevel="normal">
+    </permission>
+    <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS" />
+    <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
     <application android:icon="@drawable/kmymoney" 
     	android:label="@string/app_name"
     	android:name=".KMMDroidApp">
@@ -121,5 +137,36 @@
 		<activity android:name=".CashRequirementsOptionsActivity"
 				  android:label="@string/titleOptions">
 		</activity>
+		
+		<activity android:name=".ScheduleActionsActivity"
+		    	  android:theme="@android:style/Theme.Dialog"
+		    	  android:label="@string/titleDialogScheduleActions">
+		</activity>
+		
+		<activity android:name=".HomeScreenConfiguration"
+		    	  android:label="@string/titleHomeWidgetConfiguration">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+		    </intent-filter>
+		</activity>
+		
+		<provider android:name=".KMMDProvider"
+				  android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider">
+		</provider>
+		
+		<receiver android:name=".BasicHomeWidget"
+				  android:label="@string/titleBasicHomeWidget">
+			<intent-filter>
+				  <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>		  
+			<intent-filter>
+				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+					   android:resource="@xml/basic_widget_info" />
+		</receiver>
+		
+		<service android:name=".KMMDService">
+		</service>
     </application>
 </manifest>

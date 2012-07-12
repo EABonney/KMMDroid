@@ -3,8 +3,12 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
@@ -20,6 +24,8 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	SQLiteDatabase db;
 	private String fullPath = null;
 	private boolean dbOpen = false;
+	private boolean serviceRunning = false;
+	private boolean autoUpdate = true;
 	public ArrayList<Split> Splits;	
 	public long flSplitsTotal = 0;
 	
@@ -29,6 +35,11 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		super.onCreate();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
+		String value = this.prefs.getString("updateFrequency", "0");
+		if(value.equals("-1"))
+			this.setAutoUpdate(true);
+		else
+			this.setAutoUpdate(false);
 		Splits = new ArrayList<Split>();
 		Splits.clear();
 	}
@@ -227,5 +238,48 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		}
 		
 		db.update("kmmFileInfo", values, null, null);
+	}
+	
+	public boolean isServiceRunning()
+	{
+		return serviceRunning;
+	}
+	
+	public void setServiceRunning(boolean running)
+	{
+		this.serviceRunning = running;
+	}
+	
+	public void setRepeatingAlarm(String updateValue)
+	{
+		PendingIntent service = null;
+		
+		// Set up the repeating alarm based on the user's preferences.
+		final AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		final Calendar TIME = Calendar.getInstance();
+		TIME.set(Calendar.MINUTE, 0);
+		TIME.set(Calendar.SECOND, 0);
+		TIME.set(Calendar.MILLISECOND, 0);
+		
+		final Intent intent = new Intent(this, KMMDService.class);
+		service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		
+		if(!updateValue.equals("0"))
+			alarmMgr.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 
+				Long.valueOf(updateValue), service);
+		else
+			alarmMgr.cancel(service);
+		
+		Log.d(TAG, "Repeating alarm set for " + this.prefs.getString("updateFrequency", "0") + " milliseconds.");
+	}
+	
+	public void setAutoUpdate(boolean value)
+	{
+		this.autoUpdate = value;
+	}
+	
+	public boolean getAutoUpdate()
+	{
+		return this.autoUpdate;
 	}
 }

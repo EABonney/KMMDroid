@@ -1,6 +1,10 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.Calendar;
+
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -37,6 +41,16 @@ public class WelcomeActivity extends Activity
         {
         	if(!extras.isEmpty())
         		Closing = extras.getBoolean("Closing");
+        }
+        
+        // See if the user has a home widget in use and a preferance set for the update interval of home widgets, if so set it.
+        if(KMMDapp.prefs.getBoolean("homeWidgetSetup", false))
+        {
+        	if(!KMMDapp.getAutoUpdate())
+        	{
+        		String value = KMMDapp.prefs.getString("updateFrequency", "0");
+        		KMMDapp.setRepeatingAlarm(value);
+        	}
         }
         
         if( !Closing )

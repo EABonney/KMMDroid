@@ -21,6 +21,7 @@ public class FileChooser extends ListActivity
 {
 	private File currentDir;
 	private FileArrayAdapter adapter;
+	private final String strFileExtension = ".sqlite";
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -47,7 +48,9 @@ public class FileChooser extends ListActivity
 					dir.add(new Option(ff.getName(), "Folder", ff.getAbsolutePath()));
 				else
 				{
-					files.add(new Option(ff.getName(), "File Size: " + ff.length(), ff.getAbsolutePath()));
+					// make it so the user can only select *.sqlite files.
+					if(ff.getName().endsWith(strFileExtension))
+						files.add(new Option(ff.getName(), "File Size: " + ff.length(), ff.getAbsolutePath()));
 				}
 			}
 		}

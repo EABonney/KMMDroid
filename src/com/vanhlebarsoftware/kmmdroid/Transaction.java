@@ -7,7 +7,7 @@ import android.util.Log;
 
 public class Transaction 
 {
-	private static final String TAG = "Transaction.class";
+	private static final String TAG = Transaction.class.getSimpleName();
 	private long nAmount;
 	private long nBalance;
 	private String strPayee;
@@ -102,6 +102,9 @@ public class Transaction
 		}
 		else
 		{
+			Log.d(TAG, "numStr: " + numStr);
+			Log.d(TAG, "Number of decimals: " + String.valueOf(decpl));
+			Log.d(TAG, "num:" + String.valueOf(num));
 			throw new NumberFormatException( "wrong number of decimal places." );
 		}
 		if ( negative )

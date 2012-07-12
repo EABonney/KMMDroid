@@ -30,6 +30,9 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	private static final String TAG = "CreateModifySplitsActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
+	private static final int ACTION_ENTER_SCHEDULE = 3;
+	private static int WITHDRAW = 2;
+	private static int DEPOSIT = 0;
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM = { "accountName" };
 	private int Action = ACTION_NEW;
@@ -41,6 +44,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	String strLabelUnassigned = null;
 	String strOrigCategoryId = null;
 	String strOrigMemo = null;
+	int nTransType = 0;
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
 	boolean needUpdateRows = false;
@@ -83,6 +87,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         strTranAmount = extras.getString("TransAmount");
         strOrigCategoryId = extras.getString("CategoryId");
         strOrigMemo = extras.getString("Memo");
+        nTransType = extras.getInt("transType");
         
         // Set the OnItemSelectedListeners for the spinners and OnChangeEvents.
         spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
@@ -145,7 +150,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinCategory.setAdapter(adapterCategories);
 		
-		if(Action == ACTION_EDIT)
+		if(Action == ACTION_EDIT || Action == ACTION_ENTER_SCHEDULE)
 		{
 			// If KMMDapp.Splits.size() == 0 we didn't have any splits originally but now the user wants to add some.
 			// So let's add the original category as the first row.
@@ -432,7 +437,10 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			}
 		}
 		
-		lUnassigned = lTotal - lSumofSplits;
+		if( nTransType == DEPOSIT)
+			lUnassigned = lTotal + lSumofSplits;
+		else
+			lUnassigned = lTotal - lSumofSplits;
 		
 		// Finally append the new values to the TextViews.
 		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits));
