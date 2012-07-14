@@ -85,6 +85,9 @@ public class SchedulesActivity extends Activity
 	{
 		switch (item.getItemId())
 		{
+			case R.id.itemNew:
+				startActivity(new Intent(this, CreateModifyScheduleActivity.class));
+				break;
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));
 				break;

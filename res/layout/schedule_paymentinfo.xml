@@ -4,32 +4,66 @@
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
-<RelativeLayout
-	android:orientation="horizontal"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="#62B1F6">
-
+	<RelativeLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="#62B1F6">
+	
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_gravity="left"
-    	android:background="@drawable/titlelabel_background"
-    	android:text="@string/titleCreateModifyTransactions"
-    	android:id="@+id/titleCreateModifyTransactions"
-    	android:textSize="25sp"
+    	android:layout_below="@id/titleCreateModifySchedule"
+    	android:width="100sp"
     	android:gravity="center_vertical"
+    	android:text="@string/titleScheduleName"
+    	android:id="@+id/titleScheduleName"
+    	android:textSize="15sp"
     	android:textColor="@android:color/white"
     	android:paddingLeft="10sp"
     />
+	<EditText 
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/titleCreateModifySchedule"
+		android:layout_toRightOf="@+id/titleScheduleName"
+		android:id="@+id/editScheduleName"
+	/>
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/titleCreateModifyTransactions"
+    	android:layout_below="@id/editScheduleName"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleScheduleFrequency"
+    	android:id="@+id/titleScheduleFrequency"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="75sp"
+    	android:layout_below="@id/editScheduleName"
+    	android:layout_toRightOf="@id/titleScheduleFrequency"
+    	style="@android:style/Widget.DropDownItem"
+    	android:id="@+id/scheduleFrequencyNumber"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="150sp"
+    	android:layout_below="@id/editScheduleName"
+    	android:layout_toRightOf="@id/scheduleFrequencyNumber"
+    	android:id="@+id/scheduleFrequencyDescription"
+    />    
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/scheduleFrequencyDescription"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titleTransactionType"
-    	android:id="@+id/titleTransactionType"
+    	android:id="@+id/titleScheduleType"
     	android:textSize="15sp"
     	android:textColor="@android:color/white"
     	android:paddingLeft="10sp"
@@ -37,14 +71,33 @@
     <Spinner 
     	android:layout_height="wrap_content" 
     	android:layout_width="fill_parent"
-    	android:layout_below="@id/titleCreateModifyTransactions"
-    	android:layout_toRightOf="@id/titleTransactionType"
-    	android:id="@+id/transactionType"
+    	android:layout_below="@id/scheduleFrequencyDescription"
+    	android:layout_toRightOf="@id/titleScheduleType"
+    	android:id="@+id/scheduleType"
     />
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/transactionType"
+    	android:layout_below="@id/scheduleType"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleScheduleAccount"
+    	android:id="@+id/titleScheduleAccount"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:layout_below="@id/scheduleType"
+    	android:layout_toRightOf="@id/titleScheduleAccount"
+    	android:id="@+id/scheduleAccount"
+    />
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/scheduleAccount"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titlePayeeToFrom"
@@ -56,7 +109,7 @@
     <Spinner 
     	android:layout_height="wrap_content" 
     	android:layout_width="fill_parent"
-    	android:layout_below="@id/transactionType"
+    	android:layout_below="@id/scheduleAccount"
     	android:layout_toRightOf="@id/titlePayeeToFrom"
     	android:id="@+id/payee"
     />
@@ -100,7 +153,6 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/payee"
 		android:layout_toRightOf="@id/editCategory"
-    	android:width="55sp"
 		android:src="@drawable/split"
     	style="?android:attr/buttonStyleSmall"
 		android:text="@string/buttonSplit"	
@@ -217,5 +269,6 @@
 		android:gravity="top"
 		android:height="75sp"
 	/>
-</RelativeLayout>
+
+	</RelativeLayout>
 </ScrollView>

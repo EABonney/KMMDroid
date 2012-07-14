@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -78,9 +79,9 @@ public class CreateModifyTransactionActivity extends Activity
 	Spinner spinPayee;
 	Spinner spinCategory;
 	Spinner spinStatus;
-	Button buttonSetDate;
+	ImageButton buttonSetDate;
 	Button buttonChooseCategory;
-	Button buttonSplits;
+	ImageButton buttonSplits;
 	EditText transDate;
 	EditText editCategory;
 	EditText editMemo;
@@ -114,9 +115,9 @@ public class CreateModifyTransactionActivity extends Activity
         editMemo = (EditText) findViewById(R.id.memo);
         editAmount = (EditText) findViewById(R.id.amount);
         editCkNumber = (EditText) findViewById(R.id.checkNumber);
-        buttonSetDate = (Button) findViewById(R.id.buttonSetDate);
+        buttonSetDate = (ImageButton) findViewById(R.id.buttonSetDate);
         buttonChooseCategory = (Button) findViewById(R.id.buttonChooseCategory);
-        buttonSplits = (Button) findViewById(R.id.buttonSplit);
+        buttonSplits = (ImageButton) findViewById(R.id.buttonSplit);
    
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())

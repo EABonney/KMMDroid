@@ -279,4 +279,24 @@
 	<string name="homeWidgetError">Error</string>
 	<string name="titleHomeWidgetError">For performance reasons we currently only allow one instance of
 	    the KMyMoney for Droid home widget.</string>
+	<string name="titleCreateModifySchedule">New Schedule</string>
+	<string name="titleSchedulePaymentInfo">Payment info</string>
+	<string name="titleScheduleName">Schedule name:</string>
+	<string name="titleScheduleFrequency">Frequency:</string>
+	<string name="titleScheduleAccount">Account:</string>
+	<string name="titleScheduleOptions">Options</string>
+	<string name="titleScheduleWeekendOption">Non-processing day option:</string>
+	<string name="titleScheduleEstimate">The amount is an estimate because it varies for each payment</string>
+	<string name="titleScheduleAutoEnter">Enter this schedule into the register automatically when it is due</string>
+	<string name="titleScheduleEnd">This schedule will end at some time</string>
+	<string name="titleScheduleEndDate">Date of final transaction</string>
+	<string name="titleScheduleNumTransactions">Number of transactions remaining</string>
+	<string name="doNothing">Do nothing</string>
+	<string name="changeDateBefore">Move before</string>
+	<string name="changeDateAfter">Move after</string>
+	<string-array name="scheduleWeekendOptions">
+	    <item>@string/doNothing</item>
+	    <item>@string/changeDateBefore</item>
+	    <item>@string/changeDateAfter</item>
+	</string-array>
 </resources>
