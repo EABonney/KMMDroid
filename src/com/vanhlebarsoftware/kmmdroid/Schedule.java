@@ -10,23 +10,48 @@ import android.util.Log;
 public class Schedule 
 {
 	private static final String TAG = Schedule.class.getSimpleName();
-	private static final int OCCUR_ONCE = 1;
-	private static final int OCCUR_DAILY = 2;
-	private static final int OCCUR_WEEKLY = 4;
-	private static final int OCCUR_FORTNIGHTLY = 8;
-	private static final int OCCUR_EVERYOTHERWEEK = 16;
-	private static final int OCCUR_EVERYTHREEWEEKS = 20;
-	private static final int OCCUR_EVERYTHIRTYDAYS = 30;
-	private static final int OCCUR_MONTHLY = 32;
-	private static final int OCCUR_EVERYFOURWEEKS = 64;
-	private static final int OCCUR_EVERYEIGHTWEEKS = 126;
-	private static final int OCCUR_EVERYOTHERMONTH = 128;
-	private static final int OCCUR_EVERYTHREEMONTHS = 256;
-	private static final int OCCUR_TWICEYEARLY = 1024;
-	private static final int OCCUR_EVERYOTHERYEAR = 2048;
-	private static final int OCCUR_QUARTERLY = 4096;
-	private static final int OCCUR_EVERYFOURMONTHS = 8192;
-	private static final int OCCUR_YEARLY = 16384;
+	
+	/******** Occurence constants ***********/
+	public static final int OCCUR_ANY = 0;
+	public static final int OCCUR_ONCE = 1;
+	public static final int OCCUR_DAILY = 2;
+	public static final int OCCUR_WEEKLY = 4;
+	public static final int OCCUR_FORTNIGHTLY = 8;
+	public static final int OCCUR_EVERYOTHERWEEK = 16;
+	public static final int OCCUR_EVERYTHREEWEEKS = 20;
+	public static final int OCCUR_EVERYTHIRTYDAYS = 30;
+	public static final int OCCUR_MONTHLY = 32;
+	public static final int OCCUR_EVERYFOURWEEKS = 64;
+	public static final int OCCUR_EVERYEIGHTWEEKS = 126;
+	public static final int OCCUR_EVERYOTHERMONTH = 128;
+	public static final int OCCUR_EVERYTHREEMONTHS = 256;
+	public static final int OCCUR_TWICEYEARLY = 1024;
+	public static final int OCCUR_EVERYOTHERYEAR = 2048;
+	public static final int OCCUR_QUARTERLY = 4096;
+	public static final int OCCUR_EVERYFOURMONTHS = 8192;
+	public static final int OCCUR_YEARLY = 16384;
+	
+	/********** Schedule type constants **************/
+	public static final int TYPE_ANY = 0;
+	public static final int TYPE_BILL = 1;
+	public static final int TYPE_DEPOSIT = 2;
+	public static final int TYPE_TRANSFER = 3;
+	public static final int TYPE_LOANPAYMENT = 4;
+	
+	/********** Schedule Payment Type constants ********/
+	public static final int PAYMENT_TYPE_ANY = 0;
+	public static final int PAYMENT_TYPE_DIRECTDEBIT = 1;
+	public static final int PAYMENT_TYPE_DIRECTDEPOSIT = 2;
+	public static final int PAYMENT_TYPE_MANUALDEPOSIT = 4;
+	public static final int PAYMENT_TYPE_OTHER = 8;
+	public static final int PAYMENT_TYPE_WRITECHECK = 16;
+	public static final int PAYMENT_TYPE_STANDINGORDER = 32;
+	public static final int PAYMENT_TYPE_BANKTRANSFER = 64;
+	
+	/********* Schedule Weekend Option constants *******/
+	public static final int MOVE_BEFORE = 0;
+	public static final int MOVE_AFTER = 1;
+	public static final int MOVE_NONE = 2;
 	
 	public static final int C_ID = 0;
 	public static final int C_DESCRIPTION = 1;
@@ -39,24 +64,24 @@ public class Schedule
 	public static final int C_LASTPAYMENT = 8;
 	public static final int C_VALUEFORMATTED = 9;
 	
-	/***** Additional Contants to refer to ALL columns of a schedule cursor *****/
-	private static final int COL_ID = 0;
-	private static final int COL_DESCRIPTION = 1;
-	private static final int COL_TYPE = 2;
-	private static final int COL_TYPESTRING = 3;
-	private static final int COL_OCCURENCE = 4;
-	private static final int COL_OCCURENCEMULTIPLIER = 5;
-	private static final int COL_OCCURENCESTRING = 6;
-	private static final int COL_PAYMENTTYPE = 7;
-	private static final int COL_PAYMENTTYPESTRING = 8;
-	private static final int COL_STARTDATE = 9;
-	private static final int COL_ENDDATE = 10;
-	private static final int COL_FIXED = 11;
-	private static final int COL_AUTOENTER = 12;
-	private static final int COL_LASTPAYMENT = 13;
-	private static final int COL_NEXTPAYMENTDUE = 14;
-	private static final int COL_WEEKENDOPTION = 15;
-	private static final int COL_WEEKENDOPTIONSTRING = 16;
+	/***** Additional Constants to refer to ALL columns of a schedule cursor *****/
+	public static final int COL_ID = 0;
+	public static final int COL_DESCRIPTION = 1;
+	public static final int COL_TYPE = 2;
+	public static final int COL_TYPESTRING = 3;
+	public static final int COL_OCCURENCE = 4;
+	public static final int COL_OCCURENCEMULTIPLIER = 5;
+	public static final int COL_OCCURENCESTRING = 6;
+	public static final int COL_PAYMENTTYPE = 7;
+	public static final int COL_PAYMENTTYPESTRING = 8;
+	public static final int COL_STARTDATE = 9;
+	public static final int COL_ENDDATE = 10;
+	public static final int COL_FIXED = 11;
+	public static final int COL_AUTOENTER = 12;
+	public static final int COL_LASTPAYMENT = 13;
+	public static final int COL_NEXTPAYMENTDUE = 14;
+	public static final int COL_WEEKENDOPTION = 15;
+	public static final int COL_WEEKENDOPTIONSTRING = 16;
 	
 	/***** Elements of a specific Schedule *****/
 	private String id;
@@ -643,9 +668,11 @@ public class Schedule
 					case 2:
 						return OCCUR_EVERYOTHERMONTH;
 					case 3:
-						return OCCUR_QUARTERLY;
+						return OCCUR_EVERYTHREEMONTHS;
 					case 4:
 						return OCCUR_EVERYFOURMONTHS;
+					case 6:
+						return OCCUR_TWICEYEARLY;
 				}
 			case OCCUR_YEARLY:
 				switch(nOccurenceMultiple)
@@ -657,6 +684,164 @@ public class Schedule
 				}
 		}
 		return 0;
+	}
+	
+	static public int getOccurrenceFromMultiplier(int multiplier, String strDesc)
+	{
+		Log.d(TAG, "multiplier: " + String.valueOf(multiplier));
+		Log.d(TAG, "strDesc: " + strDesc);
+		if( strDesc.equals("Once") )
+			return OCCUR_ONCE;
+		else if ( strDesc.equals("Day") )
+		{
+			switch( multiplier) 
+			{
+			case 1:
+				return OCCUR_DAILY;
+			case 30:
+				return OCCUR_EVERYTHIRTYDAYS;
+			default:
+				return OCCUR_ANY;
+			}
+		}
+		else if ( strDesc.equals("Week") )
+		{
+			switch ( multiplier )
+			{
+			case 1:
+				return OCCUR_WEEKLY;
+			case 2:
+				return OCCUR_EVERYOTHERWEEK;
+			case 3:
+				return OCCUR_EVERYTHREEWEEKS;
+			case 4:
+				return OCCUR_EVERYFOURWEEKS;
+			case 8:
+				return OCCUR_EVERYEIGHTWEEKS;
+			default:
+				return OCCUR_ANY;
+			}
+		}
+		else if ( strDesc.equals("Month") )
+		{
+			switch ( multiplier) 
+			{
+			case 1:
+				return OCCUR_MONTHLY;
+			case 2:
+				return OCCUR_EVERYOTHERMONTH;
+			case 3:
+				return OCCUR_EVERYTHREEMONTHS;
+			case 4:
+				return OCCUR_EVERYFOURMONTHS;
+			case 6:
+				return OCCUR_TWICEYEARLY;
+			default:
+				return OCCUR_ANY;	
+			}
+		}
+		else if ( strDesc.equals("Half-month") )
+		{
+			return OCCUR_FORTNIGHTLY;
+		}
+		else if ( strDesc.equals("Year") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return OCCUR_YEARLY;
+			case 2:
+				return OCCUR_EVERYOTHERYEAR;
+			default:
+				return OCCUR_ANY;
+			}
+		}
+		else
+			return OCCUR_ANY;
+	}
+	
+	static public String getOccurrenceToString(int multiplier, String strDesc)
+	{
+		if( strDesc.equals("Once") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Once";
+			default:
+				return String.format("%1d times", multiplier);
+			}
+		}
+		else if( strDesc.equals("Day") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Daily";
+			case 30:
+				return "Every thirty days";
+			default:
+				return String.format("Every %1d days", multiplier);
+			}
+		}
+		else if( strDesc.equals("Week") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Weekly";
+			case 2:
+				return "Every other week";
+			case 3:
+				return "Every three weeks";
+			case 4:
+				return "Every four weeks";
+			case 8:
+				return "Every eight weeks";
+			default:
+				return String.format("Every %1d weeks", multiplier);
+			}	
+		}
+		else if( strDesc.equals("Half-month") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Every half month";
+			default:
+				return String.format("Every %1d half months", multiplier);
+			}
+		}
+		else if( strDesc.equals("Month") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Monthly";
+			case 2:
+				return "Every other month";
+			case 3:
+				return "Every three months";
+			case 4:
+				return "Every four months";
+			case 6:
+				return "Twice yearly";
+			default:
+				return String.format("Every %1d months", multiplier);
+			}
+		}
+		else if( strDesc.equals("Year") )
+		{
+			switch( multiplier )
+			{
+			case 1:
+				return "Yearly";
+			default:
+				return String.format("Every %1d years", multiplier);
+			}
+		}
+		else
+			return "Any";
 	}
 	
 	public boolean isPastDue()

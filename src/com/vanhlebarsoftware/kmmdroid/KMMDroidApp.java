@@ -176,6 +176,18 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	
 			values.put("transactions", id);			
 		}
+		else if ( updateColumn.equals("schedules") )
+		{
+			final String[] dbColumns = { "schedules" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("schedules", id);			
+		}
 		else if ( updateColumn.equals("splits") )
 		{
 			final String[] dbColumns = { "splits" };
@@ -235,6 +247,18 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 			id = id + 1;
 	
 			values.put("hiTransactionId", id);			
+		}
+		else if ( updateColumn.equals("hiScheduleId") )
+		{
+			final String[] dbColumns = { "hiScheduleId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiScheduleId", id);
 		}
 		
 		db.update("kmmFileInfo", values, null, null);

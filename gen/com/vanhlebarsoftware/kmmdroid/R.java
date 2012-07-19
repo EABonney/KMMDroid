@@ -9,6 +9,7 @@ package com.vanhlebarsoftware.kmmdroid;
 
 public final class R {
     public static final class array {
+        public static final int SchedulePaymentMethod=0x7f06000b;
         public static final int TransactionStatus=0x7f060003;
         public static final int TransactionTypes=0x7f060002;
         public static final int UpdateFreqValues=0x7f060005;
@@ -17,6 +18,8 @@ public final class R {
         public static final int WeeksToDisplayValues=0x7f060007;
         public static final int arrayAccountTypes=0x7f060001;
         public static final int arrayTypes=0x7f060000;
+        public static final int scheduleFreqDescription=0x7f06000a;
+        public static final int scheduleFrequency=0x7f060009;
         public static final int scheduleWeekendOptions=0x7f060008;
     }
     public static final class attr {
@@ -135,7 +138,7 @@ public final class R {
         public static final int checkboxNoInstitution=0x7f080083;
         public static final int checkboxPayeeDefaultExpense=0x7f0800e4;
         public static final int checkboxPayeeDefaultIncome=0x7f0800e2;
-        public static final int close=0x7f080123;
+        public static final int close=0x7f080125;
         public static final int crAccountBalance=0x7f080073;
         public static final int crAccountName=0x7f080072;
         public static final int crAmount=0x7f08005c;
@@ -181,24 +184,24 @@ public final class R {
         public static final int institutionPostalCode=0x7f080096;
         public static final int institutionRoutingNumber=0x7f08009a;
         public static final int institutionStreet=0x7f080092;
-        public static final int itemAbout=0x7f08011e;
-        public static final int itemAccounts=0x7f08011f;
-        public static final int itemCancel=0x7f080122;
-        public static final int itemCashRequirments=0x7f080125;
-        public static final int itemCategories=0x7f08011b;
-        public static final int itemClearAll=0x7f080128;
-        public static final int itemDelete=0x7f080121;
-        public static final int itemEdit=0x7f080120;
-        public static final int itemHome=0x7f08011a;
-        public static final int itemInsertRow=0x7f080127;
-        public static final int itemInstitutions=0x7f08011d;
-        public static final int itemNew=0x7f080118;
-        public static final int itemOpen=0x7f080129;
-        public static final int itemPayees=0x7f08011c;
-        public static final int itemPrefs=0x7f080119;
-        public static final int itemRecent=0x7f08012a;
-        public static final int itemSchedules=0x7f080124;
-        public static final int itemsave=0x7f080126;
+        public static final int itemAbout=0x7f080120;
+        public static final int itemAccounts=0x7f080121;
+        public static final int itemCancel=0x7f080124;
+        public static final int itemCashRequirments=0x7f080127;
+        public static final int itemCategories=0x7f08011d;
+        public static final int itemClearAll=0x7f08012a;
+        public static final int itemDelete=0x7f080123;
+        public static final int itemEdit=0x7f080122;
+        public static final int itemHome=0x7f08011c;
+        public static final int itemInsertRow=0x7f080129;
+        public static final int itemInstitutions=0x7f08011f;
+        public static final int itemNew=0x7f08011a;
+        public static final int itemOpen=0x7f08012b;
+        public static final int itemPayees=0x7f08011e;
+        public static final int itemPrefs=0x7f08011b;
+        public static final int itemRecent=0x7f08012c;
+        public static final int itemSchedules=0x7f080126;
+        public static final int itemsave=0x7f080128;
         public static final int kmmd_addTransaction=0x7f080019;
         public static final int kmmd_icon=0x7f080017;
         public static final int kmmd_refresh=0x7f080018;
@@ -209,8 +212,8 @@ public final class R {
         public static final int listInstitutionsView=0x7f0800cb;
         public static final int listPayeeTransView=0x7f0800eb;
         public static final int listPayeesView=0x7f0800d6;
-        public static final int listSchedules=0x7f080107;
-        public static final int listSplits=0x7f080117;
+        public static final int listSchedules=0x7f080109;
+        public static final int listSplits=0x7f080119;
         public static final int listTransactions=0x7f0800cd;
         public static final int lrAmount=0x7f0800d1;
         public static final int lrBalance=0x7f0800d2;
@@ -236,7 +239,7 @@ public final class R {
         public static final int ptrDetails=0x7f0800ee;
         public static final int radioGroup1=0x7f0800e6;
         public static final int row=0x7f0800ce;
-        public static final int scheduleAccount=0x7f080105;
+        public static final int scheduleAccount=0x7f080107;
         public static final int scheduleAmount1=0x7f08001f;
         public static final int scheduleAmount10=0x7f08004c;
         public static final int scheduleAmount11=0x7f080051;
@@ -277,20 +280,21 @@ public final class R {
         public static final int scheduleName8=0x7f080041;
         public static final int scheduleName9=0x7f080046;
         public static final int scheduleNumTransactions=0x7f0800fc;
-        public static final int scheduleType=0x7f080103;
+        public static final int schedulePaymentMethod=0x7f080103;
+        public static final int scheduleType=0x7f080105;
         public static final int scheduleWeekendOption=0x7f0800f1;
         public static final int splitAmount=0x7f0800a6;
         public static final int splitCategory=0x7f0800a4;
         public static final int splitEntryRow=0x7f0800a3;
         public static final int splitMemo=0x7f0800a5;
-        public static final int splitsAccountName=0x7f08010d;
-        public static final int splitsAmount=0x7f08010f;
-        public static final int splitsMemo=0x7f08010e;
-        public static final int srAmount=0x7f08010c;
-        public static final int srDescription=0x7f080108;
-        public static final int srFrequency=0x7f08010a;
-        public static final int srNextDueDate=0x7f08010b;
-        public static final int srPayee=0x7f080109;
+        public static final int splitsAccountName=0x7f08010f;
+        public static final int splitsAmount=0x7f080111;
+        public static final int splitsMemo=0x7f080110;
+        public static final int srAmount=0x7f08010e;
+        public static final int srDescription=0x7f08010a;
+        public static final int srFrequency=0x7f08010c;
+        public static final int srNextDueDate=0x7f08010d;
+        public static final int srPayee=0x7f08010b;
         public static final int status=0x7f0800b8;
         public static final int titleAccount=0x7f08005e;
         public static final int titleAccountCurrency=0x7f08007a;
@@ -340,7 +344,7 @@ public final class R {
         public static final int titlePayeePostalCode=0x7f0800d9;
         public static final int titlePayeeTelephone=0x7f0800db;
         public static final int titlePayeeToFrom=0x7f0800aa;
-        public static final int titleScheduleAccount=0x7f080104;
+        public static final int titleScheduleAccount=0x7f080106;
         public static final int titleScheduleAutoEnter=0x7f0800f4;
         public static final int titleScheduleEnd=0x7f0800f6;
         public static final int titleScheduleEndDate=0x7f0800f8;
@@ -348,19 +352,20 @@ public final class R {
         public static final int titleScheduleFrequency=0x7f0800ff;
         public static final int titleScheduleName=0x7f0800fd;
         public static final int titleScheduleNumTransactions=0x7f0800fb;
-        public static final int titleScheduleType=0x7f080102;
+        public static final int titleSchedulePaymentMethod=0x7f080102;
+        public static final int titleScheduleType=0x7f080104;
         public static final int titleScheduleWeekendOption=0x7f0800f0;
-        public static final int titleSchedules=0x7f080106;
+        public static final int titleSchedules=0x7f080108;
         public static final int titleStatus=0x7f0800b7;
         public static final int titleTransactionType=0x7f0800a8;
-        public static final int titleViewTransaction=0x7f080110;
+        public static final int titleViewTransaction=0x7f080112;
         public static final int transactionType=0x7f0800a9;
-        public static final int vtAmount=0x7f080115;
-        public static final int vtDate=0x7f080112;
-        public static final int vtDescription=0x7f080111;
-        public static final int vtMemo=0x7f080116;
-        public static final int vtNumber=0x7f080114;
-        public static final int vtStatus=0x7f080113;
+        public static final int vtAmount=0x7f080117;
+        public static final int vtDate=0x7f080114;
+        public static final int vtDescription=0x7f080113;
+        public static final int vtMemo=0x7f080118;
+        public static final int vtNumber=0x7f080116;
+        public static final int vtStatus=0x7f080115;
     }
     public static final class layout {
         public static final int about=0x7f030000;
@@ -425,17 +430,28 @@ public final class R {
     }
     public static final class string {
         public static final int AutoUpdate=0x7f0500b6;
+        public static final int BankTransfer=0x7f0500ed;
+        public static final int Day=0x7f0500e6;
+        public static final int DirectDeposit=0x7f0500f0;
         public static final int FifteenMinutes=0x7f0500b0;
         public static final int FourHours=0x7f0500b4;
         public static final int FourWeeks=0x7f0500be;
+        public static final int HalfMonth=0x7f0500e8;
+        public static final int ManualDeposit=0x7f0500ef;
+        public static final int Month=0x7f0500e9;
         public static final int None=0x7f0500af;
+        public static final int Once=0x7f0500e5;
         public static final int OneHour=0x7f0500b2;
         public static final int OneWeek=0x7f0500bb;
+        public static final int Other=0x7f0500ec;
         public static final int SixHours=0x7f0500b5;
+        public static final int StandingOrder=0x7f0500ee;
         public static final int ThirtyMinutes=0x7f0500b1;
         public static final int ThreeWeeks=0x7f0500bd;
         public static final int TwoHours=0x7f0500b3;
         public static final int TwoWeeks=0x7f0500bc;
+        public static final int Week=0x7f0500e7;
+        public static final int Year=0x7f0500ea;
         public static final int accountNameNotEntered=0x7f050052;
         public static final int accountNotSupported=0x7f050073;
         public static final int app_key=0x7f050000;
@@ -623,6 +639,7 @@ public final class R {
         public static final int titleScheduleNumTransactions=0x7f0500e1;
         public static final int titleScheduleOptions=0x7f0500db;
         public static final int titleSchedulePaymentInfo=0x7f0500d7;
+        public static final int titleSchedulePaymentMethod=0x7f0500eb;
         public static final int titleScheduleWeekendOption=0x7f0500dc;
         public static final int titleSchedules=0x7f05009e;
         public static final int titleSelectanAccount=0x7f0500b7;

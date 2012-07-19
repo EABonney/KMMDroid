@@ -13,7 +13,6 @@
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/titleCreateModifySchedule"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titleScheduleName"
@@ -25,9 +24,9 @@
 	<EditText 
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/titleCreateModifySchedule"
 		android:layout_toRightOf="@+id/titleScheduleName"
 		android:id="@+id/editScheduleName"
+		android:inputType="text"
 	/>
     <TextView
     	android:layout_width="wrap_content"
@@ -55,11 +54,30 @@
     	android:layout_below="@id/editScheduleName"
     	android:layout_toRightOf="@id/scheduleFrequencyNumber"
     	android:id="@+id/scheduleFrequencyDescription"
-    />    
+    />  
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_below="@id/scheduleFrequencyDescription"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleSchedulePaymentMethod"
+    	android:id="@+id/titleSchedulePaymentMethod"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:layout_below="@id/scheduleFrequencyDescription"
+    	android:layout_toRightOf="@id/titleSchedulePaymentMethod"
+    	android:id="@+id/schedulePaymentMethod"
+    />      
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/schedulePaymentMethod"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titleTransactionType"
@@ -71,7 +89,7 @@
     <Spinner 
     	android:layout_height="wrap_content" 
     	android:layout_width="fill_parent"
-    	android:layout_below="@id/scheduleFrequencyDescription"
+    	android:layout_below="@id/schedulePaymentMethod"
     	android:layout_toRightOf="@id/titleScheduleType"
     	android:id="@+id/scheduleType"
     />

@@ -55,7 +55,7 @@ public class Split
 	{
 		this.transactionId = tId;
 		this.txType = tType;
-		this.splitId = sId;
+		this.splitId = sId;			this.payeeId = pId;
 		this.payeeId = pId;
 		this.reconcileDate = rDate;
 		this.action = a;

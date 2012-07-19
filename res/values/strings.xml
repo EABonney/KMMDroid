@@ -295,8 +295,49 @@
 	<string name="changeDateBefore">Move before</string>
 	<string name="changeDateAfter">Move after</string>
 	<string-array name="scheduleWeekendOptions">
-	    <item>@string/doNothing</item>
 	    <item>@string/changeDateBefore</item>
 	    <item>@string/changeDateAfter</item>
+	    <item>@string/doNothing</item>
+	</string-array>
+	<string-array name="scheduleFrequency">
+		<item>"1"</item>
+		<item>"2"</item>
+		<item>"3"</item>
+		<item>"4"</item>
+		<item>"5"</item>
+		<item>"6"</item>
+		<item>"7"</item>
+		<item>"8"</item>
+		<item>"9"</item>
+		<item>"10"</item>
+		<item>"11"</item>
+		<item>"12"</item>	    
+	</string-array>
+	<string name="Once">Once</string>
+	<string name="Day">Day</string>
+	<string name="Week">Week</string>
+	<string name="HalfMonth">Half-month</string>
+	<string name="Month">Month</string>
+	<string name="Year">Year</string>
+	<string-array name="scheduleFreqDescription">
+	    <item>@string/Once</item>
+	    <item>@string/Day</item>
+	    <item>@string/Week</item>
+	    <item>@string/HalfMonth</item>
+	    <item>@string/Month</item>
+	    <item>@string/Year</item>
+	</string-array>
+	<string name="titleSchedulePaymentMethod">Payment method</string>
+	<string name="Other">Other</string>
+	<string name="BankTransfer">Bank transfer</string>
+	<string name="StandingOrder">Standing order</string>
+	<string name="ManualDeposit">Manual deposit</string>
+	<string name="DirectDeposit">Direct deposit</string>
+	<string-array name="SchedulePaymentMethod">
+	    <item>@string/Other</item>
+	    <item>@string/BankTransfer</item>
+	    <item>@string/StandingOrder</item>
+	    <item>@string/ManualDeposit</item>
+	    <item>@string/DirectDeposit</item>
 	</string-array>
 </resources>

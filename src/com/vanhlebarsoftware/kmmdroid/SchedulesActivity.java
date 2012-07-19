@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 public class SchedulesActivity extends Activity
 {
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private static final String dbTable = "kmmSchedules, kmmSplits, kmmPayees";
 	private static final String[] dbColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurenceString", "nextPaymentDue", 
 												"endDate", "lastPayment", "valueFormatted", "kmmPayees.name AS Payee" };
@@ -61,6 +63,12 @@ public class SchedulesActivity extends Activity
 	{
 		super.onResume();
 		
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
+        }
+        
 		//Run the query on the database to get the transactions.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy, null);
 		startManagingCursor(cursor);
@@ -86,7 +94,9 @@ public class SchedulesActivity extends Activity
 		switch (item.getItemId())
 		{
 			case R.id.itemNew:
-				startActivity(new Intent(this, CreateModifyScheduleActivity.class));
+				Intent i = new Intent(this, CreateModifyScheduleActivity.class);
+				i.putExtra("Action", ACTION_NEW);
+				startActivity(i);
 				break;
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));

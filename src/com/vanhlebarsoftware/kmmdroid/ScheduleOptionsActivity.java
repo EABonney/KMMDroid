@@ -39,7 +39,7 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	private int intYear;
 	private int intMonth;
 	private int intDay;
-	private int intWeekendOption;
+	private int intWeekendOption = MOVE_NOTHING;
 	Spinner spinWeekendOptions;
 	CheckBox ckboxEstimate;
 	CheckBox ckboxAutoEnter;
@@ -58,7 +58,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	@Override
 	protected void onCreate(Bundle savedInstanceState) 
 	{
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_options);
         
@@ -120,12 +119,14 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	@Override
 	protected void onResume() 
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
 	
 		adapterWeekendOption = ArrayAdapter.createFromResource(this, R.array.scheduleWeekendOptions, android.R.layout.simple_spinner_item);
 		adapterWeekendOption.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinWeekendOptions.setAdapter(adapterWeekendOption);
+		
+		// The spinner's value
+		spinWeekendOptions.setSelection(intWeekendOption);
 	}
 	
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
@@ -155,39 +156,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 			default:
 				break;	
 		}
-	}
-	
-	// Called first time the user clicks on the menu button
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.save_menu, menu);
-		return true;
-	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu (Menu menu)
-	{
-		// Can't delete if we are creating a new item.
-		if( Action == ACTION_NEW )
-			menu.getItem(1).setVisible(false);
-		
-		return true;
-	}
-
-	// Called when an options item is clicked
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId())
-		{
-			case R.id.itemsave:
-				break;
-			case R.id.itemCancel:
-				break;
-		}
-		return true;
 	}
 	
 	// the callback received with the user "sets" the opening date in the dialog
@@ -234,13 +202,55 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}
 	
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
+	public int getScheduleWeekendOption()
+	{
+		return this.intWeekendOption;
+	}
+	
+	public String getScheduleEstimate()
+	{
+		// The database actually stores this "Fixed" not estimate, so we return just the opp of the checkbox.
+		return this.ckboxEstimate.isChecked() == true ? "N" : "Y";
+	}
+	
+	public String getScheduleAutoEnter()
+	{
+		return this.ckboxAutoEnter.isChecked() == true ? "Y" : "N";
+	}
+	
+	public boolean getWillScheduleEnd()
+	{
+		return this.ckboxScheduleEnds.isChecked();
+	}
+	
+	public String getEndDate()
+	{
+		// Need to re-format the date to YYY-MM-DD
+		String str[] = this.editEndDate.getText().toString().split("-");
+		return new StringBuilder()
+		// Month is 0 based so add 1
+		.append(str[2]).append("-")
+		.append(str[0]).append("-")
+		.append(str[1]).toString();
+
+	}
+	
+	public int getRemainingTransactions()
+	{
+		String str = this.editNumTransactions.getText().toString();
+		
+		if( !str.isEmpty() )
+			return Integer.valueOf(str);
+		else
+			return 0;
+	}
+	
 	private void updateDisplay()
 	{
 		String strDay = null;
