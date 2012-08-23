@@ -11,9 +11,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class SchedulesActivity extends Activity
 {
@@ -44,6 +46,10 @@ public class SchedulesActivity extends Activity
         
         // Find our views
         listSchedules = (ListView) findViewById(R.id.listSchedules);
+        
+    	// Now hook into listTransactions ListView and set its onItemClickListener member
+    	// to our class handler object.
+        listSchedules.setOnItemClickListener(mMessageClickedHandler);
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -77,6 +83,19 @@ public class SchedulesActivity extends Activity
 		adapter = new ScheduleCursorAdapter(this, R.layout.schedules_rows, cursor, FROM, TO);
 		listSchedules.setAdapter(adapter); 
 	}
+	
+	// Message Handler for our listTransactions List View clicks
+	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
+	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+	    {
+	    	Intent i = new Intent(getBaseContext(), ScheduleActionsActivity.class);
+	    	Cursor sch = (Cursor) parent.getAdapter().getItem(position);
+	    	i.putExtra("scheduleId", sch.getString(0));	
+	    	i.putExtra("scheduleDescription", sch.getString(1));
+	    	i.putExtra("Action", 3);
+	    	startActivity(i);
+	    }
+	};
 	
 	// Called first time the user clicks on the menu button
 	@Override

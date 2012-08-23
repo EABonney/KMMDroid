@@ -398,6 +398,7 @@ public class KMMDService extends Service
 			intent = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 			intent.putExtra("Action", ACTION_NEW);
 			intent.putExtra("accountUsed", accountUsed);
+			intent.putExtra("fromHome", true);
 			pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_addTransaction, pendingIntent);
 			

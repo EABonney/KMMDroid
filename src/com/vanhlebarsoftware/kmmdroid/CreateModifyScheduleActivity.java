@@ -23,12 +23,32 @@ import android.widget.TabHost;
 public class CreateModifyScheduleActivity extends TabActivity 
 {
 	private static final String TAG = CreateModifyScheduleActivity.class.getSimpleName();
+	private static int C_TRANSACTIONID = 0;
+	private static int C_TXTYPE = 1;
+	private static int C_SPLITID = 2;
+	private static int C_PAYEEID = 3;
+	private static int C_RECONCILEDATE = 4;
+	private static int C_ACTION = 5;
+	private static int C_RECONCILEFLAG = 6;
+	private static int C_VALUE = 7;
+	private static int C_VALUEFORMATTED = 8;
+	private static int C_SHARES = 9;
+	private static int C_SHARESFORMATTED = 10;
+	private static int C_PRICE = 11;
+	private static int C_PRICEFORMATTED = 12;
+	private static int C_MEMO = 13;
+	private static int C_ACCOUNTID = 14;
+	private static int C_CHECKNUMBER = 15;
+	private static int C_POSTDATE = 16;
+	private static int C_BANKID = 17;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static int WITHDRAW = 2;
 	private static int DEPOSIT = 0;
 	private static int TRANSFER = 1;
 	private int Action = 0;
+	private String schId = null;
+	
 	ArrayList<Split> Splits;
 	ArrayList<Split> OrigSplits;
 	KMMDroidApp KMMDapp;
@@ -45,6 +65,10 @@ public class CreateModifyScheduleActivity extends TabActivity
         // Get the Action.
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
+        
+        // See if we are editing a schedule, if so get the schedule Id we passed in.
+        if( Action == ACTION_EDIT )
+        	schId = extras.getString("scheduleId");
         
         //Resources res = getResources(); // Resource object to get Drawables
         tabHost = getTabHost();  // The activity TabHost
@@ -94,8 +118,46 @@ public class CreateModifyScheduleActivity extends TabActivity
 	@Override
 	protected void onResume() 
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
+		
+		// See if we are editing and if so, pull the data into the forms.
+		if( Action == ACTION_EDIT )
+		{
+			Cursor schedule = KMMDapp.db.query("kmmSchedules", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
+			schedule.moveToFirst();
+			Cursor trans = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
+			trans.moveToFirst();
+			Splits = getSplits(schId);
+			
+			// So we have all the data for this schedule, now populate the Payment tab
+			getTabHost().setCurrentTab(0);
+			Activity schedulePayment = this.getCurrentActivity();
+			((SchedulePaymentInfoActivity) schedulePayment).setAction(Action);
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleName(schedule.getString(1));
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleFrequency(schedule.getInt(5));
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleFrequencyDescription(schedule.getInt(4));
+			((SchedulePaymentInfoActivity) schedulePayment).setSchedulePaymentMethod(schedule.getInt(7));
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleType(schedule.getInt(2));
+			((SchedulePaymentInfoActivity) schedulePayment).setAccountTypeId(Splits.get(0).getAccountId());
+			((SchedulePaymentInfoActivity) schedulePayment).setPayeeId(Splits.get(0).getPayeeId());
+			((SchedulePaymentInfoActivity) schedulePayment).setSplits(Splits);
+			((SchedulePaymentInfoActivity) schedulePayment).setCheckNumber(Splits.get(0).getCheckNumber());
+			((SchedulePaymentInfoActivity) schedulePayment).setStartDate(schedule.getString(14));
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleAmount(Splits.get(0).getValueFormatted());
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleStatus(Integer.valueOf(Splits.get(0).getReconcileFlag()));
+			((SchedulePaymentInfoActivity) schedulePayment).setScheduleMemo(trans.getString(3));
+			
+			// populate the Options tab
+			getTabHost().setCurrentTab(1);
+			Activity scheduleOptions = this.getCurrentActivity();
+			((ScheduleOptionsActivity) scheduleOptions).setScheduleWeekendOption(schedule.getInt(15));
+			((ScheduleOptionsActivity) scheduleOptions).setScheduleIsEstimate(schedule.getString(11));
+			((ScheduleOptionsActivity) scheduleOptions).setScheduleAutoEnter(schedule.getString(12));
+			((ScheduleOptionsActivity) scheduleOptions).setEndDate(schedule.getString(10));
+			
+			getTabHost().setCurrentTab(0);			
+			((SchedulePaymentInfoActivity) schedulePayment).editSchedule();
+		}
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -121,6 +183,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 		switch (item.getItemId())
 		{
 			case R.id.itemsave:
+				// ensure that the Splits Array is clean before starting.
+				Splits.clear();
+				
 				/*************************************************************
 				 * The following attributes MUST be valid
 				 * 
@@ -144,7 +209,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 				
 				if( Action == ACTION_NEW )
 					id = createScheduleId();
-				
+				else
+					id = schId;
+
 				// Get the PaymentInfo elements
 				getTabHost().setCurrentTab(0);
 				Activity schedulePaymentInfo = this.getCurrentActivity();
@@ -279,6 +346,13 @@ public class CreateModifyScheduleActivity extends TabActivity
 						KMMDapp.updateFileInfo("hiTransactionId", 1);
 						KMMDapp.updateFileInfo("transactions", 1);
 						KMMDapp.updateFileInfo("splits", Splits.size());
+						break;
+					case ACTION_EDIT:
+						KMMDapp.db.update("kmmSchedules", scheduleValues, "id=?", new String[] { schId });
+						KMMDapp.db.update("kmmTransactions", transactionValues, "id=?", new String[] { schId });
+						// Delete all the splits for this transaction first, getting the number or rows deleted.
+						int rowsDel = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { schId });
+						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
 						break;
 				}
 				// Insert the splits for this transaction
@@ -502,5 +576,32 @@ public class CreateModifyScheduleActivity extends TabActivity
 		default:
 			return "Do Nothing";
 		}
+	}
+	
+	private ArrayList<Split> getSplits(String transId)
+	{
+		ArrayList<Split> splits = new ArrayList<Split>();
+		
+		Cursor cursor = KMMDapp.db.query("kmmSplits", new String[] { "*" }, "transactionId=?", new String[] { transId }, null, null, "splitId ASC");
+		startManagingCursor(cursor);
+		cursor.moveToFirst();
+		
+		// put all the splits information into the ArrayList and then return that as a single object
+		while( !cursor.isAfterLast() )
+		{
+			splits.add(new Split(cursor.getString(C_TRANSACTIONID), cursor.getString(C_TXTYPE),
+								 cursor.getInt(C_SPLITID), cursor.getString(C_PAYEEID),
+								 cursor.getString(C_RECONCILEDATE), cursor.getString(C_ACTION),
+								 cursor.getString(C_RECONCILEFLAG), cursor.getString(C_VALUE),
+								 cursor.getString(C_VALUEFORMATTED), cursor.getString(C_SHARES),
+								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
+								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
+								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
+								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
+			cursor.moveToNext();
+		}
+		
+		cursor.close();
+		return splits;
 	}
 }

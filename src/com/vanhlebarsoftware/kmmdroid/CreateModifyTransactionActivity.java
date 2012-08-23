@@ -93,6 +93,7 @@ public class CreateModifyTransactionActivity extends Activity
 	Cursor cursorCategories;
 	SimpleCursorAdapter adapterPayees;
 	SimpleCursorAdapter adapterCategories;
+	boolean fromHomeWidget = false;
 	KMMDroidApp KMMDapp;
 	
 	/* Called when the activity is first created. */
@@ -118,30 +119,39 @@ public class CreateModifyTransactionActivity extends Activity
         buttonSetDate = (ImageButton) findViewById(R.id.buttonSetDate);
         buttonChooseCategory = (Button) findViewById(R.id.buttonChooseCategory);
         buttonSplits = (ImageButton) findViewById(R.id.buttonSplit);
-   
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
         
         // Make sure that the KMMDapp.Splits is empty.
         KMMDapp.splitsDestroy();
         
         // Get the action the user is doing.
         Bundle extras = getIntent().getExtras();
+        Log.d(TAG, "Size of extras: " + extras.size());
         Action = extras.getInt("Action");
+        fromHomeWidget = extras.getBoolean("fromHome");
         
         if( Action == ACTION_NEW )
+        {
+        	Log.d(TAG, "From homeWidget: " + String.valueOf(fromHomeWidget));
+        	// if we are coming from the home screen widget make sure to open the database used with the actual widget.
+        	if( fromHomeWidget )
+        	{
+        		KMMDapp.setFullPath(KMMDapp.prefs.getString("widgetDatabasePath", ""));
+        		KMMDapp.openDB();
+        	}
         	accountUsed = extras.getString("accountUsed");
-                
-        if( Action == ACTION_EDIT )
+        }
+        else if( Action == ACTION_EDIT )
         	transId = extras.getString("transId");
-        
-        if( Action == ACTION_ENTER_SCHEDULE )
+        else if( Action == ACTION_ENTER_SCHEDULE )
         {
         	// Need to get the specified schedule and all it's splits and other information.
         	scheduleToEnter = getSchedule(extras.getString("scheduleId"));
+        }
+        
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
         }
         
         // Make it so the user is not able to edit the Category selected without using the Spinner.
@@ -423,7 +433,10 @@ public class CreateModifyTransactionActivity extends Activity
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
 				// need to close the database as it is keeping it open here and causing issues.
-				KMMDapp.closeDB();
+				//KMMDapp.closeDB();
+				// If we are coming from the home widget, we need to close the db.
+				if( fromHomeWidget )
+					KMMDapp.closeDB();
 				finish();
 				break;
 			case R.id.itemCancel:

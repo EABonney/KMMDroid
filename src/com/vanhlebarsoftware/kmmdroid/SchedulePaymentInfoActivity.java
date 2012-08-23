@@ -189,20 +189,16 @@ public class SchedulePaymentInfoActivity extends Activity
         Splits = new ArrayList<Split>();
         OrigSplits = new ArrayList<Split>();
         
-        // Get the Action.
-        Bundle extras = getIntent().getExtras();
-        //Action = extras.getInt("Action");
 	}
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 	@Override
+	
 	protected void onResume() 
 	{
-		// TODO Auto-generated method stub
 		super.onResume();
 	
 		cursorPayees = KMMDapp.db.query("kmmpayees", new String[] { "name", "id AS _id" }, 
@@ -244,44 +240,21 @@ public class SchedulePaymentInfoActivity extends Activity
 		adapterSchPaymentMethod.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinPaymentMethod.setAdapter(adapterSchPaymentMethod);
 		
-		if( Action == ACTION_EDIT )
-		{
-//			editTransaction();
-		}
-//		else if( Action == ACTION_ENTER_SCHEDULE )
-//		{
-//			enterSchedule();
-//		}
-		else
-		{
-			iNumberofPasses = 0;
-			
-			// See if we have any splits from the Split Entry screen.
-			if(!KMMDapp.Splits.isEmpty())
-			{
-				setupSplitInfo();
-			}
-			else
-			{
-				if( strCategoryName == null )
-					editCategory.setText("");
-				else
-					editCategory.setText(strCategoryName);
-				btnCategory.setEnabled(true);
-				numOfSplits = 2;
-				anySplits = false;
-			}
-		}	
-		
 		// Set the default items for the type, status, freq, freq desc, account, category and payment method spinners.
 		spinSchType.setSelection(intSchTypePos);
 		spinStatus.setSelection(intSchStatusPos);
 		spinFreqNum.setSelection(intSchFreq);
 		spinFreqDesc.setSelection(intSchFreqDesc);
 		spinPaymentMethod.setSelection(intSchPaymentMethodPos);
-		//spinCategory.setSelection(intSchCategoryPos);
 		spinSchAccount.setSelection(intSchAccountPos);
 		spinPayee.setSelection(intSchPayeePos);
+		
+		// Setup the category Name
+		if(strSchCategoryId != null)
+		{
+			Log.d(TAG, "Setting the spinCategory with categoryId: " + strSchCategoryId);
+			spinCategory.setSelection(setCategoryUsed(strSchCategoryId));		
+		}
 	}
 	
 	// the callback received with the user "sets" the opening date in the dialog
@@ -321,26 +294,21 @@ public class SchedulePaymentInfoActivity extends Activity
 						intSchAccountPos = parent.getSelectedItemPosition();
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						strSchAccountId = c.getString(1).toString();
-						Log.d(TAG, "User changed the default account: " + strSchAccountId);
 						break;
 					case R.id.scheduleFrequencyNumber:
 						intSchFreq = parent.getSelectedItemPosition();	
-						Log.d(TAG, "User changed the Schedule Frequency Number: " + parent.getAdapter().getItem(pos).toString());
 						break;
 					case R.id.scheduleFrequencyDescription:
 						strSchFreqDesc = parent.getAdapter().getItem(pos).toString();
 						intSchFreqDesc = parent.getSelectedItemPosition();
-						Log.d(TAG, "User changed Schedule Frequency Description: " + strSchFreqDesc);
 						break;
 					case R.id.schedulePaymentMethod:
 						intSchPaymentMethodPos = parent.getSelectedItemPosition();
 						strSchPaymentMethod = parent.getAdapter().getItem(pos).toString();
-						Log.d(TAG, "User changed Schedule Payment Method: " + strSchPaymentMethod);
 						break;						
 					case R.id.scheduleType:
 						intSchTypePos = parent.getSelectedItemPosition();
 						String str = parent.getAdapter().getItem(pos).toString();
-						Log.d(TAG, "User changed Schedule Type: " + str);
 						if( str.matches("Deposit") )
 							intSchType = Schedule.TYPE_DEPOSIT;
 						if( str.matches("Transfer") )
@@ -382,15 +350,109 @@ public class SchedulePaymentInfoActivity extends Activity
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
+	public void setAction(int action)
+	{
+		this.Action = action;
+	}
+	
+	public void editSchedule() 
+	{
+		// If we are coming back from splits entry screen follow this path.
+		if(!KMMDapp.Splits.isEmpty())
+		{
+			setupSplitInfo();
+			editCategory.setText(R.string.splitTransaction);
+			btnCategory.setEnabled(false);
+			spinPayee.setSelection(setPayee(strSchPayeeId));
+			iNumberofPasses = 0;
+		}
+		else
+		{	
+			// load the schedule details into the form.
+			// set the spinner for the frequency and freq description of the schedule.
+			spinFreqNum.setSelection(intSchFreq);
+			spinFreqDesc.setSelection(intSchFreqDesc);
+			
+			// set the spinner for payment method
+			spinPaymentMethod.setSelection(intSchPaymentMethodPos);
+			
+			// set the spinner for the transaction type
+			spinSchType.setSelection(intSchTypePos);
+			
+			intSchPayeePos = setPayee(strSchPayeeId);
+			spinPayee.setSelection(intSchPayeePos);
+		
+			// See if we have only used one category or if we have multiple.
+			if( Splits.size() == 2 )
+			{
+				Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?",
+										new String[] { Splits.get(1).getAccountId() }, null, null, null);
+				startManagingCursor(c);
+				c.moveToFirst();
+				editCategory.setText(c.getString(0));
+				iNumberofPasses = 0;
+				intSchStatus = Integer.valueOf(Splits.get(0).getReconcileFlag());
+
+				c.close();
+				numOfSplits = 2;
+				anySplits = false;
+				
+				// Populate the category used for this split only.
+				strSchCategoryId = Splits.get(1).getAccountId();
+				spinCategory.setSelection(setCategoryUsed(strSchCategoryId));
+			}
+			else
+			{
+				// need to put the splits into the KMMDapp.Splits object so user may edit the split details.
+				KMMDapp.splitsInit();
+				for(int i = 1; i < Splits.size(); i++)
+					KMMDapp.Splits.add(Splits.get(i));
+			
+				for(int i = 0; i < KMMDapp.Splits.size(); i++)
+					 KMMDapp.Splits.get(i).dump();
+				iNumberofPasses = 0;
+				editCategory.setText(R.string.splitTransaction);
+				btnCategory.setEnabled(false);
+				numOfSplits = Splits.size();
+				anySplits = true;
+			}
+		
+			float amount = Float.valueOf(Splits.get(0).getValueFormatted());
+			if( amount < 0 )
+			{
+				intSchType = Schedule.TYPE_BILL;
+				amount = amount * -1;		//change the sign of the amount for the form only.
+			}
+			else
+				intSchType = Schedule.TYPE_DEPOSIT;
+			
+			editAmount.setText(String.valueOf(amount));
+			
+			// Need to populate the Account used for this transaction.
+			intSchAccountPos = setAccountUsed(strSchAccountId);
+			spinSchAccount.setSelection(intSchAccountPos);
+		
+			// Make a copy of the original transactions split for later use if we modify anything.
+			for(int i=0; i < Splits.size(); i++)
+				OrigSplits.add(Splits.get(i));
+			
+			updateDisplay();
+		}		
+	}
+	
 	public String getScheduleName()
 	{
 		return this.editSchName.getText().toString();
+	}
+	
+	public void setScheduleName(String name)
+	{
+		this.editSchName.setText(name);
 	}
 	
 	public int getScheduleFrequency()
@@ -399,14 +461,54 @@ public class SchedulePaymentInfoActivity extends Activity
 		return this.intSchFreq + 1;
 	}
 	
+	public void setScheduleFrequency(int freq)
+	{
+		this.intSchFreq = freq - 1;
+	}
+	
 	public String getScheduleFrequencyDescription()
 	{
 		return this.strSchFreqDesc;
 	}
 	
+	public void setScheduleFrequencyDescription(int occurence)
+	{
+		switch(occurence)
+		{
+		case Schedule.OCCUR_ONCE:
+			this.intSchFreqDesc = 0;
+			this.strSchFreqDesc = "Once";
+			break;
+		case Schedule.OCCUR_DAILY:
+			this.intSchFreqDesc = 1;
+			this.strSchFreqDesc = "Day";
+			break;
+		case Schedule.OCCUR_WEEKLY:
+			this.intSchFreqDesc = 2;
+			this.strSchFreqDesc = "Week";
+			break;
+		case Schedule.OCCUR_EVERYOTHERWEEK:
+			this.intSchFreqDesc = 3;
+			this.strSchFreqDesc = "Half-month";
+			break;
+		case Schedule.OCCUR_MONTHLY:
+			this.intSchFreqDesc = 4;
+			this.strSchFreqDesc = "Month";
+			break;
+		case Schedule.OCCUR_YEARLY:
+			this.intSchFreqDesc = 5;
+			this.strSchFreqDesc = "Year";
+			break;
+		default:
+			this.intSchFreqDesc = 0;
+			this.strSchFreqDesc = "Once";
+			break;
+		}
+	}
+	
 	public int getSchedulePaymentMethod()
 	{
-		switch(intSchPaymentMethodPos)
+		switch(this.intSchPaymentMethodPos)
 		{
 		case 0:
 			return Schedule.PAYMENT_TYPE_OTHER;
@@ -423,9 +525,61 @@ public class SchedulePaymentInfoActivity extends Activity
 		}
 	}
 	
+	public void setSchedulePaymentMethod(int type)
+	{
+		switch(type)
+		{
+		case Schedule.PAYMENT_TYPE_OTHER:
+			this.intSchPaymentMethodPos = 0;
+			break;
+		case Schedule.PAYMENT_TYPE_BANKTRANSFER:
+			this.intSchPaymentMethodPos = 1;
+			break;
+		case Schedule.PAYMENT_TYPE_STANDINGORDER:
+			this.intSchPaymentMethodPos = 2;
+			break;
+		case Schedule.PAYMENT_TYPE_MANUALDEPOSIT:
+			this.intSchPaymentMethodPos = 3;
+			break;
+		case Schedule.PAYMENT_TYPE_DIRECTDEPOSIT:
+			this.intSchPaymentMethodPos = 4;
+			break;
+		case Schedule.PAYMENT_TYPE_ANY:
+			this.intSchPaymentMethodPos = 0;
+			break;
+		}
+	}
+	
 	public int getScheduleType()
 	{
 		return this.intSchType;
+	}
+
+	public void setScheduleType(int type)
+	{
+		switch(type)
+		{
+		case Schedule.TYPE_ANY:
+			this.intSchTypePos = 2;
+			break;
+		case Schedule.TYPE_BILL:
+			this.intSchTypePos = 2;
+			break;
+		case Schedule.TYPE_DEPOSIT:
+			this.intSchTypePos = 0;
+			break;
+		case Schedule.TYPE_LOANPAYMENT:
+			this.intSchTypePos = 2;
+			break;
+		case Schedule.TYPE_TRANSFER:
+			this.intSchTypePos = 1;
+			break;
+		default:
+			this.intSchTypePos = 2;
+			break;
+		}
+		
+		this.intSchType = type;
 	}
 	
 	public String getAccountTypeId()
@@ -433,9 +587,19 @@ public class SchedulePaymentInfoActivity extends Activity
 		return this.strSchAccountId;
 	}
 	
+	public void setAccountTypeId(String acctTypeId)
+	{
+		this.strSchAccountId = acctTypeId;
+	}
+	
 	public String getPayeeId()
 	{
 		return this.strSchPayeeId;
+	}
+	
+	public void setPayeeId(String payeeId)
+	{
+		this.strSchPayeeId = payeeId;
 	}
 	
 	public String getCategoryId()
@@ -443,9 +607,19 @@ public class SchedulePaymentInfoActivity extends Activity
 		return this.strSchCategoryId;
 	}
 	
+	public void setCategoryId(String categoryId)
+	{
+		this.strSchCategoryId = categoryId;
+	}
+	
 	public String getCheckNumber()
 	{
 		return this.editCheckNum.getText().toString();
+	}
+	
+	public void setCheckNumber(String checkNumber)
+	{
+		this.editCheckNum.setText(checkNumber);
 	}
 	
 	public String getStartDate()
@@ -459,9 +633,23 @@ public class SchedulePaymentInfoActivity extends Activity
 		.append(str[1]).toString();
 	}
 	
+	public void setStartDate(String startDate)
+	{
+		// Month is 0 based so we need to subtract 1
+		String date[] = startDate.split("-");
+		intYear = Integer.valueOf(date[0]);
+		intMonth = Integer.valueOf(date[1]) - 1;
+		intDay = Integer.valueOf(date[2]);
+	}
+	
 	public String getScheduleAmount()
 	{
 		return this.editAmount.getText().toString();
+	}
+	
+	public void setScheduleAmount(String amount)
+	{
+		this.editAmount.setText(amount);
 	}
 	
 	public int getScheduleStatus()
@@ -469,9 +657,24 @@ public class SchedulePaymentInfoActivity extends Activity
 		return this.intSchStatus;
 	}
 	
+	public void setScheduleStatus(int status)
+	{
+		this.intSchStatus = status;
+	}
+	
 	public String getScheduleMemo()
 	{
 		return this.editMemo.getText().toString();
+	}
+	
+	public void setScheduleMemo(String memo)
+	{
+		this.editMemo.setText(memo);
+	}
+	
+	public void setSplits(	ArrayList<Split> Splits)
+	{
+		this.Splits = Splits;
 	}
 	
 	private void updateDisplay()
@@ -575,5 +778,70 @@ public class SchedulePaymentInfoActivity extends Activity
 		default:
 			return 0;
 		}
+	}
+	
+	private int setPayee(String payeeId)
+	{
+		int i = 0;
+		cursorPayees.moveToFirst();
+
+		if( payeeId != null )
+		{
+			while(!payeeId.equals(cursorPayees.getString(1)))
+			{
+				cursorPayees.moveToNext();
+			
+				//check to see if we have moved past the last item in the cursor, if so return current i.
+				if(cursorPayees.isAfterLast())
+					return i;
+			
+				i++;
+			}
+		}
+		return i;
+	}
+	
+	private int setAccountUsed(String accountId)
+	{
+		int i = 0;
+		cursorAccounts.moveToFirst();
+
+		if( accountId != null )
+		{
+			while(!accountId.equals(cursorAccounts.getString(1)))
+			{
+				cursorAccounts.moveToNext();
+				
+				//check to see if we have moved past the last item in the cursor, if so return current i.
+				if(cursorAccounts.isAfterLast())
+					return i;
+				
+				i++;
+			}
+		}
+		return i;
+	}
+	
+	private int setCategoryUsed(String categoryId)
+	{
+		int i = 0;
+		cursorCategories.moveToFirst();
+
+		if( categoryId != null )
+		{
+			while(!categoryId.equals(cursorCategories.getString(1)))
+			{
+				cursorCategories.moveToNext();
+				
+				//check to see if we have moved past the last item in the cursor, if so return current i.
+				if(cursorCategories.isAfterLast())
+				{
+					Log.d(TAG, "Curosor location: " + String.valueOf(i));
+					return i;
+				}
+				i++;
+			}
+		}
+		return i;		
 	}
 }

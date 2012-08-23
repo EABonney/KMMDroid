@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.3.0.1"
+      android:versionName="0.3.0.2"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
 
@@ -139,7 +139,7 @@
 		</activity>
 		
 		<activity android:name=".ScheduleActionsActivity"
-		    	  android:theme="@android:style/Theme.Dialog"
+		    	  android:theme="@style/DialogNoTitle"
 		    	  android:label="@string/titleDialogScheduleActions">
 		</activity>
 		
@@ -153,6 +153,10 @@
 		
 		<activity android:name=".ScheduleOptionsActivity"
 		    	  android:label="@string/titleScheduleOptions">
+		</activity>
+		
+		<activity android:name=".ViewScheduleActivity"
+		    	  android:label="@string/titleSchedules">
 		</activity>
 		
 		<activity android:name=".HomeScreenConfiguration"

@@ -264,6 +264,8 @@
 	<string name="titleDialogScheduleActions">Enter or Skip</string>
 	<string name="buttonEnter">Enter</string>
 	<string name="buttonSkip">Skip</string>
+	<string name="buttonEdit">Edit</string>
+	<string name="buttonDelete">Delete</string>
 	<string name="scheduleDescription">What would you like to do with: </string>
 	<string name="titleSkipSchedule">Do you really want to skip this schedule?</string>
 	<string name="homeConfigInstructions">Please enter your preferences for this widget below.</string>
@@ -340,4 +342,5 @@
 	    <item>@string/ManualDeposit</item>
 	    <item>@string/DirectDeposit</item>
 	</string-array>
+	<string name="titleViewSchedule">Schedule</string>
 </resources>

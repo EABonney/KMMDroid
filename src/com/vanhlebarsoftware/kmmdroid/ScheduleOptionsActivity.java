@@ -72,10 +72,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
         textEndDate = (TextView) findViewById(R.id.titleScheduleEndDate);
         textRemainingTrans = (TextView) findViewById(R.id.titleScheduleNumTransactions);
         
-        // Get the Action.
-        Bundle extras = getIntent().getExtras();
-        //Action = extras.getInt("Action");
-        
         // Set our OnClickListener events
         btnSelectDate.setOnClickListener(new View.OnClickListener() 
         {	
@@ -186,7 +182,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			Log.d(TAG, "Inside onItemSelected");
 			switch( parent.getId())
 			{
 				case R.id.scheduleWeekendOption:
@@ -213,15 +208,37 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 		return this.intWeekendOption;
 	}
 	
+	public void setScheduleWeekendOption(int value)
+	{
+		this.intWeekendOption = value;
+	}
+	
 	public String getScheduleEstimate()
 	{
 		// The database actually stores this "Fixed" not estimate, so we return just the opp of the checkbox.
 		return this.ckboxEstimate.isChecked() == true ? "N" : "Y";
 	}
 	
+	public void setScheduleIsEstimate(String str)
+	{
+		// The database actually stores this as "Fixed" not estimate, so we have to set the checkbox to the opposite of what is stored.
+		if( str.equals( "N" ) )
+			this.ckboxEstimate.setChecked(true);
+		else if( str.equals( "Y" ) )
+			this.ckboxEstimate.setChecked(false);
+	}
+	
 	public String getScheduleAutoEnter()
 	{
 		return this.ckboxAutoEnter.isChecked() == true ? "Y" : "N";
+	}
+	
+	public void setScheduleAutoEnter(String str)
+	{
+		if( str.equals("Y") )
+			this.ckboxAutoEnter.setChecked(true);
+		else if( str.equals("N") )
+			this.ckboxAutoEnter.setChecked(false);
 	}
 	
 	public boolean getWillScheduleEnd()
@@ -239,6 +256,38 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 		.append(str[0]).append("-")
 		.append(str[1]).toString();
 
+	}
+	
+	public void setEndDate(String str)
+	{
+		if( str != null)
+		{
+			// Turn on the ending items
+			this.ckboxScheduleEnds.setChecked(true);
+			this.editEndDate.setEnabled(true);
+			this.editNumTransactions.setEnabled(true);
+			this.btnSelectDate.setEnabled(true);
+			this.textEndDate.setEnabled(true);
+			this.textRemainingTrans.setEnabled(true);
+
+			// Month is 0 based so we need to subtract 1
+			String date[] = str.split("-");
+			intYear = Integer.valueOf(date[0]);
+			intMonth = Integer.valueOf(date[1]) - 1;
+			intDay = Integer.valueOf(date[2]);
+			
+			updateDisplay();
+		}
+		else
+		{
+			// Turn off the ending items
+			this.ckboxScheduleEnds.setChecked(false);
+			this.editEndDate.setEnabled(false);
+			this.editNumTransactions.setEnabled(false);
+			this.btnSelectDate.setEnabled(false);
+			this.textEndDate.setEnabled(false);
+			this.textRemainingTrans.setEnabled(false);
+		}
 	}
 	
 	public int getRemainingTransactions()

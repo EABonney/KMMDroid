@@ -1,15 +1,12 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -22,10 +19,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-@SuppressWarnings("unused")
-public class ViewTransactionActivity extends Activity
+public class ViewScheduleActivity extends Activity 
 {
-	private static final String TAG = "ViewTransactionActivity";
+	private static final String TAG = ViewScheduleActivity.class.getSimpleName();
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static int C_TRANSACTIONID = 0;
@@ -46,42 +42,41 @@ public class ViewTransactionActivity extends Activity
 	private static int C_CHECKNUMBER = 15;
 	private static int C_POSTDATE = 16;
 	private static int C_BANKID = 17;
-	private static final String dbTable = "kmmSplits, kmmAccounts";
+	private static final String dbTable = "kmmSplits, kmmAccounts, kmmPayees";
 	private static final String[] dbColumns = { "splitId", "transactionId AS _id", "valueFormatted", "memo",
-												"accountId", "id", "checkNumber", "accountName" };
-	private static final String strSelection = "(accountId = id) AND transactionId = ? AND splitId <> 0";
+												"accountId", "id", "checkNumber", "accountName", "kmmPayees.name AS payeeName" };
+	private static final String strSelection = "(accountId = id) AND transactionId = ? AND splitId <> 0 AND kmmPayees.id = kmmSplits.payeeId";
 	private static final String strOrderBy = "splitId ASC";
 	static final String[] FROM = { "accountName", "memo", "valueFormatted" };
 	static final int[] TO = { R.id.splitsAccountName, R.id.splitsMemo, R.id.splitsAmount  };
-	String Description = null;
-	String TransID = null;
-	String strStatus = null;
+	String schId = null;
 	ArrayList<Split> Splits;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
 	ListView listSplits;
-	TextView textTitleViewTrans;
+	TextView textTitleViewSch;
 	TextView textDate;
+	TextView textChkNum;
 	TextView textAmount;
 	TextView textMemo;
 	TextView textDescription;
 	TextView textStatus;
 	
-	/* Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_transaction);
+        setContentView(R.layout.view_schedule);
 
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
         listSplits = (ListView) findViewById(R.id.listSplits);
-        textTitleViewTrans = (TextView) findViewById(R.id.titleViewTransaction);
+        textTitleViewSch = (TextView) findViewById(R.id.titleViewSchedule);
         textDate = (TextView) findViewById(R.id.vtDate);
+        textChkNum = (TextView) findViewById(R.id.vtNumber);
         textAmount = (TextView) findViewById(R.id.vtAmount);
         textMemo = (TextView) findViewById(R.id.vtMemo);
         textDescription = (TextView) findViewById(R.id.vtDescription);
@@ -95,30 +90,35 @@ public class ViewTransactionActivity extends Activity
         
         // Set the Description, Amount, Date and Memo fields.
         Bundle extras = getIntent().getExtras();
-        textDescription.setText(extras.getString("Description"));
-        textDate.setText(extras.getString("Date"));
-		textAmount.setText(extras.getString("Amount"));
-        textMemo.setText(extras.getString("Memo"));
-        TransID = extras.getString("TransID");
-        strStatus = extras.getString("Status");
+        schId = extras.getString("id");
 	}
 
 	@Override
-	public void onDestroy()
+	protected void onDestroy() 
 	{
+		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
-	
+
 	@Override
-	protected void onResume()
+	protected void onResume() 
 	{
 		super.onResume();
-
-		// Put the transactionId into a String array
-		String[] selectionArgs = { TransID };
 		
-		//Run the query on the database to get the transactions.
+		// Get the schedule's base information
+		Cursor sch = KMMDapp.db.query("kmmSchedules", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
+		sch.moveToFirst();
+		textTitleViewSch.setText(sch.getString(Schedule.COL_DESCRIPTION));
+		textDate.setText(sch.getString(Schedule.COL_NEXTPAYMENTDUE));
+		
+		// Put the transactionId into a String array
+		String[] selectionArgs = { schId };
+		
+		//Run the query on the database to get the schedule's split information.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, selectionArgs, null, null, strOrderBy);
+		cursor.moveToFirst();
+		textChkNum.setText(cursor.getString(6));
+		
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
@@ -126,17 +126,9 @@ public class ViewTransactionActivity extends Activity
 		adapter.setViewBinder(VIEW_BINDER);
 		listSplits.setAdapter(adapter); 
 		
-		// Set the status of the transaction
-		if(strStatus.contentEquals("0"))
-			textStatus.setText(R.string.notreconciled);
-		else if(strStatus.contentEquals("1"))
-			textStatus.setText(R.string.cleared);
-		else if(strStatus.contentEquals("2"))
-			textStatus.setText(R.string.reconciled);
-		else
-			textStatus.setText("Error!!");
+
 	}
-	
+
 	// Called first time the user clicks on the menu button
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -155,7 +147,7 @@ public class ViewTransactionActivity extends Activity
 			case R.id.itemEdit:
 				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 				i.putExtra("Action", ACTION_EDIT);
-				i.putExtra("transId", TransID);
+				i.putExtra("scheduleId", schId);
 				startActivity(i);
 				finish();
 				break;
@@ -167,31 +159,29 @@ public class ViewTransactionActivity extends Activity
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {					
 						// Get our splits details.
-						Splits = getSplits(TransID);
+						Splits = getSplits(schId);
 											
+						// Delete the schedule 
+						KMMDapp.db.delete("kmmSchedules", "id=?", new String[] { schId });
+						
 						// Delete the transaction from the transactions table.
-						KMMDapp.db.delete("kmmTransactions", "id=?", new String[] { TransID });
+						KMMDapp.db.delete("kmmTransactions", "id=?", new String[] { schId });
 						
 						// Delete the splits for the selected transaction from the splits table
-						int splitsDeleted = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { TransID });						
+						int splitsDeleted = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { schId });						
 						
 						// Update the number of splits inside kmmFileInfo table.
-						Cursor c = KMMDapp.db.query("kmmFileInfo", new String[] { "transactions", "splits" }, null, null, null, null, null);
+						Cursor c = KMMDapp.db.query("kmmFileInfo", new String[] { "transactions", "splits", "schedules" }, null, null, null, null, null);
 						startManagingCursor(c);
 						c.moveToFirst();
 						int trans = c.getInt(0);
 						int splits = c.getInt(1);
+						int schedules = c.getInt(2);
 
+						KMMDapp.updateFileInfo("schedules", (schedules - 1));
 						KMMDapp.updateFileInfo("transactions", (trans - 1));
 						KMMDapp.updateFileInfo("splits", (splits - splitsDeleted));
-						
-						// Need to update the accounts for the transaction that was just deleted.
-						for(int i=0; i < Splits.size(); i++)
-						{
-							Log.d(TAG, "Split amount: " + Splits.get(i).getValueFormatted());
-							Account.updateAccount(KMMDapp.db, Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
-						}
-						// Update the number of transactions for the accounts used.
+
 						c.close();
 
 						// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
