@@ -20,6 +20,8 @@ import android.util.Log;
 public class KMMDroidApp extends Application implements OnSharedPreferenceChangeListener
 {
 	private static final String TAG = KMMDroidApp.class.getSimpleName();
+	public static final int ALARM_HOMEWIDGET = 1001;
+	public static final int ALARM_NOTIFICATIONS = 1002;
 	public SharedPreferences prefs;
 	SQLiteDatabase db;
 	private String fullPath = null;
@@ -69,6 +71,13 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 			prefEditor.putString("Full Path", "");
 			prefEditor.commit();
 		}
+		
+        // See if the user wants to get notifications of schedules that are due Today or past due.
+        if(prefs.getBoolean("receiveNotifications", false))
+        {
+    		final Calendar updateTime = Calendar.getInstance();
+        	setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+        }
 	}
 	
 	public void openDB()
@@ -274,9 +283,10 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		this.serviceRunning = running;
 	}
 	
-	public void setRepeatingAlarm(String updateValue)
+	public void setRepeatingAlarm(String updateValue, Calendar updateTime, int alarmType)
 	{
 		PendingIntent service = null;
+		Intent intent = null;
 		
 		// Set up the repeating alarm based on the user's preferences.
 		final AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -285,16 +295,29 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		TIME.set(Calendar.SECOND, 0);
 		TIME.set(Calendar.MILLISECOND, 0);
 		
-		final Intent intent = new Intent(this, KMMDService.class);
-		service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		
-		if(!updateValue.equals("0"))
-			alarmMgr.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 
-				Long.valueOf(updateValue), service);
-		else
-			alarmMgr.cancel(service);
-		
-		Log.d(TAG, "Repeating alarm set for " + this.prefs.getString("updateFrequency", "0") + " milliseconds.");
+		switch( alarmType )
+		{
+		case ALARM_HOMEWIDGET:
+			intent = new Intent(this, KMMDService.class);
+			service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			
+			if(!updateValue.equals("0"))
+				alarmMgr.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 
+						Long.valueOf(updateValue), service);
+			else
+				alarmMgr.cancel(service);
+			break;
+		case ALARM_NOTIFICATIONS:
+			intent = new Intent(this, KMMDNotificationsService.class);
+			service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			
+			if(updateTime != null)
+				alarmMgr.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 
+						Long.valueOf(30000), service);
+			else
+				alarmMgr.cancel(service);
+			break;
+		}
 	}
 	
 	public void setAutoUpdate(boolean value)

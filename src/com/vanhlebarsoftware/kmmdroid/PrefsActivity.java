@@ -78,6 +78,8 @@ public class PrefsActivity extends PreferenceActivity
 	protected void onPause() 
 	{
 		super.onPause();
+		
+		// First see what we need to do if anything with the HomeWidgets
 		String value = KMMDapp.prefs.getString("updateFrequency", "");
 		if(value.equals("Auto"))
 			KMMDapp.setAutoUpdate(true);
@@ -87,11 +89,23 @@ public class PrefsActivity extends PreferenceActivity
 		if(KMMDapp.getAutoUpdate())
 		{
 			//Cancel any alarm we might have setup at this point.
-			KMMDapp.setRepeatingAlarm("0");
+			KMMDapp.setRepeatingAlarm("0", null, KMMDroidApp.ALARM_HOMEWIDGET);
 			Intent intent = new Intent(KMMDService.DATA_CHANGED);
 			sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);			
 		}
 		else		
-			KMMDapp.setRepeatingAlarm(value);
+			KMMDapp.setRepeatingAlarm(value, null, KMMDroidApp.ALARM_HOMEWIDGET);
+		
+		// Now see if the user has specified they want to get Schedule Notifications.
+		if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
+		{
+			final Calendar updateTime = Calendar.getInstance();
+			//Cancel any alarm we might have setup at this point.
+			KMMDapp.setRepeatingAlarm(null, null, KMMDroidApp.ALARM_NOTIFICATIONS);
+			//Now set up the correct time that the user has specified.
+			KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+		}
+		else
+			KMMDapp.setRepeatingAlarm(null, null, KMMDroidApp.ALARM_NOTIFICATIONS);
 	}
 }

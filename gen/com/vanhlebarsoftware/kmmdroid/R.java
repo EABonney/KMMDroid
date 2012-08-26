@@ -534,6 +534,8 @@ public final class R {
         public static final int summaryLastUsedFile=0x7f050009;
         public static final int summaryOpenLastUsed=0x7f050007;
         public static final int summaryPayeeReassign=0x7f050035;
+        public static final int summaryPreferenceTimeToRun=0x7f0500fa;
+        public static final int summaryScheduleNotifications=0x7f0500f6;
         public static final int titleAbout=0x7f05008a;
         public static final int titleAccount=0x7f0500a6;
         public static final int titleAccountCurrency=0x7f050067;
@@ -635,6 +637,10 @@ public final class R {
         public static final int titlePayees=0x7f05001e;
         public static final int titlePayeesAvailable=0x7f050036;
         public static final int titlePreferenceHomeWidget=0x7f0500ac;
+        public static final int titlePreferenceNotifications=0x7f0500f4;
+        public static final int titlePreferenceOverDueSchedules=0x7f0500f7;
+        public static final int titlePreferenceTimeToRun=0x7f0500f9;
+        public static final int titlePreferencesDueTodaySchedules=0x7f0500f8;
         public static final int titlePrefs=0x7f05001b;
         public static final int titleReassignPayee=0x7f050037;
         public static final int titleScheduleAccount=0x7f0500dc;
@@ -644,6 +650,7 @@ public final class R {
         public static final int titleScheduleEstimate=0x7f0500df;
         public static final int titleScheduleFrequency=0x7f0500db;
         public static final int titleScheduleName=0x7f0500da;
+        public static final int titleScheduleNotifications=0x7f0500f5;
         public static final int titleScheduleNumTransactions=0x7f0500e3;
         public static final int titleScheduleOptions=0x7f0500dd;
         public static final int titleSchedulePaymentInfo=0x7f0500d9;

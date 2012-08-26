@@ -343,4 +343,11 @@
 	    <item>@string/DirectDeposit</item>
 	</string-array>
 	<string name="titleViewSchedule">Schedule</string>
+	<string name="titlePreferenceNotifications">Notifications</string>
+	<string name="titleScheduleNotifications">Receive notifications</string>
+	<string name="summaryScheduleNotifications">Do you want to receive notifications of schedules due?</string>
+	<string name="titlePreferenceOverDueSchedules">Over due schedules</string>
+	<string name="titlePreferencesDueTodaySchedules">Schedules due today</string>
+	<string name="titlePreferenceTimeToRun">Time to run</string>
+	<string name="summaryPreferenceTimeToRun">When do you wish to be reminded?</string>
 </resources>

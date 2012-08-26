@@ -5,10 +5,7 @@
     	android:summary="@string/summaryOpenLastUsed"
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
-    </CheckBoxPreference>
-	
-    
-    <PreferenceCategory 
+    </CheckBoxPreference><PreferenceCategory 
         android:title="@string/titlePreferenceHomeWidget">
 			<ListPreference 
 			    android:key="accountUsed"
@@ -29,5 +26,12 @@
     		    android:summary="@string/summaryDisplayFrequency" 
     		    android:entries="@array/WeeksToDisplay" 
     		    android:entryValues="@array/WeeksToDisplayValues"/>
-	</PreferenceCategory>    
+    		
+	</PreferenceCategory>
+    <PreferenceCategory android:title="@string/titlePreferenceNotifications">
+        <CheckBoxPreference android:key="receiveNotifications" android:title="@string/titleScheduleNotifications" android:summary="@string/summaryScheduleNotifications"/>
+        <CheckBoxPreference android:title="@string/titlePreferenceOverDueSchedules" android:key="overdueSchedules" android:dependency="receiveNotifications"/>
+        <CheckBoxPreference android:title="@string/titlePreferencesDueTodaySchedules" android:key="dueTodaySchedules" android:dependency="receiveNotifications"/>
+        <Preference android:title="@string/titlePreferenceTimeToRun" android:summary="@string/summaryPreferenceTimeToRun" android:key="timetoRun" android:dependency="receiveNotifications"/>
+    </PreferenceCategory>    
 </PreferenceScreen>

@@ -50,6 +50,8 @@ public class KMMDService extends Service
 		this.kmmdUpdater.interrupt();
 		this.kmmdUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
+		Log.d(TAG, "Closing database....");
+		this.kmmdApp.closeDB();
 	}
 
 	@Override

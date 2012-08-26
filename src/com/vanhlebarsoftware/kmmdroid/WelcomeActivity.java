@@ -49,8 +49,15 @@ public class WelcomeActivity extends Activity
         	if(!KMMDapp.getAutoUpdate())
         	{
         		String value = KMMDapp.prefs.getString("updateFrequency", "0");
-        		KMMDapp.setRepeatingAlarm(value);
+        		KMMDapp.setRepeatingAlarm(value, null, KMMDroidApp.ALARM_HOMEWIDGET);
         	}
+        }
+        
+        // See if the user wants to get notifications of schedules that are due Today or past due.
+        if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
+        {
+    		final Calendar updateTime = Calendar.getInstance();
+        	KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
         }
         
         if( !Closing )

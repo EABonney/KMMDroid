@@ -519,6 +519,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 1);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_WEEKLY:
 				while(calNextPaymentDate.before(calEnd))
@@ -526,7 +528,9 @@ public class Schedule
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 7);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
-				}			
+				}	
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_FORTNIGHTLY:
 			case OCCUR_EVERYOTHERWEEK:
@@ -536,6 +540,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 14);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYTHREEWEEKS:
 				while(calNextPaymentDate.before(calEnd))
@@ -544,6 +550,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 21);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYTHIRTYDAYS:
 				while(calNextPaymentDate.before(calEnd))
@@ -552,6 +560,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 30);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_MONTHLY:
 				while(calNextPaymentDate.before(calEnd))
@@ -560,6 +570,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.MONTH, 1);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYFOURWEEKS:
 				while(calNextPaymentDate.before(calEnd))
@@ -568,6 +580,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 28);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYEIGHTWEEKS:
 				while(calNextPaymentDate.before(calEnd))
@@ -576,6 +590,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 56);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}				
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYOTHERMONTH:
 				while(calNextPaymentDate.before(calEnd))
@@ -584,6 +600,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.MONTH, 2);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYTHREEMONTHS:
 			case OCCUR_QUARTERLY:
@@ -593,6 +611,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.MONTH, 3);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_TWICEYEARLY:
 				while(calNextPaymentDate.before(calEnd))
@@ -601,6 +621,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.MONTH, 6);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYOTHERYEAR:
 				while(calNextPaymentDate.before(calEnd))
@@ -609,6 +631,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.YEAR, 2);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}				
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_EVERYFOURMONTHS:
 				while(calNextPaymentDate.before(calEnd))
@@ -617,6 +641,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.MONTH, 4);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_YEARLY:
 				while(calNextPaymentDate.before(calEnd))
@@ -625,6 +651,8 @@ public class Schedule
 					calNextPaymentDate.add(Calendar.YEAR, 1);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			default:
 				break;
@@ -848,7 +876,28 @@ public class Schedule
 	{
 		GregorianCalendar calToday = new GregorianCalendar();
 		
-		return this.DueDate.before(calToday);
+		if(this.DueDate.get(Calendar.DAY_OF_YEAR) < calToday.get(Calendar.DAY_OF_YEAR))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isDueToday()
+	{
+		GregorianCalendar calToday = new GregorianCalendar();
+		
+		if(this.DueDate.get(Calendar.DAY_OF_YEAR) == calToday.get(Calendar.DAY_OF_YEAR))
+			return true;
+		else
+			return false;
+	}
+	
+	static public boolean isDueToday(Calendar date1, Calendar date2)
+	{
+		if(date1.get(Calendar.DAY_OF_YEAR) == date2.get(Calendar.DAY_OF_YEAR))
+			return true;
+		else
+			return false;
 	}
 	
 	public void skipSchedule()
@@ -974,5 +1023,54 @@ public class Schedule
 		}
 		
 		return String.valueOf(this.DueDate.get(Calendar.YEAR) + "-" + strMonth + "-" + strDay);
+	}
+	
+	static public String padFormattedDate(String date)
+	{
+		String str[] = date.split("-");
+		String strDay = null;
+		int intDay = Integer.valueOf(str[2]);
+		String strMonth = null;
+		int intMonth = Integer.valueOf(str[1]);
+
+		switch(intDay)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + String.valueOf(intDay);
+				break;
+			default:
+				strDay = String.valueOf(intDay);
+			break;
+		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strMonth = "0" + String.valueOf(intMonth);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth);
+				break;
+		}
+		
+		return String.valueOf(str[0] + "-" + strMonth + "-" + strDay);	
 	}
 }

@@ -184,5 +184,7 @@
 		
 		<service android:name=".KMMDService">
 		</service>
+		<service android:name=".KMMDNotificationsService">
+		</service>
     </application>
 </manifest>
