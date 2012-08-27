@@ -28,10 +28,26 @@
     		    android:entryValues="@array/WeeksToDisplayValues"/>
     		
 	</PreferenceCategory>
-    <PreferenceCategory android:title="@string/titlePreferenceNotifications">
-        <CheckBoxPreference android:key="receiveNotifications" android:title="@string/titleScheduleNotifications" android:summary="@string/summaryScheduleNotifications"/>
-        <CheckBoxPreference android:title="@string/titlePreferenceOverDueSchedules" android:key="overdueSchedules" android:dependency="receiveNotifications"/>
-        <CheckBoxPreference android:title="@string/titlePreferencesDueTodaySchedules" android:key="dueTodaySchedules" android:dependency="receiveNotifications"/>
-        <Preference android:title="@string/titlePreferenceTimeToRun" android:summary="@string/summaryPreferenceTimeToRun" android:key="timetoRun" android:dependency="receiveNotifications"/>
+    <PreferenceCategory 
+		android:title="@string/titlePreferenceNotifications">
+        	<CheckBoxPreference
+        	    android:key="receiveNotifications"
+        	    android:title="@string/titleScheduleNotifications"
+        	    android:summary="@string/summaryScheduleNotifications"/>
+        	<CheckBoxPreference
+        	    android:title="@string/titlePreferenceOverDueSchedules"
+        	    android:key="overdueSchedules"
+        	    android:dependency="receiveNotifications"/>
+        	<CheckBoxPreference
+        	    android:title="@string/titlePreferencesDueTodaySchedules"
+        	    android:key="dueTodaySchedules"
+        	    android:dependency="receiveNotifications"/>
+        	<com.vanhlebarsoftware.kmmdroid.KMMDTimePreference
+        	    android:name="@string/titlePreferenceTimeToRun"
+        	    android:summary="@string/summaryPreferenceTimeToRun"
+        	    android:dialogLayout="@layout/time_preference"
+        	    android:title="Default notification time"
+        	    android:key="notificationTime"
+				android:dependency="receiveNotifications" />
     </PreferenceCategory>    
 </PreferenceScreen>

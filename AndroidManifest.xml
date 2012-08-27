@@ -159,6 +159,10 @@
 		    	  android:label="@string/titleSchedules">
 		</activity>
 		
+		<activity android:name=".SchedulesNotificationsActivity"
+		    	  android:label="@string/titleSchedulesNotifications">
+		</activity>
+		
 		<activity android:name=".HomeScreenConfiguration"
 		    	  android:label="@string/titleHomeWidgetConfiguration">
 		    <intent-filter>

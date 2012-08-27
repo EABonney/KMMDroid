@@ -350,4 +350,7 @@
 	<string name="titlePreferencesDueTodaySchedules">Schedules due today</string>
 	<string name="titlePreferenceTimeToRun">Time to run</string>
 	<string name="summaryPreferenceTimeToRun">When do you wish to be reminded?</string>
+	<string name="titleSchedulesNotifications">Schedules due</string>
+	<string name="titlePastDue">Past due</string>
+	<string name="titleDueToday">Today</string>
 </resources>

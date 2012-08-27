@@ -51,7 +51,8 @@ public class KMMDService extends Service
 		this.kmmdUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
 		Log.d(TAG, "Closing database....");
-		this.kmmdApp.closeDB();
+		if(this.kmmdApp.isDbOpen())
+			this.kmmdApp.closeDB();
 	}
 
 	@Override
@@ -767,14 +768,9 @@ public class KMMDService extends Service
 		@Override
 		public void run()
 		{
-			KMMDService kmmdService = KMMDService.this;
-			
-			while(kmmdService.runFlag)
-			{
-				clearHomeWidgets();
-				updateHomeWidgets();
-				stopSelf();
-			}
+			clearHomeWidgets();
+			updateHomeWidgets();
+			stopSelf();
 		}
 	}
 }

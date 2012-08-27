@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
@@ -117,21 +116,15 @@ public class LedgerActivity extends Activity
 		String strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
 				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
 		
-		Log.d(TAG, "strToday: " + strToday);
-		Log.d(TAG, "strLastYear: " + strLastYear);
-		
 		// Display the Account we are looking at in the TextView TitleLedger
 		textTitleLedger.setText(AccountName);
 
 		// Put the AccountID into a String array
-		Log.d(TAG, "strToday: " + strToday);
-		Log.d(TAG, "strLastYear: " + strLastYear);
 		String[] selectionArgs = { AccountID, strToday, strLastYear };
 		
 		//Run the query on the database to get the transactions.
 		cursor = KMMDapp.db.rawQuery(sql, selectionArgs);
 		startManagingCursor(cursor);
-		Log.d(TAG, "Cursor Size: " + cursor.getCount());
 		
 		// Load up our transactions into our ArrayList
 		// This probably is extremely ineffecient, may want to review this better.

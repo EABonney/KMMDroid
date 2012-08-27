@@ -511,6 +511,8 @@ public class Schedule
 			case OCCUR_ONCE:
 				if(calScheduleStart.before(calEnd))
 					Dates.add(calScheduleStart);
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
 				break;
 			case OCCUR_DAILY:
 				while(calNextPaymentDate.before(calEnd))

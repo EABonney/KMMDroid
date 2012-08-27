@@ -71,13 +71,6 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 			prefEditor.putString("Full Path", "");
 			prefEditor.commit();
 		}
-		
-        // See if the user wants to get notifications of schedules that are due Today or past due.
-        if(prefs.getBoolean("receiveNotifications", false))
-        {
-    		final Calendar updateTime = Calendar.getInstance();
-        	setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
-        }
 	}
 	
 	public void openDB()
@@ -309,13 +302,40 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 			break;
 		case ALARM_NOTIFICATIONS:
 			intent = new Intent(this, KMMDNotificationsService.class);
-			service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+			service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			
 			if(updateTime != null)
-				alarmMgr.setRepeating(AlarmManager.RTC, TIME.getTime().getTime(), 
-						Long.valueOf(30000), service);
+			{
+				// Only set the alarm if it is not already set.
+				// Will need to relook at this b/c if the alarm is already set but the time has changed we have a problem.
+				if( !isNotificationAlarmSet() )
+				{
+					Log.d(TAG, "Setup the nofications alarm.");
+					Log.d(TAG, "Alarm date: " + updateTime.get(Calendar.MONTH) + "-" + updateTime.get(Calendar.DAY_OF_MONTH) + "-" + updateTime.get(Calendar.YEAR));
+					Log.d(TAG, "Alarm time: " + updateTime.get(Calendar.HOUR_OF_DAY) + ":" + updateTime.get(Calendar.MINUTE) + ":" + updateTime.get(Calendar.SECOND));
+					alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
+					SharedPreferences.Editor prefEditor = prefs.edit();
+					prefEditor.putBoolean("notificationAlarmSet", true);
+					prefEditor.commit();
+				}
+				else
+					Log.d(TAG, "Not setting the notifications alarm as it is alredy set!");
+			}
 			else
-				alarmMgr.cancel(service);
+			{
+				// Cancel the alarm if it is already set.
+				if( isNotificationAlarmSet() )	
+				{
+					Log.d(TAG, "Canceling the currently setup notifications alarm.");
+					SharedPreferences.Editor prefEditor = prefs.edit();
+					prefEditor.putBoolean("notificationAlarmSet", false);
+					prefEditor.commit();
+					alarmMgr.cancel(service);
+					//service.cancel();
+				}
+				else
+					Log.d(TAG, "No need to cancel the notifications alarm as it was never set.");
+			}
 			break;
 		}
 	}
@@ -328,5 +348,10 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public boolean getAutoUpdate()
 	{
 		return this.autoUpdate;
+	}
+	
+	public boolean isNotificationAlarmSet()
+	{
+		return prefs.getBoolean("notificationAlarmSet", false);
 	}
 }

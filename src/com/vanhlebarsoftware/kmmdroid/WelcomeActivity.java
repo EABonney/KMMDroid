@@ -56,8 +56,20 @@ public class WelcomeActivity extends Activity
         // See if the user wants to get notifications of schedules that are due Today or past due.
         if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
         {
-    		final Calendar updateTime = Calendar.getInstance();
-        	KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+        	// Check to see if the alarm is already set, if not then set it.
+        	if( !KMMDapp.isNotificationAlarmSet() )
+        	{
+        		Log.d(TAG, "First time we have run and we need to setup the Notifications for the user.");
+        		final Calendar updateTime = Calendar.getInstance();
+        		int intHour = KMMDapp.prefs.getInt("notificationTime.hour", 0);
+        		int intMin = KMMDapp.prefs.getInt("notificationTime.minute", 0);
+        		updateTime.set(Calendar.HOUR_OF_DAY, intHour);
+        		updateTime.set(Calendar.MINUTE, intMin);
+        		updateTime.set(Calendar.SECOND, 0);
+        		KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+        	}
+        	else
+        		Log.d(TAG, "Nofications alreadyd set up, no need to reset them......");
         }
         
         if( !Closing )

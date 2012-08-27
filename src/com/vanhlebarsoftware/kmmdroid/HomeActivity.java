@@ -73,6 +73,10 @@ public class HomeActivity extends Activity
 	{
 		super.onResume();
 		
+		// Make sure the database is open and ready.
+		if(!KMMDapp.isDbOpen())
+			KMMDapp.openDB();
+		
 		//Get all the accounts to be displayed.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
 		startManagingCursor(cursor);

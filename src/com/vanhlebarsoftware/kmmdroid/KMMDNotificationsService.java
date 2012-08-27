@@ -40,6 +40,11 @@ public class KMMDNotificationsService extends Service
 		this.kmmdNotificationScheduleUpdater.interrupt();
 		this.kmmdNotificationScheduleUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
+		if(this.kmmdApp.isDbOpen())
+		{
+			Log.d(TAG, "Closing database....");
+			this.kmmdApp.closeDB();
+		}
 	}
 	
 	@Override
@@ -50,7 +55,7 @@ public class KMMDNotificationsService extends Service
 		this.runFlag = true;
 		this.kmmdApp.setServiceRunning(true);
 		this.kmmdNotificationScheduleUpdater.start();
-		
+
 		return START_NOT_STICKY;
 	}
 	
@@ -99,15 +104,28 @@ public class KMMDNotificationsService extends Service
 			}
 			
 			this.kmmdNotifcationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			this.kmmdNotification = new Notification(R.id.kmmd_icon, "", 0);
-			PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, new Intent(this, SchedulesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+			this.kmmdNotification = new Notification(R.drawable.homewidget_icon, "", 0);
+			Intent intent = new Intent(this, SchedulesNotificationsActivity.class);
+			intent.putExtra("accountUsed", kmmdApp.prefs.getString("accountUsed", ""));
+			PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			this.kmmdNotification.when = System.currentTimeMillis();
 			this.kmmdNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-			CharSequence notificationTitle = "Schedules due";
-			String notificationSummary = "PastDue: " + String.valueOf(pastDue) + "\n" + "Due today: " + String.valueOf(dueToday);
+			String notificationTitle = "Schedules due";
+			String notificationSummary = null;
+			String stroverDue = "";
+			String strdueToday = "";
+			if(kmmdApp.prefs.getBoolean("overdueSchedules", false))
+				stroverDue = "Overdue: " + String.valueOf(pastDue);
+			if(kmmdApp.prefs.getBoolean("dueTodaySchedules", false))
+				strdueToday = "Due today: " + String.valueOf(dueToday);
+			
+			notificationSummary = stroverDue + "    " + strdueToday;
 			this.kmmdNotification.setLatestEventInfo(this, notificationTitle, notificationSummary, pendingIntent);
-			this.kmmdNotifcationMgr.notify(0, this.kmmdNotification);
-		
+			
+			// Only need to notify if we actually have schedules past due or due today.
+			if(Schedules.size() > 0)
+				this.kmmdNotifcationMgr.notify(0, this.kmmdNotification);
+			
 			Log.d(TAG, "Schedules past due: " + String.valueOf(pastDue));
 			Log.d(TAG, "Schedules due today: " + String.valueOf(dueToday));
 		}
@@ -130,13 +148,8 @@ public class KMMDNotificationsService extends Service
 		@Override
 		public void run()
 		{
-			KMMDNotificationsService kmmdNotificationsService = KMMDNotificationsService.this;
-			
-			while(kmmdNotificationsService.runFlag)
-			{
-				checkSchedules();
-				stopSelf();
-			}
+			checkSchedules();
+			stopSelf();
 		}
 	}
 }

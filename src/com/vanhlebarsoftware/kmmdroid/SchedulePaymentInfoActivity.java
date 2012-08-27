@@ -189,6 +189,9 @@ public class SchedulePaymentInfoActivity extends Activity
         Splits = new ArrayList<Split>();
         OrigSplits = new ArrayList<Split>();
         
+        // Set default values for a new schedule.
+        strSchFreqDesc = "Once";
+        
 	}
 	@Override
 	protected void onDestroy() 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#62B1F6" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/pastDue">
+  		<TextView 
+			android:layout_height="0dip"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/titlePastDue"
+			android:text="@string/titlePastDue"
+			android:textSize="20dip"
+			android:textColor="@android:color/black" />	
+        <ListView
+   			android:layout_height="fill_parent"
+   			android:layout_width="fill_parent"
+   			android:id="@+id/listPastDueTransactions"
+    		android:background="#afff"
+			android:cacheColorHint="#00000000">    
+   		</ListView>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:id="@+id/dueToday">
+  		<TextView 
+			android:layout_height="0dip"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/titleDueToday"
+			android:text="@string/titleDueToday"
+			android:textSize="20dip"
+			android:textColor="@android:color/black" />	
+        <ListView
+   			android:layout_height="fill_parent"
+   			android:layout_width="fill_parent"
+   			android:id="@+id/listDueTodayTransactions"
+    		android:background="#afff"
+			android:cacheColorHint="#00000000">    
+   		</ListView>
+    </LinearLayout>
+</LinearLayout>
