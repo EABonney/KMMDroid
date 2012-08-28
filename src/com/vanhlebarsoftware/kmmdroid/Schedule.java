@@ -432,7 +432,6 @@ public class Schedule
 	
 	public String formatDateString()
 	{
-		Log.d(TAG, "Date: " + DueDate.toString());
 		return String.valueOf(this.DueDate.get(Calendar.MONTH) + 1) + "/" + String.valueOf(this.DueDate.get(Calendar.DAY_OF_MONTH)) +
 				"/" + String.valueOf(this.DueDate.get(Calendar.YEAR));
 	}
@@ -718,8 +717,6 @@ public class Schedule
 	
 	static public int getOccurrenceFromMultiplier(int multiplier, String strDesc)
 	{
-		Log.d(TAG, "multiplier: " + String.valueOf(multiplier));
-		Log.d(TAG, "strDesc: " + strDesc);
 		if( strDesc.equals("Once") )
 			return OCCUR_ONCE;
 		else if ( strDesc.equals("Day") )

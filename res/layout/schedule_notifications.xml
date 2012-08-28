@@ -6,49 +6,45 @@
     android:orientation="vertical"
     android:background="#62B1F6" >
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:id="@+id/pastDue">
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content" 
+	    android:orientation="vertical">
   		<TextView 
-			android:layout_height="0dip"
+			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/titlePastDue"
 			android:text="@string/titlePastDue"
 			android:textSize="20dip"
 			android:textColor="@android:color/black" />	
         <ListView
-   			android:layout_height="fill_parent"
+   			android:layout_height="wrap_content"
    			android:layout_width="fill_parent"
    			android:id="@+id/listPastDueTransactions"
     		android:background="#afff"
 			android:cacheColorHint="#00000000">    
    		</ListView>
-    </LinearLayout>
-    
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:id="@+id/dueToday">
+   	</LinearLayout>
+   	
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" >
   		<TextView 
-			android:layout_height="0dip"
+			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/titleDueToday"
 			android:text="@string/titleDueToday"
 			android:textSize="20dip"
-			android:textColor="@android:color/black" />	
+			android:textColor="@android:color/black" />
         <ListView
-   			android:layout_height="fill_parent"
+   			android:layout_height="wrap_content"
    			android:layout_width="fill_parent"
    			android:id="@+id/listDueTodayTransactions"
     		android:background="#afff"
 			android:cacheColorHint="#00000000">    
    		</ListView>
-    </LinearLayout>
+	</LinearLayout>
 </LinearLayout>

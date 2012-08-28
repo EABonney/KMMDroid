@@ -353,4 +353,5 @@
 	<string name="titleSchedulesNotifications">Schedules due</string>
 	<string name="titlePastDue">Past due</string>
 	<string name="titleDueToday">Today</string>
+	<string name="titleKMMDAlarmReceiver">Alarm Receiver</string>
 </resources>

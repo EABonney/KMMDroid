@@ -100,11 +100,16 @@ public class PrefsActivity extends PreferenceActivity
 		if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
 		{
 			final Calendar updateTime = Calendar.getInstance();
+			final Calendar now = Calendar.getInstance();
     		int intHour = KMMDapp.prefs.getInt("notificationTime.hour", 0);
     		int intMin = KMMDapp.prefs.getInt("notificationTime.minute", 0);
     		updateTime.set(Calendar.HOUR_OF_DAY, intHour);
     		updateTime.set(Calendar.MINUTE, intMin);
     		updateTime.set(Calendar.SECOND, 0);
+    		
+    		//If the user set a time to before now, set the alarm to go off tomorrow.
+    		if(updateTime.before(now))
+    			updateTime.add(Calendar.DAY_OF_MONTH, 1);
     		
 			//Cancel any alarm we might have setup at this point.
 			KMMDapp.setRepeatingAlarm(null, null, KMMDroidApp.ALARM_NOTIFICATIONS);

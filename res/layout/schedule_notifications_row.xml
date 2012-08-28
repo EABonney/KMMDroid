@@ -3,15 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-      android:background="#62B1F6" >
+    android:orientation="horizontal" 
+    android:background="#62B1F6" >
  <!-- First schedule row -->
-  <LinearLayout
-        android:id="@+id/hwRowOne"
-        android:clickable="true"
-      	android:orientation="horizontal"
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent"> 
   <TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
@@ -36,5 +30,4 @@
 		android:id="@+id/scheduleAmount"
 		android:textColor="@android:color/black" /> 
   <!-- End first schedule row -->
-  </LinearLayout>
 </LinearLayout>

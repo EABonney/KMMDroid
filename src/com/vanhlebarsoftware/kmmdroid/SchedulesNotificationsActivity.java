@@ -57,8 +57,8 @@ public class SchedulesNotificationsActivity extends Activity
         KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
-        pastDueLayout = (LinearLayout) findViewById(R.id.pastDue);
-        dueTodayLayout = (LinearLayout) findViewById(R.id.dueToday);
+        //pastDueLayout = (LinearLayout) findViewById(R.id.pastDue);
+        //dueTodayLayout = (LinearLayout) findViewById(R.id.dueToday);
         listpastDue = (ListView) findViewById(R.id.listPastDueTransactions);
         listdueToday = (ListView) findViewById(R.id.listDueTodayTransactions);
         textPastDue = (TextView) findViewById(R.id.titlePastDue);
@@ -66,8 +66,8 @@ public class SchedulesNotificationsActivity extends Activity
         
     	// Now hook into ListViews and set its onItemClickListener member
     	// to our class handler object.
-        listpastDue.setOnItemClickListener(mMessagePastDueClickedHandler);
-        listdueToday.setOnItemClickListener(mMessagePastDueClickedHandler);
+        listpastDue.setOnItemClickListener(mMessageClickedHandler);
+        listdueToday.setOnItemClickListener(mMessageClickedHandler);
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -103,6 +103,11 @@ public class SchedulesNotificationsActivity extends Activity
 		String strYesterday = String.valueOf(calYesterday.get(Calendar.YEAR)) + "-" + String.valueOf(calYesterday.get(Calendar.MONTH)+ 1) + "-"
 				+ String.valueOf(calYesterday.get(Calendar.DAY_OF_MONTH));
 		
+		// Make sure all the ArrayLists are clear.
+		Schedules.clear();
+		pastDueSchedules.clear();
+		dueTodaySchedules.clear();
+		
 		// We have our open schedules from the database, now create the user defined period of cash flow.
 		Schedules = Schedule.BuildCashRequired(cursor, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
 
@@ -119,14 +124,15 @@ public class SchedulesNotificationsActivity extends Activity
 		adapterDueToday = new SchedulesAdapter(this, R.layout.schedule_notifications_row, dueTodaySchedules);
 		listpastDue.setAdapter(adapterPastDue);
 		listdueToday.setAdapter(adapterDueToday);
+
 		
 		// See if the user only wants to display one of the two types of schedule due.
-		if(!KMMDapp.prefs.getBoolean("overdueSchedules", false))
+		if(!KMMDapp.prefs.getBoolean("overdueSchedules", false) || !(pastDueSchedules.size() > 0))
 		{
 			textPastDue.setVisibility(View.GONE);
 			listpastDue.setVisibility(View.GONE);
 		}
-		if(!KMMDapp.prefs.getBoolean("dueTodaySchedules", false))
+		if(!KMMDapp.prefs.getBoolean("dueTodaySchedules", false) || !(dueTodaySchedules.size() > 0))
 		{
 			textDueToday.setVisibility(View.GONE);
 			listdueToday.setVisibility(View.GONE);
@@ -137,21 +143,37 @@ public class SchedulesNotificationsActivity extends Activity
 	}
 	
 	// Message Handler for our ListView clicks
-	private OnItemClickListener mMessagePastDueClickedHandler = new OnItemClickListener() {
+	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() 
+	{
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	Log.d(TAG, "OnItemClickListener()");
-	    	Intent i = new Intent(getBaseContext(), ScheduleActionsActivity.class);
-	    	Schedule sch = pastDueSchedules.get(position);
-	    	i.putExtra("scheduleId", sch.getId());	
-	    	i.putExtra("scheduleDescription", sch.getDescription());
-	    	i.putExtra("Action", 3);
-	    	startActivity(i);
+	    	
+	    	switch( parent.getId() )
+	    	{
+	    	case R.id.listPastDueTransactions:
+	    		Intent i = new Intent(getBaseContext(), ScheduleActionsActivity.class);
+	    		Schedule sch = pastDueSchedules.get(position);
+	    		i.putExtra("scheduleId", sch.getId());	
+	    		i.putExtra("scheduleDescription", sch.getDescription());
+	    		i.putExtra("Action", 3);
+	    		startActivity(i);	    		
+	    		break;
+	    	case R.id.listDueTodayTransactions:
+		    	i = new Intent(getBaseContext(), ScheduleActionsActivity.class);
+		    	sch = dueTodaySchedules.get(position);
+		    	i.putExtra("scheduleId", sch.getId());	
+		    	i.putExtra("scheduleDescription", sch.getDescription());
+		    	i.putExtra("Action", 3);
+		    	startActivity(i);
+		    	break;
+	    	}
 	    }
 	};
 
 	// Message Handler for our listTransactions List View clicks
-	/*private OnItemClickListener mMessageDueTodayClickedHandler = new OnItemClickListener() {
+	/*private OnItemClickListener mMessageDueTodayClickedHandler = new OnItemClickListener() 
+	{
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	Intent i = new Intent(getBaseContext(), ScheduleActionsActivity.class);

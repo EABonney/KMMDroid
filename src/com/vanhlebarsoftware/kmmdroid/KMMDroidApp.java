@@ -37,6 +37,11 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		super.onCreate();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
+		
+		// See if the user has the preference for opening up the last used database. If so, set the path to it.
+    	if( this.prefs.getBoolean("openLastUsed", false) )
+    		setFullPath(this.prefs.getString("Full Path", ""));
+    	
 		String value = this.prefs.getString("updateFrequency", "0");
 		if(value.equals("-1"))
 			this.setAutoUpdate(true);
@@ -75,6 +80,10 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	
 	public void openDB()
 	{
+		//String path = prefs.getString("Full Path", null);
+		//if(path != null)
+			//setFullPath(path);
+		
 		Log.d(TAG, "fullPath: " + fullPath);
 		db = SQLiteDatabase.openDatabase(fullPath, null, 0);
 		dbOpen = true;
@@ -301,8 +310,8 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 				alarmMgr.cancel(service);
 			break;
 		case ALARM_NOTIFICATIONS:
-			intent = new Intent(this, KMMDNotificationsService.class);
-			service = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			intent = new Intent(KMMDNotificationsService.CHECK_SCHEDULES);
+			service = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			
 			if(updateTime != null)
 			{

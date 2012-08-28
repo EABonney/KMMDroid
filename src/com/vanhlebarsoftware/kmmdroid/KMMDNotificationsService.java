@@ -18,6 +18,7 @@ import android.util.Log;
 public class KMMDNotificationsService extends Service
 {
 	private static final String TAG = KMMDNotificationsService.class.getSimpleName();
+	public static final String CHECK_SCHEDULES = "com.vanhlebarsoftware.kmmdroid.CHECK_SCHEDULES";
 	private boolean runFlag = false;
 	private KMMDNotificationScheduleUpdater kmmdNotificationScheduleUpdater;
 	private NotificationManager kmmdNotifcationMgr;
@@ -114,9 +115,9 @@ public class KMMDNotificationsService extends Service
 			String notificationSummary = null;
 			String stroverDue = "";
 			String strdueToday = "";
-			if(kmmdApp.prefs.getBoolean("overdueSchedules", false))
+			if(kmmdApp.prefs.getBoolean("overdueSchedules", false) && pastDue > 0)
 				stroverDue = "Overdue: " + String.valueOf(pastDue);
-			if(kmmdApp.prefs.getBoolean("dueTodaySchedules", false))
+			if(kmmdApp.prefs.getBoolean("dueTodaySchedules", false) && dueToday > 0)
 				strdueToday = "Due today: " + String.valueOf(dueToday);
 			
 			notificationSummary = stroverDue + "    " + strdueToday;

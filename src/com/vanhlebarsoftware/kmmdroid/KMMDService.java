@@ -188,9 +188,11 @@ public class KMMDService extends Service
 				// Convert the Calendar object to a string formated: Month Day, Year (1/10/12)
 				strDate = FormatDate(Date);
 				
-				// See if the current schedule is past due, if so change the text color.
+				// See if the schedule is past due or due today, set color accordingly.
 				if(sch.isPastDue())
 					setPastDueColor(i, views);
+				else if(sch.isDueToday())
+					setDueTodayColor(i, views);
 				else
 					setNormalColor(i, views);
 
@@ -722,6 +724,85 @@ public class KMMDService extends Service
 			view.setTextColor(R.id.scheduleName12, Color.BLACK);
 			view.setTextColor(R.id.scheduleAmount12, Color.BLACK);
 			view.setTextColor(R.id.BalanceAmount12, Color.BLACK);
+			break;	
+		}		
+	}
+	
+	private void setDueTodayColor(int row, RemoteViews view)
+	{
+		switch(row)
+		{
+		case 1:
+			view.setTextColor(R.id.scheduleDate1, Color.GREEN);
+			view.setTextColor(R.id.scheduleName1, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount1, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount1, Color.GREEN);
+			break;
+		case 2:
+			view.setTextColor(R.id.scheduleDate2, Color.GREEN);
+			view.setTextColor(R.id.scheduleName2, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount2, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount2, Color.GREEN);
+			break;
+		case 3:
+			view.setTextColor(R.id.scheduleDate3, Color.GREEN);
+			view.setTextColor(R.id.scheduleName3, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount3, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount3, Color.GREEN);
+			break;
+		case 4:
+			view.setTextColor(R.id.scheduleDate4, Color.GREEN);
+			view.setTextColor(R.id.scheduleName4, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount4, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount4, Color.GREEN);
+			break;
+		case 5:
+			view.setTextColor(R.id.scheduleDate5, Color.GREEN);
+			view.setTextColor(R.id.scheduleName5, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount5, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount5, Color.GREEN);
+			break;
+		case 6:
+			view.setTextColor(R.id.scheduleDate6, Color.GREEN);
+			view.setTextColor(R.id.scheduleName6, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount6, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount6, Color.GREEN);
+			break;
+		case 7:
+			view.setTextColor(R.id.scheduleDate7, Color.GREEN);
+			view.setTextColor(R.id.scheduleName7, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount7, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount7, Color.GREEN);
+			break;
+		case 8:
+			view.setTextColor(R.id.scheduleDate8, Color.GREEN);
+			view.setTextColor(R.id.scheduleName8, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount8, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount8, Color.GREEN);
+			break;
+		case 9:
+			view.setTextColor(R.id.scheduleDate9, Color.GREEN);
+			view.setTextColor(R.id.scheduleName9, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount9, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount9, Color.GREEN);
+			break;
+		case 10:
+			view.setTextColor(R.id.scheduleDate10, Color.GREEN);
+			view.setTextColor(R.id.scheduleName10, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount10, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount10, Color.GREEN);
+			break;
+		case 11:
+			view.setTextColor(R.id.scheduleDate11, Color.GREEN);
+			view.setTextColor(R.id.scheduleName11, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount11, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount11, Color.GREEN);
+			break;
+		case 12:
+			view.setTextColor(R.id.scheduleDate12, Color.GREEN);
+			view.setTextColor(R.id.scheduleName12, Color.GREEN);
+			view.setTextColor(R.id.scheduleAmount12, Color.GREEN);
+			view.setTextColor(R.id.BalanceAmount12, Color.GREEN);
 			break;	
 		}		
 	}

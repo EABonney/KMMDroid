@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.4.0.0"
+      android:versionName="0.4.0.2"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
 
@@ -28,143 +28,181 @@
     	android:name=".KMMDroidApp">
     	
         <activity android:name=".WelcomeActivity"
-                  android:label="@string/app_name">
+                  android:label="@string/app_name"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".FileChooser"
-        		  android:label="@string/titleFileChooser">
+        		  android:label="@string/titleFileChooser"
+        		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".NewDatabaseActivity"
-        		  andrid.label="@string/titleNewDatabase">
+        		  andrid.label="@string/titleNewDatabase"
+        		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".HomeActivity"
-        		  android.label="@string/titleHome">
+        		  android.label="@string/titleHome"
+        		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".LedgerActivity"
-        		  android:label="@string/titleLedger">
+        		  android:label="@string/titleLedger"
+        		  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".ViewTransactionActivity"
-				  android:label="@string/titleViewTransaction">
+				  android:label="@string/titleViewTransaction"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".AccountsActivity"
-				  android:label="@string/titleAccounts">
+				  android:label="@string/titleAccounts"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".PayeeActivity"
-				  android:label="@string/titlePayees">
+				  android:label="@string/titlePayees"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".TransactionsTabActivity"
-				  android:label="@string/titlePayeeTransactions">
+				  android:label="@string/titlePayeeTransactions"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateModifyPayeeActivity"
-				  android:label="@string/titleCreateModPayee">
+				  android:label="@string/titleCreateModPayee"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeAddressActivity"
-				  android:label="@string/titlePayeeAddress">
+				  android:label="@string/titlePayeeAddress"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeDefaultAccountActivity"
-				  android:label="@string/titlePayeeDefaultAccount">
+				  android:label="@string/titlePayeeDefaultAccount"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeMatchingActivity"
-				  android:label="@string/titlePayeeMatching">
+				  android:label="@string/titlePayeeMatching"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeReassignActivity"
-				  android:label="@string/titleReassignPayee">
+				  android:label="@string/titleReassignPayee"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CategoriesActivity"
-				  android:label="@string/titleCategories">
+				  android:label="@string/titleCategories"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateModifyAccountActivity"
-				  android:label="@string/titleCreateAccounts">
+				  android:label="@string/titleCreateAccounts"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateAccountInstitutionActivity"
-				  android:label="@string/titleCreateAccountInstitution">
+				  android:label="@string/titleCreateAccountInstitution"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateAccountAccountActivity"
-				  android:label="@string/titleCreateAccountAccount">
+				  android:label="@string/titleCreateAccountAccount"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateAccountParentActivity"
-				  android:label="@string/titleCreateAccountParent">
+				  android:label="@string/titleCreateAccountParent"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyCategoriesActivity"
-				  android:label="@string/titleCreateModCategory">
+				  android:label="@string/titleCreateModCategory"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CategoriesGeneralActivity"
-				  android:label="@string/titleCategoryGeneral">
+				  android:label="@string/titleCategoryGeneral"
+				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CategoriesHierarchyActivity"
-				  android:label="@string/titleCategoryHierarchy">
+				  android:label="@string/titleCategoryHierarchy"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyInstitutionActivity"
-				  android:label="@string/titleCreateModifyInstitution">
+				  android:label="@string/titleCreateModifyInstitution"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".InstitutionsActivity"
-				  android:label="@string/titleInstitutions">
+				  android:label="@string/titleInstitutions"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyTransactionActivity"
-				  android:label="@string/titleCreateModifyTransactions">
+				  android:label="@string/titleCreateModifyTransactions"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifySplitsActivity"
-				  android:label="@string/titleCreateModifySplits">
+				  android:label="@string/titleCreateModifySplits"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".PrefsActivity"
-				  android.label=".@string/titlePrefs">
+				  android.label=".@string/titlePrefs"
+				  android:screenOrientation="portrait">
 		</activity>
 	
 		<activity android:name=".AboutActivity"
-				  android:label="@string/titleAbout">
+				  android:label="@string/titleAbout"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulesActivity"
-			      android:label="@string/titleSchedules">
+			      android:label="@string/titleSchedules"
+			      android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CashRequirementsActivity"
-				  android:label="@string/titleCashRequirements">
+				  android:label="@string/titleCashRequirements"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CashRequirementsOptionsActivity"
-				  android:label="@string/titleOptions">
+				  android:label="@string/titleOptions"
+				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".ScheduleActionsActivity"
 		    	  android:theme="@style/DialogNoTitle"
-		    	  android:label="@string/titleDialogScheduleActions">
+		    	  android:label="@string/titleDialogScheduleActions"
+		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyScheduleActivity"
-		    	  android:label="@string/titleCreateModifySchedule">
+		    	  android:label="@string/titleCreateModifySchedule"
+		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulePaymentInfoActivity"
-		    	  android:label="@string/titleSchedulePaymentInfo">
+		    	  android:label="@string/titleSchedulePaymentInfo"
+		    	  android:screenOrientation="portrait">
 		</activity>		
 		
 		<activity android:name=".ScheduleOptionsActivity"
-		    	  android:label="@string/titleScheduleOptions">
+		    	  android:label="@string/titleScheduleOptions"
+		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".ViewScheduleActivity"
-		    	  android:label="@string/titleSchedules">
+		    	  android:label="@string/titleSchedules"
+		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulesNotificationsActivity"
-		    	  android:label="@string/titleSchedulesNotifications">
+		    	  android:label="@string/titleSchedulesNotifications"
+		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".HomeScreenConfiguration"
-		    	  android:label="@string/titleHomeWidgetConfiguration">
+		    	  android:label="@string/titleHomeWidgetConfiguration"
+		    	  android:screenOrientation="portrait">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
 		    </intent-filter>
@@ -184,6 +222,13 @@
 			</intent-filter>
 			<meta-data android:name="android.appwidget.provider"
 					   android:resource="@xml/basic_widget_info" />
+		</receiver>
+		
+		<receiver android:name=".KMMDAlarmReceiver"
+		    	  android:label="@string/titleKMMDAlarmReceiver">
+		    <intent-filter>
+		        <action android:name="com.vanhlebarsoftware.kmmdroid.CHECK_SCHEDULES" />
+		    </intent-filter>
 		</receiver>
 		
 		<service android:name=".KMMDService">
