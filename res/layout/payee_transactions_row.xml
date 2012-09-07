@@ -7,7 +7,8 @@
 
 	<LinearLayout
 		android:layout_height="wrap_content"
-		android:layout_width="fill_parent">
+		android:layout_width="fill_parent"
+		android:id="@+id/payeeTransRow">
 			
 		<TextView
 			android:layout_height="wrap_content"
@@ -15,7 +16,6 @@
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/ptrDate"
-			android:text="Date"
 			android:textSize="12sp"
 			android:textColor="@android:color/black" />
 			
@@ -25,7 +25,6 @@
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/ptrAccount"
-			android:text="Account"
 			android:textSize="12sp"
 			android:textColor="@android:color/black" />
 			
@@ -35,7 +34,6 @@
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/ptrDetails"
-			android:text="Details"
 			android:textSize="12sp"
 			android:textColor="@android:color/black" />
 			
@@ -45,7 +43,6 @@
 			android:layout_weight="1"
 			android:gravity="right"
 			android:id="@+id/ptrAmount"
-			android:text="Amount"
 			android:textSize="12sp"
 			android:textColor="@android:color/black" />
 	</LinearLayout>

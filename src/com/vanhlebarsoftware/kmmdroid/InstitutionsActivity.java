@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +21,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class InstitutionsActivity extends Activity
 {
@@ -39,7 +42,7 @@ public class InstitutionsActivity extends Activity
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listInstitutions;
-	SimpleCursorAdapter adapter;
+	KMMDCursorAdapter adapter;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -87,12 +90,9 @@ public class InstitutionsActivity extends Activity
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
-		//adapter = new SimpleCursorAdapter(this, R.layout.payee_row, cursor, FROM, TO);
-		listInstitutions.setAdapter(
-				new KMMDCursorAdapter(
-						getApplicationContext(),
-						R.layout.payee_row,
-						cursor, FROM, TO));
+		adapter = new KMMDCursorAdapter(getApplicationContext(), R.layout.payee_row, cursor, FROM, TO);
+		adapter.setViewBinder(VIEW_BINDER);
+		listInstitutions.setAdapter(adapter);
 	}
 	
 	// Message Handler for our listAccounts List View clicks
@@ -109,6 +109,22 @@ public class InstitutionsActivity extends Activity
 			i.putExtra("InstitutionName", selectedInstitutionName);
 			startActivity(i);
 	    }
+	};
+	
+	// View binder to do alternating of background colors.
+	static final ViewBinder VIEW_BINDER = new ViewBinder() 
+	{
+		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
+		{
+			TextView row = (TextView) view.findViewById(R.id.prPayeeName);
+			row.setText(cursor.getString(columnIndex));
+			if( cursor.getPosition() % 2 == 0)
+				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+			else
+				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+	
+			return true;
+		}
 	};
 	
 	// Called first time the user clicks on the menu button

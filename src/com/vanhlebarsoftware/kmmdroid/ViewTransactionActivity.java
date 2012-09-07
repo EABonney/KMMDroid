@@ -67,6 +67,7 @@ public class ViewTransactionActivity extends Activity
 	TextView textMemo;
 	TextView textDescription;
 	TextView textStatus;
+	TextView textCheckNum;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -86,6 +87,7 @@ public class ViewTransactionActivity extends Activity
         textMemo = (TextView) findViewById(R.id.vtMemo);
         textDescription = (TextView) findViewById(R.id.vtDescription);
         textStatus = (TextView) findViewById(R.id.vtStatus);
+        textCheckNum = (TextView) findViewById(R.id.vtNumber);
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -101,6 +103,7 @@ public class ViewTransactionActivity extends Activity
         textMemo.setText(extras.getString("Memo"));
         TransID = extras.getString("TransID");
         strStatus = extras.getString("Status");
+        textCheckNum.setText(extras.getString("CheckNum"));
 	}
 
 	@Override

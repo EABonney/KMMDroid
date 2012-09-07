@@ -204,6 +204,7 @@ public class KMMDService extends Service
 				intentDialog.putExtra("Action", ACTION_ENTER_SCHEDULE);
 				intentDialog.setData(uri);
 				
+			
 				switch(i)
 				{
 				case 1:
@@ -378,6 +379,7 @@ public class KMMDService extends Service
 					i = Schedules.size() + 1;
 					break;
 				}
+
 			}
 	
 			// see if we filled all 12 rows, if we didn't then we need to hide them.

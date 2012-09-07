@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,9 +18,11 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.SimpleCursorAdapter.ViewBinder;
 
 public class SchedulesActivity extends Activity
 {
+	private static final String TAG = SchedulesActivity.class.getSimpleName();
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final String dbTable = "kmmSchedules, kmmSplits, kmmPayees";
@@ -81,6 +85,7 @@ public class SchedulesActivity extends Activity
 		
 		// Set up the adapter
 		adapter = new ScheduleCursorAdapter(this, R.layout.schedules_rows, cursor, FROM, TO);
+		adapter.setViewBinder(VIEW_BINDER);
 		listSchedules.setAdapter(adapter); 
 	}
 	
@@ -95,6 +100,38 @@ public class SchedulesActivity extends Activity
 	    	i.putExtra("Action", 3);
 	    	startActivity(i);
 	    }
+	};
+	
+	// View binder to do alternating of background colors.
+	static final ViewBinder VIEW_BINDER = new ViewBinder() 
+	{
+		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
+		{
+			TextView amount = (TextView) view.findViewById(R.id.srAmount);
+			TextView desc = (TextView) view.findViewById(R.id.srDescription);
+			TextView payee = (TextView) view.findViewById(R.id.srPayee);
+			TextView freq = (TextView) view.findViewById(R.id.srFrequency);
+			TextView next = (TextView) view.findViewById(R.id.srNextDueDate);
+			Log.d(TAG, "Cursor: " + cursor.getPosition());
+			if( cursor.getPosition() % 2 == 0)
+			{
+				amount.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				desc.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				payee.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				freq.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				next.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+			}
+			else
+			{
+				amount.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+				desc.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+				payee.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+				freq.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+				next.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+			}
+	
+			return true;
+		}
 	};
 	
 	// Called first time the user clicks on the menu button

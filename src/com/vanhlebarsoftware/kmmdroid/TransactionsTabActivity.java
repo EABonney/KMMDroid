@@ -2,9 +2,11 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -15,12 +17,12 @@ public class TransactionsTabActivity extends Activity
 	private static final String TAG = "PayeeActivity";
 	private static final String dbTable = "kmmSplits, kmmAccounts";
 	private static final String[] dbColumns = { "splitId", "transactionId AS _id", "valueFormatted",
-												"accountId", "postDate", "id", "accountName" };
+												"accountId", "postDate", "id", "accountName", "memo" };
 	private static final String strSelectionPayee = "(accountId = id) AND payeeId = ? AND splitId = 0 AND txType = 'N'";
 	private static final String strSelectionCategory = "(accountId = id) AND accountId = ? AND txType = 'N'";
 	private static final String strOrderBy = "postDate ASC";
-	static final String[] FROM = { "postDate", "accountName", "valueFormatted" };
-	static final int[] TO = { R.id.ptrDate, R.id.ptrAccount, R.id.ptrAmount };
+	static final String[] FROM = { "postDate", "accountName", "valueFormatted", "memo" };
+	static final int[] TO = { R.id.ptrDate, R.id.ptrAccount, R.id.ptrAmount, R.id.ptrDetails };
 	String PayeeId = null;
 	String PayeeName = null;
 	String CategoryId = null;
@@ -95,15 +97,41 @@ public class TransactionsTabActivity extends Activity
 	}
 	
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	static final ViewBinder VIEW_BINDER = new ViewBinder() {
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			if(view.getId() != R.id.ptrAmount)
+	static final ViewBinder VIEW_BINDER = new ViewBinder() 
+	{
+		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
+		{
+			Log.d(TAG, "Cursor row: " + cursor.getPosition() + " of " + cursor.getCount());
+			LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.payeeTransRow);
+			
+			if( row != null)
+			{
+				if( cursor.getPosition() % 2 == 0)
+					row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				else
+					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+			}
+			
+			switch(view.getId())
+			{
+			case R.id.ptrDate:
+				Log.d(TAG, "ViewBinder: Date");
 				return false;
-			
-			// Format the Amount properly.
-			((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
-			
-			return true;
+			case R.id.ptrAccount:
+				Log.d(TAG, "ViewBinder: Account name");
+				return false;
+			case R.id.ptrDetails:
+				Log.d(TAG, "ViewBinder: Details");
+				((TextView) view).setText(cursor.getString(columnIndex));
+				return true;
+			case R.id.ptrAmount:
+				Log.d(TAG, "ViewBinder: Amount");
+				// Format the Amount properly.
+				((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
+				return true;
+			default:
+				return false;
+			}
 		}
 	};
 }

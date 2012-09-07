@@ -354,4 +354,10 @@
 	<string name="titlePastDue">Past due</string>
 	<string name="titleDueToday">Today</string>
 	<string name="titleKMMDAlarmReceiver">Alarm Receiver</string>
+	<string name="titlePreferencesSchedules">Schedule Options</string>
+	<string name="titleCheckSchedulesStartup">Check schedules at start up</string>
+	<string name="summaryCheckSchedulesStartup">Check and auto enter schedules at startup</string>
+	<string name="titlePreferencesAutoEnterScheduleStartup">Auto enter schedules at start up</string>
+	<string name="titlePreferencesCheckSchedulesNotifications">Check schedules during notifications</string>
+	<string name="titlePreferencesAutoEnterSchedulesNotifications">Auto enter schedules during notifications</string>
 </resources>

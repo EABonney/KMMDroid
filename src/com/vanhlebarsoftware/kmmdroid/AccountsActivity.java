@@ -3,6 +3,7 @@ package com.vanhlebarsoftware.kmmdroid;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -104,8 +106,16 @@ public class AccountsActivity extends Activity
 	};
 	
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	static final ViewBinder VIEW_BINDER = new ViewBinder() {
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+	static final ViewBinder VIEW_BINDER = new ViewBinder() 
+	{
+		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
+		{
+			LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.accountRow);
+			if( cursor.getPosition() % 2 == 0)
+				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+			else
+				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+			
 			//if(view.getId() != R.id.arAccountBalance)
 				//return false;
 			switch (view.getId())
@@ -150,7 +160,6 @@ public class AccountsActivity extends Activity
 				default:
 					return false;
 			}
-
 
 			return true;
 		}

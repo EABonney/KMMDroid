@@ -1,25 +1,27 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter.ViewBinder;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 public class HomeActivity extends Activity
 {
 
-	@SuppressWarnings("unused")
 	private static final String TAG = "HomeActivity";
 	private static final int C_ACCOUNTNAME = 0;
 	private static final int C_BALANCE = 1;
@@ -33,10 +35,9 @@ public class HomeActivity extends Activity
 	static final int[] TO = { R.id.hrAccountName, R.id.hrAccountBalance };
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
-	TextView tvAccountName;
-	TextView tvAccountBalance;
 	ListView listAccounts;
-	SimpleCursorAdapter adapter;
+	ArrayList<Accounts> accounts = new ArrayList<Accounts>();
+	AccountsAdapter adapterAccounts;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -44,7 +45,7 @@ public class HomeActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-		Log.d(TAG, "onCreate");
+
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
@@ -73,45 +74,82 @@ public class HomeActivity extends Activity
 	{
 		super.onResume();
 		
+		// Make sure our ArrayLists are clear.
+		accounts.clear();
+		
 		// Make sure the database is open and ready.
 		if(!KMMDapp.isDbOpen())
 			KMMDapp.openDB();
 		
 		//Get all the accounts to be displayed.
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
+		cursor.moveToFirst();
+		
+		// Loop over the cursor to build the accounts ArrayList and adjust each account for possible furture transactions.
+		for(int i=0; i < cursor.getCount(); i++)
+		{
+			accounts.add(new Accounts(cursor.getString(C_ID), cursor.getString(C_ACCOUNTNAME),
+					Account.adjustForFutureTransactions(cursor.getString(C_ID), cursor.getString(C_BALANCE), KMMDapp.db)));
+			cursor.moveToNext();
+		}
+		
+		// close the cursor since we don't need it anymore
+		cursor.close();
 		
 		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.home_row, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
-		listAccounts.setAdapter(adapter);
+		adapterAccounts = new AccountsAdapter(this, R.layout.home_row, accounts);
+		listAccounts.setAdapter(adapterAccounts);
 	}
 	
 	// Message Handler for our listAccounts List View clicks
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	cursor.moveToPosition(position);
+	    	Accounts acct = accounts.get(position);
 	    	Intent i = new Intent(getBaseContext(), LedgerActivity.class);
-	    	i.putExtra("AccountId", cursor.getString(C_ID));
-	    	i.putExtra("AccountName", cursor.getString(C_ACCOUNTNAME));
-	    	i.putExtra("Balance", cursor.getString(C_BALANCE));
+	    	i.putExtra("AccountId", acct.getId());
+	    	i.putExtra("AccountName", acct.getName());
+	    	i.putExtra("Balance", acct.getBalance());
 	    	startActivity(i);
 	    }
 	};
 	
-	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	static final ViewBinder VIEW_BINDER = new ViewBinder() {
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			if(view.getId() != R.id.hrAccountBalance)
-				return false;
-			
-			// Format the Amount properly.
-			((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
-			
-			return true;
+	private class AccountsAdapter extends ArrayAdapter<Accounts>
+	{
+		private ArrayList<Accounts> items;
+		private Context context;
+		
+		public AccountsAdapter(Context context, int textViewResourceId, ArrayList<Accounts> items)
+		{
+			super(context, textViewResourceId, items);
+			this.context = context;
+			this.items = items;
 		}
-	};
+		
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View view = convertView;
+			if(view == null)
+			{
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.home_row, null);
+			}
+			
+			Accounts item = items.get(position);
+			// Load the items into the view now for this schedule.
+			if(item != null)
+			{
+				TextView desc = (TextView) view.findViewById(R.id.hrAccountName);
+				TextView bal = (TextView) view.findViewById(R.id.hrAccountBalance);
+				
+				desc.setText(item.getName());
+				bal.setText(item.getBalance());
+			}
+			else
+				Log.d(TAG, "Never got a Schedule!");			
+			return view;
+		}
+	}
 	
 	// Called first time the user clicks on the menu button
 	@Override
@@ -162,5 +200,40 @@ public class HomeActivity extends Activity
 		}
 		
 		return true;
+	}
+	
+	/***********************************************************************************
+	 * 
+	 * 									Helper Functions
+	 */
+
+	private class Accounts extends ArrayList<Object>
+	{
+		private static final long serialVersionUID = -826625428929646643L;
+		private String id;
+		private String Name;
+		private String Balance;
+		
+		Accounts(String accountId, String accountName, String accountBal)
+		{
+			this.id = accountId;
+			this.Name = accountName;
+			this.Balance = accountBal;
+		}
+		
+		public String getId()
+		{
+			return this.id;
+		}
+		
+		public String getName()
+		{
+			return this.Name;
+		}
+		
+		public String getBalance()
+		{
+			return this.Balance;
+		}
 	}
 }

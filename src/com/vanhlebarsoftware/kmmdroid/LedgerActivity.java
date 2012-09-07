@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,11 +39,12 @@ public class LedgerActivity extends Activity
 	private static final int C_MEMO = 3;
 	private static final int C_DATE = 4;
 	private static final int C_PAYEE = 5;
-	private static final int C_STATUS = 6;
-	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name, reconcileFlag FROM " +
+	private static final int C_CKNUM = 6;
+	private static final int C_STATUS = 7;
+	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name, checkNumber, reconcileFlag FROM " +
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
 					"AND postDate <= ? AND postDate >= ?" +
-					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, checkNumber, reconcileFlag FROM" +
+					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
 					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' AND postDate <= ? AND postDate >= ?";
 	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
@@ -136,7 +138,7 @@ public class LedgerActivity extends Activity
 		for(int i=0; i < cursor.getCount(); i++)
 		{
 			trans = new Transaction(cursor.getString(C_AMOUNT), cursor.getString(C_PAYEE), cursor.getString(C_DATE), cursor.getString(C_MEMO), 
-									cursor.getString(C_TRANSID), cursor.getString(C_STATUS));
+									cursor.getString(C_TRANSID), cursor.getString(C_STATUS), cursor.getString(C_CKNUM));
 			Transactions.add(trans);
 
 			cursor.moveToNext();
@@ -178,7 +180,8 @@ public class LedgerActivity extends Activity
 	    	i.putExtra("Memo", trans.getMemo());
 	    	i.putExtra("Amount", Transaction.convertToDollars(trans.getAmount()));
 	    	i.putExtra("TransID", trans.getTransId());
-	    	i.putExtra("Status", trans.getStatus());	    	
+	    	i.putExtra("Status", trans.getStatus());
+	    	i.putExtra("CheckNum", trans.getCheckNum());
 	    	startActivity(i);
 	    }
 	};
@@ -270,6 +273,30 @@ public class LedgerActivity extends Activity
 				{
 					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
 					bChangeBackground = true;
+				}
+				
+				// See if this is a future transaction, if so change to italics.
+				if(item.isFuture())
+				{
+					DatePaid.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
+					DatePaid.setTextColor(Color.LTGRAY);
+					Payee.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
+					Payee.setTextColor(Color.LTGRAY);
+					Amount.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
+					Amount.setTextColor(Color.LTGRAY);
+					Balance.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
+					Balance.setTextColor(Color.LTGRAY);
+				}
+				else
+				{
+					DatePaid.setTypeface(Typeface.DEFAULT);
+					DatePaid.setTextColor(Color.BLACK);
+					Payee.setTypeface(Typeface.DEFAULT);
+					Payee.setTextColor(Color.BLACK);
+					Amount.setTypeface(Typeface.DEFAULT);
+					Amount.setTextColor(Color.BLACK);
+					Balance.setTypeface(Typeface.DEFAULT);
+					Balance.setTextColor(Color.BLACK);
 				}
 				
 				DatePaid.setText(item.formatDateString());

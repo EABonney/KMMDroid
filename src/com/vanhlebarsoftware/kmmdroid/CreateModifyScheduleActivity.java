@@ -172,7 +172,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
 	{
-
+		// We don't want to delete from the edit/create screens.
+		menu.getItem(1).setVisible(false);
+		
 	    return true;
 	}
 	
@@ -373,6 +375,10 @@ public class CreateModifyScheduleActivity extends TabActivity
 				}
 				// need to close the database as it is keeping it open here and causing issues.
 				KMMDapp.closeDB();
+				finish();
+				break;
+			case R.id.itemCancel:
+				KMMDapp.splitsDestroy();
 				finish();
 				break;
 		}

@@ -14,9 +14,10 @@ public class Transaction
 	private String strMemo;
 	private String strTransId;
 	private String strStatus;
+	private String strCheckNum;
 	private Calendar Date;
 	
-	Transaction(String amount, String payee, String date, String memo, String transid, String status)
+	Transaction(String amount, String payee, String date, String memo, String transid, String status, String checknum)
 	{
 		this.nAmount = convertToPennies(amount);
 		this.nBalance = 0;
@@ -24,6 +25,7 @@ public class Transaction
 		this.strMemo = memo;
 		this.strTransId = transid;
 		this.strStatus = status;
+		this.strCheckNum = checknum;
 		this.Date = convertDate(date);
 	}
 	
@@ -200,16 +202,27 @@ public class Transaction
 		return Date;
 	}
 	
+	public String getCheckNum()
+	{
+		return this.strCheckNum;
+	}
+	
 	public void setBalance(long amount)
 	{
 		nBalance = amount;
+	}
+	
+	public boolean isFuture()
+	{
+		Calendar today = Calendar.getInstance();
+		return this.Date.after(today);
 	}
 	
 	private Calendar convertDate(String date)
 	{
 		Calendar cDate = new GregorianCalendar();
 		String dates[] = date.split("-");
-		cDate.set(Integer.valueOf(dates[0]), Integer.valueOf(dates[1]), Integer.valueOf(dates[2]));
+		cDate.set(Integer.valueOf(dates[0]), Integer.valueOf(dates[1]) - 1, Integer.valueOf(dates[2]));
 		
 		return cDate;
 	}
