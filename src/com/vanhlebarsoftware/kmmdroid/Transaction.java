@@ -1,13 +1,24 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class Transaction 
 {
 	private static final String TAG = Transaction.class.getSimpleName();
+	private static final int C_ID = 0;
+	private static final int C_TXTYPE = 1;	
+	private static final int C_POSTDATE = 2;
+	private static final int C_MEMO = 3;
+	private static final int C_ENTRYDATE = 4;
+	private static final int C_CURRENCYID = 5;
+	private static final int C_BANKID = 6;
 	private long nAmount;
 	private long nBalance;
 	private String strPayee;
@@ -15,7 +26,12 @@ public class Transaction
 	private String strTransId;
 	private String strStatus;
 	private String strCheckNum;
+	private String strtxType;
+	private String strCurrencyId;
+	private String strBankId;
 	private Calendar Date;
+	private Calendar entryDate;
+	ArrayList<Split> splits;
 	
 	Transaction(String amount, String payee, String date, String memo, String transid, String status, String checknum)
 	{
@@ -26,9 +42,31 @@ public class Transaction
 		this.strTransId = transid;
 		this.strStatus = status;
 		this.strCheckNum = checknum;
+		this.strtxType = null;
+		this.strCurrencyId = null;
+		this.strBankId = null;
 		this.Date = convertDate(date);
+		this.entryDate = null;
+		this.splits = new ArrayList<Split>();
 	}
 	
+	Transaction(Cursor curTrans)
+	{
+		curTrans.moveToFirst();
+		this.nAmount = 0;
+		this.nBalance = 0;
+		this.strPayee = null;
+		this.strMemo = curTrans.getString(C_MEMO);
+		this.strTransId = curTrans.getString(C_ID);
+		this.strStatus = null;
+		this.strCheckNum = null;
+		this.Date = convertDate(curTrans.getString(C_POSTDATE));
+		this.entryDate = convertDate(curTrans.getString(C_ENTRYDATE));
+		this.strtxType = curTrans.getString(C_TXTYPE);
+		this.strCurrencyId = curTrans.getString(C_CURRENCYID);
+		this.strBankId = curTrans.getString(C_BANKID);
+		this.splits = new ArrayList<Split>();
+	}
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html
@@ -48,6 +86,9 @@ public class Transaction
 		    	case '-' :
 		    		negative = true;
 		            break;
+		    	case '(':
+		    		negative = true;
+		    		break;
 		        case '.' :
 		        	if ( decpl == -1 )
 		            {
@@ -163,8 +204,14 @@ public class Transaction
 	
 	public String formatDateString()
 	{
-		return String.valueOf(this.Date.get(Calendar.YEAR) + "-" + String.valueOf(this.Date.get(Calendar.MONTH)) + "-" 
+		return String.valueOf(this.Date.get(Calendar.YEAR) + "-" + String.valueOf(this.Date.get(Calendar.MONTH) + 1) + "-" 
 					+ String.valueOf(this.Date.get(Calendar.DAY_OF_MONTH)));
+	}
+	
+	public String formatEntryDateString()
+	{
+		return String.valueOf(this.entryDate.get(Calendar.YEAR) + "-" + String.valueOf(this.entryDate.get(Calendar.MONTH) + 1) + "-" 
+				+ String.valueOf(this.entryDate.get(Calendar.DAY_OF_MONTH)));		
 	}
 	
 	public String getPayee()
@@ -185,6 +232,11 @@ public class Transaction
 	public String getMemo()
 	{
 		return strMemo;
+	}
+	
+	public void setTransId(String id)
+	{
+		this.strTransId = id;
 	}
 	
 	public String getTransId()
@@ -212,6 +264,46 @@ public class Transaction
 		nBalance = amount;
 	}
 	
+	public void setTxType(String type)
+	{
+		this.strtxType = type;
+	}
+	
+	public String getTxType()
+	{
+		return this.strtxType;
+	}
+	
+	public void setCurrencyId(String id)
+	{
+		this.strCurrencyId = id;
+	}
+	
+	public String getCurrencyId()
+	{
+		return this.strCurrencyId;
+	}
+	
+	public void setBankId(String id)
+	{
+		this.strBankId = id;
+	}
+	
+	public String getBankId()
+	{
+		return this.strBankId;
+	}
+	
+	public void setEntryDate(Calendar date)
+	{
+		this.entryDate = date;
+	}
+	
+	public Calendar getEntryDate()
+	{
+		return this.entryDate;
+	}
+	
 	public boolean isFuture()
 	{
 		Calendar today = Calendar.getInstance();
@@ -221,9 +313,37 @@ public class Transaction
 	private Calendar convertDate(String date)
 	{
 		Calendar cDate = new GregorianCalendar();
-		String dates[] = date.split("-");
-		cDate.set(Integer.valueOf(dates[0]), Integer.valueOf(dates[1]) - 1, Integer.valueOf(dates[2]));
+		
+		if(date != null)
+		{
+			String dates[] = date.split("-");
+			cDate.set(Integer.valueOf(dates[0]), Integer.valueOf(dates[1]) - 1, Integer.valueOf(dates[2]));
+		}
 		
 		return cDate;
+	}
+	
+	public void enter(SQLiteDatabase db)
+	{
+		// create the ContentValue pairs
+		ContentValues valuesTrans = new ContentValues();
+		valuesTrans.put("id", this.strTransId);
+		valuesTrans.put("txType", this.strtxType);
+		valuesTrans.put("postDate", formatDateString());
+		valuesTrans.put("memo", this.strMemo);
+		valuesTrans.put("entryDate", formatEntryDateString());
+		valuesTrans.put("currencyId", this.strCurrencyId);
+		valuesTrans.put("bankId", this.strBankId);
+		
+		// Enter this transaction into the kmmTransactions table.
+		db.insertOrThrow("kmmTransactions", null, valuesTrans);
+		
+		// Enter the splits into the kmmSplits table.
+		for(int i=0; i<this.splits.size(); i++)
+		{
+			Log.d(TAG, "Trans Split #" + i + ": " + this.splits.get(i).getPostDate());
+			this.splits.get(i).commitSplit(false, db);
+			Account.updateAccount(db, this.splits.get(i).getAccountId(), this.splits.get(i).getValueFormatted(), 1);
+		}
 	}
 }

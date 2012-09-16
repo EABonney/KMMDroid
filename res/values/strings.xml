@@ -360,4 +360,5 @@
 	<string name="titlePreferencesAutoEnterScheduleStartup">Auto enter schedules at start up</string>
 	<string name="titlePreferencesCheckSchedulesNotifications">Check schedules during notifications</string>
 	<string name="titlePreferencesAutoEnterSchedulesNotifications">Auto enter schedules during notifications</string>
+	<string name="titleAutoEntered">Automatically entered schedules</string>
 </resources>

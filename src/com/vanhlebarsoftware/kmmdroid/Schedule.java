@@ -63,6 +63,7 @@ public class Schedule
 	public static final int C_ENDDATE = 7;
 	public static final int C_LASTPAYMENT = 8;
 	public static final int C_VALUEFORMATTED = 9;
+	public static final int C_AUTOENTER = 10;
 	
 	/***** Additional Constants to refer to ALL columns of a schedule cursor *****/
 	public static final int COL_ID = 0;
@@ -105,6 +106,7 @@ public class Schedule
 	private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 								//Held in pennies.
 	ArrayList<Split> Splits;	// All the actual details of a particular schedule
+	Transaction Transaction;
 
 	
 	// Constructor for a Schedule
@@ -131,6 +133,7 @@ public class Schedule
 		this.nAmount = convertToPennies(strAmt);
 		this.nBalance = 0;
 		this.Splits = null;
+		this.Transaction = null;
 	}
 	
 	Schedule(Cursor c)
@@ -155,7 +158,10 @@ public class Schedule
 			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 		}
 		this.Fixed = null;
-		this.AutoEnter = null;
+		if(c.getString(C_AUTOENTER) != null)
+			this.AutoEnter = c.getString(C_AUTOENTER);
+		else
+			this.AutoEnter = null;
 		this.LastPaymentDate = null;
 		if(c.getString(C_NEXTPAYMENTDUE) != null)
 		{
@@ -169,6 +175,7 @@ public class Schedule
 		this.nAmount = convertToPennies(c.getString(C_VALUEFORMATTED));
 		this.nBalance = 0;
 		this.Splits = null;
+		this.Transaction = null;
 	}
 	
 	Schedule(Cursor curSchedule, Cursor curSplits)
@@ -236,6 +243,88 @@ public class Schedule
 		//curSplits.moveToFirst();
 		for(int i=0; i < curSplits.getCount(); i++)
 			this.Splits.add(new Split(curSplits, i));
+		
+		this.Transaction = null;
+	}
+	
+	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction)
+	{
+		// First poplulate the actual schedule details.
+		String[] date = {null, null, null};
+		curSchedule.moveToFirst();
+		
+		Log.d(TAG, "ScheduleId: " + curSchedule.getString(COL_ID));
+		this.id = curSchedule.getString(COL_ID);
+		Log.d(TAG, "Description: " + curSchedule.getString(COL_DESCRIPTION));
+		this.Description = curSchedule.getString(COL_DESCRIPTION);
+		Log.d(TAG, "Type: " + curSchedule.getString(COL_TYPE));
+		this.Type = curSchedule.getInt(COL_TYPE);
+		Log.d(TAG, "Type String: " + curSchedule.getString(COL_TYPESTRING));
+		this.TypeString = curSchedule.getString(COL_TYPESTRING);
+		Log.d(TAG, "Occurence: " + curSchedule.getString(COL_OCCURENCE));
+		this.occurence = curSchedule.getInt(COL_OCCURENCE);
+		Log.d(TAG, "Occurence Multiplier: " + curSchedule.getInt(COL_OCCURENCEMULTIPLIER));
+		this.occurenceMultiplier = curSchedule.getInt(COL_OCCURENCEMULTIPLIER);
+		Log.d(TAG, "Occurence String: " + curSchedule.getString(COL_OCCURENCESTRING));
+		this.occurenceString = curSchedule.getString(COL_OCCURENCESTRING);
+		Log.d(TAG, "Payment Type: " + curSchedule.getInt(COL_PAYMENTTYPE));
+		this.paymentType = curSchedule.getInt(COL_PAYMENTTYPE);
+		Log.d(TAG, "Payment Type String: " + curSchedule.getString(COL_PAYMENTTYPESTRING));
+		this.paymentTypeString = curSchedule.getString(COL_PAYMENTTYPESTRING);
+		Log.d(TAG, "StartDate: " + curSchedule.getString(COL_STARTDATE));
+		if(curSchedule.getString(COL_STARTDATE) != null)
+		{
+			this.StartDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_STARTDATE).split("-");
+			this.StartDate.set(Integer.valueOf(date[0]),  Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		else
+			this.StartDate = null;
+		if(curSchedule.getString(COL_ENDDATE) != null)
+		{
+			this.EndDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_ENDDATE).split("-");
+			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		else
+			this.EndDate = null;
+		this.Fixed = curSchedule.getString(COL_FIXED);
+		this.AutoEnter = curSchedule.getString(COL_AUTOENTER);
+		if(curSchedule.getString(COL_LASTPAYMENT) != null)
+		{
+			this.LastPaymentDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_LASTPAYMENT).split("-");
+			this.LastPaymentDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;		
+		}
+		else
+			this.LastPaymentDate = null;
+		if(curSchedule.getString(COL_NEXTPAYMENTDUE) != null)
+		{
+			this.DueDate = Calendar.getInstance();
+			date = curSchedule.getString(COL_NEXTPAYMENTDUE).split("-");			
+			this.DueDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
+			date[0] = date[1] = date[2] = null;
+		}
+		else
+			this.DueDate = null;
+		this.WeekendOption = curSchedule.getInt(COL_WEEKENDOPTION);
+		this.WeekendOptionString = curSchedule.getString(COL_WEEKENDOPTIONSTRING);
+		
+		// We should only be using this particular Constructor for a "single" schedule instance, so nAmount and nBalance don't matter.
+		this.nAmount = 0;
+		this.nBalance = 0;
+		
+		// Now populate the Splits ArrayList from the supplied cursor.
+		this.Splits = new ArrayList<Split>();
+		//curSplits.moveToFirst();
+		for(int i=0; i < curSplits.getCount(); i++)
+			this.Splits.add(new Split(curSplits, i));
+		
+		// Now populate the transaction for this schedule
+		this.Transaction = new Transaction(curTransaction);
 	}
 	
 	public String getDescription()
@@ -302,6 +391,20 @@ public class Schedule
 	{
 		return this.EndDate;
 	}
+	
+	public void setAutoEnter(String auto)
+	{
+		this.AutoEnter = auto;
+	}
+	
+	public boolean getAutoEnter()
+	{
+		if(this.AutoEnter.equals("Y"))
+			return true;
+		else
+			return false;
+	}
+	
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html
@@ -321,6 +424,9 @@ public class Schedule
 		    	case '-' :
 		    		negative = true;
 		            break;
+		    	case '(':
+		    		negative = true;
+		    		break;
 		        case '.' :
 		        	if ( decpl == -1 )
 		            {
@@ -455,11 +561,12 @@ public class Schedule
 			for(int d=0; d < dueDates.size(); d++)
 			{
 				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED));
-				// Add the id, occurence, occurenceMultiplier and enddate for this schedule
+				// Add the id, occurence, occurenceMultiplier, autoEnter and enddate for this schedule
 				schd.setId(c.getString(C_ID));
 				schd.setOccurence(c.getInt(C_OCCURENCE));
 				schd.setOccurenceMultiplier(c.getInt(C_OCCURENCEMULTIPLIER));
 				schd.setEndDate(c.getString(C_ENDDATE));
+				schd.setAutoEnter(c.getString(C_AUTOENTER));
 				Schedules.add(schd);
 				schd = null;
 			}
@@ -1071,5 +1178,25 @@ public class Schedule
 		}
 		
 		return String.valueOf(str[0] + "-" + strMonth + "-" + strDay);	
+	}
+	
+	public Transaction convertToTransaction(String transId)
+	{
+		// All we need to do to convert a Schedule to a Transaction for entry is change the txType from 'S' to 'N' and
+		// change the transactionId from SCHXXXXXX to TXXXXXXX
+		// Need to do this on the transaction and on each split.
+		Log.d(TAG, "trasId: " + transId);
+		Transaction trans = this.Transaction;
+		trans.setTransId(transId);
+		trans.setTxType("N");
+		trans.splits = this.Splits;
+		for(int i=0; i<trans.splits.size(); i++)
+		{
+			trans.splits.get(i).setTransactionId(transId);
+			trans.splits.get(i).setTxType("N");
+			Log.d(TAG, "Split #" + i + " postDate: " + trans.splits.get(i).getPostDate());
+		}
+		
+		return trans;
 	}
 }

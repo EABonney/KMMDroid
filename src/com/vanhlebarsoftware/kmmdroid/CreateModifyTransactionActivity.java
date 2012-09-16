@@ -402,14 +402,14 @@ public class CreateModifyTransactionActivity extends Activity
 						values.put("startDate", scheduleToEnter.getDatabaseFormattedString());
 						values.put("lastPayment", formatDate(transDate.getText().toString()));
 						KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { scheduleToEnter.getId() });
-						//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in deskktop comes from.
+						//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
 						for(int i=0; i < scheduleToEnter.Splits.size(); i++)
 						{
 							Split s = scheduleToEnter.Splits.get(i);
 							s.setPostDate(scheduleToEnter.getDatabaseFormattedString());
 							s.commitSplit(true, KMMDapp.db);
 						}	
-						//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schdule for the next payment due date.
+						//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
 						values.clear();
 						values.put("postDate", scheduleToEnter.getDatabaseFormattedString());
 						KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { scheduleToEnter.getId() });						

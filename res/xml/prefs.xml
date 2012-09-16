@@ -51,9 +51,8 @@
 				android:dependency="receiveNotifications" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/titlePreferencesSchedules">
-        <CheckBoxPreference android:title="@string/titleCheckSchedulesStartup" android:key="checkSchedulesStartup" android:summary="@string/summaryCheckSchedulesStartup"/>
+        <CheckBoxPreference android:title="@string/titleCheckSchedulesStartup" android:key="checkSchedulesStartup" android:summary="@string/summaryCheckSchedulesStartup" android:dependency="openLastUsed"/>
         <CheckBoxPreference android:title="@string/titlePreferencesAutoEnterScheduleStartup" android:key="autoEnterScheduleStartup" android:dependency="checkSchedulesStartup"/>
-        <CheckBoxPreference android:title="@string/titlePreferencesCheckSchedulesNotifications" android:key="checkSchedulesNotifications"/>
-        <CheckBoxPreference android:title="@string/titlePreferencesAutoEnterSchedulesNotifications" android:key="autoEnterScheduleNotifications" android:dependency="checkSchedulesNotifications"/>
+        <CheckBoxPreference android:title="@string/titlePreferencesCheckSchedulesNotifications" android:key="checkSchedulesNotifications" android:dependency="openLastUsed"/>
     </PreferenceCategory>    
 </PreferenceScreen>

@@ -21,14 +21,16 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_SCHEDULE_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/schedule");
 	public static final Uri CONTENT_SPLIT_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/split");
 	public static final Uri CONTENT_TRANSACTION_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/transaction");
+	public static final Uri CONTENT_FILEINFO_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/fileinfo");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
-	public static final String SCHEDULES_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedules";
+	public static final String SCHEDULES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.schedules";
 	public static final String SPLIT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.split";
-	public static final String SPLITS_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.splits";
+	public static final String SPLITS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.splits";
 	public static final String TRANSACTION_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.transaction";
-	public static final String TRANSACTIONS_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.transactions";
+	public static final String TRANSACTIONS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.transactions";
+	public static final String FILEINFO_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.fileinfo";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -44,7 +46,7 @@ public class KMMDProvider extends ContentProvider
 	 ********************************************************************************************************************/
 	private static final String schedulesTable = "kmmSchedules, kmmSplits";
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted" };
+												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
@@ -53,7 +55,24 @@ public class KMMDProvider extends ContentProvider
 	private static final String scheduleSingleSelection = "kmmSchedules.id = kmmSplits.transactionId" +
 			" AND kmmSplits.splitId = 0 AND kmmSchedules.Id=?";
 	private static final String schedulesOrderBy = "nextPaymentDue ASC";
- 
+	/*********************************************************************************************************************
+	 * Parameters used for querying the transactions table
+	 ********************************************************************************************************************/	
+	private static final String transactionsTable = "kmmTransactions";
+	private static final String[] transactionsColumns = { "*" };
+	private static final String transactionsSingleSelection = "id=?";
+	/*********************************************************************************************************************
+	 * Parameters used for querying the splits table
+	 ********************************************************************************************************************/	
+	private static final String splitsTable = "kmmSplits";
+	private static final String[] splitsColumns = { "*" };
+	private static final String splitsSingleSelection = "transactionId=?";
+	private static final String splitsOrderBy = "splitId ASC";
+	/*********************************************************************************************************************
+	 * Parameters used for querying the fileinfo table
+	 ********************************************************************************************************************/
+	private static final String fileinfoTable = "kmmFileInfo";
+	
 	private String dbTable = null;
 	private String[] dbColumns = null;
 	private String dbSelection = null;
@@ -69,6 +88,7 @@ public class KMMDProvider extends ContentProvider
 	private static final int SPLITS_ID = 6;
 	private static final int TRANSACTIONS = 7;
 	private static final int TRANSACTIONS_ID= 8;
+	private static final int FILEINFO = 9;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -80,6 +100,7 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "split/*", SPLITS_ID);
 		sURIMatcher.addURI(authority, "transaction", TRANSACTIONS);
 		sURIMatcher.addURI(authority, "transaction/*", TRANSACTIONS_ID);
+		sURIMatcher.addURI(authority, "fileinfo", FILEINFO);
 	}
 	private boolean firstRun = true;
 	public SharedPreferences prefs;
@@ -107,36 +128,79 @@ public class KMMDProvider extends ContentProvider
 		case SCHEDULES_ID:
 			return SCHEDULE_MIME_TYPE;
 		case SPLITS:
-			return SPLIT_MIME_TYPE;
+			return SPLITS_MIME_TYPE;
 		case SPLITS_ID:
-			return SPLIT_MIME_TYPE;
+			return SPLITS_MIME_TYPE;
 		case TRANSACTIONS:
 			return TRANSACTIONS_MIME_TYPE;
 		case TRANSACTIONS_ID:
 			return TRANSACTION_MIME_TYPE;
+		case FILEINFO:
+			return FILEINFO_MIME_TYPE;
 		default:
 			return null;
 		}
 	}
 
 	@Override
-	public Uri insert(Uri arg0, ContentValues arg1) 
+	public Uri insert(Uri uri, ContentValues contentValues) 
 	{
-		// TODO Auto-generated method stub
+		// See if we need to open the database.
+		if( !db.isOpen() )
+			db = openDatabase();
+		
+		// See which content uri is requested.
+		int match = sURIMatcher.match(uri);
+		switch(match)
+		{
+			case ACCOUNTS:
+				break;
+			case ACCOUNTS_ID:
+				break;
+			case SCHEDULES:
+				break;
+			case SCHEDULES_ID:
+				dbTable = "kmmSchedules";
+				dbSelection = "id=?";
+				break;
+			case SPLITS:
+				break;
+			case SPLITS_ID:
+				dbTable = "kmmSplits";
+				dbSelection = "transactionId=?";
+				break;
+			case TRANSACTIONS:
+				break;
+			case TRANSACTIONS_ID:
+				dbTable = "kmmTransactions";
+				dbSelection = "id=?";
+				break;
+			case FILEINFO:
+				dbTable = "kmmFileInfo";
+				break;
+			default:
+				break;
+		}
+		
+		// perform the update.
+		db.update(dbTable, contentValues, null, null);
+		
+		// close the database.
+		db.close();
+		
 		return null;
 	}
 
 	@Override
 	public boolean onCreate() 
-	{  
-		Log.d(TAG, "onCreate() entered");
-		       
+	{         
 		return false;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) 
 	{
+		Log.d(TAG, "Uri provided to query(): " + uri.toString());
 		String id = null;
 		
 		// We need to open the database.
@@ -154,8 +218,6 @@ public class KMMDProvider extends ContentProvider
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
-		accountUsed = prefs.getString("accountUsed", "");
 
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
@@ -175,6 +237,8 @@ public class KMMDProvider extends ContentProvider
 				id = this.getId(uri);
 				break;
 			case SCHEDULES:
+				SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+				accountUsed = prefs.getString("accountUsed", "");
 				dbTable = schedulesTable;
 				dbColumns = schedulesColumns;
 				dbSelection = schedulesSelection + "'" + accountUsed + "'";
@@ -182,10 +246,41 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case SCHEDULES_ID:
 				dbTable = schedulesTable;
-				dbColumns = schedulesColumns;
-				dbSelection = scheduleSingleSelection;
-				dbOrderBy = schedulesOrderBy;	
+				if(projection != null)
+				{
+					Log.d(TAG, "Using passed in projection value.");
+					dbColumns = projection;
+				}
+				else
+					dbColumns = schedulesColumns;
+				if(selection != null)
+					dbSelection = selection;
+				else
+					dbSelection = scheduleSingleSelection;
 				id = this.getId(uri);
+				dbOrderBy = schedulesOrderBy;	
+				break;
+			case TRANSACTIONS_ID:
+				dbTable = transactionsTable;
+				dbColumns = transactionsColumns;
+				dbSelection = transactionsSingleSelection;
+				dbOrderBy = null;
+				id = this.getId(uri);
+				break;
+			case SPLITS:
+			case SPLITS_ID:
+				dbTable = splitsTable;
+				dbColumns = splitsColumns;
+				dbSelection = splitsSingleSelection;
+				dbOrderBy = splitsOrderBy;
+				id = this.getId(uri);
+				break;
+			case FILEINFO:
+				Log.d(TAG, "Getting kmmFileInfo table items.");
+				dbTable = fileinfoTable;
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
 				break;
 			default:
 				break;
@@ -207,7 +302,7 @@ public class KMMDProvider extends ContentProvider
 		else
 		{
 			if(db.isOpen())
-				cur = db.query(dbTable, dbColumns, dbSelection, new String[] { id }, null, null, null);
+				cur = db.query(dbTable, dbColumns, dbSelection, new String[] { id }, null, null, dbOrderBy);
 			else
 			{
 				Log.d(TAG, "Database is not open!");
@@ -246,13 +341,16 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case SPLITS_ID:
 				dbTable = "kmmSplits";
-				dbSelection = "transactionId=?";
+				dbSelection = "transactionId=? AND splitId=?";
 				break;
 			case TRANSACTIONS:
 				break;
 			case TRANSACTIONS_ID:
 				dbTable = "kmmTransactions";
 				dbSelection = "id=?";
+				break;
+			case FILEINFO:
+				updateFileInfo(selection, Integer.valueOf(selectionArgs[0]));
 				break;
 			default:
 				break;
@@ -302,6 +400,8 @@ public class KMMDProvider extends ContentProvider
 			return null;
 		case TRANSACTIONS_ID:
 			return lastPathSegment;
+		case FILEINFO:
+			return null;
 		default:
 			return null;
 		}		
@@ -328,4 +428,160 @@ public class KMMDProvider extends ContentProvider
 		
 		return SQLiteDatabase.openDatabase(path, null, 0);
 	}
+	
+	public void updateFileInfo(String updateColumn, int nChange)
+	{
+		Cursor cursor;
+		ContentValues values = new ContentValues();
+		
+		if( updateColumn.equals("lastModified") )
+		{
+	        // get the current date
+	        Calendar c = Calendar.getInstance();
+	        int intYear = c.get(Calendar.YEAR);
+	        int intMonth = c.get(Calendar.MONTH);
+	        int intDay = c.get(Calendar.DAY_OF_MONTH);
+	        String date = new StringBuilder()
+			.append(intYear).append("-")
+			.append(intMonth + 1).append("-")
+			.append(intDay).toString();
+	        
+	        values.put("lastModified", date);
+		}
+		else if ( updateColumn.equals("institutions") )
+		{
+			final String[] dbColumns = { "institutions" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("institutions", id);			
+		}
+		else if ( updateColumn.equals("accounts") )
+		{
+			final String[] dbColumns = { "accounts" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("accounts", id);			
+		}
+		else if ( updateColumn.equals("payees") )
+		{
+			final String[] dbColumns = { "payees" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("payees", id);			
+		}
+		else if ( updateColumn.equals("transactions") )
+		{
+			final String[] dbColumns = { "transactions" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("transactions", id);			
+		}
+		else if ( updateColumn.equals("schedules") )
+		{
+			final String[] dbColumns = { "schedules" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("schedules", id);			
+		}
+		else if ( updateColumn.equals("splits") )
+		{
+			final String[] dbColumns = { "splits" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + nChange;
+	
+			values.put("splits", id);			
+		}
+		else if ( updateColumn.equals("hiInstitutionsId") )
+		{
+			final String[] dbColumns = { "hiInstitutionId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiInstitutionId", id);			
+		}
+		else if ( updateColumn.equals("hiPayeeId") )
+		{
+			final String[] dbColumns = { "hiPayeeId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiPayeeId", id);	
+		}
+		else if ( updateColumn.equals("hiAccountId") )
+		{
+			final String[] dbColumns = { "hiAccountId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiAccountId", id);			
+		}
+		else if ( updateColumn.equals("hiTransactionId") )
+		{
+			final String[] dbColumns = { "hiTransactionId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiTransactionId", id);			
+		}
+		else if ( updateColumn.equals("hiScheduleId") )
+		{
+			final String[] dbColumns = { "hiScheduleId" };
+			
+			cursor = db.query("kmmFileInfo", dbColumns, null, null, null, null, null);
+			cursor.moveToFirst();
+			
+			int id = cursor.getInt(0);
+			id = id + 1;
+	
+			values.put("hiScheduleId", id);
+		}
+		
+		db.update("kmmFileInfo", values, null, null);
+	}
+
 }

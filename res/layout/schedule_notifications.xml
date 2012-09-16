@@ -47,4 +47,25 @@
 			android:cacheColorHint="#00000000">    
    		</ListView>
 	</LinearLayout>
+	
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" >
+  		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:gravity="left"
+			android:id="@+id/titleAutoEntered"
+			android:text="@string/titleAutoEntered"
+			android:textSize="20dip"
+			android:textColor="@android:color/black" />
+        <ListView
+   			android:layout_height="wrap_content"
+   			android:layout_width="fill_parent"
+   			android:id="@+id/listAutoEntered"
+    		android:background="#afff"
+			android:cacheColorHint="#00000000">    
+   		</ListView>
+	</LinearLayout>
 </LinearLayout>

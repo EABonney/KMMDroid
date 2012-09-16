@@ -101,7 +101,7 @@ public class Split
 	
 	public boolean commitSplit(boolean updating, SQLiteDatabase db)
 	{
-	
+		Log.d(TAG, "transactionId: " + this.transactionId);
 		// create the ContentValue pairs
 		ContentValues valuesSplit = new ContentValues();
 		valuesSplit.put("transactionId", this.transactionId);
@@ -125,11 +125,10 @@ public class Split
 		
 		if( updating )
 		{
-			int result = db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { transactionId, String.valueOf(splitId) });
+			int result = db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { this.transactionId, String.valueOf(this.splitId) });
 		}
 		else
 		{
-			Log.d(TAG, valuesSplit.toString());
 			db.insertOrThrow("kmmSplits", null, valuesSplit);
 		}
 		
@@ -187,6 +186,16 @@ public class Split
 		return this.memo;
 	}
 	
+	public void setTransactionId(String id)
+	{
+		this.transactionId = id;
+	}
+	
+	public String getTransactionId()
+	{
+		return this.transactionId;
+	}
+	
 	public int getSplitId()
 	{
 		return this.splitId;
@@ -195,5 +204,60 @@ public class Split
 	public void setPostDate(String date)
 	{
 		this.postDate = date;
+	}
+	
+	public String getPostDate()
+	{
+		return this.postDate;
+	}
+	
+	public void setTxType(String type)
+	{
+		this.txType = type;
+	}
+	
+	public String getTxType()
+	{
+		return this.txType;
+	}
+	
+	public String getReconcileDate()
+	{
+		return this.reconcileDate;
+	}
+	
+	public String getValue()
+	{
+		return this.value;
+	}
+	
+	public String getShares()
+	{
+		return this.shares;
+	}
+	
+	public String getSharesFormatted()
+	{
+		return this.sharesFormatted;
+	}
+	
+	public String getPrice()
+	{
+		return this.price;
+	}
+	
+	public String getPriceFormatted()
+	{
+		return this.priceFormatted;
+	}
+	
+	public String getBankId()
+	{
+		return this.bankId;
+	}
+	
+	public String getAction()
+	{
+		return this.action;
 	}
 }
