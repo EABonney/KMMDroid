@@ -58,7 +58,7 @@ public class ViewTransactionActivity extends Activity
 	String strStatus = null;
 	ArrayList<Split> Splits;
 	KMMDroidApp KMMDapp;
-	Cursor cursor;
+	Cursor splits;
 	SimpleCursorAdapter adapter;
 	ListView listSplits;
 	TextView textTitleViewTrans;
@@ -97,13 +97,13 @@ public class ViewTransactionActivity extends Activity
         
         // Set the Description, Amount, Date and Memo fields.
         Bundle extras = getIntent().getExtras();
-        textDescription.setText(extras.getString("Description"));
-        textDate.setText(extras.getString("Date"));
-		textAmount.setText(extras.getString("Amount"));
-        textMemo.setText(extras.getString("Memo"));
-        TransID = extras.getString("TransID");
-        strStatus = extras.getString("Status");
-        textCheckNum.setText(extras.getString("CheckNum"));
+        //textDescription.setText(extras.getString("Description"));
+        //textDate.setText(extras.getString("Date"));
+		//textAmount.setText(extras.getString("Amount"));
+        //textMemo.setText(extras.getString("Memo"));
+        TransID = extras.getString("transactionId");
+        //strStatus = extras.getString("Status");
+        //textCheckNum.setText(extras.getString("CheckNum"));
 	}
 
 	@Override
@@ -116,19 +116,34 @@ public class ViewTransactionActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-
+		
+		// Get the transaction details and the splitId = 0 for the view.
+		Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { TransID }, null, null, null);
+		Cursor split0 = KMMDapp.db.query("kmmSplits, kmmPayees", new String[] { "kmmSplits.*", "kmmPayees.id", "kmmPayees.name" },
+										 "transactionId=? AND splitId=0 AND kmmPayees.id=kmmSplits.payeeId", new String[] { TransID }, null, null, null);
+		transaction.moveToFirst();
+		split0.moveToFirst();
+		
 		// Put the transactionId into a String array
 		String[] selectionArgs = { TransID };
 		
 		//Run the query on the database to get the transactions.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, selectionArgs, null, null, strOrderBy);
-		startManagingCursor(cursor);
+		splits = KMMDapp.db.query(dbTable, dbColumns, strSelection, selectionArgs, null, null, strOrderBy);
+		startManagingCursor(splits);
 		
 		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.splits_row, cursor, FROM, TO);
+		adapter = new SimpleCursorAdapter(this, R.layout.splits_row, splits, FROM, TO);
 		adapter.setViewBinder(VIEW_BINDER);
 		listSplits.setAdapter(adapter); 
 		
+		// Populate the views of this transaction.
+		textDescription.setText(split0.getString(split0.getColumnIndexOrThrow("name")));
+		textDate.setText(transaction.getString(transaction.getColumnIndexOrThrow("postDate")));
+		textAmount.setText(split0.getString(split0.getColumnIndexOrThrow("valueFormatted")));
+		textMemo.setText(transaction.getString(transaction.getColumnIndexOrThrow("memo")));
+		strStatus = split0.getString(split0.getColumnIndexOrThrow("reconcileFlag"));
+		textCheckNum.setText(split0.getString(split0.getColumnIndexOrThrow("checkNumber")));
+
 		// Set the status of the transaction
 		if(strStatus.contentEquals("0"))
 			textStatus.setText(R.string.notreconciled);

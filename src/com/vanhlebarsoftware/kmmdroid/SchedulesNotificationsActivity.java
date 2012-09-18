@@ -25,7 +25,7 @@ public class SchedulesNotificationsActivity extends Activity
 	private static final String TAG = SchedulesNotificationsActivity.class.getSimpleName();
 	private static final String schedulesTable = "kmmSchedules, kmmSplits";
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted" };
+												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
@@ -37,13 +37,19 @@ public class SchedulesNotificationsActivity extends Activity
 	LinearLayout dueTodayLayout;
 	ListView listpastDue;
 	ListView listdueToday;
+	ListView listautoEntered;
 	TextView textPastDue;
 	TextView textDueToday;
+	TextView textAutoEntered;
 	ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
 	ArrayList<Schedule> pastDueSchedules = new ArrayList<Schedule>();
 	ArrayList<Schedule> dueTodaySchedules = new ArrayList<Schedule>();
+	ArrayList<Schedule> autoEnteredSchedules = new ArrayList<Schedule>();
+	ArrayList<String> autoEnteredScheduleIds = new ArrayList<String>();
+	ArrayList<String> autoTransactionIds = new ArrayList<String>();
 	SchedulesAdapter adapterPastDue;
 	SchedulesAdapter adapterDueToday;
+	SchedulesAdapter adapterAutoEntered;
 	KMMDroidApp KMMDapp;
 	
 	/* Called when the activity is first created. */
@@ -61,13 +67,16 @@ public class SchedulesNotificationsActivity extends Activity
         //dueTodayLayout = (LinearLayout) findViewById(R.id.dueToday);
         listpastDue = (ListView) findViewById(R.id.listPastDueTransactions);
         listdueToday = (ListView) findViewById(R.id.listDueTodayTransactions);
+        listautoEntered = (ListView) findViewById(R.id.listAutoEntered);
         textPastDue = (TextView) findViewById(R.id.titlePastDue);
         textDueToday = (TextView) findViewById(R.id.titleDueToday);
+        textAutoEntered = (TextView) findViewById(R.id.titleAutoEntered);
         
     	// Now hook into ListViews and set its onItemClickListener member
     	// to our class handler object.
         listpastDue.setOnItemClickListener(mMessageClickedHandler);
         listdueToday.setOnItemClickListener(mMessageClickedHandler);
+        listautoEntered.setOnItemClickListener(mMessageClickedHandler);
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -79,6 +88,8 @@ public class SchedulesNotificationsActivity extends Activity
         Bundle extras = getIntent().getExtras();
         accountUsed = extras.getString("accountUsed");
         dbSelection = schedulesSelection + "'" + accountUsed + "'";
+        autoEnteredScheduleIds = extras.getStringArrayList("autoEnteredScheduleIds");
+        autoTransactionIds = extras.getStringArrayList("newTransactionIds");
 	}
 
 	@Override
@@ -107,6 +118,7 @@ public class SchedulesNotificationsActivity extends Activity
 		Schedules.clear();
 		pastDueSchedules.clear();
 		dueTodaySchedules.clear();
+		autoEnteredSchedules.clear();
 		
 		// We have our open schedules from the database, now create the user defined period of cash flow.
 		Schedules = Schedule.BuildCashRequired(cursor, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
@@ -119,11 +131,26 @@ public class SchedulesNotificationsActivity extends Activity
 			else if(Schedules.get(i).isDueToday())
 				dueTodaySchedules.add(Schedules.get(i));
 		}
+		
+		// Need to get the schedules that where entered based on auto enter preferences.
+		Cursor cur = null;
+		String selection = dbSelection + " AND id=?";
+		for(int i=0; i<autoEnteredScheduleIds.size(); i++)
+		{
+			cur = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, new String[] { autoEnteredScheduleIds.get(i) }, null, null, null);
+			cur.moveToFirst();
+			Calendar today = new GregorianCalendar();
+			autoEnteredSchedules.add(new Schedule(cur.getString(1), today, cur.getString(9)));
+			cur.close();
+		}
+		
 		// Set up the adapters
 		adapterPastDue = new SchedulesAdapter(this, R.layout.schedule_notifications_row, pastDueSchedules);
 		adapterDueToday = new SchedulesAdapter(this, R.layout.schedule_notifications_row, dueTodaySchedules);
+		adapterAutoEntered = new SchedulesAdapter(this, R.layout.schedule_notifications_row, autoEnteredSchedules);
 		listpastDue.setAdapter(adapterPastDue);
 		listdueToday.setAdapter(adapterDueToday);
+		listautoEntered.setAdapter(adapterAutoEntered);
 
 		
 		// See if the user only wants to display one of the two types of schedule due.
@@ -136,6 +163,13 @@ public class SchedulesNotificationsActivity extends Activity
 		{
 			textDueToday.setVisibility(View.GONE);
 			listdueToday.setVisibility(View.GONE);
+		}
+		
+		// If there where no schedules auto entered then hide that listview and textview.
+		if(autoEnteredSchedules.size() > 0)
+		{
+			textAutoEntered.setVisibility(View.VISIBLE);
+			listautoEntered.setVisibility(View.VISIBLE);
 		}
 		
 		// Close the cursor to free up memory.
@@ -167,6 +201,11 @@ public class SchedulesNotificationsActivity extends Activity
 		    	i.putExtra("Action", 3);
 		    	startActivity(i);
 		    	break;
+	    	case R.id.listAutoEntered:
+	    		i = new Intent(getBaseContext(), ViewTransactionActivity.class);
+	    		i.putExtra("transactionId", autoTransactionIds.get(position));
+	    		startActivity(i);
+	    		break;
 	    	}
 	    }
 	};

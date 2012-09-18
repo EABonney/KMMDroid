@@ -158,22 +158,19 @@ public class KMMDProvider extends ContentProvider
 			case ACCOUNTS_ID:
 				break;
 			case SCHEDULES:
+				dbTable = "kmmSchedules";
 				break;
 			case SCHEDULES_ID:
-				dbTable = "kmmSchedules";
-				dbSelection = "id=?";
 				break;
 			case SPLITS:
+				dbTable = "kmmSplits";
 				break;
 			case SPLITS_ID:
-				dbTable = "kmmSplits";
-				dbSelection = "transactionId=?";
 				break;
 			case TRANSACTIONS:
+				dbTable = "kmmTransactions";
 				break;
 			case TRANSACTIONS_ID:
-				dbTable = "kmmTransactions";
-				dbSelection = "id=?";
 				break;
 			case FILEINFO:
 				dbTable = "kmmFileInfo";
@@ -182,8 +179,8 @@ public class KMMDProvider extends ContentProvider
 				break;
 		}
 		
-		// perform the update.
-		db.update(dbTable, contentValues, null, null);
+		// perform the insert.
+		db.insert(dbTable, null, contentValues);
 		
 		// close the database.
 		db.close();
@@ -231,8 +228,14 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case ACCOUNTS_ID:
 				dbTable = accountsTable;
-				dbColumns = accountsColumns;
-				dbSelection = accountsSingleSelection;
+				if(projection != null)
+					dbColumns = projection;
+				else
+					dbColumns = accountsColumns;
+				if(selection != null)
+					dbSelection = selection;
+				else
+					dbSelection = accountsSingleSelection;
 				dbOrderBy = accountsOrderBy;
 				id = this.getId(uri);
 				break;
@@ -318,6 +321,7 @@ public class KMMDProvider extends ContentProvider
 	public int update(Uri uri, ContentValues contentvalues, String selection, String[] selectionArgs) 
 	{
 		String id = null;
+		int result = 0;
 		
 		// See if we need to open the database.
 		if( !db.isOpen() )
@@ -330,24 +334,30 @@ public class KMMDProvider extends ContentProvider
 			case ACCOUNTS:
 				break;
 			case ACCOUNTS_ID:
+				dbTable = "kmmAccounts";
+				dbSelection = selection;
+				result = db.update(dbTable, contentvalues, selection, selectionArgs);
 				break;
 			case SCHEDULES:
 				break;
 			case SCHEDULES_ID:
 				dbTable = "kmmSchedules";
 				dbSelection = "id=?";
+				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
 				break;
 			case SPLITS:
 				break;
 			case SPLITS_ID:
 				dbTable = "kmmSplits";
 				dbSelection = "transactionId=? AND splitId=?";
+				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
 				break;
 			case TRANSACTIONS:
 				break;
 			case TRANSACTIONS_ID:
 				dbTable = "kmmTransactions";
 				dbSelection = "id=?";
+				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
 				break;
 			case FILEINFO:
 				updateFileInfo(selection, Integer.valueOf(selectionArgs[0]));
@@ -356,23 +366,10 @@ public class KMMDProvider extends ContentProvider
 				break;
 		}
 		
-		// Update the file modified information to today's date.
-        final Calendar c = Calendar.getInstance();
-        String strDate = new StringBuilder()
-		// Month is 0 based so add 1
-		.append(c.get(Calendar.YEAR)).append("-")
-		.append(c.get(Calendar.MONTH) + 1).append("-")
-		.append(c.get(Calendar.DAY_OF_MONTH)).toString();
-        ContentValues values = new ContentValues();
-        values.put("lastModified", strDate);
-        db.update("kmmFileInfo", values, null, null);
-		
-		int reslut = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
-		
 		// clean up, close the database.
 		db.close();
 		
-		return reslut;
+		return result;
 	}
 
 	private String getId(Uri uri)
@@ -433,6 +430,7 @@ public class KMMDProvider extends ContentProvider
 	{
 		Cursor cursor;
 		ContentValues values = new ContentValues();
+		Log.d(TAG, "updating File Info: " + updateColumn);
 		
 		if( updateColumn.equals("lastModified") )
 		{
@@ -520,7 +518,7 @@ public class KMMDProvider extends ContentProvider
 	
 			values.put("splits", id);			
 		}
-		else if ( updateColumn.equals("hiInstitutionsId") )
+		else if ( updateColumn.equals("hiInstitutionId") )
 		{
 			final String[] dbColumns = { "hiInstitutionId" };
 			
@@ -565,7 +563,7 @@ public class KMMDProvider extends ContentProvider
 			
 			int id = cursor.getInt(0);
 			id = id + 1;
-	
+			Log.d(TAG, "new hiTransactionId");
 			values.put("hiTransactionId", id);			
 		}
 		else if ( updateColumn.equals("hiScheduleId") )

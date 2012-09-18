@@ -114,6 +114,7 @@ public class KMMDNotificationsService extends Service
 			
     		// Take the list of schedules that need to be entered and create the transactions from the scheduleId and enter it into the database.
     		Schedule schedule = null;
+    		ArrayList<String> newTransactionIds = new ArrayList<String>();
     		for(String scheduleId : autoEnterSchedules)
     		{
     			// Get the schedule from the supplied id
@@ -198,8 +199,12 @@ public class KMMDNotificationsService extends Service
     				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, schedule.getId());
     				getContentResolver().update(u, valuesSplit, null, new String[] { schedule.getId(), String.valueOf(s.getSplitId()) });
     				valuesSplit.clear();
+    				// Need to update the Accounts for this split.
+    				updateAccountInfo(s.getAccountId(), s.getValueFormatted(), 1);
 					//s.commitSplit(true, kmmdApp.db);
 					s = null;
+					// Save this transactionId for the ScheduleNotificationsActivity.
+					newTransactionIds.add(transaction.getTransId());
 				}	
 				//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
 				values.clear();
@@ -210,7 +215,7 @@ public class KMMDNotificationsService extends Service
 				//kmmdApp.db.update("kmmTransactions", values, "id=?", new String[] { schedule.getId() });
 				
     			//Now update the kmmFileInfo row for the entered items.
-				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "hiTransactionsId", new String[] { "1" });
+				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "hiTransactionId", new String[] { "1" });
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "transactions", new String[] { "1" });
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "splits", new String[] { String.valueOf(transaction.splits.size()) });	
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "lastModified", new String[] { "0" });
@@ -233,6 +238,8 @@ public class KMMDNotificationsService extends Service
 			this.kmmdNotifcationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			this.kmmdNotification = new Notification(R.drawable.homewidget_icon, "", 0);
 			Intent intent = new Intent(this, SchedulesNotificationsActivity.class);
+			intent.putExtra("autoEnteredScheduleIds", autoEnterSchedules);
+			intent.putExtra("newTransactionIds", newTransactionIds);
 			intent.putExtra("accountUsed", kmmdApp.prefs.getString("accountUsed", ""));
 			PendingIntent pendingIntent = PendingIntent.getActivity(this, -1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			this.kmmdNotification.when = System.currentTimeMillis();
@@ -310,6 +317,31 @@ public class KMMDNotificationsService extends Service
 		newId = newId + nextId;
 		
 		return newId;
+	}
+	
+	private void updateAccountInfo(String accountId, String transValue, int nChange)
+	{
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountId);
+		Cursor c = getContentResolver().query(u, new String[] { "balanceFormatted", "transactionCount" }, "id=?", new String[] { accountId }, null);
+		c.moveToFirst();
+		
+		// Update the current balance for this account.
+		long balance = Transaction.convertToPennies(c.getString(0));
+		
+		// If we are editing a transaction we need to reverse the original transaction values, this takes care of that for us.
+		long tValue = Transaction.convertToPennies(transValue) * nChange;
+		
+		long newBalance = balance + tValue;
+
+		// Update the number of transactions used for this account.
+		int Count = c.getInt(1) + nChange;
+		
+		ContentValues values = new ContentValues();
+		values.put("balanceFormatted", Transaction.convertToDollars(newBalance));
+		values.put("balance", Account.createBalance(newBalance));
+		values.put("transactionCount", Count);
+		
+		getContentResolver().update(u, values, "id=?", new String[] { accountId });
 	}
 	/**************************************************************************************************************
 	 * Thread that will perform the actual updating of the notifications for schedules

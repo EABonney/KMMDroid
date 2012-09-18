@@ -322,8 +322,8 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 					Log.d(TAG, "Setup the nofications alarm.");
 					Log.d(TAG, "Alarm date: " + (updateTime.get(Calendar.MONTH) + 1) + "-" + updateTime.get(Calendar.DAY_OF_MONTH) + "-" + updateTime.get(Calendar.YEAR));
 					Log.d(TAG, "Alarm time: " + updateTime.get(Calendar.HOUR_OF_DAY) + ":" + updateTime.get(Calendar.MINUTE) + ":" + updateTime.get(Calendar.SECOND));
-					//alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
-					alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
+					alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
+					//alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
 					SharedPreferences.Editor prefEditor = prefs.edit();
 					prefEditor.putBoolean("notificationAlarmSet", true);
 					prefEditor.commit();

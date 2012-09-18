@@ -217,6 +217,15 @@ public class WelcomeActivity extends Activity
 		return true;
 	}
     
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu)
+	{
+		// remove the New and Recent menu items for now.
+		menu.getItem(0).setVisible(false);
+		menu.getItem(2).setVisible(false);
+		
+		return true;
+	}
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
