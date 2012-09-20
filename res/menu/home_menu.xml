@@ -44,4 +44,10 @@
     	android:title="@string/titleAbout"
     	android:icon="@android:drawable/ic_menu_help">
     </item>
+    <item android:id="@+id/Sync" android:title="@string/titleSync">
+        <menu>
+            <item android:id="@+id/syncDropbox" android:title="@string/titleSyncDropbox"/>
+            <item android:id="@+id/syncAll" android:title="@string/titleSyncAll"/>
+        </menu>
+    </item>
 </menu>

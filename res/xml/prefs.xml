@@ -5,7 +5,46 @@
     	android:summary="@string/summaryOpenLastUsed"
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
-    </CheckBoxPreference><PreferenceCategory 
+    </CheckBoxPreference>
+    <PreferenceScreen 
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/titleCloudServices">
+        <CheckBoxPreference 
+            android:title="@string/accountNameNotEntered"
+            android:key="useWiFiOnly"/>
+        <PreferenceScreen 
+            android:title="@string/titleDropbox">
+            <CheckBoxPreference 
+                android:title="@string/titleDropboxSync"
+                android:key="dropboxSync">
+            </CheckBoxPreference>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxStartupCheck"
+                android:title="@string/titleDropboxStartupCheck"
+                android:key="dropboxStartupCheck"/>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxUploadonExit"
+                android:title="@string/titleDropboxUploadonExit"
+                android:key="dropboxUploadonExit"/>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxAutoSync"
+                android:title="@string/titleDropboxAutoSync"
+                android:key="dropboxAutoSync"/>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/titleGoogleDrive">
+            <CheckBoxPreference
+                android:title="@string/titleGoogleDriveSync"
+                android:key="googledriveSync" />
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/titleUbuntuOne">
+            <CheckBoxPreference
+                android:title="@string/titleUbuntuOneSync"
+                android:key="ubuntuoneSync"/>
+    	</PreferenceScreen>
+    </PreferenceScreen>
+    <PreferenceCategory 
         android:title="@string/titlePreferenceHomeWidget">
 			<ListPreference 
 			    android:key="accountUsed"
@@ -26,7 +65,6 @@
     		    android:summary="@string/summaryDisplayFrequency" 
     		    android:entries="@array/WeeksToDisplay" 
     		    android:entryValues="@array/WeeksToDisplayValues"/>
-    		
 	</PreferenceCategory>
     <PreferenceCategory 
 		android:title="@string/titlePreferenceNotifications">
@@ -50,9 +88,20 @@
         	    android:key="notificationTime"
 				android:dependency="receiveNotifications" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/titlePreferencesSchedules">
-        <CheckBoxPreference android:title="@string/titleCheckSchedulesStartup" android:key="checkSchedulesStartup" android:summary="@string/summaryCheckSchedulesStartup" android:dependency="openLastUsed"/>
-        <CheckBoxPreference android:title="@string/titlePreferencesAutoEnterScheduleStartup" android:key="autoEnterScheduleStartup" android:dependency="checkSchedulesStartup"/>
-        <CheckBoxPreference android:title="@string/titlePreferencesCheckSchedulesNotifications" android:key="checkSchedulesNotifications" android:dependency="openLastUsed"/>
-    </PreferenceCategory>    
+    <PreferenceCategory 
+        android:title="@string/titlePreferencesSchedules">
+        <CheckBoxPreference
+            android:title="@string/titleCheckSchedulesStartup"
+            android:key="checkSchedulesStartup"
+            android:summary="@string/summaryCheckSchedulesStartup"
+            android:dependency="openLastUsed"/>
+        <CheckBoxPreference
+            android:title="@string/titlePreferencesAutoEnterScheduleStartup"
+            android:key="autoEnterScheduleStartup"
+            android:dependency="checkSchedulesStartup"/>
+        <CheckBoxPreference
+            android:title="@string/titlePreferencesCheckSchedulesNotifications"
+            android:key="checkSchedulesNotifications"
+            android:dependency="openLastUsed"/>
+    </PreferenceCategory>
 </PreferenceScreen>

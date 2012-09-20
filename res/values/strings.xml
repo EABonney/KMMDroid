@@ -361,4 +361,25 @@
 	<string name="titlePreferencesCheckSchedulesNotifications">Check schedules during notifications</string>
 	<string name="titlePreferencesAutoEnterSchedulesNotifications">Auto enter schedules during notifications</string>
 	<string name="titleAutoEntered">Automatically entered schedules</string>
+	<string name="titleDropbox">Dropbox</string>
+	<string name="buttonLogin">Login</string>
+	<string name="buttonLogout">Logout</string>
+    <string name="titleLinkToDropbox">Link to Dropbox</string>
+    <string name="summaryLinkToDropbox">Would you like to link KMMDroid with your Dropbox account?</string>
+    <string name="titleCloudServices">Cloud Services</string>
+    <string name="titleGoogleDrive">Google Drive</string>
+    <string name="titleUbuntuOne">UbuntuOne</string>
+    <string name="titleDropboxSync">Sync with Dropbox</string>
+    <string name="titleGoogleDriveSync">Google Drive Sync</string>
+    <string name="titleUbuntuOneSync">UbuntuOne Sync</string>
+    <string name="titleWifiOnly">Use WiFi only</string>
+    <string name="titleDropboxStartupCheck">Check at startup</string>
+    <string name="summaryDropboxStartupCheck">Check for outdate file on startup</string>
+    <string name="titleDropboxUploadonExit">Upload on exit</string>
+    <string name="summaryDropboxUploadonExit">Upload file upon exit</string>
+    <string name="titleDropboxAutoSync">Auto Sync</string>
+    <string name="summaryDropboxAutoSync">Periodically check file status</string>
+    <string name="titleSyncAll">All</string>
+    <string name="titleSyncDropbox">Dropbox</string>
+    <string name="titleSync">Sync</string>
 </resources>

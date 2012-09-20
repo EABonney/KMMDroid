@@ -22,6 +22,7 @@
     <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS" />
     <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     
     <application android:icon="@drawable/kmymoney" 
     	android:label="@string/app_name"
@@ -207,6 +208,24 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
 		    </intent-filter>
 		</activity>
+
+		<activity
+				  android:name=".CloudIntegrationActivity"
+				  android:label="@string/titleDropbox"
+				  android:screenOrientation="portrait">
+		</activity>
+    	<activity
+      			  android:name="com.dropbox.client2.android.AuthActivity"
+      			  android:launchMode="singleTask"
+      			  android:configChanges="orientation|keyboard">
+      			  <intent-filter>
+        		  <!-- Change this to be db- followed by your app key -->
+        		  <data android:scheme="db-eqz0w6paff0sku9" />
+        		  <action android:name="android.intent.action.VIEW" />
+        		  <category android:name="android.intent.category.BROWSABLE"/>
+        		  <category android:name="android.intent.category.DEFAULT" />
+      			  </intent-filter>
+    	</activity>
 		
 		<provider android:name=".KMMDProvider"
 				  android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider">
@@ -234,6 +253,8 @@
 		<service android:name=".KMMDService">
 		</service>
 		<service android:name=".KMMDNotificationsService">
+		</service>
+		<service android:name=".KMMDCloudServicesService">
 		</service>
     </application>
 </manifest>
