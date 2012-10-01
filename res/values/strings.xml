@@ -382,4 +382,5 @@
     <string name="titleSyncAll">All</string>
     <string name="titleSyncDropbox">Dropbox</string>
     <string name="titleSync">Sync</string>
+    <string name="lostDatabase">Error!! Missing database</string>
 </resources>

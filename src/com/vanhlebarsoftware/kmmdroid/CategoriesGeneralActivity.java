@@ -61,6 +61,12 @@ public class CategoriesGeneralActivity extends Activity
         {
         	KMMDapp.openDB();
         }
+        
+		// We need to populate the user's default currency.
+		Cursor defaultCur = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
+		defaultCur.moveToFirst();
+		currencyPos = getCurrencyPos(defaultCur.getString(0));
+		defaultCur.close();
 	}
 	
 	@Override
@@ -159,5 +165,31 @@ public class CategoriesGeneralActivity extends Activity
 	public void putTransactionCount(String strCount)
 	{
 		txtTotTrans.setText(txtTotTrans.getText().toString() + " " + strCount);
+	}
+	
+	private int getCurrencyPos(String id)
+	{
+		int i = 0;
+		
+		Cursor c = KMMDapp.db.query("kmmCurrencies", new String[] { "name", "ISOcode" },
+									null, null,	null, null, "name ASC");
+		startManagingCursor(c);
+		c.moveToFirst();
+		
+		if(c.getCount() > 0)
+		{
+			while(!id.equals(c.getString(1)))
+			{
+				c.moveToNext();
+				i++;
+			}
+		}
+		else
+		{
+			Log.d(TAG, "getCurrencyPos query returned no accounts!");
+			i = 0;
+		}
+		
+		return i;
 	}
 }

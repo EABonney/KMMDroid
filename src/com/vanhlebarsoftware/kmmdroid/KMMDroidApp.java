@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -10,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,7 +42,20 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		
 		// See if the user has the preference for opening up the last used database. If so, set the path to it.
     	if( this.prefs.getBoolean("openLastUsed", false) )
-    		setFullPath(this.prefs.getString("Full Path", ""));
+    	{
+    		// First see if the path still exists if not then the user did something and we need to change the user preference and not 
+    		// try to open any file this time around.
+    		String path = this.prefs.getString("Full Path", "");
+    		if( fileExists(path) )
+    			setFullPath(path);
+    		else
+    		{
+    			Editor edit = this.prefs.edit();
+    			edit.putBoolean("openLastUsed", false);
+    			edit.putString("Full Path", "");
+    			edit.apply();
+    		}
+    	}
     	
 		String value = this.prefs.getString("updateFrequency", "0");
 		if(value.equals("-1"))
@@ -79,14 +94,53 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	}
 	
 	public void openDB()
-	{
-		//String path = prefs.getString("Full Path", null);
-		//if(path != null)
-			//setFullPath(path);
+	{	
+		// always make sure that the db still exists, if not, send the user back to Welcome and pop up an Alert
+		// saying that their database is gone somehow. Pass the path to the lost database to Welcome in extras.
+		if( fullPath != null )
+		{
+			if( fileExists(fullPath) )
+			{
+				db = SQLiteDatabase.openDatabase(fullPath, null, 0);
+				dbOpen = true;
+			}
+			else
+			{
+				// clear the users preferences in settings.
+				Editor edit = this.prefs.edit();
+				edit.putBoolean("openLastUsed", false);
+				edit.putString("Full Path", "");
+				edit.apply();
+			
+				// make sure that we no longer show the database open or have a path set for it.
+				this.fullPath = null;
+				this.dbOpen = false;
+			
+				// Send the user to Welcome.
+				Intent i = new Intent(this, WelcomeActivity.class);
+				i.putExtra("lostPath", fullPath);
+				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(i);
+			}
+		}
+		else
+		{
+			// clear the users preferences in settings.
+			Editor edit = this.prefs.edit();
+			edit.putBoolean("openLastUsed", false);
+			edit.putString("Full Path", "");
+			edit.apply();
 		
-		Log.d(TAG, "fullPath: " + fullPath);
-		db = SQLiteDatabase.openDatabase(fullPath, null, 0);
-		dbOpen = true;
+			// make sure that we no longer show the database open or have a path set for it.
+			this.fullPath = null;
+			this.dbOpen = false;
+		
+			// Send the user to Welcome.
+			Intent i = new Intent(this, WelcomeActivity.class);
+			i.putExtra("lostPath", fullPath);
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(i);			
+		}
 	}
 	
 	public void closeDB()
@@ -98,6 +152,11 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public void setFullPath(String path)
 	{
 		fullPath = path;
+	}
+	
+	public String getFullPath()
+	{
+		return this.fullPath;
 	}
 	
 	public boolean isDbOpen()
@@ -363,5 +422,12 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public boolean isNotificationAlarmSet()
 	{
 		return prefs.getBoolean("notificationAlarmSet", false);
+	}
+	
+	public boolean fileExists(String path)
+	{
+		File file = new File(path);
+		
+		return file.exists();		
 	}
 }

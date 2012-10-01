@@ -8,6 +8,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.exception.DropboxException;
+import com.dropbox.client2.exception.DropboxServerException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session.AccessType;
@@ -38,7 +39,7 @@ public class PrefsActivity extends PreferenceActivity
     
     // Change this to DROPBOX if we need access to the users entire Dropbox structure.
     // Use APP_FOLDER to limit access to just that location under Dropbox.
-    final static private AccessType ACCESS_TYPE = AccessType.DROPBOX;
+    final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
     final static private String ACCOUNT_PREFS_NAME = "prefs";
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
@@ -163,19 +164,17 @@ public class PrefsActivity extends PreferenceActivity
        			// Create our Dropbox folder if it isn't there already.
        			try
        			{
-       				info = mApi.metadata("/KMMDroid", 0, null, true, null);    				
-       				if( !info.isDir )
+       				//info = mApi.metadata("/Apps/KMMDroid", 0, null, true, null);    				
+       				//if( !info.isDir )
        					info = mApi.createFolder("/KMMDroid");
-       				else
+       				//else
        					needToSync = true;
        			}
        			catch( DropboxException e)
        			{
-       				Log.d(TAG, "Error creating our base folder! - " + e.getMessage());
-       			}
-       			finally
-       			{
-       				Log.d(TAG, "We have our folder at: " + info.path);
+       				needToSync = true;
+       				Log.d(TAG, "Error creating our base folder!");
+       				e.printStackTrace();
        			}
        		}
        		catch (IllegalStateException e)
@@ -190,14 +189,13 @@ public class PrefsActivity extends PreferenceActivity
 				// create a File object for the parent directory
 				File KMMDroidDirectory = new File(Environment.getExternalStorageDirectory(), "/KMMDroid");
 				// have the object build the directory structure, if needed.
-				if(KMMDroidDirectory.mkdirs())
-				{
-					// Safe to assume that since we created the directory we need to download the files.
-					Intent i = new Intent(this, KMMDCloudServicesService.class);
-					i.putExtra("cloudService", KMMDCloudServicesService.CLOUD_DROPBOX);
-					i.putExtra("syncing", true);
-					startService(i);
-				}
+				KMMDroidDirectory.mkdirs();
+				
+				// Now retrieve any data that we might need.
+				Intent i = new Intent(this, KMMDCloudServicesService.class);
+				i.putExtra("cloudService", KMMDCloudServicesService.CLOUD_DROPBOX);
+				i.putExtra("syncing", true);
+				startService(i);
        		}
        	}
 	}

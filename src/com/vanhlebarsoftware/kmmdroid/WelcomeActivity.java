@@ -6,14 +6,17 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,147 +53,169 @@ public class WelcomeActivity extends Activity
         KMMDapp = ((KMMDroidApp) getApplication());
         
         Bundle extras = getIntent().getExtras();
+        String lostPath = null;
         boolean Closing = false;
         
         if( extras != null)
         {
         	if(!extras.isEmpty())
+        	{
         		Closing = extras.getBoolean("Closing");
-        }
-        
-        // See if the user has a home widget in use and a preferance set for the update interval of home widgets, if so set it.
-        if(KMMDapp.prefs.getBoolean("homeWidgetSetup", false))
-        {
-        	if(!KMMDapp.getAutoUpdate())
-        	{
-        		String value = KMMDapp.prefs.getString("updateFrequency", "0");
-        		KMMDapp.setRepeatingAlarm(value, null, KMMDroidApp.ALARM_HOMEWIDGET);
+        		lostPath = extras.getString("lostPath");
         	}
         }
         
-        // See if the user wants to get notifications of schedules that are due Today or past due.
-        if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
+        // If the user has lostPath, somehow they lost their saved database, just pop and alert, show them the lost path and then skip
+        // everything else until they open up a new database.
+        if( lostPath != null )
         {
-        	// Check to see if the alarm is already set, if not then set it.
-        	if( !KMMDapp.isNotificationAlarmSet() )
-        	{
-        		Log.d(TAG, "First time we have run and we need to setup the Notifications for the user.");
-        		final Calendar updateTime = Calendar.getInstance();
-        		int intHour = KMMDapp.prefs.getInt("notificationTime.hour", 0);
-        		int intMin = KMMDapp.prefs.getInt("notificationTime.minute", 0);
-        		updateTime.set(Calendar.HOUR_OF_DAY, intHour);
-        		updateTime.set(Calendar.MINUTE, intMin);
-        		updateTime.set(Calendar.SECOND, 0);
-        		KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
-        	}
-        	else
-        		Log.d(TAG, "Nofications alreadyd set up, no need to reset them......");
+        	String msg = "Sorry but somehow you have lost the database that you had opened. Please open another one to continue.";
+        	msg = msg + "\n" + "Missing database was at: " + lostPath;
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.lostDatabase);
+			alertDel.setMessage(msg);
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichButton) {					
+				}
+			});				
+			alertDel.show();        	
         }
-        
-        // See if the user wants us to check for schedules that need to be automatically entered at startup. If so then enter them.
-        if(KMMDapp.prefs.getBoolean("checkSchedulesStartup", false) && KMMDapp.prefs.getBoolean("autoEnterScheduleStartup", false))
+        else
         {
-        	// See if the user has set the preference to start up with the last used database
-        	if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        	// See if the user has a home widget in use and a preferance set for the update interval of home widgets, if so set it.
+        	if(KMMDapp.prefs.getBoolean("homeWidgetSetup", false))
         	{
-        		KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
-        		KMMDapp.openDB();
+        		if(!KMMDapp.getAutoUpdate())
+        		{
+        			String value = KMMDapp.prefs.getString("updateFrequency", "0");
+        			KMMDapp.setRepeatingAlarm(value, null, KMMDroidApp.ALARM_HOMEWIDGET);
+        		}
         	}
+        
+        	// See if the user wants to get notifications of schedules that are due Today or past due.
+        	if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
+        	{
+        		// Check to see if the alarm is already set, if not then set it.
+        		if( !KMMDapp.isNotificationAlarmSet() )
+        		{
+        			Log.d(TAG, "First time we have run and we need to setup the Notifications for the user.");
+        			final Calendar updateTime = Calendar.getInstance();
+        			int intHour = KMMDapp.prefs.getInt("notificationTime.hour", 0);
+        			int intMin = KMMDapp.prefs.getInt("notificationTime.minute", 0);
+        			updateTime.set(Calendar.HOUR_OF_DAY, intHour);
+        			updateTime.set(Calendar.MINUTE, intMin);
+        			updateTime.set(Calendar.SECOND, 0);
+        			KMMDapp.setRepeatingAlarm(null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+        		}
+        		else
+        			Log.d(TAG, "Nofications alreadyd set up, no need to reset them......");
+        	}
+        
+        	// See if the user wants us to check for schedules that need to be automatically entered at startup. If so then enter them.
+        	if(KMMDapp.prefs.getBoolean("checkSchedulesStartup", false) && KMMDapp.prefs.getBoolean("autoEnterScheduleStartup", false))
+        	{
+        		// See if the user has set the preference to start up with the last used database
+        		if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        		{
+        			KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
+        			KMMDapp.openDB();
+        		}
         	
-    		Cursor c = null;
-    		String accountUsed = KMMDapp.prefs.getString("accountUsed", "");
-    		
-    		// Get our active schedules from the database.
-    		String selection = schedulesSelection + "'" + accountUsed + "'";
-    		c = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, null, null, null, schedulesOrderBy);
+        		Cursor c = null;
+        		String accountUsed = KMMDapp.prefs.getString("accountUsed", "");
+        		
+        		// Get our active schedules from the database.
+        		String selection = schedulesSelection + "'" + accountUsed + "'";
+        		c = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, null, null, null, schedulesOrderBy);
 
-    		GregorianCalendar calToday = new GregorianCalendar();
-    		GregorianCalendar calYesterday = new GregorianCalendar();
-    		calYesterday = (GregorianCalendar) calToday.clone();
-    		calYesterday.add(Calendar.DAY_OF_MONTH, -1);
-    		String strToday = String.valueOf(calToday.get(Calendar.YEAR)) + "-" + String.valueOf(calToday.get(Calendar.MONTH)+ 1) + "-"
-    				+ String.valueOf(calToday.get(Calendar.DAY_OF_MONTH));
-    		String strYesterday = String.valueOf(calYesterday.get(Calendar.YEAR)) + "-" + String.valueOf(calYesterday.get(Calendar.MONTH)+ 1) + "-"
-    				+ String.valueOf(calYesterday.get(Calendar.DAY_OF_MONTH));
+        		GregorianCalendar calToday = new GregorianCalendar();
+        		GregorianCalendar calYesterday = new GregorianCalendar();
+        		calYesterday = (GregorianCalendar) calToday.clone();
+        		calYesterday.add(Calendar.DAY_OF_MONTH, -1);
+        		String strToday = String.valueOf(calToday.get(Calendar.YEAR)) + "-" + String.valueOf(calToday.get(Calendar.MONTH)+ 1) + "-"
+        				+ String.valueOf(calToday.get(Calendar.DAY_OF_MONTH));
+        		String strYesterday = String.valueOf(calYesterday.get(Calendar.YEAR)) + "-" + String.valueOf(calYesterday.get(Calendar.MONTH)+ 1) + "-"
+        				+ String.valueOf(calYesterday.get(Calendar.DAY_OF_MONTH));
     		
-    		// We have our open schedules from the database, now create the user defined period of cash flow.
-    		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
+        		// We have our open schedules from the database, now create the user defined period of cash flow.
+        		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
     		
-    		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
+        		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
 
-    		// Get a list of all schedules that are due today AND are setup for autoEntry.
-    		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
-    		for(int i=0; i < Schedules.size(); i++)
-    		{
-    			if( Schedules.get(i).isDueToday() && Schedules.get(i).getAutoEnter())
-    				autoEnterSchedules.add(Schedules.get(i).getId());
-    		}
+        		// Get a list of all schedules that are due today AND are setup for autoEntry.
+        		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
+        		for(int i=0; i < Schedules.size(); i++)
+        		{
+        			if( Schedules.get(i).isDueToday() && Schedules.get(i).getAutoEnter())
+        				autoEnterSchedules.add(Schedules.get(i).getId());
+        		}
     		
-    		// Take the list of schedules that need to be entered and create the transactions from the scheduleId and enter it into the database.
-    		Schedule schedule = null;
-    		for(String scheduleId : autoEnterSchedules)
-    		{
-    			// Get the schedule from the supplied id
-    			schedule = getSchedule(scheduleId);
-    			Transaction transaction = schedule.convertToTransaction(createTransId());
-    			transaction.setEntryDate(calToday);
-    			transaction.enter(KMMDapp.db);
-    			schedule = null;
-    			
-    			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
-    			// schedule. Not sure why...
-    			schedule = getSchedule(scheduleId);
-				//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
-    			schedule.advanceDueDate(Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier()));
-				ContentValues values = new ContentValues();
-				values.put("nextPaymentDue", schedule.getDatabaseFormattedString());
-				values.put("startDate", schedule.getDatabaseFormattedString());
-				values.put("lastPayment", transaction.formatEntryDateString());
-				KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { schedule.getId() });
-				//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
-				for(int i=0; i < schedule.Splits.size(); i++)
-				{
-					Split s = schedule.Splits.get(i);
-					s.setPostDate(schedule.getDatabaseFormattedString());
-					s.commitSplit(true, KMMDapp.db);
-					s = null;
-				}	
-				//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
-				values.clear();
-				values.put("postDate", schedule.getDatabaseFormattedString());
-				KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { schedule.getId() });
-				
-    			//Now update the kmmFileInfo row for the entered items.
-				KMMDapp.updateFileInfo("hiTransactionId", 1);
-				KMMDapp.updateFileInfo("transactions", 1);
-				KMMDapp.updateFileInfo("splits", transaction.splits.size());
-				KMMDapp.updateFileInfo("lastModified", 0);
-    			transaction = null;
-    			schedule = null;
-    		}
+        		// Take the list of schedules that need to be entered and create the transactions from the scheduleId and enter it into the database.
+        		Schedule schedule = null;
+        		for(String scheduleId : autoEnterSchedules)
+        		{
+        			// Get the schedule from the supplied id
+        			schedule = getSchedule(scheduleId);
+        			Transaction transaction = schedule.convertToTransaction(createTransId());
+        			transaction.setEntryDate(calToday);
+        			transaction.enter(KMMDapp.db);
+        			schedule = null;
+        			
+        			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
+        			// schedule. Not sure why...
+        			schedule = getSchedule(scheduleId);
+        			//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
+        			schedule.advanceDueDate(Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier()));
+        			ContentValues values = new ContentValues();
+        			values.put("nextPaymentDue", schedule.getDatabaseFormattedString());
+        			values.put("startDate", schedule.getDatabaseFormattedString());
+        			values.put("lastPayment", transaction.formatEntryDateString());
+        			KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { schedule.getId() });
+        			//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
+        			for(int i=0; i < schedule.Splits.size(); i++)
+        			{
+        				Split s = schedule.Splits.get(i);
+        				s.setPostDate(schedule.getDatabaseFormattedString());
+        				s.commitSplit(true, KMMDapp.db);
+        				s = null;
+        			}		
+        			//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
+        			values.clear();
+        			values.put("postDate", schedule.getDatabaseFormattedString());
+        			KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { schedule.getId() });
+        			
+        			//Now update the kmmFileInfo row for the entered items.
+        			KMMDapp.updateFileInfo("hiTransactionId", 1);
+        			KMMDapp.updateFileInfo("transactions", 1);
+        			KMMDapp.updateFileInfo("splits", transaction.splits.size());
+        			KMMDapp.updateFileInfo("lastModified", 0);
+        			transaction = null;
+        			schedule = null;
+        		}	
     		
-			// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
-			if(KMMDapp.getAutoUpdate())
-			{
-				Intent intent = new Intent(KMMDService.DATA_CHANGED);
-				sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
-			}
+        		// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
+        		if(KMMDapp.getAutoUpdate())
+        		{
+        			Intent intent = new Intent(KMMDService.DATA_CHANGED);
+        			sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
+        		}	
 			
-    		// Just do a toast for now to see if we are getting results correctly.
-			Toast.makeText(this, "Number of schedules that where auto-entered: " + autoEnterSchedules.size(), Toast.LENGTH_SHORT).show();
-        }
+        		// Just do a toast for now to see if we are getting results correctly.
+        		Toast.makeText(this, "Number of schedules that where auto-entered: " + autoEnterSchedules.size(), Toast.LENGTH_SHORT).show();
+        	}
         
-        if( !Closing )
-        {
-        	// See if the user has set the preference to start up with the last used database
-        	if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        	if( !Closing )
         	{
-        		KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
-        		startActivity(new Intent(this, HomeActivity.class));
-        		finish();
+        		// See if the user has set the preference to start up with the last used database
+        		if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
+        		{
+        			KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
+        			startActivity(new Intent(this, HomeActivity.class));
+        			finish();
+        		}
         	}
         }
-        
         // Find our views
         setContentView(R.layout.welcome);
     }
@@ -265,6 +290,7 @@ public class WelcomeActivity extends Activity
     			KMMDapp.setFullPath(path);
     			i = new Intent(this, HomeActivity.class);
     			startActivity(i);
+    			finish();
     		}
     		
     		if( fromActivity.equalsIgnoreCase("NewDatabase") )

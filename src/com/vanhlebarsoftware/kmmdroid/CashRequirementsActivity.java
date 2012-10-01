@@ -39,7 +39,7 @@ public class CashRequirementsActivity extends Activity
 	private static final int C_VALUEFORMATTED = 9;
 	private static final String dbTable = "kmmSchedules, kmmSplits";
 	private static final String[] dbColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted" };
+												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String strSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=?";

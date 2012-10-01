@@ -79,7 +79,7 @@ public final class R {
         public static final int BalanceAmount8=0x7f090044;
         public static final int BalanceAmount9=0x7f090049;
         public static final int SumofSplits=0x7f0900a4;
-        public static final int Sync=0x7f09013b;
+        public static final int Sync=0x7f090139;
         public static final int TableAddSplits=0x7f0900a7;
         public static final int TransAmount=0x7f0900a6;
         public static final int Unassigned=0x7f0900a5;
@@ -195,7 +195,7 @@ public final class R {
         public static final int itemAbout=0x7f090133;
         public static final int itemAccounts=0x7f090134;
         public static final int itemCancel=0x7f090137;
-        public static final int itemCashRequirments=0x7f09013a;
+        public static final int itemCashRequirments=0x7f09013d;
         public static final int itemCategories=0x7f090130;
         public static final int itemClearAll=0x7f090140;
         public static final int itemDelete=0x7f090136;
@@ -208,7 +208,7 @@ public final class R {
         public static final int itemPayees=0x7f090131;
         public static final int itemPrefs=0x7f09012e;
         public static final int itemRecent=0x7f090142;
-        public static final int itemSchedules=0x7f090139;
+        public static final int itemSchedules=0x7f09013c;
         public static final int itemsave=0x7f09013e;
         public static final int kmmd_addTransaction=0x7f09001a;
         public static final int kmmd_icon=0x7f090018;
@@ -312,8 +312,8 @@ public final class R {
         public static final int srNextDueDate=0x7f09011e;
         public static final int srPayee=0x7f09011c;
         public static final int status=0x7f0900bd;
-        public static final int syncAll=0x7f09013d;
-        public static final int syncDropbox=0x7f09013c;
+        public static final int syncAll=0x7f09013b;
+        public static final int syncDropbox=0x7f09013a;
         public static final int titleAccount=0x7f090060;
         public static final int titleAccountCurrency=0x7f09007f;
         public static final int titleAccountIBAN=0x7f09008e;
@@ -537,6 +537,7 @@ public final class R {
         public static final int itemNumTransactions=0x7f050092;
         public static final int itemSave=0x7f050032;
         public static final int itemVersion=0x7f05008b;
+        public static final int lostDatabase=0x7f05011b;
         public static final int menuOpen=0x7f050041;
         public static final int menuRecent=0x7f050042;
         public static final int msgPayeeName=0x7f05003e;
