@@ -254,7 +254,7 @@ public class SchedulesNotificationsActivity extends Activity
 				TextView Amount = (TextView) view.findViewById(R.id.scheduleAmount);
 				DatePaid.setText(item.formatDateString());
 				Desc.setText(item.getDescription());
-				Amount.setText(Transaction.convertToDollars(item.getAmount()));
+				Amount.setText(Transaction.convertToDollars(item.getAmount(), true));
 			}
 			else
 				Log.d(TAG, "Never got a Schedule!");			

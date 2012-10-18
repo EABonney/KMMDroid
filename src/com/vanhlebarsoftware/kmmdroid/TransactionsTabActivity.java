@@ -127,7 +127,7 @@ public class TransactionsTabActivity extends Activity
 			case R.id.ptrAmount:
 				Log.d(TAG, "ViewBinder: Amount");
 				// Format the Amount properly.
-				((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
+				((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true));
 				return true;
 			default:
 				return false;

@@ -337,7 +337,7 @@ public class KMMDNotificationsService extends Service
 		int Count = c.getInt(1) + nChange;
 		
 		ContentValues values = new ContentValues();
-		values.put("balanceFormatted", Transaction.convertToDollars(newBalance));
+		values.put("balanceFormatted", Transaction.convertToDollars(newBalance, false));
 		values.put("balance", Account.createBalance(newBalance));
 		values.put("transactionCount", Count);
 		

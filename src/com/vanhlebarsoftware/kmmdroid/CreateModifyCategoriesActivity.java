@@ -260,12 +260,12 @@ public class CreateModifyCategoriesActivity extends TabActivity
 					if(strType.equalsIgnoreCase("Income"))
 					{
 						accountType = String.valueOf(AC_INCOME);
-						accountTypeString = "Income";
+						accountTypeString = getString(R.string.Income);
 					}
 					else
 					{
 						accountType = String.valueOf(AC_EXPENSE);
-						accountTypeString = "Expense";
+						accountTypeString = getString(R.string.Expense);
 					}
 					
 					currencyId = ((CategoriesGeneralActivity) categoryGeneral).getCategoryCurrency();

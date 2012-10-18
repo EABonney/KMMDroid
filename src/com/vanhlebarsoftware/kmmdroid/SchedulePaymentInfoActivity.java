@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -647,7 +648,9 @@ public class SchedulePaymentInfoActivity extends Activity
 	
 	public String getScheduleAmount()
 	{
-		return this.editAmount.getText().toString();
+		DecimalFormat decimal = new DecimalFormat();
+		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
+		return Transaction.convertToDollars(Transaction.convertToPennies(this.editAmount.getText().toString().replace('.', decChar)), false);
 	}
 	
 	public void setScheduleAmount(String amount)
@@ -742,7 +745,7 @@ public class SchedulePaymentInfoActivity extends Activity
 				tmp = KMMDapp.flSplitsTotal * -1;
 			else
 				tmp = KMMDapp.flSplitsTotal;
-			editAmount.setText(Transaction.convertToDollars((tmp)));
+			editAmount.setText(Transaction.convertToDollars((tmp), true));
 		}
 		
 		// Clear the Splits ArrayList out.

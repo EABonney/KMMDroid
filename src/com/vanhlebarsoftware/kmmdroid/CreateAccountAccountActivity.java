@@ -173,29 +173,29 @@ public class CreateAccountAccountActivity extends Activity
 					strTypeSelected = parent.getAdapter().getItem(pos).toString();
 					Log.d(TAG, "itemSelected: " + strTypeSelected);
 			
-					if( strTypeSelected.matches("Asset") )
+					if( strTypeSelected.matches(getString(R.string.Asset)) )
 					{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
 						" AND balance !='0/1')");
 						TypeSelected = 0;
 					}
-					else if( strTypeSelected.matches("Checking") )
+					else if( strTypeSelected.matches(getString(R.string.Checking)) )
 					{
 						CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
 						" AND balance !='0/1')");
 						TypeSelected = 1;
 					}
-					else if( strTypeSelected.matches("Equity") )
+					else if( strTypeSelected.matches(getString(R.string.Equity)) )
 					{
 						CreateAccountParentActivity.setSelected("id='AStd::Equity' OR (parentId='AStd::Equity'" +
 						" AND balance !='0/1')");
 						TypeSelected = 2;
 					}
-					else if( strTypeSelected.matches("Liability") )
+					else if( strTypeSelected.matches(getString(R.string.Liability)) )
 					{	CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
 						" AND balance !='0/1')");
 					TypeSelected = 3;
 					}
-					else if( strTypeSelected.matches("Savings") )
+					else if( strTypeSelected.matches(getString(R.string.Savings)) )
 					{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
 						" AND balance !='0/1')");
 					TypeSelected = 4;

@@ -383,4 +383,20 @@
     <string name="titleSyncDropbox">Dropbox</string>
     <string name="titleSync">Sync</string>
     <string name="lostDatabase">Error!! Missing database</string>
+    <string name="Checking">Checking</string>
+    <string name="Savings">Savings</string>
+    <string name="Cash">Cash</string>
+    <string name="CreditCard">Credit Card</string>
+    <string name="Loan">Loan</string>
+    <string name="Investment">Investment</string>
+    <string name="MoneyMarket">Money Market</string>
+    <string name="Asset">Asset</string>
+    <string name="Liability">Liability</string>
+    <string name="Currency">Currency</string>
+    <string name="Income">Income</string>
+    <string name="Expense">Expense</string>
+    <string name="AssetLoan">Asset Loan</string>
+    <string name="Stock">Stock</string>
+    <string name="Equity">Equity</string>
+    
 </resources>

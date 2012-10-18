@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -73,6 +74,9 @@ public class Transaction
 	********************************************************************************************/
 	static public long convertToPennies(String numStr)
 	{
+		DecimalFormat decimal = new DecimalFormat();
+		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
+		
 		numStr = numStr.trim ();
 		// strip commas, spaces, + etc
 		StringBuffer b = new StringBuffer( numStr.length() );
@@ -89,7 +93,7 @@ public class Transaction
 		    	case '(':
 		    		negative = true;
 		    		break;
-		        case '.' :
+		        /*case e :
 		        	if ( decpl == -1 )
 		            {
 		               decpl = 0;
@@ -98,7 +102,7 @@ public class Transaction
 		            {
 		               throw new NumberFormatException( "more than one decimal point" );
 		            }
-		            break;
+		            break;*/
 		        case '0' :
 		        case '1' :
 		        case '2' :
@@ -116,6 +120,17 @@ public class Transaction
 		            b.append(c);
 		            break;
 		        default:
+		        	if(c == decChar)
+		        	{
+			        	if ( decpl == -1 )
+			            {
+			               decpl = 0;
+			            }
+			            else
+			            {
+			               throw new NumberFormatException( "more than one decimal point" );
+			            }
+		        	}
 		        	// ignore junk chars
 		            break;
 		    }
@@ -161,8 +176,10 @@ public class Transaction
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html
 	********************************************************************************************/
-	static public String convertToDollars(long pennies)
+	static public String convertToDollars(long pennies, boolean formatted)
 	{
+		DecimalFormat decimal = new DecimalFormat();
+		
 		boolean negative;
 		if ( pennies < 0 )
 		{
@@ -173,30 +190,39 @@ public class Transaction
 			negative = false;
 
 		String s = Long.toString( pennies );
-		String strNumber = String.format("%,d", (pennies / 100));
+		// if formatted == true then we want to localize the formatting of the string for display
+		// else we are putting the string into the table and we want to NOT have formatting other
+		// than the symbol between dollars and cents.
+		String strNumber = null;
+		if(formatted)
+			strNumber = String.format("%,d", (pennies / 100));
+		else
+			strNumber = String.format("%d", (pennies / 100));
 		int len = s.length();
 		switch ( len )
 		{
 			case 1:
-		        strNumber = "0.0" + s;
+		        strNumber = "0" + decimal.getDecimalFormatSymbols().getDecimalSeparator() + "0" + s;
 		        break;
 		    case 2:
-		        strNumber = "0." + s;
+		        strNumber = "0" + decimal.getDecimalFormatSymbols().getDecimalSeparator() + s;
 		        break;
 		    default:
-		    	strNumber = strNumber + "." + s.substring(len-2, len);
+		    	strNumber = strNumber + decimal.getDecimalFormatSymbols().getDecimalSeparator() + s.substring(len-2, len);
 		        break;
 		} // end switch
 		
-		if ( negative )
+		if ( negative && formatted )
 			strNumber = "(" + strNumber + ")";
+		else if( negative && !formatted)
+			strNumber = "-" + strNumber;
 
 		return strNumber;
 	}
 	
 	public long calcBalance(long nPrevBal, long nPrevTrans)
 	{
-		// Since we are working backwards we need to actually "add" or do the opposit of thhe current transaction.
+		// Since we are working backwards we need to actually "add" or do the opposite of the current transaction.
 		this.nBalance = nPrevBal - nPrevTrans;
 		
 		return this.nBalance; 

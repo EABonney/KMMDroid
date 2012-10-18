@@ -221,7 +221,7 @@ public class SchedulesActivity extends Activity
 			txtDesc.setText(this.c.getString(1));
 			txtOccurence.setText(this.c.getString(2));
 			txtNextPaymentDue.setText(this.c.getString(3));
-			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.c.getString(6))));
+			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.c.getString(6)), true));
 			txtPayee.setText(this.c.getString(7));
 			
 			return view;

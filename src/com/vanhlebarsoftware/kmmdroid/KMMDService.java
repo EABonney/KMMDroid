@@ -140,7 +140,7 @@ public class KMMDService extends Service
 		c = getContentResolver().query(u, null, null, null, null);
 		c.moveToFirst();
 		views.setTextViewText(R.id.hrAccountName, c.getString(0));
-		strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)));
+		strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)), true);
 		views.setTextViewText(R.id.hrAccountBalance, strBal);
 		c.close();
 		
@@ -182,8 +182,8 @@ public class KMMDService extends Service
 				sch = Schedules.get(i-1);
 				Date = sch.getDueDate();
 				strDescription = sch.getDescription();
-				strAmount = Transaction.convertToDollars(sch.getAmount());
-				strBalance = Transaction.convertToDollars(sch.getBalance());
+				strAmount = Transaction.convertToDollars(sch.getAmount(), true);
+				strBalance = Transaction.convertToDollars(sch.getBalance(), true);
 				
 				// Convert the Calendar object to a string formated: Month Day, Year (1/10/12)
 				strDate = FormatDate(Date);

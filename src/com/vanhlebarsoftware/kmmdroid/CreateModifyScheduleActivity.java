@@ -312,7 +312,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 						// If we have splits grab the relevant information from the KMMDapp.Splits object.
 						if( anySplits )
 						{
-							value = Account.createBalance(Transaction.convertToPennies(KMMDapp.Splits.get(i-1).getValueFormatted()));
+							value = KMMDapp.Splits.get(i-1).getValue();
 							formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
 							memo = KMMDapp.Splits.get(i-1).getMemo();
 							accountId = KMMDapp.Splits.get(i-1).getAccountId();

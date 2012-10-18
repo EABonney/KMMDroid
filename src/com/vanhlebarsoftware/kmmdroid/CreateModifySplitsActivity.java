@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -142,7 +143,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		super.onResume();
 		
 		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountTypeString='Expense' OR accountTypeString='Income')", null, null, null, "accountName ASC");
+				"(accountTypeString=? OR accountTypeString=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
 		startManagingCursor(cursorCategories);
 		
 		// Set up the adapters
@@ -443,13 +445,9 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			lUnassigned = lTotal - lSumofSplits;
 		
 		// Finally append the new values to the TextViews.
-		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits));
-		txtUnassigned.setText(strLabelUnassigned + " " + Transaction.convertToDollars(lUnassigned));
-		//txtTransAmount.setText(strLabelTotal + " " + Transaction.convertToDollars(lTotal));
-		
-		Log.d(TAG, "lSumofSplits: " + String.valueOf(lSumofSplits));
-		Log.d(TAG, "lUnassigned: " + String.valueOf(lUnassigned));
-		Log.d(TAG, "lTotal: " + String.valueOf(lTotal));
+		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits, true));
+		txtUnassigned.setText(strLabelUnassigned + " " + Transaction.convertToDollars(lUnassigned, true));
+
 		
 		// If we are finished with our editing and we are out of balance we need to return the new sum of the transaction.
 		if(bfinal)
@@ -460,6 +458,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	
 	private void saveSplits()
 	{
+		DecimalFormat decimal = new DecimalFormat();
+		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
 		//String strCategory = null;
 		String strMemo = null;
 		String strAmount = null;
@@ -475,10 +475,16 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			e = (EditText) row.getChildAt(1);
 			strMemo = e.getText().toString();
 			e = (EditText) row.getChildAt(2);
-			strAmount = e.getText().toString();
+			// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
+			strAmount = e.getText().toString().replace('.', decChar);
+
+			// We need to strip out an formatting the user put in except the "decimal" indicator.
+			String strFormattedAmt = Transaction.convertToDollars(Transaction.convertToPennies(strAmount), false);
+			// Need to take the user's amount and create the reduced fraction.
+			String fraction = Account.createBalance(Transaction.convertToPennies(strAmount));
 			// Create the split in the Splits Array.
-			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", "", strAmount, "", strAmount, "", strAmount, 
-					strMemo, AccountIdList.get(i-1), "", "", ""));
+			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", fraction, strFormattedAmt, fraction, strFormattedAmt,
+											fraction, strFormattedAmt,	strMemo, AccountIdList.get(i-1), "", "", ""));
 		}
 	}
 }

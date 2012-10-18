@@ -242,7 +242,8 @@ public class ViewTransactionActivity extends Activity
 				return false;
 			
 			// Format the Amount properly.
-			((TextView) view).setText(String.format("%,(.2f", Float.valueOf(cursor.getString(columnIndex))));
+			String str = Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true);
+			((TextView) view).setText(str);
 			
 			return true;
 		}

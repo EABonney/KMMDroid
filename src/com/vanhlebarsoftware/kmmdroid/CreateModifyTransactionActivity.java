@@ -1,5 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.StringTokenizer;
@@ -11,6 +12,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -225,7 +228,8 @@ public class CreateModifyTransactionActivity extends Activity
 				null, null, null, null, "name ASC");
 		startManagingCursor(cursorPayees);
 		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountTypeString='Expense' OR accountTypeString='Income')", null, null, null, "accountName ASC");
+				"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
 		startManagingCursor(cursorCategories);
 		
 		// Set up the adapters
@@ -324,6 +328,11 @@ public class CreateModifyTransactionActivity extends Activity
 					id = transId;
 				valuesTrans.put("id", id);
 				
+				// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
+				DecimalFormat decimal = new DecimalFormat();
+				char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
+				String strAmount = editAmount.getText().toString().replace('.', decChar);
+				
 				// Create the splits information to be saved.			
 				for( int i=0; i < numOfSplits; i++)
 				{
@@ -332,13 +341,14 @@ public class CreateModifyTransactionActivity extends Activity
 					{
 						if( intTransType == WITHDRAW )
 						{
-							value = "-" + Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
-							formatted = "-" + editAmount.getText().toString();
+							value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+							Log.d(TAG, "value: " + value);
+							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 						}
 						else
 						{
-							value = Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
-							formatted = editAmount.getText().toString();							
+							value = Account.createBalance(Transaction.convertToPennies(strAmount));
+							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);							
 						}
 						memo = editMemo.getText().toString();
 					}
@@ -347,7 +357,7 @@ public class CreateModifyTransactionActivity extends Activity
 						// If we have splits grab the relevant information from the KMMDapp.Splits object.
 						if( anySplits )
 						{
-							value = Account.createBalance(Transaction.convertToPennies(KMMDapp.Splits.get(i-1).getValueFormatted()));
+							value = KMMDapp.Splits.get(i-1).getValue();
 							formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
 							memo = KMMDapp.Splits.get(i-1).getMemo();
 							accountUsed = KMMDapp.Splits.get(i-1).getAccountId();
@@ -356,13 +366,13 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							if( intTransType == WITHDRAW )
 							{
-								value = Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
-								formatted = editAmount.getText().toString();								
+								value = Account.createBalance(Transaction.convertToPennies(strAmount));
+								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
 							}
 							else
 							{
-								value = "-" + Account.createBalance(Transaction.convertToPennies(editAmount.getText().toString()));
-								formatted = "-" + editAmount.getText().toString();								
+								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
 							}
 							memo = editMemo.getText().toString();
 							accountUsed = strTransCategoryId;
@@ -496,8 +506,8 @@ public class CreateModifyTransactionActivity extends Activity
 						Log.d(TAG, "Inside payee: " + strTransPayeeId);
 						break;
 					case R.id.category:
-						Log.d(TAG, "Inside category: " + String.valueOf(parent.getId()));
 						c = (Cursor) parent.getAdapter().getItem(pos);
+						Log.d(TAG, "Inside category: " + c.getString(0).toString());
 						editCategory.setText(c.getString(0).toString());
 						strTransCategoryId = c.getString(1).toString();
 						spinCategory.setVisibility(4);
@@ -618,26 +628,7 @@ public class CreateModifyTransactionActivity extends Activity
 		.append(dates[0]).append("-")
 		.append(dates[1]).toString();
 	}
-	
-/*	private void increaseId()
-	{
-		final String[] dbColumns = { "hiTransactionId" };
-		final String strOrderBy = "hiTransactionId DESC";
 		
-		Cursor cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		int id = cursor.getInt(0);
-		id = id + 1;
-		
-		ContentValues values = new ContentValues();
-		values.put("hiTransactionId", id);
-		values.put("transactions", id);
-		
-		KMMDapp.db.update("kmmFileInfo", values, null, null);		
-	}
-*/	
 	private ArrayList<Split> getSplits(String transId)
 	{
 		ArrayList<Split> splits = new ArrayList<Split>();
@@ -697,28 +688,7 @@ public class CreateModifyTransactionActivity extends Activity
 		}
 		return i;
 	}
-	
-/*	private int setCategory(String categoryId)
-	{
-		int i = 0;
-		cursorCategories.moveToFirst();
-		
-		if( categoryId != null )
-		{
-			while(!categoryId.equals(cursorCategories.getString(1)))
-			{
-				cursorCategories.moveToNext();
-			
-				//check to see if we have moved past the last item in the cursor, if so return current i.
-				if(cursorCategories.isAfterLast())
-					return i;
-			
-				i++;
-			}
-		}
-		return i;
-	}
-*/	
+
 	private void setupSplitInfo()
 	{
 		// need to take into account the actual accounts entry as well as the splits.
@@ -731,7 +701,7 @@ public class CreateModifyTransactionActivity extends Activity
 				tmp = KMMDapp.flSplitsTotal * -1;
 			else
 				tmp = KMMDapp.flSplitsTotal;
-			editAmount.setText(Transaction.convertToDollars((tmp)));
+			editAmount.setText(Transaction.convertToDollars((tmp), true));
 		}
 		
 		// Clear the Splits ArrayList out.
@@ -805,7 +775,10 @@ public class CreateModifyTransactionActivity extends Activity
 				anySplits = true;
 			}
 		
-			float amount = Float.valueOf(Splits.get(0).getValueFormatted());
+			Log.d(TAG, "Split.getValue(): " + Splits.get(0).getValue());
+			Log.d(TAG, "Split.getValue() converted: " + Account.convertBalance(Splits.get(0).getValue()));
+			Log.d(TAG, "Split.getValue() converted then formatted: " + Transaction.convertToDollars(Account.convertBalance(Splits.get(0).getValue()), false));
+			float amount = Float.valueOf(Transaction.convertToDollars(Account.convertBalance(Splits.get(0).getValue()), false));
 			if( amount < 0 )
 			{
 				intTransType = WITHDRAW;
@@ -838,7 +811,6 @@ public class CreateModifyTransactionActivity extends Activity
 			buttonChooseCategory.setEnabled(false);
 			spinPayee.setSelection(setPayee(strTransPayeeId));
 			iNumberofPasses = 0;
-			Log.d(TAG, "OnResume Action == ACTION_ENTER_SCHEDULE");
 		}
 		else
 		{	

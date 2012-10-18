@@ -28,10 +28,11 @@ public class HomeActivity extends Activity
 	private static final String TAG = "HomeActivity";
 	private static final int C_ACCOUNTNAME = 0;
 	private static final int C_BALANCE = 1;
-	private static final int C_ID = 2;
+	private static final int C_BALANCEFORMATTED = 2;
+	private static final int C_ID = 3;
 	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balanceFormatted", "id AS _id"};
-	private static final String strSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability') AND " +
+	private static final String[] dbColumns = { "accountName", "balance", "balanceFormatted", "id AS _id"};
+	private static final String strSelection = "(accountType != ? AND accountType != ?) AND " +
 			"(balance != '0/1')";
 	private static final String strOrderBy = "parentID, accountName ASC";
 	static final String[] FROM = { "accountName", "balanceFormatted" };
@@ -111,14 +112,16 @@ public class HomeActivity extends Activity
 				KMMDapp.openDB();
 		
 			//Get all the accounts to be displayed.
-			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
+			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) },
+										null, null, strOrderBy);
 			cursor.moveToFirst();
 		
 			// Loop over the cursor to build the accounts ArrayList and adjust each account for possible furture transactions.
 			for(int i=0; i < cursor.getCount(); i++)
 			{
 				accounts.add(new Accounts(cursor.getString(C_ID), cursor.getString(C_ACCOUNTNAME),
-						Account.adjustForFutureTransactions(cursor.getString(C_ID), cursor.getString(C_BALANCE), KMMDapp.db)));
+						Account.adjustForFutureTransactions(cursor.getString(C_ID), Account.convertBalance(cursor.getString(C_BALANCE)),
+								KMMDapp.db)));
 				cursor.moveToNext();
 			}
 		

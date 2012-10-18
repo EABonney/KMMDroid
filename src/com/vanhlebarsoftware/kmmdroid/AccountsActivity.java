@@ -34,12 +34,11 @@ public class AccountsActivity extends Activity
 	private static final int AT_EXPENSE = 13;
 	private static final int AT_EQUITY = 16;
 	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balanceFormatted", "accountTypeString",
+	private static final String[] dbColumns = { "accountName", "balance", "accountTypeString",
 												"accountType", "id AS _id"};
-	private static final String strSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability' OR " +
-											   "parentId='AStd::Equity')"; //AND (balance != '0/1')";
-	private static final String strOrderBy = "parentID, accountName ASC";
-	static final String[] FROM = { "accountName", "accountTypeString", "balanceFormatted", "accountType" };
+	private static final String strSelection = "(accountType != ? AND accountType != ?)";
+	private static final String strOrderBy = "accountName ASC";
+	static final String[] FROM = { "accountName", "accountTypeString", "balance", "accountType" };
 	static final int[] TO = { R.id.arAccountName, R.id.arAccountType, R.id.arAccountBalance, R.id.arIcon };
 	private String strAccountId = null;
 	KMMDroidApp KMMDapp;
@@ -83,7 +82,8 @@ public class AccountsActivity extends Activity
 		super.onResume();
 		
 		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
+		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) },
+									null, null, strOrderBy);
 		startManagingCursor(cursor);
 		
 		// Set up the adapter
@@ -122,7 +122,7 @@ public class AccountsActivity extends Activity
 			{
 				case R.id.arAccountBalance:
 					// Format the Amount properly.
-					((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex))));
+					((TextView) view).setText(Transaction.convertToDollars(Account.convertBalance(cursor.getString(columnIndex)), true));
 					break;
 				case R.id.arIcon:
 					// Set the correct icon based on accountType

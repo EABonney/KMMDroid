@@ -41,10 +41,10 @@ public class LedgerActivity extends Activity
 	private static final int C_PAYEE = 5;
 	private static final int C_CKNUM = 6;
 	private static final int C_STATUS = 7;
-	private static final String sql = "SELECT transactionId AS _id, payeeId, valueFormatted, memo, postDate, name, checkNumber, reconcileFlag FROM " +
+	private static final String sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
 					"AND postDate <= ? AND postDate >= ?" +
-					" UNION SELECT transactionId, payeeId, valueFormatted, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
+					" UNION SELECT transactionId, payeeId, value, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
 					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' AND postDate <= ? AND postDate >= ?";
 	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
 	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
@@ -104,11 +104,11 @@ public class LedgerActivity extends Activity
 		super.onResume();
 		Calendar today = Calendar.getInstance();
 		long balance = Balance;
-		Cursor curBalance = KMMDapp.db.query("kmmAccounts", new String[] { "balanceFormatted" }, "id=?", new String[] { AccountID },
+		Cursor curBalance = KMMDapp.db.query("kmmAccounts", new String[] { "balance" }, "id=?", new String[] { AccountID },
 											null, null, null);
 		startManagingCursor(curBalance);
 		curBalance.moveToFirst();
-		balance = Transaction.convertToPennies(curBalance.getString(0));
+		balance = Account.convertBalance(curBalance.getString(0));
 		
 		// Get today's date and then subtract one year to limit the rows in our view.
 		String strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
@@ -137,7 +137,8 @@ public class LedgerActivity extends Activity
 		
 		for(int i=0; i < cursor.getCount(); i++)
 		{
-			trans = new Transaction(cursor.getString(C_AMOUNT), cursor.getString(C_PAYEE), cursor.getString(C_DATE), cursor.getString(C_MEMO), 
+			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(cursor.getString(C_AMOUNT)), true),
+									cursor.getString(C_PAYEE), cursor.getString(C_DATE), cursor.getString(C_MEMO), 
 									cursor.getString(C_TRANSID), cursor.getString(C_STATUS), cursor.getString(C_CKNUM));
 			Transactions.add(trans);
 
@@ -302,8 +303,8 @@ public class LedgerActivity extends Activity
 				
 				DatePaid.setText(item.formatDateString());
 				Payee.setText(item.getPayee());
-				Amount.setText(Transaction.convertToDollars(item.getAmount()));
-				Balance.setText(Transaction.convertToDollars(item.getBalance()));
+				Amount.setText(Transaction.convertToDollars(item.getAmount(), true));
+				Balance.setText(Transaction.convertToDollars(item.getBalance(), true));
 			}
 			else
 				Log.d(TAG, "Never got a Schedule!");
