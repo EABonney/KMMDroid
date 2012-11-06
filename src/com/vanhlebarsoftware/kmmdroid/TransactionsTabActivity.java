@@ -1,10 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,6 +30,9 @@ public class TransactionsTabActivity extends Activity
 	String PayeeName = null;
 	String CategoryId = null;
 	String CategoryName = null;
+	private boolean fromPayee = false;
+	CreateModifyPayeeActivity payeeTabHost;
+	CreateModifyCategoriesActivity categoryTabHost;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	ListView listPayeeTrans;
@@ -42,6 +48,16 @@ public class TransactionsTabActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Set the AccountId selected fields.
+        Bundle extras = getIntent().getExtras();
+        PayeeId = extras.getString("PayeeId");
+        PayeeName = extras.getString("PayeeName");
+        CategoryId = extras.getString("CategoryId");
+        CategoryName = extras.getString("CategoryName");
+        
+        if( PayeeId != null )
+        	fromPayee = true;
+    
         // Find our views
         listPayeeTrans = (ListView) findViewById(R.id.listPayeeTransView);
 
@@ -54,13 +70,6 @@ public class TransactionsTabActivity extends Activity
         {
         	KMMDapp.openDB();
         }
-        
-        // Set the AccountId selected fields.
-        Bundle extras = getIntent().getExtras();
-        PayeeId = extras.getString("PayeeId");
-        PayeeName = extras.getString("PayeeName");
-        CategoryId = extras.getString("CategoryId");
-        CategoryName = extras.getString("CategoryName");
 	}
 	
 	@Override
@@ -94,6 +103,54 @@ public class TransactionsTabActivity extends Activity
 		adapter = new SimpleCursorAdapter(this, R.layout.payee_transactions_row, cursor, FROM, TO);
 		adapter.setViewBinder(VIEW_BINDER);
 		listPayeeTrans.setAdapter(adapter);
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		boolean isDirty = false;
+		
+        // Get the correct tabHost based on the parent.
+        if( fromPayee )
+        {
+        	payeeTabHost = ((CreateModifyPayeeActivity) this.getParent());
+        	isDirty = payeeTabHost.getIsDirty();
+        }
+        else
+        {
+        	categoryTabHost = ((CreateModifyCategoriesActivity) this.getParent());
+        	isDirty = categoryTabHost.getIsDirty();
+        }
+        
+		if( isDirty )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
 	}
 	
 	// View binder to do formatting of the string values to numbers with commas and parenthesis

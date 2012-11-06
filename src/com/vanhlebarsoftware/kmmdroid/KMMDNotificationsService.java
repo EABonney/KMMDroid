@@ -357,7 +357,12 @@ public class KMMDNotificationsService extends Service
 		@Override
 		public void run()
 		{
-			checkSchedules();
+			// Check to see if the user has specified to use the last opened file. If not then skip checking the schedules.
+			// This is a hack right now, need a better method of dealing with mutliple files.
+			if(kmmdApp.prefs.getBoolean("openLastUsed", false))
+				checkSchedules();
+			else
+				Log.d(TAG, "checkSchedules() skipped as user does not have correct settings!");
 			stopSelf();
 		}
 	}

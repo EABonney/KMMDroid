@@ -3,12 +3,15 @@ package com.vanhlebarsoftware.kmmdroid;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +23,7 @@ import android.widget.Spinner;
 
 public class HomeScreenConfiguration extends Activity 
 {
+	private static final String TAG = HomeScreenConfiguration.class.getSimpleName();
 	private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
@@ -27,6 +31,10 @@ public class HomeScreenConfiguration extends Activity
 	private String strAccountId = null;
 	private int intDefaultFreq = 0;
 	private int intNumOfWeeks = 0;
+	private String widgetId = null;
+	private String accountUsed = null;
+	private String updateFreq = null;
+	private String displayWeeks = null;
 	TextView txtDatabasePath;
 	Spinner spinDefaultAccount;
 	Spinner spinDefaultFreq;
@@ -43,29 +51,12 @@ public class HomeScreenConfiguration extends Activity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "Entering HomeScreenConfiguration::onCreate()");
         setContentView(R.layout.homescreenconfiguration);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // See if we have already setup a widget, if so then pop an alert and tell the user to bad.
-        if( KMMDapp.prefs.getBoolean("homeWidgetSetup", false) )
-        {
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
-			alertDel.setTitle(R.string.homeWidgetError);
-			alertDel.setMessage(getString(R.string.titleHomeWidgetError));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{					
-			        setResult(RESULT_CANCELED, null);
-					finish();
-				}
-			});			
-			alertDel.show();
-        }
-        
+                
         // Get our views
         txtDatabasePath = (TextView) findViewById(R.id.homeConfigDatabaseTitle);
         spinDefaultAccount = (Spinner) findViewById(R.id.homeConfigDefaultAccountSpinner);
@@ -84,16 +75,24 @@ public class HomeScreenConfiguration extends Activity
 			}
 		});
         
+        final Context context = getApplicationContext();
         btnSave.setOnClickListener(new View.OnClickListener()
         {
 			public void onClick(View arg0)
 			{
+				Log.d(TAG, "Saving updated values....");
+				Log.d(TAG, "WidgetId: " + String.valueOf(appWidgetId));
+				Log.d(TAG, "Databasepath: " + txtDatabasePath.getText().toString());
+				Log.d(TAG, "accountUsed: " + strAccountId);
+				Log.d(TAG, "updateFrequency: " + String.valueOf(intDefaultFreq));
+				Log.d(TAG, "displayWeeks: " + String.valueOf(intNumOfWeeks));
+				String strappWidgetId = String.valueOf(appWidgetId);
 		    	// Save the config settings for this WidgetId.
 				SharedPreferences.Editor editor = KMMDapp.prefs.edit();
-				editor.putString("widgetDatabasePath", txtDatabasePath.getText().toString());
-				editor.putString("accountUsed", strAccountId);
-				editor.putString("updateFrequency", String.valueOf(intDefaultFreq));
-				editor.putString("displayWeeks", String.valueOf(intNumOfWeeks));
+				editor.putString("widgetDatabasePath" + strappWidgetId, txtDatabasePath.getText().toString());
+				editor.putString("accountUsed" + strappWidgetId, strAccountId);
+				editor.putString("updateFrequency" + strappWidgetId, String.valueOf(intDefaultFreq));
+				editor.putString("displayWeeks" + strappWidgetId, String.valueOf(intNumOfWeeks));
 				editor.putBoolean("homeWidgetSetup", true);
 				editor.apply();
 		    	
@@ -104,6 +103,7 @@ public class HomeScreenConfiguration extends Activity
 		    	
 		    	// Make sure we refresh the new widget.
 				Intent intent = new Intent(KMMDService.DATA_CHANGED);
+				intent.putExtra("appWidgetIds", appWidgetId);
 				sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				
 		    	finish();
@@ -119,7 +119,10 @@ public class HomeScreenConfiguration extends Activity
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         if( extras != null )
+        {
         	appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        	widgetId = extras.getString("widgetId");
+        }
         
         // Set the result to canceled in case the user exits the activity without accepting the config changes.
         setResult(RESULT_CANCELED, null);
@@ -137,6 +140,7 @@ public class HomeScreenConfiguration extends Activity
 	protected void onResume() 
 	{
 		super.onResume();
+		Log.d(TAG, "Editing widgetId: " + widgetId);
 		
 		// Set up the adapters
 		adapterDefaultFreq = ArrayAdapter.createFromResource(this, R.array.UpdateFrequency, android.R.layout.simple_spinner_item);
@@ -145,6 +149,44 @@ public class HomeScreenConfiguration extends Activity
 		adapterNumOfWeeks = ArrayAdapter.createFromResource(this, R.array.WeeksToDisplay, android.R.layout.simple_spinner_item);
 		adapterNumOfWeeks.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinNumOfWeeks.setAdapter(adapterNumOfWeeks);
+		
+		// Get all the information for the specific widget if an Id was passed.
+		if(!widgetId.isEmpty())
+		{
+			// Since we are passing in a widgetId, we need to set appWidgetId to this passed in value.
+			appWidgetId = Integer.valueOf(widgetId);
+			
+			txtDatabasePath.setText(KMMDapp.prefs.getString("widgetDatabasePath" + widgetId, ""));
+			accountUsed = KMMDapp.prefs.getString("accountUsed" + widgetId, "");
+			updateFreq = KMMDapp.prefs.getString("updateFrequency" + widgetId, "");
+			displayWeeks = KMMDapp.prefs.getString("displayWeeks" + widgetId, "");
+			
+			// Set the spinners correctly.
+			spinDefaultFreq.setSelection(setDefaultFrequency(updateFreq));
+			spinNumOfWeeks.setSelection(setNumberOfWeeks(displayWeeks));
+			
+			// Set up the adapter for the accounts and set the spinner correctly.
+			final String dbTable = "kmmAccounts";
+			final String[] dbColumns = { "accountName", "id AS _id"};
+			final String strSelection = "(parentId='AStd::Asset' OR parentId='AStd::Liability') AND " +
+					"(balance != '0/1')";
+			final String strOrderBy = "parentID, accountName ASC";
+			
+			db = SQLiteDatabase.openDatabase(txtDatabasePath.getText().toString(), null, 0);
+			
+			// Get a cursor with the accounts for the user based on the database they selected.
+			Cursor cur = db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
+			startManagingCursor(cur);
+			
+			// Setup the adapter now that we have a database and a cursor
+			adapterDefaultAccount = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cur, FROM1, TO);
+			adapterDefaultAccount.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+			spinDefaultAccount.setAdapter(adapterDefaultAccount);
+			spinDefaultAccount.setSelection(setAccountUsed(accountUsed, cur));
+			
+			// Clean up the cursor and database.
+			db.close();			
+		}
 	}
 	
     @Override
@@ -190,33 +232,33 @@ public class HomeScreenConfiguration extends Activity
 			switch(parent.getId())
 			{
 			case R.id.homeConfigDefaultUpdateFreqSpinner:
-				if( str.equals("None") )
+				if( str.equals(getString(R.string.None)) )
 					intDefaultFreq = 0;
-				else if( str.equals("15 minutes") )
+				else if( str.equals(getString(R.string.FifteenMinutes)) )
 					intDefaultFreq = 90000;
-				else if( str.equals("30 minutes") )
+				else if( str.equals(getString(R.string.ThirtyMinutes)) )
 					intDefaultFreq = 180000;
-				else if( str.equals("1 hour") )
+				else if( str.equals(getString(R.string.OneHour)) )
 					intDefaultFreq = 360000;
-				else if( str.equals("2 hours") )
+				else if( str.equals(getString(R.string.TwoHours)) )
 					intDefaultFreq = 720000;
-				else if( str.equals("4 hours") )
+				else if( str.equals(getString(R.string.FourHours)) )
 					intDefaultFreq = 14400000;
-				else if( str.equals("8 hours") )
+				else if( str.equals(getString(R.string.SixHours)) )
 					intDefaultFreq = 28800000;
-				else if( str.equals("Upon KMyMoney modification") )
+				else if( str.equals(getString(R.string.AutoUpdate)) )
 					intDefaultFreq = -1;
 				else
 					intDefaultFreq = 0;
 				break;
 			case R.id.homeConfigNumWeeksDisplaySpinner:
-				if( str.equals("One Week") )
+				if( str.equals(getString(R.string.OneWeek)) )
 					intNumOfWeeks = 1;
-				else if( str.equals("Two Weeks") )
+				else if( str.equals(getString(R.string.TwoWeeks)) )
 					intNumOfWeeks = 2;
-				else if( str.equals("Three Weeks") )
+				else if( str.equals(getString(R.string.ThreeWeeks)) )
 					intNumOfWeeks = 3;
-				else if( str.equals("Four Weeks") )
+				else if( str.equals(getString(R.string.FourWeeks)) )
 					intNumOfWeeks = 4;
 				else
 					intNumOfWeeks = 1;
@@ -224,6 +266,7 @@ public class HomeScreenConfiguration extends Activity
 			case R.id.homeConfigDefaultAccountSpinner:
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 				strAccountId = c.getString(1).toString();
+				Log.d(TAG, "accountId: " + strAccountId);
 				break;
 			default:
 				break;
@@ -234,5 +277,84 @@ public class HomeScreenConfiguration extends Activity
 		{
 			// do nothing.
 		}		
+	}
+	
+	// **************************************************************************************************
+	// ************************************ Helper methods **********************************************
+	private int setDefaultFrequency(String displayFreq)
+	{
+		switch(Integer.valueOf(displayFreq))
+		{
+		case 0:
+			intDefaultFreq = 0;
+			return 0;
+		case 90000:
+			intDefaultFreq = 90000;
+			return 1;
+		case 180000:
+			intDefaultFreq = 180000;
+			return 2;
+		case 360000:
+			intDefaultFreq = 360000;
+			return 3;
+		case 720000:
+			intDefaultFreq = 720000;
+			return 4;
+		case 14400000:
+			intDefaultFreq = 14400000;
+			return 5;
+		case 28800000:
+			intDefaultFreq = 28800000;
+			return 6;
+		case -1:
+			intDefaultFreq = -1;
+			return 7;
+		default:
+			intDefaultFreq = 0;
+			return 0;
+		}
+	}
+	
+	private int setNumberOfWeeks(String weeks)
+	{
+		switch(Integer.valueOf(weeks))
+		{
+		case 1:
+			intNumOfWeeks = 1;
+			return 0;
+		case 2:
+			intNumOfWeeks = 2;
+			return 1;
+		case 3:
+			intNumOfWeeks = 3;
+			return 2;
+		case 4:
+			intNumOfWeeks = 4;
+			return 3;
+		default:
+			intNumOfWeeks = 1;
+			return 0;
+		}
+	}
+	
+	private int setAccountUsed(String account, Cursor cur)
+	{
+		int i = 0;
+		cur.moveToFirst();
+		
+		if( account != null )
+		{
+			while(!account.equals(cur.getString(1)))
+			{
+				cur.moveToNext();
+			
+				//check to see if we have moved past the last item in the cursor, if so return current i.
+				if(cur.isAfterLast())
+					return i;
+			
+				i++;
+			}
+		}
+		return i;
 	}
 }

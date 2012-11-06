@@ -17,8 +17,9 @@ public class BasicHomeWidget extends AppWidgetProvider
 	{
 		// Ensure the widget gets updated when first added to the home screen.
 		Intent intent = new Intent(context, KMMDService.class);
+		intent.putExtra("appWidgetIds", appWidgetIds);
 		context.startService(intent);
-		Log.d(TAG, "onUpdated");
+		Log.d(TAG, "Number of widgetIds: " + appWidgetIds.length);
 	}
 	
 	@Override
@@ -38,7 +39,17 @@ public class BasicHomeWidget extends AppWidgetProvider
 			context.startService(intent);
 		}
 	}
-	
+
+	@Override
+	public void onDeleted(Context context, int[] appWidgetIds) 
+	{
+		super.onDeleted(context, appWidgetIds);
+		Log.d(TAG, "Deleted widgetId: " + appWidgetIds[0]);
+		Intent intent = new Intent(context, KMMDService.class);
+		intent.putExtra("widgetDeleted", appWidgetIds[0]);
+		context.startService(intent);		
+	}
+
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{

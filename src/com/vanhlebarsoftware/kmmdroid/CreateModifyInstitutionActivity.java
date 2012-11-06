@@ -7,7 +7,10 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +32,7 @@ public class CreateModifyInstitutionActivity extends Activity
 	private int Action = 0;
 	private String instId = null;
 	private boolean returnFromDelete = false;
+	private boolean isDirty = false;
 	EditText instName;
 	EditText instCity;
 	EditText instStreet;
@@ -53,6 +57,112 @@ public class CreateModifyInstitutionActivity extends Activity
         instPhone = (EditText) findViewById(R.id.institutionPhone);
         instRoutingNumber = (EditText) findViewById(R.id.institutionRoutingNumber);
         instBIC = (EditText) findViewById(R.id.institutionBIC);
+        
+        // Set up the other keyListener's for the various editText items.
+        instName.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instCity.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instStreet.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instPostalCode.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instPhone.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instRoutingNumber.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        instBIC.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
         
         // Get the action the user is doing.
         Bundle extras = getIntent().getExtras();
@@ -102,6 +212,8 @@ public class CreateModifyInstitutionActivity extends Activity
 					instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
 					instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
 					instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+					// Need to reset the isDirty flag to false.
+					isDirty = false;
 				}
 				else
 					Log.d(TAG, "Error! Nothing returned from our query!");
@@ -140,6 +252,12 @@ public class CreateModifyInstitutionActivity extends Activity
 		}
 		if( Action == ACTION_NEW || rows > 0 )
 			menu.getItem(1).setVisible(false);
+		
+		// See if we need to show the save item or not.
+		if( isDirty )
+			menu.getItem(0).setVisible(true);
+		else
+			menu.getItem(0).setVisible(false);
 		
 		return true;
 	}
@@ -216,10 +334,67 @@ public class CreateModifyInstitutionActivity extends Activity
 				alertDel.show();
 				break;
 			case R.id.itemCancel:
-				finish();
+				if( isDirty )
+				{
+					alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+					alertDel.setTitle(R.string.BackActionWarning);
+					alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int whichButton)
+						{
+							finish();
+						}
+					});
+					
+					alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int whichButton) 
+						{
+							// Canceled.
+							Log.d(TAG, "User cancelled back action.");
+						}
+					});				
+					alertDel.show();
+				}
+				else
+					finish();
 				break;
 		}
 		return true;
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( isDirty )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+			finish();
 	}
 	// ************************************************************************************************
 	// ******************************* Helper Functions ***********************************************

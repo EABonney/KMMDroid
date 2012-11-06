@@ -10,6 +10,7 @@ import android.content.UriMatcher;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -145,9 +146,11 @@ public class KMMDProvider extends ContentProvider
 	@Override
 	public Uri insert(Uri uri, ContentValues contentValues) 
 	{
+		String widgetId = uri.getFragment();
+		
 		// See if we need to open the database.
 		if( !db.isOpen() )
-			db = openDatabase();
+			db = openDatabase(widgetId);
 		
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
@@ -199,9 +202,11 @@ public class KMMDProvider extends ContentProvider
 	{
 		Log.d(TAG, "Uri provided to query(): " + uri.toString());
 		String id = null;
+		String widgetId = uri.getFragment();
+		Log.d(TAG, "Fragment passed to query: " + widgetId);
 		
 		// We need to open the database.
-		db = openDatabase();
+		db = openDatabase(widgetId);
 		
 		// Need to get the prefs for our application so we can update the account used..
 		Context context = getContext();
@@ -218,6 +223,7 @@ public class KMMDProvider extends ContentProvider
 
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
+		Log.d(TAG, "Matcher returned: " + match);		
 		switch(match)
 		{
 			case ACCOUNTS:
@@ -241,7 +247,7 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case SCHEDULES:
 				SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
-				accountUsed = prefs.getString("accountUsed", "");
+				accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
 				dbTable = schedulesTable;
 				dbColumns = schedulesColumns;
 				dbSelection = schedulesSelection + "'" + accountUsed + "'";
@@ -250,10 +256,7 @@ public class KMMDProvider extends ContentProvider
 			case SCHEDULES_ID:
 				dbTable = schedulesTable;
 				if(projection != null)
-				{
-					Log.d(TAG, "Using passed in projection value.");
 					dbColumns = projection;
-				}
 				else
 					dbColumns = schedulesColumns;
 				if(selection != null)
@@ -292,9 +295,10 @@ public class KMMDProvider extends ContentProvider
 		Cursor cur = null;
 		if(id == null)
 		{
-			if(db.isOpen())
+			if(db != null)
 			{
 				cur = db.query(dbTable, dbColumns, dbSelection, null, null, null, dbOrderBy);
+				Log.d(TAG, "Size of cursor to be returned: " + cur.getCount());
 			}
 			else
 			{	
@@ -304,7 +308,7 @@ public class KMMDProvider extends ContentProvider
 		}
 		else
 		{
-			if(db.isOpen())
+			if(db != null)
 				cur = db.query(dbTable, dbColumns, dbSelection, new String[] { id }, null, null, dbOrderBy);
 			else
 			{
@@ -322,10 +326,11 @@ public class KMMDProvider extends ContentProvider
 	{
 		String id = null;
 		int result = 0;
+		String widgetId = uri.getFragment();
 		
 		// See if we need to open the database.
 		if( !db.isOpen() )
-			db = openDatabase();
+			db = openDatabase(widgetId);
 		
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
@@ -404,7 +409,7 @@ public class KMMDProvider extends ContentProvider
 		}		
 	}
 	
-	private SQLiteDatabase openDatabase()
+	private SQLiteDatabase openDatabase(String widgetId)
 	{
 		// Need to get the prefs for our application.
 		Context context = getContext();
@@ -420,10 +425,33 @@ public class KMMDProvider extends ContentProvider
 		}
 		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
 		
-		// Get the path to the database the user wants to use for this widget.
-		path = prefs.getString("widgetDatabasePath", "");
+		// Open the correct database
+		// If widgetId is 9999, then we are already in the application and need to open the default database.
+		String prefString = null;
+		if( widgetId.equals("9999") )
+		{
+			prefString = "currentOpenedDatabase";
+		}
+		else
+		{
+			// Get the path to the database the user wants to use for this widget.
+			prefString = "widgetDatabasePath" + String.valueOf(widgetId);
+			Log.d(TAG, "Attempting to locate databasePath for widget " + widgetId + " with prefrence string: " + prefString);
+		}
 		
-		return SQLiteDatabase.openDatabase(path, null, 0);
+		path = prefs.getString(prefString, "");
+		Log.d(TAG, "Path for KMMDProvider database: " + path);
+		
+		try 
+		{
+			return SQLiteDatabase.openDatabase(path, null, 0);
+		} 
+		catch (SQLiteException e) 
+		{
+			Log.d(TAG, "Error opening database!! Error message: " + e.getMessage());
+		}
+		
+		return null;
 	}
 	
 	public void updateFileInfo(String updateColumn, int nChange)

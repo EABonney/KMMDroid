@@ -48,6 +48,7 @@ public class CreateModifyCategoriesActivity extends TabActivity
 	private static String strCategoryName = null;
 	public static boolean inValidateParentId = false;
 	private boolean returnFromDelete = false;
+	private boolean isDirty = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
@@ -80,13 +81,13 @@ public class CreateModifyCategoriesActivity extends TabActivity
         intent = new Intent().setClass(this, CategoriesGeneralActivity.class);
 
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("general").setIndicator("General")
+        spec = tabHost.newTabSpec("general").setIndicator(getString(R.string.CategoriesTabGeneral))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, CategoriesHierarchyActivity.class);
-        spec = tabHost.newTabSpec("hierarchy").setIndicator("Hierarchy")
+        spec = tabHost.newTabSpec("hierarchy").setIndicator(getString(R.string.CategoriesTabHierarchy))
                       .setContent(intent);
         tabHost.addTab(spec);
 
@@ -95,7 +96,7 @@ public class CreateModifyCategoriesActivity extends TabActivity
         	intent = new Intent().setClass(this, TransactionsTabActivity.class);
         	intent.putExtra("CategoryName", strCategoryName);
         	intent.putExtra("CategoryId", strCategoryId);
-        	spec = tabHost.newTabSpec("payeetransactions").setIndicator("Transactions")
+        	spec = tabHost.newTabSpec("payeetransactions").setIndicator(getString(R.string.TabTransactions))
                       .setContent(intent);
         	tabHost.addTab(spec);
         }
@@ -193,6 +194,7 @@ public class CreateModifyCategoriesActivity extends TabActivity
 				Log.d(TAG, "parentId: " + cursor.getString(C_PARENTID));
 				// Make sure the 1st tab is displayed to the user.
 				getTabHost().setCurrentTab(0);
+				this.isDirty = false;
 			}
 		}
 	}
@@ -441,5 +443,15 @@ public class CreateModifyCategoriesActivity extends TabActivity
 		String balance = dollars + cents;
 		String denominator = "/100";
 		return balance + denominator;
+	}
+	
+	public void setIsDirty(boolean flag)
+	{
+		this.isDirty = flag;
+	}
+	
+	public boolean getIsDirty()
+	{
+		return this.isDirty;
 	}
 }

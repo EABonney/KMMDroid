@@ -5,12 +5,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -59,6 +64,7 @@ public class SchedulePaymentInfoActivity extends Activity
 	private String strSchPaymentMethod = null;
 	private String strCategoryName = null;
 	private static int iNumberofPasses = 0;
+	CreateModifyScheduleActivity parentTabHost;
 	private int numOfSplits;
 	private boolean anySplits = false;
 	ArrayList<Split> Splits;
@@ -103,6 +109,9 @@ public class SchedulePaymentInfoActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Get the tabHost on the parent.
+        parentTabHost = ((CreateModifyScheduleActivity) this.getParent());
+        
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
@@ -140,6 +149,7 @@ public class SchedulePaymentInfoActivity extends Activity
 			public void onClick(View v)
 			{
 				showDialog(SET_DATE_ID);
+				parentTabHost.setIsDirty(true);
 			}
 		});
 
@@ -176,6 +186,68 @@ public class SchedulePaymentInfoActivity extends Activity
         spinFreqNum.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         spinFreqDesc.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         spinPaymentMethod.setOnItemSelectedListener(new AccountOnItemSelectedListener());
+        
+        // Set up the other keyListener's for the various editText items.
+        editSchName.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editCheckNum.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editAmount.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editMemo.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
         
         // get the current date
         final Calendar c = Calendar.getInstance();
@@ -261,6 +333,40 @@ public class SchedulePaymentInfoActivity extends Activity
 		}
 	}
 	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( parentTabHost.getIsDirty() )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
+	}
+	
 	// the callback received with the user "sets" the opening date in the dialog
 	private DatePickerDialog.OnDateSetListener mDateSetListener = 
 			new DatePickerDialog.OnDateSetListener() 
@@ -298,17 +404,21 @@ public class SchedulePaymentInfoActivity extends Activity
 						intSchAccountPos = parent.getSelectedItemPosition();
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						strSchAccountId = c.getString(1).toString();
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.scheduleFrequencyNumber:
 						intSchFreq = parent.getSelectedItemPosition();	
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.scheduleFrequencyDescription:
 						strSchFreqDesc = parent.getAdapter().getItem(pos).toString();
 						intSchFreqDesc = parent.getSelectedItemPosition();
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.schedulePaymentMethod:
 						intSchPaymentMethodPos = parent.getSelectedItemPosition();
 						strSchPaymentMethod = parent.getAdapter().getItem(pos).toString();
+						parentTabHost.setIsDirty(true);
 						break;						
 					case R.id.scheduleType:
 						intSchTypePos = parent.getSelectedItemPosition();
@@ -319,11 +429,13 @@ public class SchedulePaymentInfoActivity extends Activity
 							intSchType = Schedule.TYPE_TRANSFER;
 						if( str.matches("Withdrawal") )
 							intSchType = Schedule.TYPE_BILL;
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.payee:
 						intSchPayeePos = parent.getSelectedItemPosition();
 						c = (Cursor) parent.getAdapter().getItem(pos);
 						strSchPayeeId = c.getString(1).toString();
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.category:
 						//intSchCategoryPos = parent.getSelectedItemPosition();
@@ -333,6 +445,7 @@ public class SchedulePaymentInfoActivity extends Activity
 						strSchCategoryId = c.getString(1).toString();
 						spinCategory.setVisibility(4);
 						btnCategory.setVisibility(0);
+						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.status:
 						intSchStatusPos = parent.getSelectedItemPosition();
@@ -343,6 +456,7 @@ public class SchedulePaymentInfoActivity extends Activity
 							intSchStatus = 1;
 						if( str.matches( "Not reconciled" ) )
 							intSchStatus = 2;
+						parentTabHost.setIsDirty(true);
 						break;
 					default:
 						Log.d(TAG, "parentId: " + String.valueOf(parent.getId()));
@@ -717,7 +831,7 @@ public class SchedulePaymentInfoActivity extends Activity
 			case 6:
 			case 7:
 			case 8:
-			case 9:
+			//case 9:
 				strMonth = "0" + String.valueOf(intMonth + 1);
 				break;
 			default:

@@ -97,13 +97,7 @@ public class ViewTransactionActivity extends Activity
         
         // Set the Description, Amount, Date and Memo fields.
         Bundle extras = getIntent().getExtras();
-        //textDescription.setText(extras.getString("Description"));
-        //textDate.setText(extras.getString("Date"));
-		//textAmount.setText(extras.getString("Amount"));
-        //textMemo.setText(extras.getString("Memo"));
         TransID = extras.getString("transactionId");
-        //strStatus = extras.getString("Status");
-        //textCheckNum.setText(extras.getString("CheckNum"));
 	}
 
 	@Override

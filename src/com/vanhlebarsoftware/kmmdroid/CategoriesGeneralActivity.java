@@ -1,9 +1,14 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,6 +31,8 @@ public class CategoriesGeneralActivity extends Activity
 	private static int currencyPos = 0;
 	private static int categoryTypePos = 0;
 	String strCurrency = null;
+	private int numberOfPasses = 0;
+	private CreateModifyCategoriesActivity parentTabHost;
 	EditText editCategoryName;
 	EditText editCategoryNotes;
 	Spinner spinCategoryType;
@@ -45,6 +52,9 @@ public class CategoriesGeneralActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Get the tabHost on the parent.
+        parentTabHost = ((CreateModifyCategoriesActivity) this.getParent());
+        
         // Find our views.
         editCategoryName = (EditText) findViewById(R.id.categoryName);
         editCategoryNotes = (EditText) findViewById(R.id.categoryNotes);
@@ -55,6 +65,39 @@ public class CategoriesGeneralActivity extends Activity
         // Set the OnItemSelectedListeners for the spinners.
         spinCategoryType.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
         spinCategoryCurrency.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
+        
+        // Set up the other keyListener's for the various editText items.
+        editCategoryName.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+				Log.d(TAG, "changing isDirty from accountName!");
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editCategoryNotes.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+				Log.d(TAG, "changing isDirty from accountName!");
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -103,23 +146,63 @@ public class CategoriesGeneralActivity extends Activity
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			switch(parent.getId())
+			if( numberOfPasses > 1 )
 			{
-				case R.id.categoryType:
-					CreateModifyCategoriesActivity.strType = parent.getItemAtPosition(pos).toString();
-					CreateModifyCategoriesActivity.inValidateParentId = true;
-					break;
-				case R.id.categoryCurrency:
-					Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-					strCurrency = c.getString(1);
-					break;
+				switch(parent.getId())
+				{
+					case R.id.categoryType:
+						CreateModifyCategoriesActivity.strType = parent.getItemAtPosition(pos).toString();
+						CreateModifyCategoriesActivity.inValidateParentId = true;
+						parentTabHost.setIsDirty(true);
+						break;
+					case R.id.categoryCurrency:
+						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
+						strCurrency = c.getString(1);
+						parentTabHost.setIsDirty(true);
+						break;
+				}
 			}
+			else
+				numberOfPasses++;
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( parentTabHost.getIsDirty() )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
 	}
 	
 	// ************************************************************************************************

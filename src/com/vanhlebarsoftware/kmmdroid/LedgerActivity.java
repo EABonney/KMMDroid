@@ -176,13 +176,6 @@ public class LedgerActivity extends Activity
 	    {
 	    	Intent i = new Intent(getBaseContext(), ViewTransactionActivity.class);
 	    	Transaction trans = Transactions.get(position);
-	    	/*i.putExtra("Description", trans.getPayee());
-	    	i.putExtra("Date", trans.formatDateString());
-	    	i.putExtra("Memo", trans.getMemo());
-	    	i.putExtra("Amount", Transaction.convertToDollars(trans.getAmount()));
-	    	i.putExtra("TransID", trans.getTransId());
-	    	i.putExtra("Status", trans.getStatus());
-	    	i.putExtra("CheckNum", trans.getCheckNum());*/
 	    	i.putExtra("transactionId", trans.getTransId());
 	    	startActivity(i);
 	    }

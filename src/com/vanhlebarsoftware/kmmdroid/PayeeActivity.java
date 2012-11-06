@@ -156,7 +156,10 @@ public class PayeeActivity extends Activity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemNew:
-				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+				Intent i = new Intent(getBaseContext(), CreateModifyPayeeActivity.class);
+				i.putExtra("Activity", ACTION_NEW);
+				startActivity(i);
+/*				AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
 				alert.setTitle(getString(R.string.createNewPayee));
 				alert.setMessage(getString(R.string.msgPayeeName));
@@ -183,6 +186,7 @@ public class PayeeActivity extends Activity
 				});
 
 				alert.show();
+*/
 				break;	
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));

@@ -10,7 +10,7 @@
     <string name="summaryLastUsedFile">Location of the last used file</string>
     <string name="titleFileChooser">Choose a File</string>
     <string name="titleDatabaseName">Please enter a database name</string>
-    <string name="titleButtonOK">Ok</string>
+    <string name="titleButtonOK">OK</string>
     <string name="titleButtonCancel">Cancel</string>
     <string name="titleButtonEdit">Edit</string>
     <string name="titleButtonDelete">Delete</string>
@@ -398,5 +398,20 @@
     <string name="AssetLoan">Asset Loan</string>
     <string name="Stock">Stock</string>
     <string name="Equity">Equity</string>
-    
+    <string name="PayeeTabAddress">Address</string>
+    <string name="PayeeTabDefault">Default</string>
+    <string name="PayeeTabMatching">Matching</string>
+    <string name="CategoriesTabGeneral">General</string>
+    <string name="CategoriesTabHierarchy">Hierarchy</string>
+    <string name="AccountTabInstitution">Institution</string>
+    <string name="AccountTabAccount">Account</string>
+    <string name="AccountTabSubAccount">SubAccount</string>
+    <string name="TabTransactions">Transactions</string>
+    <string name="FileChooserLocation">Current Dir:</string>
+    <string name="FileChooserFolder">Folder</string>
+    <string name="FileChooserParentDirectory">Parent Directory</string>
+    <string name="FileChooserFile">File Size:</string>
+    <string name="BackActionWarning">Changes will be lost</string>
+    <string name="titleBackActionWarning">Your changes will be lost if you proceed! Do you really wish to proceed?</string>
+    <string name="titlePayeeName">Name: </string>
 </resources>

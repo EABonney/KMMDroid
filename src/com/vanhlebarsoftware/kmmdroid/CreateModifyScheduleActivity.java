@@ -48,6 +48,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 	private static int TRANSFER = 1;
 	private int Action = 0;
 	private String schId = null;
+	private String widgetDatabasePath = null;
+	private Boolean fromScheduleActions = false;
+	private Boolean isDirty = false;
 	
 	ArrayList<Split> Splits;
 	ArrayList<Split> OrigSplits;
@@ -62,13 +65,27 @@ public class CreateModifyScheduleActivity extends TabActivity
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.createmod_schedule);
         
+        // Get our application
+        KMMDapp = ((KMMDroidApp) getApplication());
+        
         // Get the Action.
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
+        widgetDatabasePath = extras.getString("widgetDatabasePath");
+        fromScheduleActions = extras.getBoolean("fromScheduleActions");
         
         // See if we are editing a schedule, if so get the schedule Id we passed in.
         if( Action == ACTION_EDIT )
+        {
         	schId = extras.getString("scheduleId");
+        	
+        	// If we are coming from a home widget, then we need to open the correct database.
+        	if(widgetDatabasePath != null)
+        	{
+        		KMMDapp.setFullPath(widgetDatabasePath);
+        		KMMDapp.openDB();
+        	}
+        }
         
         //Resources res = getResources(); // Resource object to get Drawables
         tabHost = getTabHost();  // The activity TabHost
@@ -90,9 +107,6 @@ public class CreateModifyScheduleActivity extends TabActivity
         tabHost.addTab(spec);
         
         tabHost.setCurrentTab(0);
-        
-        // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
 
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -157,6 +171,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 			
 			getTabHost().setCurrentTab(0);			
 			((SchedulePaymentInfoActivity) schedulePayment).editSchedule();
+			isDirty = false;
 		}
 	}
 	
@@ -609,5 +624,15 @@ public class CreateModifyScheduleActivity extends TabActivity
 		
 		cursor.close();
 		return splits;
+	}
+	
+	public void setIsDirty(boolean flag)
+	{
+		this.isDirty = flag;
+	}
+	
+	public Boolean getIsDirty()
+	{
+		return this.isDirty;
 	}
 }

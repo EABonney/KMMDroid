@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -54,6 +55,7 @@ public class WelcomeActivity extends Activity
         
         Bundle extras = getIntent().getExtras();
         String lostPath = null;
+        String fromWidgetId = null;
         boolean Closing = false;
         
         if( extras != null)
@@ -62,8 +64,11 @@ public class WelcomeActivity extends Activity
         	{
         		Closing = extras.getBoolean("Closing");
         		lostPath = extras.getString("lostPath");
+        		fromWidgetId = extras.getString("fromWidgetId");
         	}
         }
+        else
+        	Log.d(TAG, "No extras passed to WelcomeActivity!");
         
         // If the user has lostPath, somehow they lost their saved database, just pop and alert, show them the lost path and then skip
         // everything else until they open up a new database.
@@ -205,15 +210,41 @@ public class WelcomeActivity extends Activity
         		Toast.makeText(this, "Number of schedules that where auto-entered: " + autoEnterSchedules.size(), Toast.LENGTH_SHORT).show();
         	}
         
+    		Editor edit = KMMDapp.prefs.edit();
         	if( !Closing )
         	{
+        		// See if we are starting from a home widget, if so use that database.
+        		if(fromWidgetId != null)
+        		{
+        			//See if the database is already open, if so, close it.
+        			if(KMMDapp.isDbOpen())
+        				KMMDapp.closeDB();
+        			
+        			KMMDapp.setFullPath(KMMDapp.prefs.getString("widgetDatabasePath" + fromWidgetId, ""));
+            		// Start the HomeActivity.
+        			Log.d(TAG, "Starting from home widget: " + fromWidgetId);
+            		startActivity(new Intent(this, HomeActivity.class));
+            		finish();
+        		}
+        		
         		// See if the user has set the preference to start up with the last used database
         		if( KMMDapp.prefs.getBoolean("openLastUsed", false) )
         		{
         			KMMDapp.setFullPath(KMMDapp.prefs.getString("Full Path", ""));
-        			startActivity(new Intent(this, HomeActivity.class));
-        			finish();
+            		// Start the HomeActivity.
+            		startActivity(new Intent(this, HomeActivity.class));
+            		finish();
         		}
+        		
+        		// Save the currently opened database in the preferences.
+        		edit.putString("currentOpenedDatabase", KMMDapp.getFullPath());
+        		edit.apply();
+        	}
+        	else
+        	{
+        		//Remove the entry for currentOpenedDatabase from preferences.
+        		edit.remove("currentOpenedDatabase");
+        		edit.apply();
         	}
         }
         // Find our views

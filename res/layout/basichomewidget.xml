@@ -39,6 +39,15 @@
 	    android:contentDescription="@string/descriptionAddTransaction"
 	    android:src="@drawable/transaction_add" >
 	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_widgetSettings"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@android:drawable/ic_menu_preferences" >	    
+	</ImageView>
 	<TextView 
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"

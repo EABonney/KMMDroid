@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +50,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
 	boolean needUpdateRows = false;
+	boolean isDirty = false;
+	int numOfPasses = 0;
 	ArrayList<String> AccountIdList;
 	TextView txtSumSplits;
 	TextView txtUnassigned;
@@ -94,7 +97,10 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         editSplitAmount.addTextChangedListener(new TextWatcher()
         {
-        	public void afterTextChanged(Editable arg0) {}
+        	public void afterTextChanged(Editable arg0) 
+        	{
+        		isDirty = true;
+        	}
 
         	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
         			int arg3) {}
@@ -103,6 +109,19 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
         	{
         		needUpdateRows = true;
         	}        	
+        });
+        
+        editSplitMemo.addTextChangedListener(new TextWatcher()
+        {
+        	public void afterTextChanged(Editable arg0) 
+        	{
+        		isDirty = true;
+        	}
+
+        	public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+        			int arg3) {}
+
+        	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}        	
         });
         
         // See if the database is already open, if not open it Read/Write.
@@ -143,7 +162,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		super.onResume();
 		
 		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountTypeString=? OR accountTypeString=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+				"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
 					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
 		startManagingCursor(cursorCategories);
 		
@@ -171,11 +190,15 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					insertNewRow(strCategory, KMMDapp.Splits.get(i).getMemo(), KMMDapp.Splits.get(i).getValueFormatted());
 				}
 			}
+			
+			// Need to reset the isDirty flag back to false.
+			isDirty = false;
 		}
 		
         // Set up the footer correctly.
 		updateTotals(false);
         txtTransAmount.setText(strLabelTotal + " " + strTranAmount);
+        Log.d(TAG, "isDirty: " + isDirty);
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -202,6 +225,12 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		else
 			menu.getItem(3).setVisible(false);
 		
+		// See if we need to display the Save menu item.
+		if(isDirty)
+			menu.getItem(0).setVisible(true);
+		else
+			menu.getItem(0).setVisible(false);
+		
 		return true;
 	}
 	
@@ -221,6 +250,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				insertNewRow(strCategoryName, editSplitMemo.getText().toString(), editSplitAmount.getText().toString());
 				updateTotals(false);
 				needUpdateRows = false;
+				isDirty = true;
+		        Log.d(TAG, "At itemInsertRow, isDirty: " + isDirty);
 				break;
 			case R.id.itemClearAll:
 				for(int i = intInsertRowAt; i > 1; i--)
@@ -229,6 +260,8 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					intInsertRowAt = intInsertRowAt - 1;
 				}
 				updateTotals(false);
+				isDirty = true;
+		        Log.d(TAG, "At itemClearAll, isDirty: " + isDirty);
 				break;
 			case R.id.itemDelete:
 				tableSplits.removeViewAt(rowClicked);
@@ -236,9 +269,36 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				rowClicked = 0;
 				intInsertRowAt = intInsertRowAt - 1;
 				updateTotals(false);
+				isDirty = true;
+		        Log.d(TAG, "At itemDelete, isDirty: " + isDirty);
 				break;
 			case R.id.itemCancel:
-				finish();
+				if( isDirty )
+				{
+					AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+					alertDel.setTitle(R.string.BackActionWarning);
+					alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int whichButton)
+						{
+							finish();
+						}
+					});
+					
+					alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int whichButton) 
+						{
+							// Canceled.
+							Log.d(TAG, "User cancelled back action.");
+						}
+					});				
+					alertDel.show();
+				}
+				else
+					finish();
 				break;
 			case R.id.itemsave:
 				// See if we need to update the rows because user has not "inserted a new row yet"
@@ -266,6 +326,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 						public void onClick(DialogInterface dialog, int whichButton) {
 							saveSplits();
 							KMMDapp.flSplitsTotal = updateTotals(true);
+							KMMDapp.setSplitsAryDirty(true);
 							finish();
 						}
 					});
@@ -280,6 +341,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 				else
 				{
 					saveSplits();
+					KMMDapp.setSplitsAryDirty(true);
 					finish();
 				}
 				break;
@@ -287,6 +349,37 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 		return true;
 	}
 	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( isDirty )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+			finish();
+	}
 	public class AccountOnItemSelectedListener implements OnItemSelectedListener
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
@@ -298,6 +391,11 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 					strCategoryName = c.getString(0).toString();
 					strAccountId = c.getString(1).toString();
 					//c.close();
+					if( numOfPasses > KMMDapp.Splits.size() )
+						isDirty = true;
+					else
+						numOfPasses++;
+			        Log.d(TAG, "At splitCateogry, isDirty: " + isDirty);
 					break;
 				default:
 					Log.d(TAG, "parentId: " + String.valueOf(parent.getId()));
@@ -485,6 +583,9 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			// Create the split in the Splits Array.
 			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", fraction, strFormattedAmt, fraction, strFormattedAmt,
 											fraction, strFormattedAmt,	strMemo, AccountIdList.get(i-1), "", "", ""));
+			
+			// Mark splits as dirty.
+			KMMDapp.setSplitsAryDirty(true);
 		}
 	}
 }

@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class KMMDBootReceiver extends BroadcastReceiver 
 {
@@ -19,6 +20,7 @@ public class KMMDBootReceiver extends BroadcastReceiver
 	{
 		// Need to get the prefs for our application so we can update the account used..
 		prefs = context.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+		SharedPreferences.Editor prefEditor = prefs.edit();
 		
         // See if the user wants to get notifications of schedules that are due Today or past due.
         if(prefs.getBoolean("receiveNotifications", false))
@@ -30,6 +32,14 @@ public class KMMDBootReceiver extends BroadcastReceiver
         	updateTime.set(Calendar.MINUTE, intMin);
         	updateTime.set(Calendar.SECOND, 0);
         	setRepeatingAlarm(context, null, updateTime, KMMDroidApp.ALARM_NOTIFICATIONS);
+    		prefEditor.putBoolean("notificationAlarmSet", true);
+    		prefEditor.apply();
+        }
+        else
+        {
+    		prefEditor.putBoolean("notificationAlarmSet", false);
+    		prefEditor.apply();
+    		Log.d(TAG, "Notifications where NOT set up at bootup");
         }
 	}
 
@@ -39,20 +49,16 @@ public class KMMDBootReceiver extends BroadcastReceiver
 		Intent intent = null;
 		
 		// Set up the repeating alarm based on the user's preferences.
-		final AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		final Calendar TIME = Calendar.getInstance();
-		TIME.set(Calendar.MINUTE, 0);
-		TIME.set(Calendar.SECOND, 0);
-		TIME.set(Calendar.MILLISECOND, 0);
-		
+		final AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);	
 
 		intent = new Intent(KMMDNotificationsService.CHECK_SCHEDULES);
 		service = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			
-		alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
-		//alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
-		SharedPreferences.Editor prefEditor = prefs.edit();
-		prefEditor.putBoolean("notificationAlarmSet", true);
-		prefEditor.apply();
+		//alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
+		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
+		
+		Log.d(TAG, "Notifications where set at bootup");
+		Log.d(TAG, "Alarms will go off at: " + updateTime.get(Calendar.HOUR_OF_DAY) + ":" + updateTime.get(Calendar.MINUTE));
+		Log.d(TAG, "updateTime.getTimInMillis(): " + updateTime.getTimeInMillis());
 	}
 }

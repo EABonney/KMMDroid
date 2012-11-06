@@ -33,6 +33,11 @@ public class KMMDService extends Service
 	private boolean runFlag = false;
 	private KMMDUpdater kmmdUpdater;
 	private KMMDroidApp kmmdApp;
+	private int[] appWidgetIds;
+	private int refreshWidgetId = 0;
+	private int deletedWidget = 0;
+	private String widgetDatabasePath = null;
+	private String widgetId = null;
 	
 	@Override
 	public void onCreate() 
@@ -63,18 +68,22 @@ public class KMMDService extends Service
 		boolean lastWidgetDeleted = false;
 		String skippedScheduleId = null;
 		
-		// If the user has not yet configured a widget properly do nothing.
-		if( this.kmmdApp.prefs.getBoolean("homeWidgetSetup", false) )
-			Log.d(TAG, "user had defined a widget.");
-		
 		if( this.kmmdApp.prefs.getBoolean("homeWidgetSetup", false) )
 		{
-			if( intent.hasExtra("lastWidgetDeleted") || intent.hasExtra("skipScheduleId") )
+			if( intent.hasExtra("lastWidgetDeleted") || intent.hasExtra("skipScheduleId") || 
+				intent.hasExtra("appWidgetIds") || intent.hasExtra("widgetDeleted") || intent.hasExtra("refreshWidgetId") )
 			{
 				extras = intent.getExtras();
 				lastWidgetDeleted = extras.getBoolean("lastWidgetDeleted");
 				skippedScheduleId = extras.getString("skipScheduleId");
+				appWidgetIds = extras.getIntArray("appWidgetIds");
+				refreshWidgetId = extras.getInt("refreshWidgetId");
+				deletedWidget = extras.getInt("widgetDeleted");	
+		        widgetDatabasePath = extras.getString("widgetDatabasePath");
+		        widgetId = extras.getString("widgetId");
 			}
+			else
+				Log.d(TAG, "No extras where passed!");
 			// See if we are telling the service we deleted the last widget.
 			// If so then update the preferences so the user can add another one later.
 			if(lastWidgetDeleted)
@@ -83,17 +92,56 @@ public class KMMDService extends Service
 				editor.putBoolean("homeWidgetSetup", false);
 				editor.apply();
 			}
+			else if(deletedWidget != 0)
+			{
+				Log.d(TAG, "Deleting preferences for widgetId: " + deletedWidget);
+				SharedPreferences.Editor editor = this.kmmdApp.prefs.edit();
+				editor.remove("widgetDatabasePath" + String.valueOf(deletedWidget));
+				editor.remove("accountUsed" + String.valueOf(deletedWidget));
+				editor.remove("updateFrequency" + String.valueOf(deletedWidget));
+				editor.remove("displayWeeks" + String.valueOf(deletedWidget));
+				editor.apply();				
+			}
+			else if(refreshWidgetId != 0)
+			{
+				this.runFlag = true;
+				this.kmmdApp.setServiceRunning(true);
+				this.kmmdUpdater.start();
+			}
 			else
 			{
 				// See if we are starting the service with any extras in the intent.
 				if(skippedScheduleId != null)
 				{
-					skipSchedule(skippedScheduleId);
+					// We need to make sure we have the correct database open for this widget.
+					skipSchedule(skippedScheduleId, widgetId);
+					
+					// Need to refresh the widget now.
+					this.runFlag = true;
+					this.kmmdApp.setServiceRunning(true);
+					this.kmmdUpdater.start();
 				}
-   
-				this.runFlag = true;
-				this.kmmdApp.setServiceRunning(true);
-				this.kmmdUpdater.start();
+				else
+				{
+					// See if ALL the appWidgetIds are used in our preferences, if not don't start the service.
+					Boolean validIds = true;
+					for(int i=0; i<appWidgetIds.length; i++)
+					{
+						String path = this.kmmdApp.prefs.getString("widgetDatabasePath" + String.valueOf(appWidgetIds[i]), null);
+						if(path == null)
+						{
+							validIds = false;
+							break;
+						}
+					}
+				
+					if(validIds)
+					{
+						this.runFlag = true;
+						this.kmmdApp.setServiceRunning(true);
+						this.kmmdUpdater.start();
+					}
+				}
 			}
 		}
 		
@@ -128,47 +176,54 @@ public class KMMDService extends Service
 		int lastRow = 0;
 		RemoteViews views = new RemoteViews(getPackageName(), R.layout.basichomewidget);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-		ComponentName thisAppWidget = new ComponentName(getPackageName(), BasicHomeWidget.class.getName());
-		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
-
-		// Need to get the user prefs for our application.
-		String accountUsed = kmmdApp.prefs.getString("accountUsed", "");
-		String weeksToDisplay = kmmdApp.prefs.getString("displayWeeks", "1");
-		
-		// Get our account and account balance from the database.
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountUsed);
-		c = getContentResolver().query(u, null, null, null, null);
-		c.moveToFirst();
-		views.setTextViewText(R.id.hrAccountName, c.getString(0));
-		strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)), true);
-		views.setTextViewText(R.id.hrAccountBalance, strBal);
-		c.close();
-		
-		// Take today's date and then determine the number of days to add to it based on the user's preference.
-		GregorianCalendar calStart = new GregorianCalendar();
-		GregorianCalendar calEnd = new GregorianCalendar();
-		calEnd.add(Calendar.DAY_OF_MONTH, (7 * Integer.valueOf(weeksToDisplay)));
-		String strStartDate = String.valueOf(calStart.get(Calendar.YEAR)) + "-" + String.valueOf(calStart.get(Calendar.MONTH)+ 1) + "-"
-				+ String.valueOf(calStart.get(Calendar.DAY_OF_MONTH));
-		String strEndDate = String.valueOf(calEnd.get(Calendar.YEAR)) + "-" + String.valueOf(calEnd.get(Calendar.MONTH)+ 1) + "-"
-				+ String.valueOf(calEnd.get(Calendar.DAY_OF_MONTH));
-		
-		// Get our active schedules from the database.
-		c = getContentResolver().query(KMMDProvider.CONTENT_SCHEDULE_URI, null, null, null, null);
-		
-		// We have our open schedules from the database, now create the user defined period of cash flow.
-		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
-		Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal));
-
-		// close our cursor as we no longer need it.
-		c.close();
-		
-		// Make sure we hide any unused rows.
-		lastRow = Schedules.size();
+		if(appWidgetIds == null)
+		{
+			ComponentName thisAppWidget = new ComponentName(getPackageName(), BasicHomeWidget.class.getName());
+			appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);			
+		}
 		
 		// Loop through all the instances of this widget
 		for(int appWidgetId : appWidgetIds)
-		{	
+		{
+			// Need to get the user prefs for our application.
+			String accountUsed = kmmdApp.prefs.getString("accountUsed" + String.valueOf(appWidgetId), "");
+			String weeksToDisplay = kmmdApp.prefs.getString("displayWeeks" + String.valueOf(appWidgetId), "1");
+			
+			// Get our account and account balance from the database.
+			String frag = "#" + appWidgetId;
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountUsed + frag);
+			u = Uri.parse(u.toString());
+
+			c = getContentResolver().query(u, null, null, null, null);
+			c.moveToFirst();
+			views.setTextViewText(R.id.hrAccountName, c.getString(0));
+			strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)), true);
+			views.setTextViewText(R.id.hrAccountBalance, strBal);
+			c.close();
+			
+			// Take today's date and then determine the number of days to add to it based on the user's preference.
+			GregorianCalendar calStart = new GregorianCalendar();
+			GregorianCalendar calEnd = new GregorianCalendar();
+			calEnd.add(Calendar.DAY_OF_MONTH, (7 * Integer.valueOf(weeksToDisplay)));
+			String strStartDate = String.valueOf(calStart.get(Calendar.YEAR)) + "-" + String.valueOf(calStart.get(Calendar.MONTH)+ 1) + "-"
+					+ String.valueOf(calStart.get(Calendar.DAY_OF_MONTH));
+			String strEndDate = String.valueOf(calEnd.get(Calendar.YEAR)) + "-" + String.valueOf(calEnd.get(Calendar.MONTH)+ 1) + "-"
+					+ String.valueOf(calEnd.get(Calendar.DAY_OF_MONTH));
+			
+			// Get our active schedules from the database.
+			Uri schedules = Uri.parse(KMMDProvider.CONTENT_SCHEDULE_URI.toString() + frag);
+			c = getContentResolver().query(schedules, null, null, null, null);
+			
+			// We have our open schedules from the database, now create the user defined period of cash flow.
+			ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
+			Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal));
+
+			// close our cursor as we no longer need it.
+			c.close();
+			
+			// Make sure we hide any unused rows.
+			lastRow = Schedules.size();
+			
 			// Loop thru the returned ArrayList and populate the widgets rows.
 			Calendar Date = null;
 			String strDate = null;
@@ -202,9 +257,13 @@ public class KMMDService extends Service
 				Intent intentDialog = new Intent(getBaseContext(), ScheduleActionsActivity.class);
 				//intentDialog.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, String.valueOf(appWidgetId));
 				intentDialog.putExtra("Action", ACTION_ENTER_SCHEDULE);
+				intentDialog.putExtra("widgetId", String.valueOf(appWidgetId));
+				String prefString = "widgetDatabasePath" + String.valueOf(appWidgetId);
+				String path = kmmdApp.prefs.getString(prefString, "");
+				intentDialog.putExtra("widgetDatabasePath", path);
 				intentDialog.setData(uri);
 				
-			
+				String rowAction = null;
 				switch(i)
 				{
 				case 1:
@@ -214,7 +273,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount1, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowOne");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowOne" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog1 = PendingIntent.getActivity(getBaseContext(), 0, intentDialog, 
@@ -228,7 +288,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount2, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwo");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowTwo" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog2 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -242,7 +303,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount3, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowThree");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowThree" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog3 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -256,7 +318,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount4, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFour");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowFour" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog4 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -270,7 +333,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount5, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowFive");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowFive" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog5 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -284,7 +348,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount6, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSix");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowSix" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog6 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -298,7 +363,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount7, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowSeven");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowSeven" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog7 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -312,7 +378,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount8, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEight");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowEight" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog8 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -326,7 +393,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount9, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowNine");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowNine" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog9 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -340,7 +408,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount10, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTen");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowTen" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog10 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -354,7 +423,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount11, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowEleven");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowEleven" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog11 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -368,7 +438,8 @@ public class KMMDService extends Service
 					views.setTextViewText(R.id.BalanceAmount12, strBalance);
 					
 					// Set up the onClick action for clicking on a row to Enter or Skip a schedule.
-					intentDialog.setAction("com.vanhlebarsoftware.kmmdroid.hwRowTwelve");
+					rowAction = "com.vanhlebarsoftware.kmmdroid.hwRowTwelve" + "#" + String.valueOf(appWidgetId);
+					intentDialog.setAction(rowAction);
 					intentDialog.putExtra("scheduleId", sch.getId());
 					intentDialog.putExtra("scheduleDescription", sch.getDescription());
 					PendingIntent pendingIntentDialog12 = PendingIntent.getActivity(this.getBaseContext(), 0, intentDialog, 
@@ -392,12 +463,17 @@ public class KMMDService extends Service
 			// Setup the onClick response to the various buttons on the widget
 			// Start application by clicking on the icon
 			Intent intent = new Intent(getBaseContext(), WelcomeActivity.class);
+			intent.putExtra("fromWidgetId", String.valueOf(appWidgetId));
+			String action = "com.vanhlebarsoftware.kmmdroid.Welcome" + "#" + String.valueOf(appWidgetId);
+			intent.setAction(action);
 			PendingIntent pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_icon, pendingIntent);
 			
 			// Refresh icon
 			intent = new Intent(getBaseContext(), KMMDService.class);
-			intent.setAction("com.vanhlebarsoftware.kmmdroid.Refresh");
+			intent.putExtra("refreshWidgetId", appWidgetId);
+			action = "com.vanhlebarsoftware.kmmdroid.Refresh" + "#" + String.valueOf(appWidgetId);
+			intent.setAction(action);
 			pendingIntent = PendingIntent.getService(this.getBaseContext(), 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_refresh, pendingIntent);
 			
@@ -406,8 +482,19 @@ public class KMMDService extends Service
 			intent.putExtra("Action", ACTION_NEW);
 			intent.putExtra("accountUsed", accountUsed);
 			intent.putExtra("fromHome", true);
+			intent.putExtra("widgetDatabasePath", "widgetDatabasePath" + String.valueOf(appWidgetId));
+			action = "com.vanhlebarsoftware.kmmdroid.AddTransaction" + "#" + String.valueOf(appWidgetId);
+			intent.setAction(action);
 			pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_addTransaction, pendingIntent);
+			
+			// Preferences icon
+			intent = new Intent(getBaseContext(), HomeScreenConfiguration.class);
+			intent.putExtra("widgetId", String.valueOf(appWidgetId));
+			action = "com.vanhlebarsoftware.kmmdroid.Preferences" + "#" + String.valueOf(appWidgetId);
+			intent.setAction(action);
+			pendingIntent = PendingIntent.getActivity(this.getBaseContext(), 0, intent, 0);
+			views.setOnClickPendingIntent(R.id.kmmd_widgetSettings, pendingIntent);
 			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
@@ -809,11 +896,14 @@ public class KMMDService extends Service
 		}		
 	}
 	
-	private void skipSchedule(String schToSkip)
+	private void skipSchedule(String schToSkip, String widgetId)
 	{
 		
 		// Get our schedule that the user wants to skip from the database.
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schToSkip);
+		String frag = "#" + widgetId;
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schToSkip + frag);
+		u = Uri.parse(u.toString());
+		Log.d(TAG, "Skipped schedule uri: " + u.toString());
 		Cursor c = getContentResolver().query(u, null, null, null, null);
 
 		Schedule sch = new Schedule(c);
@@ -826,13 +916,15 @@ public class KMMDService extends Service
 		getContentResolver().update(u, values, null, new String[] { sch.getId() });
 		
 		// Update the postDate on the schedules transaction.
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schToSkip);	
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schToSkip + frag);
+		u = Uri.parse(u.toString());
 		values.clear();
 		values.put("postDate", sch.getDatabaseFormattedString());
 		getContentResolver().update(u, values, null, new String[] { sch.getId() });
 		
 		// Update the splits postDate for the schedule.
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, schToSkip);	
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, schToSkip + frag);
+		u = Uri.parse(u.toString());
 		values.clear();		
 		values.put("postDate", sch.getDatabaseFormattedString());		
 		getContentResolver().update(u, values, null, new String[] { sch.getId() });			

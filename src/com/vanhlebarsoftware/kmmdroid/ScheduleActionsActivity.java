@@ -40,6 +40,8 @@ public class ScheduleActionsActivity extends Activity
 	private String scheduleId = null;
 	private String scheduleDesc = null;
 	private int Action = 0;
+	private String widgetDatabasePath = null;
+	private String widgetId = null;
 	ArrayList<Split> Splits;
 	KMMDroidApp KMMDapp;
 	
@@ -59,17 +61,27 @@ public class ScheduleActionsActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
-        
         // Get the scheduleId the user clicked on in the widget.
         Bundle extras = getIntent().getExtras();
         scheduleId = extras.getString("scheduleId");
         scheduleDesc = extras.getString("scheduleDescription");
         Action = extras.getInt("Action");
+        widgetDatabasePath = extras.getString("widgetDatabasePath");
+        widgetId = extras.getString("widgetId");
+
+        // If the widgetDatabasePath is empty then we came from inside the app and don't need to worry
+        // about the database path, since it is already open.
+        if(widgetDatabasePath != null)
+        {	
+        	// Ensure that we open the correct database for this item.
+        	KMMDapp.setFullPath(widgetDatabasePath);
+        }
+        
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
+        }
         
         // Find our views
         buttonEnter = (Button) findViewById(R.id.btnEnterSchedule);
@@ -90,6 +102,8 @@ public class ScheduleActionsActivity extends Activity
 				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 				i.putExtra("scheduleId", scheduleId);
 				i.putExtra("Action", Action);
+				i.putExtra("widgetDatabasePath", widgetDatabasePath);
+				i.putExtra("fromScheduleActions", true);
 				startActivity(i);
 				finish();
 			}
@@ -110,6 +124,9 @@ public class ScheduleActionsActivity extends Activity
 					{					
 						Intent intent = new Intent(getBaseContext(), KMMDService.class);
 						intent.putExtra("skipScheduleId", scheduleId);
+						if(widgetId == null)
+							widgetId = "9999";
+						intent.putExtra("widgetId", widgetId);
 						startService(intent);
 						finish();
 					}
@@ -133,6 +150,8 @@ public class ScheduleActionsActivity extends Activity
 				Intent i = new Intent(getBaseContext(), CreateModifyScheduleActivity.class);
 				i.putExtra("scheduleId", scheduleId);
 				i.putExtra("Action", ACTION_EDIT);
+				i.putExtra("widgetDatabasePath", widgetDatabasePath);
+				i.putExtra("fromScheduleActions", true);
 				startActivity(i);
 				finish();
 			}
@@ -207,6 +226,8 @@ public class ScheduleActionsActivity extends Activity
 	{
 		// TODO Auto-generated method stub
 		super.onResume();
+		Log.d(TAG, "Home Widget clicked: " + widgetId);
+		Log.d(TAG, "Database path for this widget: " + widgetDatabasePath);
 	}
 
 	// **************************************************************************************************

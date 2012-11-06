@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -48,6 +49,7 @@ public class CreateModifyAccountActivity extends TabActivity
 	private int Action = 0;
 	private String accountId = null;
 	private boolean returnFromDelete = false;
+	private boolean isDirty = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	TextView payeeName;
@@ -84,19 +86,19 @@ public class CreateModifyAccountActivity extends TabActivity
         intent = new Intent().setClass(this, CreateAccountInstitutionActivity.class);
 
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("institution").setIndicator("Institution")
+        spec = tabHost.newTabSpec("institution").setIndicator(getString(R.string.AccountTabInstitution))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, CreateAccountAccountActivity.class);
-        spec = tabHost.newTabSpec("account").setIndicator("Account")
+        spec = tabHost.newTabSpec("account").setIndicator(getString(R.string.AccountTabAccount))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, CreateAccountParentActivity.class);
-        spec = tabHost.newTabSpec("parent").setIndicator("Subaccount")
+        spec = tabHost.newTabSpec("parent").setIndicator(getString(R.string.AccountTabSubAccount))
                       .setContent(intent);
         tabHost.addTab(spec);
         
@@ -235,7 +237,8 @@ public class CreateModifyAccountActivity extends TabActivity
 				Activity accountParent = this.getCurrentActivity();
 				((CreateAccountParentActivity) accountParent).putParentId(cursor.getString(C_PARENTID));
 				// Make sure the 1st tab is displayed to the user.
-				getTabHost().setCurrentTab(0);		
+				getTabHost().setCurrentTab(0);
+				this.isDirty = false;
 				Log.d(TAG, "reached the end of onResume for editing");
 			}
 		}
@@ -516,5 +519,15 @@ public class CreateModifyAccountActivity extends TabActivity
 		String denominator = "/100";
 		
 		return balance + denominator;
+	}
+	
+	public void setIsDirty(boolean flag)
+	{
+		this.isDirty = flag;
+	}
+	
+	public boolean getIsDirty()
+	{
+		return this.isDirty;
 	}
 }

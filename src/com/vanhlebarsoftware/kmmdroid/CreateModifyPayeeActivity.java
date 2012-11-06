@@ -48,6 +48,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 	private int Action = 0;
 	private String payeeId = null;
 	private boolean returnFromDelete = false;
+	private boolean isDirty = false;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
 	TextView payeeName;
@@ -82,18 +83,18 @@ public class CreateModifyPayeeActivity extends TabActivity
         intent = new Intent().setClass(this, PayeeAddressActivity.class);
 
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("payeeaddress").setIndicator("Address")
+        spec = tabHost.newTabSpec("payeeaddress").setIndicator(getString(R.string.PayeeTabAddress))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, PayeeDefaultAccountActivity.class);
-        spec = tabHost.newTabSpec("payeedefault").setIndicator("Default")
+        spec = tabHost.newTabSpec("payeedefault").setIndicator(getString(R.string.PayeeTabDefault))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         intent = new Intent().setClass(this, PayeeMatchingActivity.class);
-        spec = tabHost.newTabSpec("payeematching").setIndicator("Matching")
+        spec = tabHost.newTabSpec("payeematching").setIndicator(getString(R.string.PayeeTabMatching))
                       .setContent(intent);
         tabHost.addTab(spec);
 
@@ -102,7 +103,7 @@ public class CreateModifyPayeeActivity extends TabActivity
         	intent = new Intent().setClass(this, TransactionsTabActivity.class);
         	intent.putExtra("PayeeId", payeeId);
         	intent.putExtra("PayeeName", extras.getString("PayeeName"));
-        	spec = tabHost.newTabSpec("payeetransactions").setIndicator("Transactions")
+        	spec = tabHost.newTabSpec("payeetransactions").setIndicator(getString(R.string.TabTransactions))
                       .setContent(intent);
         	tabHost.addTab(spec);
 
@@ -176,6 +177,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 				// Populate the Address elements
 				getTabHost().setCurrentTab(0);
 				Activity payeeAddress = this.getCurrentActivity();
+				((PayeeAddressActivity) payeeAddress).putPayeeName(cursor.getString(PAYEE_NAME));
 				((PayeeAddressActivity) payeeAddress).putPayeeAddress(cursor.getString(PAYEE_STREET));
 				((PayeeAddressActivity) payeeAddress).putPayeePostalCode(cursor.getString(PAYEE_ZIPCODE));
 				((PayeeAddressActivity) payeeAddress).putPayeePhone(cursor.getString(PAYEE_PHONE));
@@ -219,6 +221,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 				
 				// Make sure the 1st tab is displayed to the user.
 				getTabHost().setCurrentTab(0);
+				isDirty = false;
 			}
 		}
 		else
@@ -251,7 +254,8 @@ public class CreateModifyPayeeActivity extends TabActivity
 				// Get the Address elements
 				getTabHost().setCurrentTab(0);
 				Activity payeeAddress = this.getCurrentActivity();
-				name = payeeName.getText().toString();
+				//name = payeeName.getText().toString();
+				name = ((PayeeAddressActivity) payeeAddress).getPayeeName();
 				address = ((PayeeAddressActivity) payeeAddress).getPayeeAddress();
 				postalcode = ((PayeeAddressActivity) payeeAddress).getPayeePostalCode();
 				phone = ((PayeeAddressActivity) payeeAddress).getPayeePhone();
@@ -324,7 +328,6 @@ public class CreateModifyPayeeActivity extends TabActivity
 						} 
 						catch (SQLException e) 
 						{
-							// TODO Auto-generated catch block
 							Log.d(TAG, "Insert error: " + e.getMessage());
 						}
 						increasePayeeId();
@@ -470,5 +473,15 @@ public class CreateModifyPayeeActivity extends TabActivity
 		
 		Log.d(TAG, "getListViewPos returning: " + String.valueOf(i));
 		return i;
+	}
+	
+	public void setIsDirty(boolean flag)
+	{
+		this.isDirty = flag;
+	}
+	
+	public boolean getIsDirty()
+	{
+		return this.isDirty;
 	}
 }

@@ -26,6 +26,7 @@ import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;

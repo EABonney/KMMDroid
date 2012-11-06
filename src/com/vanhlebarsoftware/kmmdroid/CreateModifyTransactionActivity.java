@@ -6,15 +6,18 @@ import java.util.Calendar;
 import java.util.StringTokenizer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -76,6 +79,11 @@ public class CreateModifyTransactionActivity extends Activity
 	private String accountUsed = null;
 	private int numOfSplits;
 	private Schedule scheduleToEnter = null;
+	boolean fromHomeWidget = false;
+	boolean fromScheduleActions = false;
+	private String widgetDatabasePath = null;
+	private boolean isDirty = false;
+	private boolean firstRun = true;
 	ArrayList<Split> Splits;
 	ArrayList<Split> OrigSplits;
 	Spinner spinTransType;
@@ -96,7 +104,6 @@ public class CreateModifyTransactionActivity extends Activity
 	Cursor cursorCategories;
 	SimpleCursorAdapter adapterPayees;
 	SimpleCursorAdapter adapterCategories;
-	boolean fromHomeWidget = false;
 	KMMDroidApp KMMDapp;
 	
 	/* Called when the activity is first created. */
@@ -131,6 +138,8 @@ public class CreateModifyTransactionActivity extends Activity
         Log.d(TAG, "Size of extras: " + extras.size());
         Action = extras.getInt("Action");
         fromHomeWidget = extras.getBoolean("fromHome");
+        fromScheduleActions = extras.getBoolean("fromScheduleActions");
+        widgetDatabasePath = extras.getString("widgetDatabasePath");
         
         if( Action == ACTION_NEW )
         {
@@ -138,7 +147,7 @@ public class CreateModifyTransactionActivity extends Activity
         	// if we are coming from the home screen widget make sure to open the database used with the actual widget.
         	if( fromHomeWidget )
         	{
-        		KMMDapp.setFullPath(KMMDapp.prefs.getString("widgetDatabasePath", ""));
+        		KMMDapp.setFullPath(KMMDapp.prefs.getString(widgetDatabasePath, ""));
         		KMMDapp.openDB();
         	}
         	accountUsed = extras.getString("accountUsed");
@@ -149,6 +158,13 @@ public class CreateModifyTransactionActivity extends Activity
         {
         	// Need to get the specified schedule and all it's splits and other information.
         	scheduleToEnter = getSchedule(extras.getString("scheduleId"));
+        	
+        	if( fromHomeWidget )
+        	{
+        		// Need to ensure we are working with the correct database file.
+        		KMMDapp.setFullPath(widgetDatabasePath);
+        		KMMDapp.openDB();
+        	}
         }
         
         // See if the database is already open, if not open it Read/Write.
@@ -160,12 +176,59 @@ public class CreateModifyTransactionActivity extends Activity
         // Make it so the user is not able to edit the Category selected without using the Spinner.
         editCategory.setKeyListener(null);
         
+        // Set up the other keyListener's for the various editText items.
+        editCkNumber.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editMemo.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        editAmount.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				isDirty = true;
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
         // Set our OnClickListener events
         buttonSetDate.setOnClickListener(new View.OnClickListener() 
         {	
 			public void onClick(View v)
 			{
 				showDialog(SET_DATE_ID);
+				isDirty = true;
 			}
 		});
         
@@ -249,6 +312,7 @@ public class CreateModifyTransactionActivity extends Activity
 		if( Action == ACTION_EDIT )
 		{
 			editTransaction();
+			isDirty = false;
 		}
 		else if( Action == ACTION_ENTER_SCHEDULE )
 		{
@@ -271,6 +335,14 @@ public class CreateModifyTransactionActivity extends Activity
 				anySplits = false;
 			}
 		}	
+		
+		// See if the splits are dirty, if so mark the transaction as dirty.
+		if( KMMDapp.getSplitsAreDirty() )
+		{
+			Log.d(TAG, "Splits are dirty!!");
+			isDirty = true;
+		}
+		
 		// Set the default items for the type and status spinners.
 		spinTransType.setSelection(intTransType);
 		spinStatus.setSelection(intTransStatus);
@@ -291,6 +363,12 @@ public class CreateModifyTransactionActivity extends Activity
 		// Can't delete if we are creating a new item.
 		if( Action == ACTION_NEW )
 			menu.getItem(1).setVisible(false);
+		
+		// Only display the save item if we have made changes.
+		if( isDirty )
+			menu.getItem(0).setVisible(true);
+		else
+			menu.getItem(0).setVisible(false);
 		
 		return true;
 	}
@@ -439,6 +517,7 @@ public class CreateModifyTransactionActivity extends Activity
 				// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
 				if(KMMDapp.getAutoUpdate())
 				{
+					Log.d(TAG, "Send off intent to update the widgets.");
 					Intent intent = new Intent(KMMDService.DATA_CHANGED);
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
@@ -447,16 +526,89 @@ public class CreateModifyTransactionActivity extends Activity
 				// If we are coming from the home widget, we need to close the db.
 				if( fromHomeWidget )
 					KMMDapp.closeDB();
+				
+				// Clear the SplitsDirty flag.
+				KMMDapp.setSplitsAryDirty(false);
 				finish();
 				break;
 			case R.id.itemCancel:
-				KMMDapp.splitsDestroy();
 				Log.d(TAG, "CreateModifyTransactionActivity itemCancelled!");
-				finish();
+				if( isDirty )
+				{
+					AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+					alertDel.setTitle(R.string.BackActionWarning);
+					alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int whichButton)
+						{
+							// Clear the SplitsDirty flag.
+							KMMDapp.setSplitsAryDirty(false);
+							finish();
+						}
+					});
+					
+					alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int whichButton) 
+						{
+							// Canceled.
+							Log.d(TAG, "User cancelled back action.");
+						}
+					});				
+					alertDel.show();
+				}
+				else
+				{
+					KMMDapp.splitsDestroy();
+					// Clear the SplitsDirty flag.
+					KMMDapp.setSplitsAryDirty(false);
+					finish();
+				}
 				break;
 		}
 		return true;
 	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( isDirty )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					// Clear the SplitsDirty flag.
+					KMMDapp.setSplitsAryDirty(false);
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			// Clear the SplitsDirty flag.
+			KMMDapp.setSplitsAryDirty(false);
+			finish();
+		}
+	}
+	
 	// the callback received with the user "sets" the opening date in the dialog
 	private DatePickerDialog.OnDateSetListener mDateSetListener = 
 			new DatePickerDialog.OnDateSetListener() 
@@ -499,11 +651,13 @@ public class CreateModifyTransactionActivity extends Activity
 							intTransType = 1;
 						if( str.matches("Withdrawal") )
 							intTransType = 2;
+						isDirty = true;
 						break;
 					case R.id.payee:
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						strTransPayeeId = c.getString(1).toString();
 						Log.d(TAG, "Inside payee: " + strTransPayeeId);
+						isDirty = true;
 						break;
 					case R.id.category:
 						c = (Cursor) parent.getAdapter().getItem(pos);
@@ -512,6 +666,7 @@ public class CreateModifyTransactionActivity extends Activity
 						strTransCategoryId = c.getString(1).toString();
 						spinCategory.setVisibility(4);
 						buttonChooseCategory.setVisibility(0);
+						isDirty = true;
 						break;
 					case R.id.status:
 						Log.d(TAG, "Inside status: " + String.valueOf(parent.getId()));
@@ -522,6 +677,7 @@ public class CreateModifyTransactionActivity extends Activity
 							intTransStatus = 1;
 						if( str.matches( "Not reconciled" ) )
 							intTransStatus = 2;
+						isDirty = true;
 						break;
 					default:
 						Log.d(TAG, "parentId: " + String.valueOf(parent.getId()));
@@ -601,7 +757,6 @@ public class CreateModifyTransactionActivity extends Activity
 			case 6:
 			case 7:
 			case 8:
-			case 9:
 				strMonth = "0" + String.valueOf(intMonth + 1);
 				break;
 			default:

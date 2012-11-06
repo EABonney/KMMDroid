@@ -3,13 +3,18 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +45,8 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	private int intMonth;
 	private int intDay;
 	private int intWeekendOption = MOVE_NOTHING;
+	private int numberOfPasses = 0;
+	private CreateModifyScheduleActivity parentTabHost;
 	Spinner spinWeekendOptions;
 	CheckBox ckboxEstimate;
 	CheckBox ckboxAutoEnter;
@@ -61,6 +68,9 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_options);
         
+        // Get the tabHost on the parent.
+        parentTabHost = ((CreateModifyScheduleActivity) this.getParent());
+        
         // Find our views
         spinWeekendOptions = (Spinner) findViewById(R.id.scheduleWeekendOption);
         ckboxEstimate = (CheckBox) findViewById(R.id.checkboxEstimate);
@@ -78,6 +88,7 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 			public void onClick(View v)
 			{
 				showDialog(SET_DATE_ID);
+				parentTabHost.setIsDirty(true);
 			}
 		});
         
@@ -86,6 +97,24 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
         
         // Hook into our onClickListener Events for the checkboxes.
         ckboxScheduleEnds.setOnCheckedChangeListener(this);
+        ckboxEstimate.setOnCheckedChangeListener(this);
+        ckboxAutoEnter.setOnCheckedChangeListener(this);
+        
+        // Set up the other keyListener's for the various editText items.
+        editNumTransactions.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
         
         // Set the Number of Transactions, End Date and Select Date items as disabled at the start.
         editEndDate.setEnabled(false);
@@ -125,6 +154,40 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 		spinWeekendOptions.setSelection(intWeekendOption);
 	}
 	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( parentTabHost.getIsDirty() )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
+	}
+	
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
 	{
 		switch( buttonView.getId() )
@@ -152,6 +215,7 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 			default:
 				break;	
 		}
+		parentTabHost.setIsDirty(true);
 	}
 	
 	// the callback received with the user "sets" the opening date in the dialog
@@ -182,18 +246,24 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			switch( parent.getId())
+			if( numberOfPasses > 1)
 			{
-				case R.id.scheduleWeekendOption:
-					String str = parent.getAdapter().getItem(pos).toString();
-					if( str.equals("Move before") )
-						intWeekendOption = MOVE_BEFORE;
-					else if( str.equals("Move after") )
-						intWeekendOption = MOVE_AFTER;
-					else if( str.equals("Do nothing") )
-						intWeekendOption = MOVE_NOTHING;
-					break;
+				switch( parent.getId())
+				{
+					case R.id.scheduleWeekendOption:
+						String str = parent.getAdapter().getItem(pos).toString();
+						if( str.equals("Move before") )
+							intWeekendOption = MOVE_BEFORE;
+						else if( str.equals("Move after") )
+							intWeekendOption = MOVE_AFTER;
+						else if( str.equals("Do nothing") )
+							intWeekendOption = MOVE_NOTHING;
+						parentTabHost.setIsDirty(true);
+						break;
+				}
 			}
+			else
+				numberOfPasses++;
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {

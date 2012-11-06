@@ -36,7 +36,7 @@ public class FileChooser extends ListActivity
 	private void fill(File f)
 	{
 		File[]dirs = f.listFiles();
-		this.setTitle("Current Dir: " + f.getName());
+		this.setTitle(getString(R.string.FileChooserLocation) + " " + f.getName());
 		List<Option>dir = new ArrayList<Option>();
 		List<Option>files = new ArrayList<Option>();
 		
@@ -45,12 +45,12 @@ public class FileChooser extends ListActivity
 			for(File ff : dirs )
 			{
 				if(ff.isDirectory())
-					dir.add(new Option(ff.getName(), "Folder", ff.getAbsolutePath()));
+					dir.add(new Option(ff.getName(), getString(R.string.FileChooserFolder), ff.getAbsolutePath()));
 				else
 				{
 					// make it so the user can only select *.sqlite files.
 					if(ff.getName().endsWith(strFileExtension))
-						files.add(new Option(ff.getName(), "File Size: " + ff.length(), ff.getAbsolutePath()));
+						files.add(new Option(ff.getName(), getString(R.string.FileChooserFile) + " " + ff.length(), ff.getAbsolutePath()));
 				}
 			}
 		}
@@ -63,7 +63,7 @@ public class FileChooser extends ListActivity
 		dir.addAll(files);
 		
 		if(!f.getName().equalsIgnoreCase("sdcard"))
-			dir.add(0, new Option("..", "Parent Directory", f.getParent()));
+			dir.add(0, new Option("..", getString(R.string.FileChooserParentDirectory), f.getParent()));
 		
 		adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view, dir);
 		this.setListAdapter(adapter);

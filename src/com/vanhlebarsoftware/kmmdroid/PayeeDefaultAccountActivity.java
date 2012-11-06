@@ -1,9 +1,12 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -27,6 +30,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	String strExpAccountSelected = null;
 	int IncSpinnerPos = 0;
 	int ExpSpinnerPos = 0;
+	private int numberOfPasses = 0;
+	private CreateModifyPayeeActivity parentTabHost;
 	KMMDroidApp KMMDapp;
 	Cursor cursorInc;
 	Cursor cursorExp;
@@ -46,6 +51,9 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
+        
+        // Get the tabHost on the parent.
+        parentTabHost = ((CreateModifyPayeeActivity) this.getParent());
         
         // Find our views
         spinIncome = (Spinner) findViewById(R.id.payeeDefaultIncome);
@@ -107,7 +115,41 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		spinIncome.setSelection(IncSpinnerPos);
 		spinExpense.setSelection(ExpSpinnerPos);
 	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( parentTabHost.getIsDirty() )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
 
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
+	}
+	
 	public void onCheckedChanged(CompoundButton btn, boolean arg1) 
 	{
 		switch ( btn.getId() )
@@ -157,7 +199,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 				else
 					spinIncome.setEnabled(false);
 				break;
-		}		
+		}
+		parentTabHost.setIsDirty(true);
 	}
 	
 	public boolean getUseDefaults()
@@ -216,23 +259,30 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-			
-			// TODO Auto-generated method stub
-			switch ( parent.getId() )
+			if( numberOfPasses > 1 )
 			{
-				case R.id.payeeDefaultIncome:
-					Log.d(TAG, "Default Income account selected.");
-					strIncAccountSelected = c.getString(1);
-					break;
-				case R.id.payeeDefaultExpense:
-					Log.d(TAG, "Default Expense account selected");
-					strExpAccountSelected = c.getString(1);
-					break;
-				default:
-					Log.d(TAG, "Somehow it thinks we did not select an account but we did!");
-					break;
+				Cursor c = (Cursor) parent.getAdapter().getItem(pos);
+			
+				// TODO Auto-generated method stub
+				switch ( parent.getId() )
+				{
+					case R.id.payeeDefaultIncome:
+						Log.d(TAG, "Default Income account selected.");
+						strIncAccountSelected = c.getString(1);
+						parentTabHost.setIsDirty(true);
+						break;
+					case R.id.payeeDefaultExpense:
+						Log.d(TAG, "Default Expense account selected");
+						strExpAccountSelected = c.getString(1);
+						parentTabHost.setIsDirty(true);
+						break;
+					default:
+						Log.d(TAG, "Somehow it thinks we did not select an account but we did!");
+						break;
+				}
 			}
+			else
+				numberOfPasses++;
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {

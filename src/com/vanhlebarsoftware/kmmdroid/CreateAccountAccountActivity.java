@@ -5,16 +5,23 @@ import java.util.Calendar;
 import com.vanhlebarsoftware.kmmdroid.PayeeDefaultAccountActivity.PayeeDefaultOnItemSelectedListener;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
@@ -22,7 +29,7 @@ import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
-public class CreateAccountAccountActivity extends Activity
+public class CreateAccountAccountActivity extends Activity implements OnCheckedChangeListener
 {
 	private static final String TAG = "CreateAccountAccountActivity";
 	static final String[] FROM = { "name" };
@@ -40,8 +47,10 @@ public class CreateAccountAccountActivity extends Activity
 	private int intMonth;
 	private int intDay;
 	private int TypeSelected = 0;
+	private int numberOfPasses = 0;
 	private String strTypeSelected = null;
 	private String currencySelected = null;
+	private CreateModifyAccountActivity parentTabHost;
 	Button buttonDate;
 	EditText accountName;
 	EditText openDate;
@@ -64,6 +73,9 @@ public class CreateAccountAccountActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Get the activity for the tabHost.
+        parentTabHost = ((CreateModifyAccountActivity) this.getParent());
+        
         // Find our views
         spinCurrency = (Spinner) findViewById(R.id.accountCurrency);
         spinType = (Spinner) findViewById(R.id.accountType);
@@ -79,14 +91,47 @@ public class CreateAccountAccountActivity extends Activity
         {	
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				showDialog(SET_DATE_ID);
+				parentTabHost.setIsDirty(true);
 			}
 		});
         
         // Set the OnItemSelectedListeners for the spinners.
         spinType.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         spinCurrency.setOnItemSelectedListener(new AccountOnItemSelectedListener());
+        
+        // Set up the other keyListener's for the various editText items.
+        accountName.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+				Log.d(TAG, "changing isDirty from accountName!");
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
+        
+        openBalance.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				parentTabHost.setIsDirty(true);
+				Log.d(TAG, "changing isDirty from openBalance!");
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
         
         // get the current date
         final Calendar c = Calendar.getInstance();
@@ -144,7 +189,6 @@ public class CreateAccountAccountActivity extends Activity
 			{				
 				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
 				{
-					// TODO Auto-generated method stub
 					intYear = year;
 					intMonth = monthOfYear;
 					intDay = dayOfMonth;
@@ -167,66 +211,163 @@ public class CreateAccountAccountActivity extends Activity
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			switch( parent.getId())
+			if( numberOfPasses > 2)
 			{
-				case R.id.accountType:
-					strTypeSelected = parent.getAdapter().getItem(pos).toString();
-					Log.d(TAG, "itemSelected: " + strTypeSelected);
+				switch( parent.getId())
+				{
+					case R.id.accountType:
+						strTypeSelected = parent.getAdapter().getItem(pos).toString();
+						Log.d(TAG, "itemSelected: " + strTypeSelected);
 			
-					if( strTypeSelected.matches(getString(R.string.Asset)) )
-					{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-						" AND balance !='0/1')");
-						TypeSelected = 0;
-					}
-					else if( strTypeSelected.matches(getString(R.string.Checking)) )
-					{
-						CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-						" AND balance !='0/1')");
-						TypeSelected = 1;
-					}
-					else if( strTypeSelected.matches(getString(R.string.Equity)) )
-					{
-						CreateAccountParentActivity.setSelected("id='AStd::Equity' OR (parentId='AStd::Equity'" +
-						" AND balance !='0/1')");
-						TypeSelected = 2;
-					}
-					else if( strTypeSelected.matches(getString(R.string.Liability)) )
-					{	CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
-						" AND balance !='0/1')");
-					TypeSelected = 3;
-					}
-					else if( strTypeSelected.matches(getString(R.string.Savings)) )
-					{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-						" AND balance !='0/1')");
-					TypeSelected = 4;
-					}
-					else
-						Log.d(TAG, "ERROR!!!");
-					break;
-				case R.id.accountCurrency:
-					Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-					currencySelected = c.getString(0);
-					Log.d(TAG, "currencyId: " + currencySelected);
-					break;
-				
+						if( strTypeSelected.matches(getString(R.string.Asset)) )
+						{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
+								" AND balance !='0/1')");
+							TypeSelected = 0;
+						}
+						else if( strTypeSelected.matches(getString(R.string.Checking)) )
+						{
+							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
+									" AND balance !='0/1')");
+							TypeSelected = 1;
+						}
+						else if( strTypeSelected.matches(getString(R.string.Equity)) )
+						{
+							CreateAccountParentActivity.setSelected("id='AStd::Equity' OR (parentId='AStd::Equity'" +
+									" AND balance !='0/1')");
+							TypeSelected = 2;
+						}
+						else if( strTypeSelected.matches(getString(R.string.Liability)) )
+						{	CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
+								" AND balance !='0/1')");
+							TypeSelected = 3;
+						}
+						else if( strTypeSelected.matches(getString(R.string.Savings)) )
+						{
+							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
+								" AND balance !='0/1')");
+							TypeSelected = 4;
+						}
+						else
+							Log.d(TAG, "ERROR!!!");
+						Log.d(TAG, "Number of passes: " + numberOfPasses);
+						parentTabHost.setIsDirty(true);
+						break;
+					case R.id.accountCurrency:
+						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
+						currencySelected = c.getString(0);
+						Log.d(TAG, "Number of passes: " + numberOfPasses);
+						parentTabHost.setIsDirty(true);
+						Log.d(TAG, "currencyId: " + currencySelected);
+						break;
+				}
+			}
+			else
+			{
+				numberOfPasses++;
+				Log.d(TAG, "Number of passes: " + numberOfPasses);
 			}
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}
+
+
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+	{
+		switch( buttonView.getId() )
+		{
+			case R.id.checkboxAccountPreferred:
+				parentTabHost.setIsDirty(true);
+				break;
+		}
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+		Log.d(TAG, "User clicked the back button");
+		if( parentTabHost.getIsDirty() )
+		{
+			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
+			alertDel.setTitle(R.string.BackActionWarning);
+			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+			{
+				public void onClick(DialogInterface dialog, int whichButton)
+				{
+					finish();
+				}
+			});
+			
+			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+			{
+				public void onClick(DialogInterface dialog, int whichButton) 
+				{
+					// Canceled.
+					Log.d(TAG, "User cancelled back action.");
+				}
+			});				
+			alertDel.show();
+		}
+		else
+		{
+			finish();
+		}
+	}
+	
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
 	
 	private void updateDisplay()
 	{
+		String strDay = null;
+		String strMonth = null;
+		switch(intDay)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + String.valueOf(intDay);
+				break;
+			default:
+				strDay = String.valueOf(intDay);
+			break;
+		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			//case 9:
+				strMonth = "0" + String.valueOf(intMonth + 1);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth + 1);
+				break;
+		}
+		
 		openDate.setText(
 				new StringBuilder()
 					// Month is 0 based so add 1
-					.append(intMonth + 1).append("-")
-					.append(intDay).append("-")
+					.append(strMonth).append("-")
+					.append(strDay).append("-")
 					.append(intYear));
 	}
 	
