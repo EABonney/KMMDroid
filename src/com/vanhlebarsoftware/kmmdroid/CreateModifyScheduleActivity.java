@@ -125,7 +125,6 @@ public class CreateModifyScheduleActivity extends TabActivity
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 
@@ -142,6 +141,25 @@ public class CreateModifyScheduleActivity extends TabActivity
 			Cursor trans = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
 			trans.moveToFirst();
 			Splits = getSplits(schId);
+			
+			// Dump the schedule cursor to see what we are retrieving.
+			Log.d(TAG, "id: " + schedule.getString(0));
+			Log.d(TAG, "name: " + schedule.getString(1));
+			Log.d(TAG, "type: " + schedule.getString(2));
+			Log.d(TAG, "typeString: " + schedule.getString(3));
+			Log.d(TAG, "occurence: " + schedule.getString(4));
+			Log.d(TAG, "occurenceMultiplier: " + schedule.getString(5));
+			Log.d(TAG, "occurenceString: " + schedule.getString(6));
+			Log.d(TAG, "paymentType: " + schedule.getString(7));
+			Log.d(TAG, "paymentTypeString: " + schedule.getString(8));
+			Log.d(TAG, "startDate: " + schedule.getString(9));
+			Log.d(TAG, "endDate: " + schedule.getString(10));
+			Log.d(TAG, "fixed: " + schedule.getString(11));
+			Log.d(TAG, "autoEnter: " + schedule.getString(12));
+			Log.d(TAG, "lastPayment: " + schedule.getString(13));
+			Log.d(TAG, "nextPaymentDue: " + schedule.getString(14));
+			Log.d(TAG, "weekendOption: " + schedule.getString(15));
+			Log.d(TAG, "weekendOptionString: " + schedule.getString(16));
 			
 			// So we have all the data for this schedule, now populate the Payment tab
 			getTabHost().setCurrentTab(0);
@@ -235,7 +253,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 				scheduleName = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getScheduleName();
 				nSchOccurenceMultiplier = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getScheduleFrequency();
 				scheduleOccurenceString = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getScheduleFrequencyDescription();
-				nSchOccurence = Schedule.getOccurrenceFromMultiplier(nSchOccurenceMultiplier, scheduleOccurenceString);
+				nSchOccurence = Schedule.getOccurrenceFromMultiplier(/*nSchOccurenceMultiplier,*/ scheduleOccurenceString);
 				nSchType = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getScheduleType();
 				accountId = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getAccountTypeId();
 				payeeId = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getPayeeId();
@@ -247,6 +265,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 				ckNumber = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getCheckNumber();
 				nPaymentType = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getSchedulePaymentMethod();
 				
+				Log.d(TAG, "nSchOccurence: " + nSchOccurence);
+				Log.d(TAG, "nSchOccurenceMultiplier: " + nSchOccurenceMultiplier);
+				Log.d(TAG, "scheduleOccurenceString: " + scheduleOccurenceString);
 				// Get the PaymentOptions elements
 				getTabHost().setCurrentTab(1);
 				Activity scheduleOptions = this.getCurrentActivity();

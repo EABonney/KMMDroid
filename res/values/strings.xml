@@ -414,4 +414,8 @@
     <string name="BackActionWarning">Changes will be lost</string>
     <string name="titleBackActionWarning">Your changes will be lost if you proceed! Do you really wish to proceed?</string>
     <string name="titlePayeeName">Name: </string>
+    <string name="titleLoadMore">Load more</string>
+    <string name="buttonOneMonth">One month</string>
+    <string name="buttonOneYear">One year</string>
+    <string name="buttonAll">All</string>
 </resources>

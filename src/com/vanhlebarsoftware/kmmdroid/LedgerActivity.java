@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
 import android.util.Log;
@@ -41,7 +43,7 @@ public class LedgerActivity extends Activity
 	private static final int C_PAYEE = 5;
 	private static final int C_CKNUM = 6;
 	private static final int C_STATUS = 7;
-	private static final String sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
+	private String sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
 					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
 					"AND postDate <= ? AND postDate >= ?" +
 					" UNION SELECT transactionId, payeeId, value, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
@@ -51,6 +53,7 @@ public class LedgerActivity extends Activity
 	String AccountID = null;
 	String AccountName = null;
 	boolean bChangeBackground = false;
+	boolean showAll = false;
 	long Balance = 0;
 	ArrayList<Transaction> Transactions;
 	Cursor cursor;
@@ -58,6 +61,13 @@ public class LedgerActivity extends Activity
 	KMMDroidApp KMMDapp;
 	ListView listTransactions;
 	TextView textTitleLedger;
+	
+	// Items for the transactions query
+	private Calendar today = null; // = Calendar.getInstance();
+	private String strToday = null;
+	private Calendar lastyear = null; //(Calendar) today.clone();
+	private String strLastYear = null;
+	String[] selectionArgs = { null, null, null };
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -90,6 +100,16 @@ public class LedgerActivity extends Activity
         Balance = Transaction.convertToPennies(extras.getString("Balance"));
         
         Transactions = new ArrayList<Transaction>();
+        
+        // Setup our baseline of one year for the transactions query.
+        today = Calendar.getInstance();
+        //strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
+				//String.valueOf(today.get(Calendar.DAY_OF_MONTH));
+		strToday = getDatabaseFormattedString(today);
+        today.add(Calendar.YEAR, -1);
+        lastyear = (Calendar) today.clone();
+        //strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
+				//String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
 	}
 
 	@Override
@@ -102,7 +122,7 @@ public class LedgerActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		Calendar today = Calendar.getInstance();
+		strLastYear = getDatabaseFormattedString(lastyear);
 		long balance = Balance;
 		Cursor curBalance = KMMDapp.db.query("kmmAccounts", new String[] { "balance" }, "id=?", new String[] { AccountID },
 											null, null, null);
@@ -110,20 +130,23 @@ public class LedgerActivity extends Activity
 		curBalance.moveToFirst();
 		balance = Account.convertBalance(curBalance.getString(0));
 		
-		// Get today's date and then subtract one year to limit the rows in our view.
-		String strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
-							String.valueOf(today.get(Calendar.DAY_OF_MONTH));
-		today.add(Calendar.YEAR, -1);
-		Calendar lastyear = (Calendar) today.clone();
-		String strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
-				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
-		
 		// Display the Account we are looking at in the TextView TitleLedger
 		textTitleLedger.setText(AccountName);
 
 		// Put the AccountID into a String array
-		String[] selectionArgs = { AccountID, strToday, strLastYear };
+		if( !showAll )
+		{
+			selectionArgs[0] = AccountID;
+			selectionArgs[1] = strToday;
+			selectionArgs[2] = strLastYear;
+		}
+		else
+		{
+			String selection[] = { AccountID };
+			selectionArgs = selection;
+		}
 		
+        Log.d(TAG, "strToday: " + strToday + " / strLastYear: " + strLastYear);
 		//Run the query on the database to get the transactions.
 		cursor = KMMDapp.db.rawQuery(sql, selectionArgs);
 		startManagingCursor(cursor);
@@ -168,6 +191,8 @@ public class LedgerActivity extends Activity
 		
 		// Close the cursor to free up memory.
 		cursor.close();
+		
+		Log.d(TAG, "Number of transactions displayed: " + Transactions.size());
 	}
 	
 	// Message Handler for our listTransactions List View clicks
@@ -190,6 +215,15 @@ public class LedgerActivity extends Activity
 		return true;
 	}
 	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu)
+	{
+		// Once the user has elected to showAll, disable the Load more menu item.
+		if(showAll)
+			menu.getItem(1).setVisible(false);
+		
+		return true;
+	}
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -201,6 +235,10 @@ public class LedgerActivity extends Activity
 				i.putExtra("Action", ACTION_NEW);
 				i.putExtra("accountUsed", AccountID);
 				startActivity(i);
+				break;
+			case R.id.itemLoadMore:
+				i = new Intent(this, LoadMoreTransactionsActivity.class);
+				startActivityForResult(i, 0);
 				break;
 			case R.id.itemHome:
 				startActivity(new Intent(this, HomeActivity.class));
@@ -228,6 +266,40 @@ public class LedgerActivity extends Activity
 		return true;
 	}
 	
+    @Override
+    protected void onActivityResult(int pRequestCode, int resultCode, Intent data)
+    {    	
+    	if( resultCode != -1)
+    	{
+    		String response = data.getStringExtra("LoadMore");
+    		if(response.equalsIgnoreCase("Month"))
+    		{
+    			Log.d(TAG, "User wants us to add one month.");
+    			lastyear.add(Calendar.MONTH, -1);
+    		}
+    		else if(response.equalsIgnoreCase("Year"))
+    		{
+    			Log.d(TAG, "User wants us to add one year.");
+    			lastyear.add(Calendar.YEAR, -1);
+    		}
+    		else if(response.equalsIgnoreCase("All"))
+    		{
+    			Log.d(TAG, "User wants us to add all.");
+    			sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
+    					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
+    					//"AND postDate <= ? AND postDate >= ?" +
+    					" UNION SELECT transactionId, payeeId, value, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
+    					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N'";// AND postDate <= ? AND postDate >= ?";
+    			showAll = true;
+    		}
+    		else
+    			Log.d(TAG, "Unexpected result returned from LoadMoreTransactionsActivity!");
+    		
+            strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
+    				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
+    	}
+    }
+    
 	private class TransactionAdapter extends ArrayAdapter<Transaction>
 	{
 		private ArrayList<Transaction> items;
@@ -312,5 +384,52 @@ public class LedgerActivity extends Activity
 		{
 			return arg0.getDate().compareTo(arg1.getDate());
 		}
+	}
+	
+	private String getDatabaseFormattedString(Calendar date)
+	{
+		String strDay = null;
+		int intDay = date.get(Calendar.DAY_OF_MONTH);
+		String strMonth = null;
+		int intMonth = date.get(Calendar.MONTH);
+
+		switch(intDay)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + String.valueOf(intDay);
+				break;
+			default:
+				strDay = String.valueOf(intDay);
+			break;
+		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+				strMonth = "0" + String.valueOf(intMonth + 1);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth + 1);
+				break;
+		}
+		
+		return String.valueOf(date.get(Calendar.YEAR) + "-" + strMonth + "-" + strDay);
 	}
 }

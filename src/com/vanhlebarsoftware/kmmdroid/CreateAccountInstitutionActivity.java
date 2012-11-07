@@ -135,7 +135,6 @@ public class CreateAccountInstitutionActivity extends Activity implements OnClic
 		spinInstitutions.setAdapter(adapterInst);
 		
 		// Set the Institutions spinner to the proper location or default of zero.
-		Log.d(TAG, "institutionSelected: " + institutionSelected);
 		spinInstitutions.setSelection(setInstitution(institutionSelected, columnUsed));
 	}
 
@@ -187,14 +186,9 @@ public class CreateAccountInstitutionActivity extends Activity implements OnClic
 				institutionId = c.getString(0);
 				institutionSelected = c.getString(1);
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "Number of passes: " + numberOfPasses);
-				Log.d(TAG, "institutionSelected: " + institutionSelected);
 			}
 			else
-			{
-				Log.d(TAG, "Number of passes: " + numberOfPasses);
 				numberOfPasses++;
-			}
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
@@ -204,9 +198,7 @@ public class CreateAccountInstitutionActivity extends Activity implements OnClic
 	
 	@Override
 	public void onBackPressed()
-	{
-		Log.d(TAG, "User clicked the back button");
-		
+	{		
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -249,7 +241,6 @@ public class CreateAccountInstitutionActivity extends Activity implements OnClic
 		{
 			while(!institution.equals(cursorInst.getString(columUsed)))
 			{
-				Log.d(TAG, "name: " + institution + " cursorName: " + cursorInst.getString(columUsed));
 				cursorInst.moveToNext();
 			
 				//check to see if we have moved past the last item in the cursor, if so return current i.

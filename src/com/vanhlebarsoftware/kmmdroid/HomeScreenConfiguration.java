@@ -151,7 +151,7 @@ public class HomeScreenConfiguration extends Activity
 		spinNumOfWeeks.setAdapter(adapterNumOfWeeks);
 		
 		// Get all the information for the specific widget if an Id was passed.
-		if(!widgetId.isEmpty())
+		if(widgetId != null)
 		{
 			// Since we are passing in a widgetId, we need to set appWidgetId to this passed in value.
 			appWidgetId = Integer.valueOf(widgetId);

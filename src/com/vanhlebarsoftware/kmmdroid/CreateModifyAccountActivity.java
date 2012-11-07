@@ -239,7 +239,6 @@ public class CreateModifyAccountActivity extends TabActivity
 				// Make sure the 1st tab is displayed to the user.
 				getTabHost().setCurrentTab(0);
 				this.isDirty = false;
-				Log.d(TAG, "reached the end of onResume for editing");
 			}
 		}
 	}

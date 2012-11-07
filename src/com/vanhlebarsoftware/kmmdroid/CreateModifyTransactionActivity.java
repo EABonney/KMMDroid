@@ -236,9 +236,20 @@ public class CreateModifyTransactionActivity extends Activity
         {			
 			public void onClick(View arg0)
 			{
-				spinCategory.setVisibility(0);
+				spinCategory.refreshDrawableState();
 				spinCategory.performClick();
-				buttonChooseCategory.setVisibility(4);
+				
+				/*if( !spinCategory.performClick() )
+				{
+					Log.d(TAG, "User never selected anything!");
+					spinCategory.setVisibility(View.INVISIBLE);
+					buttonChooseCategory.setVisibility(View.VISIBLE);
+				}
+				else
+				{
+					Log.d(TAG, "User must have selected something!");
+					buttonChooseCategory.setVisibility(View.INVISIBLE);
+				}*/
 			}
 		});
         
@@ -274,6 +285,12 @@ public class CreateModifyTransactionActivity extends Activity
         // Initialize our Splits ArrayList.
         Splits = new ArrayList<Split>();
         OrigSplits = new ArrayList<Split>();
+        
+        // Set the default adapter for Categories.
+		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+				"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+		startManagingCursor(cursorCategories);
 	}
 	
 	@Override
@@ -290,10 +307,6 @@ public class CreateModifyTransactionActivity extends Activity
 		cursorPayees = KMMDapp.db.query("kmmpayees", new String[] { "name", "id AS _id" }, 
 				null, null, null, null, "name ASC");
 		startManagingCursor(cursorPayees);
-		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-		startManagingCursor(cursorCategories);
 		
 		// Set up the adapters
 		adapterPayees = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorPayees, FROM, TO);
@@ -646,11 +659,41 @@ public class CreateModifyTransactionActivity extends Activity
 						Log.d(TAG, "Inside transactionType: " + String.valueOf(parent.getId()));
 						String str = parent.getAdapter().getItem(pos).toString();
 						if( str.matches("Deposit") )
+						{
 							intTransType = 0;
+							// Populate the categories spinner with the income statement accounts instead of balance sheet.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						if( str.matches("Transfer") )
+						{
 							intTransType = 1;
+							// Populate the categories spinner with the balance sheet accounts instead of income statement.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_ASSET),
+										String.valueOf(Account.ACCOUNT_LIABILITY) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						if( str.matches("Withdrawal") )
+						{
 							intTransType = 2;
+							// Populate the categories spinner with the income statement accounts instead of balance sheet.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						isDirty = true;
 						break;
 					case R.id.payee:
@@ -664,8 +707,8 @@ public class CreateModifyTransactionActivity extends Activity
 						Log.d(TAG, "Inside category: " + c.getString(0).toString());
 						editCategory.setText(c.getString(0).toString());
 						strTransCategoryId = c.getString(1).toString();
-						spinCategory.setVisibility(4);
-						buttonChooseCategory.setVisibility(0);
+						//spinCategory.setVisibility(4);
+						//buttonChooseCategory.setVisibility(0);
 						isDirty = true;
 						break;
 					case R.id.status:
@@ -684,8 +727,8 @@ public class CreateModifyTransactionActivity extends Activity
 						break;
 				}
 			}
-				if( iNumberofPasses < 4 )
-					iNumberofPasses = iNumberofPasses + 1;
+			if( iNumberofPasses < 4 )
+				iNumberofPasses = iNumberofPasses + 1;
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {

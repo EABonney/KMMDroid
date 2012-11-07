@@ -18,6 +18,7 @@ public class Schedule
 	public static final int OCCUR_WEEKLY = 4;
 	public static final int OCCUR_FORTNIGHTLY = 8;
 	public static final int OCCUR_EVERYOTHERWEEK = 16;
+	public static final int OCCUR_EVERYHALFMONTH = 18;
 	public static final int OCCUR_EVERYTHREEWEEKS = 20;
 	public static final int OCCUR_EVERYTHIRTYDAYS = 30;
 	public static final int OCCUR_MONTHLY = 32;
@@ -554,6 +555,7 @@ public class Schedule
 		// Loop over the dataset and expand each of the cases out the date the user entered.
 		for(int i=0; i < c.getCount(); i++)
 		{
+			Log.d(TAG, "Schedule Name: " + c.getString(1));
 			dueDates = Schedule.paymentDates(strStartDate, strEndDate, Schedule.getOccurence(c.getInt(C_OCCURENCE), c.getInt(C_OCCURENCEMULTIPLIER)), c.getString(C_STARTDATE), c.getString(C_NEXTPAYMENTDUE));
 
 			// We now have all our payment dates for this schedule between the dates the user supplied.
@@ -646,6 +648,16 @@ public class Schedule
 				{
 					Dates.add(date);
 					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 14);
+					date = (GregorianCalendar) calNextPaymentDate.clone();
+				}
+				if(isDueToday(calNextPaymentDate, calEnd))
+					Dates.add(date);
+				break;
+			case OCCUR_EVERYHALFMONTH:
+				while(calNextPaymentDate.before(calEnd))
+				{
+					Dates.add(date);
+					calNextPaymentDate.add(Calendar.DAY_OF_MONTH, 15);
 					date = (GregorianCalendar) calNextPaymentDate.clone();
 				}
 				if(isDueToday(calNextPaymentDate, calEnd))
@@ -796,6 +808,8 @@ public class Schedule
 					case 8:
 						return OCCUR_EVERYEIGHTWEEKS;
 				}
+			case OCCUR_EVERYHALFMONTH:
+				return OCCUR_EVERYHALFMONTH;
 			case OCCUR_MONTHLY:
 				switch(nOccurenceMultiple)
 				{
@@ -822,13 +836,13 @@ public class Schedule
 		return 0;
 	}
 	
-	static public int getOccurrenceFromMultiplier(int multiplier, String strDesc)
+	static public int getOccurrenceFromMultiplier(/*int multiplier,*/ String strDesc)
 	{
 		if( strDesc.equals("Once") )
 			return OCCUR_ONCE;
 		else if ( strDesc.equals("Day") )
 		{
-			switch( multiplier) 
+			/*switch( multiplier) 
 			{
 			case 1:
 				return OCCUR_DAILY;
@@ -836,11 +850,12 @@ public class Schedule
 				return OCCUR_EVERYTHIRTYDAYS;
 			default:
 				return OCCUR_ANY;
-			}
+			}*/
+			return OCCUR_DAILY;
 		}
 		else if ( strDesc.equals("Week") )
 		{
-			switch ( multiplier )
+			/*switch ( multiplier )
 			{
 			case 1:
 				return OCCUR_WEEKLY;
@@ -854,11 +869,12 @@ public class Schedule
 				return OCCUR_EVERYEIGHTWEEKS;
 			default:
 				return OCCUR_ANY;
-			}
+			}*/
+			return OCCUR_WEEKLY;
 		}
 		else if ( strDesc.equals("Month") )
 		{
-			switch ( multiplier) 
+			/*switch ( multiplier) 
 			{
 			case 1:
 				return OCCUR_MONTHLY;
@@ -872,15 +888,16 @@ public class Schedule
 				return OCCUR_TWICEYEARLY;
 			default:
 				return OCCUR_ANY;	
-			}
+			}*/
+			return OCCUR_MONTHLY;
 		}
 		else if ( strDesc.equals("Half-month") )
 		{
-			return OCCUR_FORTNIGHTLY;
+			return OCCUR_EVERYHALFMONTH;
 		}
 		else if ( strDesc.equals("Year") )
 		{
-			switch( multiplier )
+			/*switch( multiplier )
 			{
 			case 1:
 				return OCCUR_YEARLY;
@@ -888,7 +905,8 @@ public class Schedule
 				return OCCUR_EVERYOTHERYEAR;
 			default:
 				return OCCUR_ANY;
-			}
+			}*/
+			return OCCUR_YEARLY;
 		}
 		else
 			return OCCUR_ANY;
@@ -1032,6 +1050,10 @@ public class Schedule
 			case OCCUR_EVERYOTHERWEEK:
 				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
 					this.DueDate.add(Calendar.DAY_OF_MONTH, 14);
+				break;
+			case OCCUR_EVERYHALFMONTH:
+				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					this.DueDate.add(Calendar.DAY_OF_MONTH, 15);
 				break;
 			case OCCUR_EVERYTHREEWEEKS:
 				if(this.DueDate.before(this.EndDate) || this.EndDate == null)

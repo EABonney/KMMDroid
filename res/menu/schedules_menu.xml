@@ -5,7 +5,7 @@
     <item
         android:title="@string/titleNew" 
         android:id="@+id/itemNew" 
-        android:icon="@drawable/transaction_add">
+        android:icon="@drawable/schedule">
     </item>
 	<item 
 		android:title="@string/titleHome"

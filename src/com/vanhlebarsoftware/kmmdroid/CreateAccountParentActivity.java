@@ -60,7 +60,7 @@ public class CreateAccountParentActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		
+		Log.d(TAG, "strSelection: " + strSelection);
 		cursor = KMMDapp.db.query("kmmAccounts", new String[] { "id AS _id", "accountName" }, strSelection, null, null, null, null);
 		startManagingCursor(cursor);
 		
@@ -138,6 +138,7 @@ public class CreateAccountParentActivity extends Activity
 		{
 			while(!parentId.equals(cursor.getString(0)))
 			{
+				Log.d(TAG, "parentId: " + parentId + "cursor: " + cursor.getString(0));
 				cursor.moveToNext();
 			
 				//check to see if we have moved past the last item in the cursor, if so return current i.

@@ -61,7 +61,7 @@ public class PrefsActivity extends PreferenceActivity
 		addPreferencesFromResource(R.xml.prefs);
         
 		// Find our ListPreference for the Home Widget Account to be used.
-		ListPreference Accounts = (ListPreference) findPreference("accountUsed");
+		//ListPreference Accounts = (ListPreference) findPreference("accountUsed");
 		dropboxSync = (CheckBoxPreference) findPreference("dropboxSync");
 		
         // Load out private key and secret key.
@@ -132,8 +132,8 @@ public class PrefsActivity extends PreferenceActivity
 			}
 		}
 		
-		Accounts.setEntries(entries);
-		Accounts.setEntryValues(entryValues);
+		//Accounts.setEntries(entries);
+		//Accounts.setEntryValues(entryValues);
 	}
 	
 	@Override
@@ -207,7 +207,7 @@ public class PrefsActivity extends PreferenceActivity
 		super.onPause();
 		
 		// First see what we need to do if anything with the HomeWidgets
-		String value = KMMDapp.prefs.getString("updateFrequency", "");
+		/*String value = KMMDapp.prefs.getString("updateFrequency", "");
 		if(value.equals("Auto"))
 			KMMDapp.setAutoUpdate(true);
 		else
@@ -222,7 +222,7 @@ public class PrefsActivity extends PreferenceActivity
 		}
 		else		
 			KMMDapp.setRepeatingAlarm(value, null, KMMDroidApp.ALARM_HOMEWIDGET);
-		
+		*/
 		// Now see if the user has specified they want to get Schedule Notifications.
 		if(KMMDapp.prefs.getBoolean("receiveNotifications", false))
 		{

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+		android:layout_height="wrap_content"
+    	android:layout_width="match_parent"
+    	android:layout_gravity="bottom"
+    	android:text="@string/buttonOneMonth"
+    	android:id="@+id/buttonOneMonth" />
+
+    <Button
+		android:layout_height="wrap_content"
+    	android:layout_width="match_parent"
+    	android:layout_gravity="bottom"
+    	android:text="@string/buttonOneYear"
+    	android:id="@+id/buttonOneYear" />
+    
+    <Button
+		android:layout_height="wrap_content"
+    	android:layout_width="match_parent"
+    	android:layout_gravity="bottom"
+    	android:text="@string/buttonAll"
+    	android:id="@+id/buttonAll" />
+</LinearLayout>

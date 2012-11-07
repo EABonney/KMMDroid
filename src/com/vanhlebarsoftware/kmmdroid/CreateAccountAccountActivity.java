@@ -211,7 +211,7 @@ public class CreateAccountAccountActivity extends Activity implements OnCheckedC
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			if( numberOfPasses > 2)
+			if( numberOfPasses > 1)
 			{
 				switch( parent.getId())
 				{
@@ -220,7 +220,8 @@ public class CreateAccountAccountActivity extends Activity implements OnCheckedC
 						Log.d(TAG, "itemSelected: " + strTypeSelected);
 			
 						if( strTypeSelected.matches(getString(R.string.Asset)) )
-						{	CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
+						{	
+							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
 								" AND balance !='0/1')");
 							TypeSelected = 0;
 						}
@@ -237,7 +238,8 @@ public class CreateAccountAccountActivity extends Activity implements OnCheckedC
 							TypeSelected = 2;
 						}
 						else if( strTypeSelected.matches(getString(R.string.Liability)) )
-						{	CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
+						{	
+							CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
 								" AND balance !='0/1')");
 							TypeSelected = 3;
 						}

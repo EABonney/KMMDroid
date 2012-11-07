@@ -171,9 +171,8 @@ public class SchedulePaymentInfoActivity extends Activity
         {			
 			public void onClick(View arg0)
 			{
-				spinCategory.setVisibility(0);
+				spinCategory.refreshDrawableState();
 				spinCategory.performClick();
-				btnCategory.setVisibility(4);
 			}
 		});
         
@@ -281,13 +280,19 @@ public class SchedulePaymentInfoActivity extends Activity
 				null, null, null, null, "name ASC");
 		startManagingCursor(cursorPayees);
 		
-		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountTypeString='Expense' OR accountTypeString='Income')", null, null, null, "accountName ASC");
+		/*cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+				"(accountTypeString='Expense' OR accountTypeString='Income')", null, null, null, "accountName ASC");*/
+		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName",  "id AS _id" }, "accountType=? OR accountType=?",
+				new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
 		startManagingCursor(cursorCategories);
-		
-		cursorAccounts = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+
+		/*cursorAccounts = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 				"(accountTypeString='Checking' OR accountTypeString='Savings' OR accountTypeString='Liability' OR " +
-						"accountTypeString='Credit Card') AND (balance != '0/1')", null, null, null, "accountName ASC");
+						"accountTypeString='Credit Card') AND (balance != '0/1')", null, null, null, "accountName ASC");*/
+		cursorAccounts = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+				"(accountType=? OR accountType=? OR accountType=? OR accountType=?) AND (balance != '0/1')",
+				new String[] { String.valueOf(Account.ACCOUNT_CHECKING), String.valueOf(Account.ACCOUNT_SAVINGS), 
+				String.valueOf(Account.ACCOUNT_LIABILITY), String.valueOf(Account.ACCOUNT_CREDITCARD) }, null, null, "accountName ASC");
 		startManagingCursor(cursorAccounts);
 		
 		// Set up the adapters
@@ -424,11 +429,41 @@ public class SchedulePaymentInfoActivity extends Activity
 						intSchTypePos = parent.getSelectedItemPosition();
 						String str = parent.getAdapter().getItem(pos).toString();
 						if( str.matches("Deposit") )
+						{
 							intSchType = Schedule.TYPE_DEPOSIT;
+							// Populate the categories spinner with the income statement accounts instead of balance sheet.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						if( str.matches("Transfer") )
+						{
 							intSchType = Schedule.TYPE_TRANSFER;
+							// Populate the categories spinner with the balance sheet accounts instead of income statement.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_ASSET),
+										String.valueOf(Account.ACCOUNT_LIABILITY) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						if( str.matches("Withdrawal") )
+						{
 							intSchType = Schedule.TYPE_BILL;
+							// Populate the categories spinner with the income statement accounts instead of balance sheet.
+							//cursorCategories.close();
+							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+							//startManagingCursor(cursorCategories);
+							adapterCategories.changeCursor(cursorCategories);
+							adapterCategories.notifyDataSetChanged();
+						}
 						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.payee:
@@ -443,8 +478,6 @@ public class SchedulePaymentInfoActivity extends Activity
 						strCategoryName = c.getString(0).toString();
 						editCategory.setText(strCategoryName);
 						strSchCategoryId = c.getString(1).toString();
-						spinCategory.setVisibility(4);
-						btnCategory.setVisibility(0);
 						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.status:
@@ -605,7 +638,7 @@ public class SchedulePaymentInfoActivity extends Activity
 			this.intSchFreqDesc = 2;
 			this.strSchFreqDesc = "Week";
 			break;
-		case Schedule.OCCUR_EVERYOTHERWEEK:
+		case Schedule.OCCUR_EVERYHALFMONTH:
 			this.intSchFreqDesc = 3;
 			this.strSchFreqDesc = "Half-month";
 			break;
