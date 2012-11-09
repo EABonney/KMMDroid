@@ -74,7 +74,8 @@ public class FileChooser extends ListActivity
 	{
 		super.onListItemClick(l, v, position, id);
 		Option o = adapter.getItem(position);
-		if(o.getData().equalsIgnoreCase("folder") || o.getData().equalsIgnoreCase("parent directory"))
+		if(o.getData().equalsIgnoreCase(getString(R.string.FileChooserFolder)) ||
+		   o.getData().equalsIgnoreCase(getString(R.string.FileChooserParentDirectory)))
 		{
 			currentDir = new File(o.getPath());
 			fill(currentDir);

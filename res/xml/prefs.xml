@@ -10,11 +10,13 @@
         android:title="@string/titleNavigation" >
         <CheckBoxPreference 
             android:title="@string/titleMenuNav"
-            android:key="navMenu" >
+            android:key="navMenu" 
+            android:defaultValue="true" >
         </CheckBoxPreference>
         <CheckBoxPreference 
             android:title="@string/titleNavBar"
-            android:key="navBar" >
+            android:key="navBar"
+            android:defaultValue="false" >
         </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceScreen 
