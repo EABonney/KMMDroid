@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.6.1.2"
+      android:versionName="0.6.2.0"
       android:installLocation="auto">
     <uses-sdk android:minSdkVersion="10" />
 
@@ -232,6 +232,12 @@
     	    	  android:name=".LoadMoreTransactionsActivity"
     	    	  android:label="@string/titleLoadMore"
     	    	  android:theme="@style/DialogNoTitle"
+    	    	  android:screenOrientation="portrait" >    	    
+    	</activity>
+    	
+    	<activity
+    	    	  android:name=".ReportsActivity"
+    	    	  android:label="@string/titleReports"
     	    	  android:screenOrientation="portrait" >    	    
     	</activity>
 		<provider android:name=".KMMDProvider"

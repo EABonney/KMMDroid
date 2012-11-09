@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +42,14 @@ public class HomeActivity extends Activity
 	static final int[] TO = { R.id.hrAccountName, R.id.hrAccountBalance };
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
+	ImageButton btnHome;
+	ImageButton btnAccounts;
+	ImageButton btnCategories;
+	ImageButton btnInstitutions;
+	ImageButton btnPayees;
+	ImageButton btnSchedules;
+	ImageButton btnReports;
+	LinearLayout navBar;
 	ListView listAccounts;
 	ArrayList<Accounts> accounts = new ArrayList<Accounts>();
 	AccountsAdapter adapterAccounts;
@@ -55,6 +66,77 @@ public class HomeActivity extends Activity
         
         // Find our views
         listAccounts = (ListView) findViewById(R.id.listHomeView);
+        btnHome = (ImageButton) findViewById(R.id.buttonHome);
+        btnAccounts = (ImageButton) findViewById(R.id.buttonAccounts);
+        btnCategories = (ImageButton) findViewById(R.id.buttonCategories);
+        btnInstitutions = (ImageButton) findViewById(R.id.buttonInstitutions);
+        btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
+        btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
+        btnReports = (ImageButton) findViewById(R.id.buttonReports);
+        navBar = (LinearLayout) findViewById(R.id.navBar);
+        
+        // Set out onClickListener events.
+        /*btnHome.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
+			}
+		});*/
+        btnHome.setVisibility(View.GONE);
+        
+        btnAccounts.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
+				finish();
+			}
+		});
+        
+        btnCategories.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
+				finish();
+			}
+		});
+        
+        btnInstitutions.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
+				finish();
+			}
+		});
+        
+        btnPayees.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
+				finish();
+			}
+		});
+        
+        btnSchedules.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
+				finish();
+			}
+		});
+        
+        btnReports.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), ReportsActivity.class));
+			}
+		});
 
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
@@ -132,6 +214,12 @@ public class HomeActivity extends Activity
 			adapterAccounts = new AccountsAdapter(this, R.layout.home_row, accounts);
 			listAccounts.setAdapter(adapterAccounts);
 		}
+		
+		// See if the user has requested the navigation bar.
+		if(!KMMDapp.prefs.getBoolean("navBar", false))
+			navBar.setVisibility(View.GONE);
+		else
+			navBar.setVisibility(View.VISIBLE);
 	}
 	
 	// Message Handler for our listAccounts List View clicks
@@ -198,9 +286,29 @@ public class HomeActivity extends Activity
 	{
 		// Hide the sync menu if the user is not logged into at least one of the services.
 		if( !KMMDapp.prefs.getBoolean("dropboxSync", false) )
-			menu.getItem(2).setVisible(false);
+			menu.findItem(R.id.Sync).setVisible(false);
 		else
-			menu.getItem(2).setVisible(true);
+			menu.findItem(R.id.Sync).setVisible(true);
+		
+		// See if the user wants us to navigation menu items.
+		if( !KMMDapp.prefs.getBoolean("navMenu", true))
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(false);
+			menu.findItem(R.id.itemCategories).setVisible(false);
+			menu.findItem(R.id.itemPayees).setVisible(false);
+			menu.findItem(R.id.itemInstitutions).setVisible(false);
+			menu.findItem(R.id.itemSchedules).setVisible(false);
+			menu.findItem(R.id.itemReports).setVisible(false);
+		}
+		else
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(true);
+			menu.findItem(R.id.itemCategories).setVisible(true);
+			menu.findItem(R.id.itemPayees).setVisible(true);
+			menu.findItem(R.id.itemInstitutions).setVisible(true);
+			menu.findItem(R.id.itemSchedules).setVisible(true);
+			menu.findItem(R.id.itemReports).setVisible(true);
+		}
 		
 		return true;
 	}
@@ -236,8 +344,8 @@ public class HomeActivity extends Activity
 			case R.id.itemSchedules:
 				startActivity(new Intent(this, SchedulesActivity.class));
 				break;
-			case R.id.itemCashRequirments:
-				startActivity(new Intent(this, CashRequirementsOptionsActivity.class));
+			case R.id.itemReports:
+				startActivity(new Intent(this, ReportsActivity.class));
 				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));

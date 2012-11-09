@@ -15,11 +15,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.util.Log;
@@ -40,6 +42,14 @@ public class PayeeActivity extends Activity
 	private String selectedPayeeName = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
+	ImageButton btnHome;
+	ImageButton btnAccounts;
+	ImageButton btnCategories;
+	ImageButton btnInstitutions;
+	ImageButton btnPayees;
+	ImageButton btnSchedules;
+	ImageButton btnReports;
+	LinearLayout navBar;
 	ListView listPayees;
 	KMMDCursorAdapter adapter;
 	
@@ -55,6 +65,78 @@ public class PayeeActivity extends Activity
         
         // Find our views
         listPayees = (ListView) findViewById(R.id.listPayeesView);
+        btnHome = (ImageButton) findViewById(R.id.buttonHome);
+        btnAccounts = (ImageButton) findViewById(R.id.buttonAccounts);
+        btnCategories = (ImageButton) findViewById(R.id.buttonCategories);
+        btnInstitutions = (ImageButton) findViewById(R.id.buttonInstitutions);
+        btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
+        btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
+        btnReports = (ImageButton) findViewById(R.id.buttonReports);
+        navBar = (LinearLayout) findViewById(R.id.navBar);
+        
+        // Set out onClickListener events.
+        btnHome.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), HomeActivity.class));
+				finish();
+			}
+		});
+        
+        btnAccounts.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
+				finish();
+			}
+		});
+        
+        btnCategories.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
+				finish();
+			}
+		});
+        
+        btnInstitutions.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
+				finish();
+			}
+		});
+        
+        /*btnPayees.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
+			}
+		});*/
+        btnPayees.setVisibility(View.GONE);
+        
+        btnSchedules.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
+				finish();
+			}
+		});
+        
+        btnReports.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), ReportsActivity.class));
+			}
+		});
+        
 		listPayees.setFastScrollEnabled(true);
 		
     	// Now hook into listAccounts ListView and set its onItemClickListener member
@@ -92,6 +174,12 @@ public class PayeeActivity extends Activity
 		adapter = new KMMDCursorAdapter(getApplicationContext(), R.layout.payee_row, cursor, FROM, TO);
 		adapter.setViewBinder(VIEW_BINDER);
 		listPayees.setAdapter(adapter);
+		
+		// See if the user has requested the navigation bar.
+		if(!KMMDapp.prefs.getBoolean("navBar", false))
+			navBar.setVisibility(View.GONE);
+		else
+			navBar.setVisibility(View.VISIBLE);
 	}
 		
 	// Message Handler for our listAccounts List View clicks
@@ -131,6 +219,32 @@ public class PayeeActivity extends Activity
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.payees_menu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu)
+	{
+		// See if the user wants us to navigation menu items.
+		if( !KMMDapp.prefs.getBoolean("navMenu", true))
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(false);
+			menu.findItem(R.id.itemCategories).setVisible(false);
+			menu.findItem(R.id.itemHome).setVisible(false);
+			menu.findItem(R.id.itemInstitutions).setVisible(false);
+			menu.findItem(R.id.itemSchedules).setVisible(false);
+			menu.findItem(R.id.itemReports).setVisible(false);
+		}
+		else
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(true);
+			menu.findItem(R.id.itemCategories).setVisible(true);
+			menu.findItem(R.id.itemHome).setVisible(true);
+			menu.findItem(R.id.itemInstitutions).setVisible(true);
+			menu.findItem(R.id.itemSchedules).setVisible(true);
+			menu.findItem(R.id.itemReports).setVisible(true);
+		}
+		
 		return true;
 	}
 
@@ -188,6 +302,12 @@ public class PayeeActivity extends Activity
 				alert.show();
 */
 				break;	
+			case R.id.itemSchedules:
+				startActivity(new Intent(this, SchedulesActivity.class));
+				break;
+			case R.id.itemReports:
+				startActivity(new Intent(this, ReportsActivity.class));
+				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
 				break;

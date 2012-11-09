@@ -41,8 +41,8 @@
     	android:title="@string/titleSchedules">
     </item>
     <item 
-    	android:id="@+id/itemCashRequirments"
-    	android:title="@string/titleCashRequirements">
+    	android:id="@+id/itemReports"
+    	android:title="@string/titleReports">
     </item>
     <item 
     	android:id="@+id/itemAbout" 

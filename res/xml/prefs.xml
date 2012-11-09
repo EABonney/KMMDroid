@@ -6,6 +6,17 @@
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
     </CheckBoxPreference>
+    <PreferenceCategory 
+        android:title="@string/titleNavigation" >
+        <CheckBoxPreference 
+            android:title="@string/titleMenuNav"
+            android:key="navMenu" >
+        </CheckBoxPreference>
+        <CheckBoxPreference 
+            android:title="@string/titleNavBar"
+            android:key="navBar" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
     <PreferenceScreen 
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:title="@string/titleCloudServices">

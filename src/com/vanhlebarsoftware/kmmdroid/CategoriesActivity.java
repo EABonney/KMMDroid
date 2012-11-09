@@ -11,10 +11,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
@@ -39,6 +41,14 @@ public class CategoriesActivity extends Activity
 	private String accountType = null;
 	KMMDroidApp KMMDapp;
 	Cursor cursor;
+	ImageButton btnHome;
+	ImageButton btnAccounts;
+	ImageButton btnCategories;
+	ImageButton btnInstitutions;
+	ImageButton btnPayees;
+	ImageButton btnSchedules;
+	ImageButton btnReports;
+	LinearLayout navBar;
 	ListView listCategories;
 	SimpleCursorAdapter adapter;
 	
@@ -54,6 +64,77 @@ public class CategoriesActivity extends Activity
         
         // Find our views
         listCategories = (ListView) findViewById(R.id.listCategoriesView);
+        btnHome = (ImageButton) findViewById(R.id.buttonHome);
+        btnAccounts = (ImageButton) findViewById(R.id.buttonAccounts);
+        btnCategories = (ImageButton) findViewById(R.id.buttonCategories);
+        btnInstitutions = (ImageButton) findViewById(R.id.buttonInstitutions);
+        btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
+        btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
+        btnReports = (ImageButton) findViewById(R.id.buttonReports);
+        navBar = (LinearLayout) findViewById(R.id.navBar);
+        
+        // Set out onClickListener events.
+        btnHome.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), HomeActivity.class));
+				finish();
+			}
+		});
+        
+        btnAccounts.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
+				finish();
+			}
+		});
+        
+        /*btnCategories.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
+			}
+		});*/
+        btnCategories.setVisibility(View.GONE);
+        
+        btnInstitutions.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
+				finish();
+			}
+		});
+        
+        btnPayees.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
+				finish();
+			}
+		});
+        
+        btnSchedules.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
+				finish();
+			}
+		});
+        
+        btnReports.setOnClickListener(new View.OnClickListener()
+        {
+			public void onClick(View arg0)
+			{
+				startActivity(new Intent(getBaseContext(), ReportsActivity.class));
+			}
+		});
 
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
@@ -85,6 +166,12 @@ public class CategoriesActivity extends Activity
 		adapter = new SimpleCursorAdapter(this, R.layout.categories_row, cursor, FROM, TO);
 		adapter.setViewBinder(VIEW_BINDER);
 		listCategories.setAdapter(adapter);
+		
+		// See if the user has requested the navigation bar.
+		if(!KMMDapp.prefs.getBoolean("navBar", false))
+			navBar.setVisibility(View.GONE);
+		else
+			navBar.setVisibility(View.VISIBLE);
 	}
 	
 	// Message Handler for our listAccounts List View clicks
@@ -133,6 +220,32 @@ public class CategoriesActivity extends Activity
 		return true;
 	}
 	
+	@Override
+	public boolean onPrepareOptionsMenu (Menu menu)
+	{	
+		// See if the user wants us to navigation menu items.
+		if( !KMMDapp.prefs.getBoolean("navMenu", true))
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(false);
+			menu.findItem(R.id.itemHome).setVisible(false);
+			menu.findItem(R.id.itemPayees).setVisible(false);
+			menu.findItem(R.id.itemInstitutions).setVisible(false);
+			menu.findItem(R.id.itemSchedules).setVisible(false);
+			menu.findItem(R.id.itemReports).setVisible(false);
+		}
+		else
+		{
+			menu.findItem(R.id.itemAccounts).setVisible(true);
+			menu.findItem(R.id.itemHome).setVisible(true);
+			menu.findItem(R.id.itemPayees).setVisible(true);
+			menu.findItem(R.id.itemInstitutions).setVisible(true);
+			menu.findItem(R.id.itemSchedules).setVisible(true);
+			menu.findItem(R.id.itemReports).setVisible(true);
+		}
+		
+		return true;
+	}
+	
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -158,6 +271,12 @@ public class CategoriesActivity extends Activity
 				Intent i = new Intent(this, CreateModifyCategoriesActivity.class);
 				i.putExtra("Action", ACTION_NEW);
 				startActivity(i);
+				break;
+			case R.id.itemSchedules:
+				startActivity(new Intent(this, SchedulesActivity.class));
+				break;
+			case R.id.itemReports:
+				startActivity(new Intent(this, ReportsActivity.class));
 				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));

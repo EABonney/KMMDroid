@@ -12,6 +12,14 @@
     	android:title="@string/titleInstitutions" android:icon="@drawable/institutions_view">
     </item>
     <item 
+    	android:id="@+id/itemSchedules"
+    	android:title="@string/titleSchedules">
+    </item>
+    <item 
+    	android:id="@+id/itemReports"
+    	android:title="@string/titleReports">
+    </item>
+    <item 
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
     </item>

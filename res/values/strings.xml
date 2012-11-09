@@ -418,4 +418,11 @@
     <string name="buttonOneMonth">One month</string>
     <string name="buttonOneYear">One year</string>
     <string name="buttonAll">All</string>
+    <string name="titleReports">Reports</string>
+    <string name="titleNavigation">Navigation</string>
+    <string name="titleMenuNav">Menu</string>
+    <string name="titleNavBar">Navigation Bar</string>
+    <string-array name="Reports">
+        <item>@string/titleCashRequirements</item>
+    </string-array>
 </resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="0dp"
+	android:layout_weight="1"
+	android:layout_alignParentBottom="true"
+	android:layout_gravity="center_horizontal"
+	android:gravity="bottom"
+   	android:layout_marginLeft="10sp"
+   	android:layout_marginRight="10sp"
+   	android:layout_marginBottom="10sp"
+	android:id="@+id/navBar">
+   	<HorizontalScrollView 
+   	    android:layout_width="match_parent"
+   	    android:layout_height="wrap_content" >
+   	    <LinearLayout
+   	        android:orientation="horizontal"
+   	        android:layout_width="wrap_content"
+   	        android:layout_height="wrap_content" >
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/home_view"
+			android:text="@string/titleHome"	
+			android:id="@+id/buttonHome" />
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/accounts_view"
+			android:text="@string/titleAccounts"	
+			android:id="@+id/buttonAccounts" />
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+    		android:width="55sp"
+			android:src="@drawable/categories_view"
+			android:text="@string/titleCategories"	
+			android:id="@+id/buttonCategories" />
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/institutions_view"
+			android:text="@string/titleInstitutions"	
+			android:id="@+id/buttonInstitutions" />  	    
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/payees_view"
+			android:text="@string/titlePayees"	
+			android:id="@+id/buttonPayees" />
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/schedules_view"
+			android:text="@string/titleSchedules"	
+			android:id="@+id/buttonSchedules" />
+   	    <ImageButton
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="15sp"
+			android:src="@drawable/reports_view"
+			android:text="@string/titleReports"	
+			android:id="@+id/buttonReports" />
+   	    </LinearLayout>
+   	</HorizontalScrollView>
+</LinearLayout>
