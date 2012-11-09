@@ -406,5 +406,18 @@
     <string name="FileChooserFolder">Ordner</string>
     <string name="FileChooserParentDirectory">Übergeordnetes Verzeichnis</string>
     <string name="FileChooserFile">Dateigröße:</string>
-    
+    <string name="BackActionWarning">Änderungen werden verloren gehen</string>
+    <string name="titleBackActionWarning">Ihre Änderungen werden verloren gehen, wenn Sie die Aktion fortsetzen. Wollen Sie wirklich fortsetzen?</string>
+    <string name="titlePayeeName">Name: </string>
+    <string name="titleLoadMore">weitere laden</string>
+    <string name="buttonOneMonth">Einen Monat</string>
+    <string name="buttonOneYear">Ein Jahr</string>
+    <string name="buttonAll">Alles laden</string>    
+    <string name="titleReports">Berichte</string>
+    <string name="titleNavigation">Navigation</string>
+    <string name="titleMenuNav">Menü</string>
+    <string name="titleNavBar">Navigationsleiste</string>
+    <string-array name="Reports">
+        <item>@string/titleCashRequirements</item>
+    </string-array>    
 </resources>
