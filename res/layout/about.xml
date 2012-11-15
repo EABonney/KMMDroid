@@ -152,4 +152,10 @@
   		android:textColor="@android:color/black"
   		android:id="@+id/aboutNumBudgets">
   	</TextView>  
+    <Button
+    		android:layout_height="wrap_content"
+    		android:layout_width="match_parent"
+    		android:layout_below="@+id/aboutNumBudgets"
+    		android:text="@string/buttonLog"
+    		android:id="@+id/buttonLog"/>
 </RelativeLayout>

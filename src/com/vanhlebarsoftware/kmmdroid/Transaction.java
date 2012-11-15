@@ -46,7 +46,10 @@ public class Transaction
 		this.strtxType = null;
 		this.strCurrencyId = null;
 		this.strBankId = null;
-		this.Date = convertDate(date);
+		if( date != null)
+			this.Date = convertDate(date);
+		else
+			this.Date = null;
 		this.entryDate = null;
 		this.splits = new ArrayList<Split>();
 	}

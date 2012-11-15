@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class LoadMoreTransactionsActivity extends Activity
 {
@@ -56,7 +57,6 @@ public class LoadMoreTransactionsActivity extends Activity
         {
 			public void onClick(View arg0)
 			{
-				Log.d(TAG, "User clicked All!");
 				i.putExtra("LoadMore", "All");
 				setResult(1, i);
 				finish();
