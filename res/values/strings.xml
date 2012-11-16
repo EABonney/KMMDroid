@@ -454,4 +454,32 @@
         <item>@string/Nov</item>
         <item>@string/Dec</item>
     </string-array>
+    <string name="freqEvery">Every</string>
+    <string name="freqOnce">Once</string>
+    <string name="freqTimes">times</string>
+    <string name="freqDay">Day</string>
+    <string name="freqDaily">Daily</string>
+    <string name="freq30Days">Every thirty days</string>
+    <string name="freqDays">days</string>
+    <string name="freqWeek">Week</string>
+    <string name="freqWeekly">Weekly</string>
+    <string name="freqWeeks">weeks</string>
+    <string name="freq2Weeks">Every other week</string>
+    <string name="freq3Weeks">Every three weeks</string>
+    <string name="freq4Weeks">Every four weeks</string>
+    <string name="freq8Weeks">Every eight weeks</string>
+    <string name="freqHalfMonth">Half-month</string>
+    <string name="freqHalfMonths">Every half month</string>
+    <string name="freqHalfMonths2">half months</string>
+    <string name="freqMonth">Month</string>
+    <string name="freqMonthly">Monthly</string>
+    <string name="freq2Months">Every other month</string>
+    <string name="freq3Months">Every three months</string>
+    <string name="freq4Months">Every four months</string>
+    <string name="freqMonths">months</string>
+    <string name="freq2Yearly">Twice yearly</string>
+    <string name="freqYear">Year</string>
+    <string name="freqYearly">Yearly</string>
+    <string name="freqYears">years</string>
+    <string name="freqAny">Any</string>
 </resources>

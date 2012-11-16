@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -912,88 +914,88 @@ public class Schedule
 			return OCCUR_ANY;
 	}
 	
-	static public String getOccurrenceToString(int multiplier, String strDesc)
+	static public String getOccurrenceToString(int multiplier, String strDesc, Context context)
 	{
-		if( strDesc.equals("Once") )
+		if( strDesc.equals(context.getString(R.string.freqOnce)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Once";
+				return context.getString(R.string.freqOnce);
 			default:
-				return String.format("%1d times", multiplier);
+				return String.format("%1d " + context.getString(R.string.freqTimes), multiplier);
 			}
 		}
-		else if( strDesc.equals("Day") )
+		else if( strDesc.equals(context.getString(R.string.freqDay)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Daily";
+				return context.getString(R.string.freqDaily);
 			case 30:
-				return "Every thirty days";
+				return context.getString(R.string.freq30Days);
 			default:
-				return String.format("Every %1d days", multiplier);
+				return String.format(context.getString(R.string.freqEvery) + " %1d " + context.getString(R.string.freqDays), multiplier);
 			}
 		}
-		else if( strDesc.equals("Week") )
+		else if( strDesc.equals(context.getString(R.string.freqWeek)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Weekly";
+				return context.getString(R.string.freqWeekly);
 			case 2:
-				return "Every other week";
+				return context.getString(R.string.freq2Weeks);
 			case 3:
-				return "Every three weeks";
+				return context.getString(R.string.freq3Weeks);
 			case 4:
-				return "Every four weeks";
+				return context.getString(R.string.freq4Weeks);
 			case 8:
-				return "Every eight weeks";
+				return context.getString(R.string.freq8Weeks);
 			default:
-				return String.format("Every %1d weeks", multiplier);
+				return String.format(context.getString(R.string.freqEvery) + " %1d " + context.getString(R.string.freqWeeks), multiplier);
 			}	
 		}
-		else if( strDesc.equals("Half-month") )
+		else if( strDesc.equals(context.getString(R.string.freqHalfMonth)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Every half month";
+				return context.getString(R.string.freqHalfMonths);
 			default:
-				return String.format("Every %1d half months", multiplier);
+				return String.format(context.getString(R.string.freqEvery) + " %1d " + context.getString(R.string.freqHalfMonths2), multiplier);
 			}
 		}
-		else if( strDesc.equals("Month") )
+		else if( strDesc.equals(context.getString(R.string.freqMonth)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Monthly";
+				return context.getString(R.string.freqMonthly);
 			case 2:
-				return "Every other month";
+				return context.getString(R.string.freq2Months);
 			case 3:
-				return "Every three months";
+				return context.getString(R.string.freq3Months);
 			case 4:
-				return "Every four months";
+				return context.getString(R.string.freq4Months);
 			case 6:
-				return "Twice yearly";
+				return context.getString(R.string.freq2Yearly);
 			default:
-				return String.format("Every %1d months", multiplier);
+				return String.format(context.getString(R.string.freqEvery) + " %1d " + context.getString(R.string.freqMonths), multiplier);
 			}
 		}
-		else if( strDesc.equals("Year") )
+		else if( strDesc.equals(context.getString(R.string.freqYear)) )
 		{
 			switch( multiplier )
 			{
 			case 1:
-				return "Yearly";
+				return context.getString(R.string.freqYearly);
 			default:
-				return String.format("Every %1d years", multiplier);
+				return String.format(context.getString(R.string.freqEvery) + " %1d " + context.getString(R.string.freqYears), multiplier);
 			}
 		}
 		else
-			return "Any";
+			return context.getString(R.string.freqAny);
 	}
 	
 	public boolean isPastDue()

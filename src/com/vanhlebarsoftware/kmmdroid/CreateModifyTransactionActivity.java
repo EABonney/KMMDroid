@@ -433,7 +433,6 @@ public class CreateModifyTransactionActivity extends Activity
 						if( intTransType == WITHDRAW )
 						{
 							value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-							Log.d(TAG, "value: " + value);
 							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 						}
 						else
