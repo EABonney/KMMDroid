@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="src" path="lib"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
-	<classpathentry kind="lib" path="lib/dropbox-android-sdk-1.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/json_simple-1.1.jar"/>
-	<classpathentry kind="output" path="bin/classes"/>
+<?xml version="1.0" encoding="UTF-8"?><classpath>
+<classpathentry kind="src" path="src"/>
+<classpathentry kind="src" path="gen"/>
+<classpathentry kind="src" path="lib"/>
+<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+<classpathentry kind="lib" path="lib/dropbox-android-sdk-1.5.1.jar"/>
+<classpathentry kind="lib" path="lib/httpclient-4.0.3.jar"/>
+<classpathentry kind="lib" path="lib/json_simple-1.1.jar"/>
+<classpathentry kind="output" path="bin/classes"/>
+<classpathentry kind="lib" path="lib/acra-4.4.0.jar"/>
 </classpath>

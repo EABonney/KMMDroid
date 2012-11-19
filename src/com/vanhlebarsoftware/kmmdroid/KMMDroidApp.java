@@ -1,5 +1,8 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import org.acra.*;
+import org.acra.annotation.*;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 @SuppressWarnings("unused")
+@ReportsCrashes(formKey = "dGVacG0ydVHnaNHjRjVTUTEtb3FPWGc6MQ")
 public class KMMDroidApp extends Application implements OnSharedPreferenceChangeListener
 {
 	private static final String TAG = KMMDroidApp.class.getSimpleName();
@@ -37,6 +41,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	@Override
 	public void onCreate()
 	{
+		ACRA.init(this);
 		super.onCreate();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
