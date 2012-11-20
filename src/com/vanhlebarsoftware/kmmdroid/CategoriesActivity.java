@@ -1,5 +1,7 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -30,17 +34,22 @@ public class CategoriesActivity extends Activity
 	private static final int C_BALANCE = 1;
 	private static final int C_ID = 2;
 	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balance", "id AS _id" };
-	private static final String strSelection = "(accountType=" + Account.ACCOUNT_EXPENSE + " OR accountType=" + Account.ACCOUNT_INCOME +
-			") AND (balance != '0/1')";
+	private static final String[] dbColumns = { "accountName", "balance", "id AS _id", "parentId" };
+	private static final String strSelectionExp = "(parentId='AStd::Expense')"; /* + " OR accountType=" + Account.ACCOUNT_INCOME +
+			") AND (balance != '0/1')*/
+	private static final String strSelectionInc = "(parentId='AStd::Income')"; /* + " OR accountType=" + Account.ACCOUNT_INCOME +
+	") AND (balance != '0/1')*/	
 	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName", "balance" };
 	static final int[] TO = { R.id.crAccountName, R.id.crAccountBalance };
 	private static String strCategoryId = null;
 	private static String strCategoryName = null;
 	private String accountType = null;
+	private String newGroupId = null;
+	private String newGroupName = null;
 	KMMDroidApp KMMDapp;
-	Cursor cursor;
+	Cursor cursorExp;
+	Cursor cursorInc;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
 	ImageButton btnCategories;
@@ -49,8 +58,9 @@ public class CategoriesActivity extends Activity
 	ImageButton btnSchedules;
 	ImageButton btnReports;
 	LinearLayout navBar;
-	ListView listCategories;
-	SimpleCursorAdapter adapter;
+	ExpandableListView listCategories;
+	TextView tvGroupHeader;
+	KMMDExpandableListAdapter adapter;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -63,7 +73,7 @@ public class CategoriesActivity extends Activity
         KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
-        listCategories = (ListView) findViewById(R.id.listCategoriesView);
+        listCategories = (ExpandableListView) findViewById(R.id.listCategoriesView);
         btnHome = (ImageButton) findViewById(R.id.buttonHome);
         btnAccounts = (ImageButton) findViewById(R.id.buttonAccounts);
         btnCategories = (ImageButton) findViewById(R.id.buttonCategories);
@@ -71,6 +81,7 @@ public class CategoriesActivity extends Activity
         btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
         btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
         btnReports = (ImageButton) findViewById(R.id.buttonReports);
+        tvGroupHeader = (TextView) findViewById(R.id.GroupHeading);
         navBar = (LinearLayout) findViewById(R.id.navBar);
         
         // Set out onClickListener events.
@@ -92,13 +103,6 @@ public class CategoriesActivity extends Activity
 			}
 		});
         
-        /*btnCategories.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
-			}
-		});*/
         btnCategories.setVisibility(View.GONE);
         
         btnInstitutions.setOnClickListener(new View.OnClickListener()
@@ -138,12 +142,45 @@ public class CategoriesActivity extends Activity
 
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
-        listCategories.setOnItemClickListener(mMessageClickedHandler);
+        listCategories.setOnChildClickListener(new OnChildClickListener()
+        {
+            public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id)
+            {
+            	Account account = (Account) adapter.getChild(groupPosition, childPosition);
+            	if( !account.getIsParent() )
+            	{
+            		strCategoryId = account.getId();
+            		strCategoryName = account.getName();
+            		Intent i = new Intent(getBaseContext(), CreateModifyCategoriesActivity.class);
+            		i.putExtra("Action", ACTION_EDIT);
+            		i.putExtra("categoryId", strCategoryId);
+            		i.putExtra("categoryName", strCategoryName);
+            		startActivity(i);
+            	}
+            	else
+            	{
+            		Intent i = new Intent(getBaseContext(), CategoriesActivity.class);
+            		i.putExtra("newGroupId", account.getId());
+            		i.putExtra("newGroupName", account.getName());
+            		startActivity(i);    		
+            	}
+            	
+                return false;
+            }
+        });
 
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
         	KMMDapp.openDB();
+        }
+        
+        // See if we are coming from a previous list
+        Bundle extras = getIntent().getExtras();
+        if( extras != null )
+        {
+        	newGroupId = extras.getString("newGroupId");
+            newGroupName = extras.getString("newGroupName");
         }
 	}
 	
@@ -158,14 +195,51 @@ public class CategoriesActivity extends Activity
 	{
 		super.onResume();
 		
-		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.categories_row, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
+		// Initialize the adapter with a blanck groups and children.
+		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>(), KMMDapp);
+		//adapter.setViewBinder(VIEW_BINDER);
 		listCategories.setAdapter(adapter);
+		
+		//Get all the accounts to be displayed OR just get the sub-accounts for the passed in ParentId.
+		if( newGroupId == null )
+		{
+			cursorExp = KMMDapp.db.query(dbTable, dbColumns, strSelectionExp, null, null, null, strOrderBy);
+			cursorInc = KMMDapp.db.query(dbTable, dbColumns, strSelectionInc, null, null, null, strOrderBy);
+			
+			// Add the items from our expense cursor
+			cursorExp.moveToFirst();	
+			for(int i=0; i < cursorExp.getCount(); i++)
+			{
+				Account account = new Account(cursorExp);
+				adapter.addItem(getString(R.string.Expense), account);
+				cursorExp.moveToNext();
+			}
+			
+			// Add the items from our income cursor
+			cursorInc.moveToFirst();
+			for(int i=0; i < cursorInc.getCount(); i++)
+			{
+				Account account = new Account(cursorInc);
+				adapter.addItem(getString(R.string.Income), account);
+				cursorInc.moveToNext();
+			}
+		}
+		else
+		{
+			Cursor cur = KMMDapp.db.query(dbTable, dbColumns, "parentId=?", new String[] { newGroupId }, null, null, strOrderBy);
+			
+			if( cur.getCount() > 0 )
+			{
+				cur.moveToFirst();
+				for(int i=0; i < cur.getCount(); i++)
+				{
+					Account account = new Account(cur);
+					adapter.addItem(newGroupName, account);
+					cur.moveToNext();
+				}
+			}
+			listCategories.expandGroup(0);
+		}
 		
 		// See if the user has requested the navigation bar.
 		if(!KMMDapp.prefs.getBoolean("navBar", false))
@@ -174,20 +248,6 @@ public class CategoriesActivity extends Activity
 			navBar.setVisibility(View.VISIBLE);
 	}
 	
-	// Message Handler for our listAccounts List View clicks
-	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
-	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
-	    {
-	    	cursor.moveToPosition(position);
-	    	strCategoryId = cursor.getString(C_ID);
-	    	strCategoryName = cursor.getString(C_ACCOUNTNAME);
-			Intent i = new Intent(getBaseContext(), CreateModifyCategoriesActivity.class);
-			i.putExtra("Action", ACTION_EDIT);
-			i.putExtra("categoryId", strCategoryId);
-			i.putExtra("categoryName", strCategoryName);
-			startActivity(i);
-	    }
-	};
 	
 	// View binder to do formatting of the string values to numbers with commas and parenthesis
 	// and to do the alternating of background colors for rows.

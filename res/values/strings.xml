@@ -482,4 +482,14 @@
     <string name="freqYearly">Yearly</string>
     <string name="freqYears">years</string>
     <string name="freqAny">Any</string>
+	<string name="crash_toast_text">Something went wrong, please send us a crash report to  let us know what you where doing and to help fix the issue.</string>
+	<string name="crash_dialog_title">KMMDroid has crashed</string>
+	<string name="crash_dialog_text">An unexpected error occurred forcing the
+	    application to stop. Please help us fix this by sending us error data,
+	    all you have to do is click OK.</string>
+	<string name="crash_dialog_comment_prompt">Please give us more information about what you where doing at the time of the crash:</string>
+	<string name="crash_dialog_ok_toast">Thank you for helping make KMMDroid a better applicaition.</string>
+	<string name="pref_disable_acra">Disable error reporting entirely</string>
+	<string name="pref_acra_enabled">Error reporting is on</string>
+	<string name="pref_acra_disabled">Error reporting is off</string>
 </resources>

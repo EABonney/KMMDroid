@@ -6,7 +6,7 @@
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
     </CheckBoxPreference>
-    <PreferenceCategory 
+    <CheckBoxPreference android:key="acra.enable" android:title="@string/pref_disable_acra" android:summaryOn="@string/pref_acra_enabled" android:summaryOff="@string/pref_acra_disabled" android:defaultValue="true" /><PreferenceCategory 
         android:title="@string/titleNavigation" >
         <CheckBoxPreference 
             android:title="@string/titleMenuNav"
@@ -19,6 +19,7 @@
             android:defaultValue="false" >
         </CheckBoxPreference>
     </PreferenceCategory>
+	
     <PreferenceScreen 
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:title="@string/titleCloudServices">
@@ -95,4 +96,5 @@
             android:key="checkSchedulesNotifications"
             android:dependency="openLastUsed"/>
     </PreferenceCategory>
+    
 </PreferenceScreen>

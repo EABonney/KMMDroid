@@ -10,13 +10,20 @@
 		android:layout_width="fill_parent"
 		android:id="@+id/crRow">
 		
+	    <ImageView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:gravity="left"
+			android:src="@drawable/arrow"
+			android:id="@+id/expandIcon" >
+		</ImageView>
 		<TextView 
 			android:layout_height="wrap_content"
 			android:layout_width="fill_parent"
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/crAccountName"
-			android:text="Account Name"
 			android:textColor="@android:color/black" />
 			
 		<TextView
@@ -25,7 +32,6 @@
 			android:layout_weight="1"
 			android:gravity="right"
 			android:id="@+id/crAccountBalance"
-			android:text="Balance"
 			android:textColor="@android:color/black" />
 	</LinearLayout>
 </LinearLayout>

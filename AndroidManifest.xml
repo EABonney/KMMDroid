@@ -240,6 +240,15 @@
     	    	  android:label="@string/titleReports"
     	    	  android:screenOrientation="portrait" >    	    
     	</activity>
+    	
+    	<activity 
+    	    	  android:name="org.acra.CrashReportDialog"
+        		  android:theme="@android:style/Theme.Dialog"
+        		  android:launchMode="singleInstance"
+        		  android:excludeFromRecents="true"
+        		  android:finishOnTaskLaunch="true" >
+      	</activity>
+      	
 		<provider android:name=".KMMDProvider"
 				  android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider">
 		</provider>

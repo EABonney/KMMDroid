@@ -162,13 +162,15 @@ public class CreateAccountInstitutionActivity extends Activity implements OnClic
 				// if the user is selecting the checkbox, turn off the Institutions spinner
 				if( btn.isChecked() )
 				{
-					spinInstitutions.setVisibility(8);
-					textInstitutions.setVisibility(8);
+					spinInstitutions.setVisibility(View.GONE);
+					textInstitutions.setVisibility(View.GONE);
+					buttonNewInstitution.setVisibility(View.GONE);
 				}
 				else
 				{
-					spinInstitutions.setVisibility(0);
-					textInstitutions.setVisibility(0);
+					spinInstitutions.setVisibility(View.VISIBLE);
+					textInstitutions.setVisibility(View.VISIBLE);
+					buttonNewInstitution.setVisibility(View.VISIBLE);
 				}
 				break;
 		}
