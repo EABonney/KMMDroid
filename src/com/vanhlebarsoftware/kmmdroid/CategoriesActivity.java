@@ -8,6 +8,9 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,8 +24,9 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter.ViewBinder;
+//import android.widget.AdapterView.OnItemClickListener;
+//import android.widget.SimpleCursorAdapter.ViewBinder;
+//import android.view.*;
 
 public class CategoriesActivity extends Activity
 {
@@ -83,7 +87,9 @@ public class CategoriesActivity extends Activity
         btnReports = (ImageButton) findViewById(R.id.buttonReports);
         tvGroupHeader = (TextView) findViewById(R.id.GroupHeading);
         navBar = (LinearLayout) findViewById(R.id.navBar);
-        
+		
+		registerForContextMenu(listCategories);
+		
         // Set out onClickListener events.
         btnHome.setOnClickListener(new View.OnClickListener()
         {
@@ -168,7 +174,30 @@ public class CategoriesActivity extends Activity
                 return false;
             }
         });
-
+		
+		listCategories.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener()
+		{
+				// Create the context menu for the long click on child items.
+				public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo)
+				{
+					//super.onCreateContextMenu(menu, v, menuInfo);
+					ExpandableListView.ExpandableListContextMenuInfo info =
+						(ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+					int type =
+						ExpandableListView.getPackedPositionType(info.packedPosition);
+					int group =
+						ExpandableListView.getPackedPositionGroup(info.packedPosition);
+					int child =
+						ExpandableListView.getPackedPositionChild(info.packedPosition);					
+					Account account = (Account) adapter.getChild(group, child);
+					//Only create a context menu for child items and isParent() is true
+					if (type == 1 && account.getIsParent()) 
+					{
+						menu.add(0, 1, 0, "Edit account");
+					}
+				}			
+		});
+		
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
@@ -182,6 +211,37 @@ public class CategoriesActivity extends Activity
         	newGroupId = extras.getString("newGroupId");
             newGroupName = extras.getString("newGroupName");
         }
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem menuItem)
+	{
+		ExpandableListContextMenuInfo info =
+			(ExpandableListContextMenuInfo) menuItem.getMenuInfo();
+		int groupPos = 0, childPos = 0;
+		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD)
+		{
+			groupPos = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+			childPos = ExpandableListView.getPackedPositionChild(info.packedPosition);
+		}
+		
+		Account account = (Account) adapter.getChild(groupPos, childPos);
+		switch(menuItem.getItemId())
+		{
+			case 1:
+				strCategoryId = account.getId();
+				strCategoryName = account.getName();
+				Intent i = new Intent(getBaseContext(), CreateModifyCategoriesActivity.class);
+				i.putExtra("Action", ACTION_EDIT);
+				i.putExtra("categoryId", strCategoryId);
+				i.putExtra("categoryName", strCategoryName);
+				startActivity(i);
+				return true;
+			default:
+				Log.d(TAG, "We reached the defualt spot somehow.");
+				return false;
+		}
 	}
 	
 	@Override
@@ -247,29 +307,6 @@ public class CategoriesActivity extends Activity
 		else
 			navBar.setVisibility(View.VISIBLE);
 	}
-	
-	
-	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	// and to do the alternating of background colors for rows.
-	static final ViewBinder VIEW_BINDER = new ViewBinder() 
-	{
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
-		{
-			LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.crRow);
-			if( cursor.getPosition() % 2 == 0)
-				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-			else
-				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-			
-			if(view.getId() != R.id.crAccountBalance)
-				return false;
-			
-			// Format the Amount properly.
-			((TextView) view).setText(String.format(Transaction.convertToDollars(Account.convertBalance(cursor.getString(columnIndex)), true)));
-			
-			return true;
-		}
-	};
 	
 	// Called first time the user clicks on the menu button
 	@Override

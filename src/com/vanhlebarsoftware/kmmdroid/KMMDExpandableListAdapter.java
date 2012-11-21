@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.*;
+import android.graphics.*;
 
 public class KMMDExpandableListAdapter extends BaseExpandableListAdapter 
 {
@@ -74,6 +76,12 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
             convertView = infalInflater.inflate(R.layout.categories_row, null);
         }    
 
+		LinearLayout row = (LinearLayout) convertView.findViewById(R.id.crRow);
+		if( childPosition % 2 == 0)
+			row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+		else
+			row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+		
     	Account account = (Account) getChild(groupPosition, childPosition); 
     	// See if this account is used as a parent, if so display the arrow in the row and set the isParent flag of the account.
     	Cursor c = this.kmmdApp.db.query("kmmAccounts", new String[] {"id"}, "parentId=?", new String[] {account.getId()}, null, null, null);
