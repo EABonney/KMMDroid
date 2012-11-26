@@ -427,8 +427,13 @@ public class KMMDProvider extends ContentProvider
 		
 		// Open the correct database
 		// If widgetId is 9999, then we are already in the application and need to open the default database.
+		// If widgetId is null, then we are coming from a scheduled event for checking schedules of the main app.
 		String prefString = null;
-		if( widgetId.equals("9999") )
+		if( widgetId == null )
+		{
+			prefString = "Full Path";
+		}
+		else if( widgetId.equals("9999") )
 		{
 			prefString = "currentOpenedDatabase";
 		}

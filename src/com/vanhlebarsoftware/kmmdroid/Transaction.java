@@ -20,6 +20,10 @@ public class Transaction
 	private static final int C_ENTRYDATE = 4;
 	private static final int C_CURRENCYID = 5;
 	private static final int C_BANKID = 6;
+	public static final int DEPOSIT = 0;
+	public static final int TRANSFER = 1;
+	public static final int WITHDRAW = 2;
+	
 	private long nAmount;
 	private long nBalance;
 	private String strPayee;

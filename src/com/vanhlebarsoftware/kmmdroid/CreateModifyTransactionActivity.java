@@ -58,9 +58,6 @@ public class CreateModifyTransactionActivity extends Activity
 	private static int C_BANKID = 17;
 	private static int T_POSTDATE = 2;
 	private static int T_MEMO = 3;
-	private static int WITHDRAW = 2;
-	private static int DEPOSIT = 0;
-	private static int TRANSFER = 1;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM1 = { "accountName" };
@@ -68,7 +65,7 @@ public class CreateModifyTransactionActivity extends Activity
 	private int intYear;
 	private int intMonth;
 	private int intDay;
-	private int intTransType = WITHDRAW;
+	private int intTransType = Transaction.WITHDRAW;
 	private int intTransStatus = 0;
 	private String strTransPayeeId = null;
 	private String strTransCategoryId = null;		// Only used if we have ONLY one category, use splits if we have more than one.
@@ -430,7 +427,7 @@ public class CreateModifyTransactionActivity extends Activity
 					String value = null, formatted = null, memo = null;
 					if(i == 0)
 					{
-						if( intTransType == WITHDRAW )
+						/*if( intTransType == WITHDRAW )
 						{
 							value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
 							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
@@ -439,7 +436,22 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							value = Account.createBalance(Transaction.convertToPennies(strAmount));
 							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);							
+						}*/
+						switch( intTransType )
+						{
+							case Transaction.DEPOSIT:
+								value = Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							case Transaction.TRANSFER:
+								value = Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							case Transaction.WITHDRAW:
+								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							default:
+								break;
 						}
+						formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 						memo = editMemo.getText().toString();
 					}
 					else
@@ -454,7 +466,7 @@ public class CreateModifyTransactionActivity extends Activity
 						}
 						else
 						{
-							if( intTransType == WITHDRAW )
+							/*if( intTransType == Transaction.WITHDRAW )
 							{
 								value = Account.createBalance(Transaction.convertToPennies(strAmount));
 								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
@@ -463,7 +475,23 @@ public class CreateModifyTransactionActivity extends Activity
 							{
 								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
 								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
+							}*/
+							switch( intTransType )
+							{
+								case Transaction.DEPOSIT:
+									value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+									break;
+								case Transaction.TRANSFER:
+									// We have to take the current value and change the sign.
+									value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
+									break;
+								case Transaction.WITHDRAW:
+									value = Account.createBalance(Transaction.convertToPennies(strAmount));
+									break;
+								default:
+								break;
 							}
+							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
 							memo = editMemo.getText().toString();
 							accountUsed = strTransCategoryId;
 						}
@@ -978,11 +1006,11 @@ public class CreateModifyTransactionActivity extends Activity
 			float amount = Float.valueOf(Transaction.convertToDollars(Account.convertBalance(Splits.get(0).getValue()), false));
 			if( amount < 0 )
 			{
-				intTransType = WITHDRAW;
+				intTransType = Transaction.WITHDRAW;
 				amount = amount * -1;		//change the sign of the amount for the form only.
 			}
 			else
-				intTransType = DEPOSIT;
+				intTransType = Transaction.DEPOSIT;
 			
 			editAmount.setText(String.valueOf(amount));
 			
@@ -1055,11 +1083,11 @@ public class CreateModifyTransactionActivity extends Activity
 			float amount = Float.valueOf(scheduleToEnter.Splits.get(0).getValueFormatted());
 			if( amount < 0 )
 			{
-				intTransType = WITHDRAW;
+				intTransType = Transaction.WITHDRAW;
 				amount = amount * -1;		//change the sign of the amount for the form only.
 			}
 			else
-				intTransType = DEPOSIT;
+				intTransType = Transaction.WITHDRAW;
 			
 			editAmount.setText(String.valueOf(amount));
 			

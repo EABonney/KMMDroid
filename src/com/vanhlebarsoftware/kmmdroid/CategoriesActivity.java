@@ -96,7 +96,6 @@ public class CategoriesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), HomeActivity.class));
-				finish();
 			}
 		});
         
@@ -105,7 +104,6 @@ public class CategoriesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-				finish();
 			}
 		});
         
@@ -116,7 +114,6 @@ public class CategoriesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
-				finish();
 			}
 		});
         
@@ -125,7 +122,6 @@ public class CategoriesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
-				finish();
 			}
 		});
         
@@ -134,7 +130,6 @@ public class CategoriesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
-				finish();
 			}
 		});
         

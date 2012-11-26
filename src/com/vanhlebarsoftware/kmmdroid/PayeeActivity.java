@@ -81,7 +81,6 @@ public class PayeeActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), HomeActivity.class));
-				finish();
 			}
 		});
         
@@ -90,7 +89,6 @@ public class PayeeActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-				finish();
 			}
 		});
         
@@ -99,7 +97,6 @@ public class PayeeActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
-				finish();
 			}
 		});
         
@@ -108,17 +105,9 @@ public class PayeeActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
-				finish();
 			}
 		});
         
-        /*btnPayees.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
-			}
-		});*/
         btnPayees.setVisibility(View.GONE);
         
         btnSchedules.setOnClickListener(new View.OnClickListener()
@@ -126,7 +115,6 @@ public class PayeeActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
-				finish();
 			}
 		});
         
