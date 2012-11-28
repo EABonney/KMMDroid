@@ -184,11 +184,13 @@ public class CategoriesActivity extends Activity
 						ExpandableListView.getPackedPositionGroup(info.packedPosition);
 					int child =
 						ExpandableListView.getPackedPositionChild(info.packedPosition);					
-					Account account = (Account) adapter.getChild(group, child);
+
 					//Only create a context menu for child items and isParent() is true
-					if (type == 1 && account.getIsParent()) 
+					if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
 					{
-						menu.add(0, 1, 0, "Edit account");
+						Account account = (Account) adapter.getChild(group, child);
+						if(account.getIsParent())
+							menu.add(0, 1, 0, "Edit account");
 					}
 				}			
 		});

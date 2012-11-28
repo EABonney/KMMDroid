@@ -63,7 +63,7 @@
         	<CheckBoxPreference
         	    android:key="receiveNotifications"
         	    android:title="@string/titleScheduleNotifications"
-        	    android:summary="@string/summaryScheduleNotifications"/>
+        	    android:summary="@string/summaryScheduleNotifications" android:dependency="openLastUsed"/>
         	<CheckBoxPreference
         	    android:title="@string/titlePreferenceOverDueSchedules"
         	    android:key="overdueSchedules"

@@ -49,8 +49,8 @@ public class KMMDProvider extends ContentProvider
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
-												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
-												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
+												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
+												" AND kmmSplits.splitId = 0"; // AND kmmSplits.accountId=";
 	private static final String[] schedulesSingleSelectionColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 		"nextPaymentDue", "startDate", "endDate", "lastPayment" };
 	private static final String scheduleSingleSelection = "kmmSchedules.id = kmmSplits.transactionId" +
@@ -247,10 +247,20 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case SCHEDULES:
 				SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
-				accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
+				// See if we have a widgetId or not, if so we need to get the accountId for that specific widget, if not leave off the accountId
+				if( widgetId != null )
+				{
+					accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
+					dbSelection = schedulesSelection + " AND kmmSplits.accountId='" + accountUsed + "'";
+				}
+				else
+				{
+					dbSelection = schedulesSelection;
+				}
+					
 				dbTable = schedulesTable;
 				dbColumns = schedulesColumns;
-				dbSelection = schedulesSelection + "'" + accountUsed + "'";
+				//dbSelection = schedulesSelection + "'" + accountUsed + "'";
 				dbOrderBy = schedulesOrderBy;
 				break;
 			case SCHEDULES_ID:

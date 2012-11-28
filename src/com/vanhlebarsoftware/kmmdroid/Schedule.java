@@ -557,7 +557,6 @@ public class Schedule
 		// Loop over the dataset and expand each of the cases out the date the user entered.
 		for(int i=0; i < c.getCount(); i++)
 		{
-			Log.d(TAG, "Schedule Name: " + c.getString(1));
 			dueDates = Schedule.paymentDates(strStartDate, strEndDate, Schedule.getOccurence(c.getInt(C_OCCURENCE), c.getInt(C_OCCURENCEMULTIPLIER)), c.getString(C_STARTDATE), c.getString(C_NEXTPAYMENTDUE));
 
 			// We now have all our payment dates for this schedule between the dates the user supplied.

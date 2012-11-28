@@ -113,6 +113,12 @@ public class CreateModifyTransactionActivity extends Activity
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
+        }
+        
         // Find our views
         spinTransType = (Spinner) findViewById(R.id.transactionType);
         spinPayee = (Spinner) findViewById(R.id.payee);
@@ -162,12 +168,6 @@ public class CreateModifyTransactionActivity extends Activity
         		KMMDapp.setFullPath(widgetDatabasePath);
         		KMMDapp.openDB();
         	}
-        }
-        
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
         }
         
         // Make it so the user is not able to edit the Category selected without using the Spinner.

@@ -3,21 +3,19 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.database.Cursor;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.*;
-import android.graphics.*;
 
-public class KMMDExpandableListAdapter extends BaseExpandableListAdapter 
+public class KMMDExpandableListAdapterSchedules extends BaseExpandableListAdapter
 {
     private Context context;
     private ArrayList<String> groups;
-    private ArrayList<ArrayList<Account>> children;
+    private ArrayList<ArrayList<Schedule>> children;
     KMMDroidApp kmmdApp;
 
     @Override
@@ -26,7 +24,7 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
         return true;
     }
 
-    public KMMDExpandableListAdapter(Context context, ArrayList<String> groups, ArrayList<ArrayList<Account>> children, KMMDroidApp kmmdApp) 
+    public KMMDExpandableListAdapterSchedules(Context context, ArrayList<String> groups, ArrayList<ArrayList<Schedule>> children, KMMDroidApp kmmdApp) 
     {
         this.context = context;
         this.groups = groups;
@@ -38,12 +36,12 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
     /**
      * A general add method, that allows you to add a Vehicle to this list
      * 
-     * Depending on if the parentId of the account is present or not,
+     * Depending on if the parentId of the Schedule is present or not,
      * the corresponding item will either be added to an existing group if it 
      * exists, else the group will be created and then the item will be added
      * 
      */
-    public void addItem(String strParentId, Account account) 
+    public void addItem(String strParentId, Schedule schedule) 
     {
         if ( !groups.contains(strParentId) ) 
         {
@@ -52,11 +50,16 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
         int index = groups.indexOf(strParentId);
         if (children.size() < index + 1) 
         {
-            children.add(new ArrayList<Account>());
+            children.add(new ArrayList<Schedule>());
         }
-        children.get(index).add(account);
+        children.get(index).add(schedule);
     }
 
+    public void removeItem(int groupPosition, int childPosition)
+    {
+    	children.get(groupPosition).remove(childPosition);   		
+    }
+    
     public Object getChild(int groupPosition, int childPosition) 
     {
         return children.get(groupPosition).get(childPosition);
@@ -74,36 +77,23 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
         {
             LayoutInflater infalInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.categories_row, null);
+            convertView = infalInflater.inflate(R.layout.schedule_notifications_row, null);
         }    
 
-		LinearLayout row = (LinearLayout) convertView.findViewById(R.id.crRow);
+		LinearLayout row = (LinearLayout) convertView.findViewById(R.id.schNotificationsRow);
 		if( childPosition % 2 == 0)
 			row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
 		else
 			row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
 		
-    	Account account = (Account) getChild(groupPosition, childPosition); 
-    	// See if this account is used as a parent, if so display the arrow in the row and set the isParent flag of the account.
-    	Cursor c = this.kmmdApp.db.query("kmmAccounts", new String[] {"id"}, "parentId=?", new String[] {account.getId()}, null, null, null);
-    	ImageView imgView = (ImageView) convertView.findViewById(R.id.expandIcon);
-    	String accountName = null;
-    	if( c.getCount() > 0 )
-        {
-        	imgView.setVisibility(View.VISIBLE);
-        	account.setIsParent(true);
-        	accountName = account.getName() + " (" + c.getCount() + ")";
-        }
-        else
-        {
-        	imgView.setVisibility(View.GONE);
-        	account.setIsParent(false);
-        	accountName = account.getName();
-        }
-    	TextView tvName = (TextView) convertView.findViewById(R.id.crAccountName);
-    	TextView tvBalance = (TextView) convertView.findViewById(R.id.crAccountBalance);
-        tvName.setText(accountName);
-        tvBalance.setText(String.format(Transaction.convertToDollars(Account.convertBalance(account.getBalance()), true)));
+    	Schedule schedule = (Schedule) getChild(groupPosition, childPosition); 
+
+    	TextView tvDate = (TextView) convertView.findViewById(R.id.scheduleDate);
+    	TextView tvName = (TextView) convertView.findViewById(R.id.scheduleName);
+    	TextView tvAmount = (TextView) convertView.findViewById(R.id.scheduleAmount);
+    	tvDate.setText(schedule.formatDateString());
+        tvName.setText(schedule.getDescription());
+        tvAmount.setText(String.format(Transaction.convertToDollars(schedule.getAmount(), true)));
         return convertView;
     }
 
@@ -151,5 +141,4 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
     {
         return true;
     }
-
 }
