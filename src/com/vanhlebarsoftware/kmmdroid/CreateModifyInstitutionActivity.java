@@ -308,6 +308,10 @@ public class CreateModifyInstitutionActivity extends Activity
 						break;
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
+				
+				//Mark file as dirty
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				finish();
 				break;
 			case R.id.itemDelete:
@@ -322,6 +326,10 @@ public class CreateModifyInstitutionActivity extends Activity
 						KMMDapp.updateFileInfo("institutions", -1);
 						returnFromDelete = true;
 						KMMDapp.updateFileInfo("lastModified", 0);
+						
+						//Mark file as dirty
+						KMMDapp.markFileIsDirty(true, "9999");
+						
 						finish();
 					}
 				});

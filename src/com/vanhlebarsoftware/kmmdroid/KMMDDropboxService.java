@@ -43,16 +43,17 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
-public class KMMDCloudServicesService extends Service 
+public class KMMDDropboxService extends Service 
 {
-	private static final String TAG = KMMDCloudServicesService.class.getSimpleName();
-    final static private String ACCOUNT_PREFS_NAME = "prefs";
+	private static final String TAG = KMMDDropboxService.class.getSimpleName();
+    final static private String ACCOUNT_PREFS_NAME = "com.vanhlebarsoftware.kmmdroid_preferences";
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
-    final static private String DEVICE_STATE_FILE = "device_state";
-	public static final int CLOUD_DROPBOX = 0;
-	public static final int CLOUD_GOOGLEDRIVE = 1;
-	public static final int CLOUD_UBUNTUONE = 2;
+    final static public String DEVICE_STATE_FILE = "device_state";
+    public static final int CLOUD_ALL = 0;
+	public static final int CLOUD_DROPBOX = 1;
+	public static final int CLOUD_GOOGLEDRIVE = 2;
+	public static final int CLOUD_UBUNTUONE = 3;
 	public static final int CLOUD_NOTIFICATION = 1001;
 	private KMMDDropboxUpdater kmmdDropbox;
 	private NotificationManager kmmdNotifcationMgr;
@@ -190,56 +191,61 @@ public class KMMDCloudServicesService extends Service
 		}
 
 		// Need to handle our changes in the device state from the xml file.
-		List<DeviceItem> deviceState = new ArrayList<DeviceItem>();
+		List<KMMDDeviceItem> deviceState = new ArrayList<KMMDDeviceItem>();
 		// Get our CURRENT device state
 		deviceState.addAll(getDeviceState(Environment.getExternalStorageDirectory() + "/KMMDroid"));
 		// Make our changes to the cloud service
-		syncDeviceState(deviceState);
+		List<KMMDDeviceItem> currentState = syncDeviceState(deviceState);
 		// Write our CURRENT device state to xml file.
-		writeDeviceState(deviceState);
+		writeDeviceState(currentState);
 	}
 	
-	private boolean upload(String fileName)
+	private String upload(KMMDDeviceItem itemUpload)
 	{
+    	// Read in the saved deviceState from the xml file and put it into a List<>.
+    	List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
+    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(DEVICE_STATE_FILE, getBaseContext());
+    	savedDeviceState = parser.parse();
 		File KMMDroidDirectory = new File(Environment.getExternalStorageDirectory(), "/KMMDroid");
-		String prevRev = null;
-		String individualPrevRev[] = { null, null, null };
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        Editor editor = prefs.edit();
+		String prevRev = itemUpload.getRevCode(CLOUD_DROPBOX);
+		//String individualPrevRev[] = { null, null, null };
+        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        //Editor editor = prefs.edit();
 		
 		// Get any previous revs we might have.
-		prevRev = prefs.getString(fileName + "prevRev", null);
-		if(prevRev != null)
-			individualPrevRev = prevRev.split(":");
+        //Log.d(TAG, "Attempting to get prevRev for: " + fileName + "prevRev");
 			
 		FileInputStream inputStream = null;
 		try 
 		{
-		    File file = new File(KMMDroidDirectory, fileName);
+		    File file = new File(KMMDroidDirectory, itemUpload.getName());
 		    inputStream = new FileInputStream(file);
-		    Entry newEntry = mApi.putFile("/" + fileName, inputStream,
-		            file.length(), individualPrevRev[CLOUD_DROPBOX], null);
-		    Log.i(TAG, "The uploaded file's rev is: " + newEntry.rev);
+		    Entry newEntry = mApi.putFile("/" + itemUpload.getName(), inputStream,
+		            file.length(), prevRev, null);
+
 		    // Need to store the key value pair of the file name and rev hash in the prefences so that we can use it later
 		    // to see if the file has changed or not to see if we need to redownload or upload the file.
-			editor.putString(newEntry.fileName() + "prevRev", newEntry.rev);
-			editor.apply();
+			//editor.putString(newEntry.fileName() + "prevRev", newEntry.rev);
+			// Mark the file as being clean now for Dropbox.
+			//editor.putString(newEntry.fileName(), "0:0:0");
+			//editor.apply();
+			return newEntry.rev;
 		} 
 		catch (DropboxUnlinkedException e) 
 		{
 		    // User has unlinked, ask them to link again here.
 		    Log.e(TAG, "User has unlinked. : " + e.getMessage());
-		    return false;
+		    return null;
 		} 
 		catch (DropboxException e) 
 		{
 		    Log.e(TAG, "Something went wrong while uploading. - " + e.getMessage());
-		    return false;
+		    return null;
 		} 
 		catch (FileNotFoundException e) 
 		{
 		    Log.e(TAG, "File not found. - " + e.getMessage());
-		    return false;
+		    return null;
 		} 
 		finally 
 		{
@@ -252,15 +258,11 @@ public class KMMDCloudServicesService extends Service
 		        catch (IOException e) {}
 		    }
 		}
-		
-		return true;
 	}
 	
-	private void download(String fileName)
+	private KMMDDeviceItem download(String fileName)
 	{
 		File KMMDroidDirectory = new File(Environment.getExternalStorageDirectory(), "/KMMDroid");
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        Editor edit = prefs.edit();
 		
 		// Now we need to download the database file from our Dropbox folder.
 		FileOutputStream outputStream = null;
@@ -269,25 +271,27 @@ public class KMMDCloudServicesService extends Service
 		{
 			// create a File object for the parent directory
 			File file = new File(KMMDroidDirectory, fileName);
-			Log.d(TAG, "Attempting to create file at: " + file.getAbsolutePath());
 			outputStream = new FileOutputStream(file);
 			// Get the actual file from the service
 			DropboxFileInfo fileInfo = mApi.getFile("/" + fileName, null, outputStream, null);
-			// Now store the file name along with the rev code so we have it for later.
-			edit.putString(fileName, fileInfo.getMetadata().rev);
-			edit.apply();
-			Log.d(TAG, "Sucessfully downloaded: " + fileInfo.getMetadata().fileName() + " from Dropbox!");
-			Log.d(TAG, "File was saved at: " + file.getAbsolutePath());
-			Log.d(TAG, "The file's rev is: " + fileInfo.getMetadata().rev);
+			KMMDDeviceItem newItem = new KMMDDeviceItem(file);
+			newItem.setRevCode(fileInfo.getMetadata().rev, CLOUD_DROPBOX);
+			Log.d(TAG, "newItem name: " + newItem.getName());
+			Log.d(TAG, "newItem type: " + newItem.getType());
+			Log.d(TAG, "newItem path: " + newItem.getPath());
+			Log.d(TAG, "newItem revCode: " + newItem.getRevCode(CLOUD_DROPBOX));
+			return newItem;
 		} 
 		catch (DropboxException e) 
 		{
 			e.printStackTrace();
 			Log.d(TAG, "There was an error downloading the file: " + fileName + ": error code: " + e.getMessage());
+			return null;
 		} 
 		catch (FileNotFoundException e) 
 		{
 			Log.e("DbExampleLog", e.getMessage());
+			return null;
 		} 
 		finally 
 		{
@@ -299,13 +303,13 @@ public class KMMDCloudServicesService extends Service
 				} 
 				catch (IOException e) {}
 			}
-		}				
+		}
 	}
 	
-	private void delete(DeviceItem removedItem)
+	private void delete(KMMDDeviceItem removedItem)
 	{
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        Editor edit = prefs.edit();
+        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        //Editor edit = prefs.edit();
         
         // Try and delete the item from the service.
         try
@@ -317,7 +321,7 @@ public class KMMDCloudServicesService extends Service
         	switch(e.error)
         	{
         	case DropboxServerException._404_NOT_FOUND:
-        		Log.d(TAG, "Dropbox returned: " + e.getMessage().toString());
+        		Log.d(TAG, "Dropbox says we don't have this file on the server!");
         		break;
         	}
         }
@@ -325,18 +329,17 @@ public class KMMDCloudServicesService extends Service
         {
         	Log.d(TAG, "Error deleting item: " + removedItem.getPath() + " - error given: " + e.getMessage());
         }
-        
-        // Remove the path from the preferences
-    	edit.remove(removedItem.getPath());
-    	edit.apply();
 	}
 	
 	private void applyDropboxDeltaPages(DeltaPage<Entry> dropboxChanges)
 	{
     	// Read in the saved deviceState from the xml file and put it into a List<>.
-    	List<DeviceItem> savedDeviceState = new ArrayList<DeviceItem>();
-    	DeviceItemParser parser = new DeviceItemParser(DEVICE_STATE_FILE);
+    	List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
+    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(DEVICE_STATE_FILE, getBaseContext());
     	savedDeviceState = parser.parse();
+    	// If we don't have a state file, parser returned null, then we need an empty List
+    	if(savedDeviceState == null)
+    		savedDeviceState = new ArrayList<KMMDDeviceItem>();
     	
 		// Because the service give us our App Folder of "/KMMDroid" we only need to get the path of the sd card.
 		File KMMDroidDirectory = new File(Environment.getExternalStorageDirectory(), "/KMMDroid");
@@ -354,10 +357,10 @@ public class KMMDCloudServicesService extends Service
 			if(metaData == null)
 			{
 				boolean haveConflict = false;
-				DeviceItem foundItem = null;
+				KMMDDeviceItem foundItem = null;
 				
 				// See if we still have this folder/file in our saved state, if so we need to delete it, if not skip it.
-				for(DeviceItem item : savedDeviceState)
+				for(KMMDDeviceItem item : savedDeviceState)
 					foundItem = item.findMatch(entry.lcPath);
 
 				if(foundItem != null)
@@ -371,7 +374,7 @@ public class KMMDCloudServicesService extends Service
 							File[] files = folder.listFiles();
 							for(int f=0; f<files.length; f++)
 							{
-								if(isFileDirty(files[f].getAbsolutePath(), CLOUD_DROPBOX))
+								if(foundItem.findMatch(files[f].getAbsolutePath()).getIsDirty(CLOUD_DROPBOX))
 								{
 									// We have a conflict so rename our device file and then upload and delete our device file of original name.
 									// get the current date
@@ -384,9 +387,17 @@ public class KMMDCloudServicesService extends Service
 						        						String.valueOf(c.get(Calendar.MINUTE)) + "-" +
 						        						String.valueOf(c.get(Calendar.SECOND)) + filename[1]);
 									files[f].renameTo(newFile);
-									if( !upload(foundItem.getServerPath() + files[f].getName()) )
+									KMMDDeviceItem dkiUpload = new KMMDDeviceItem(files[f]);
+									String newRev = upload(dkiUpload);
+									if( newRev == null )
 									{
 										// We had an issue uploading our file we need to handle this.
+									}
+									else
+									{
+										// Need to set this item's new rev code.
+										dkiUpload.setRevCode(newRev, CLOUD_DROPBOX);
+										savedDeviceState.add(dkiUpload);
 									}
 									
 									// Delete the file the server has removed.
@@ -407,8 +418,8 @@ public class KMMDCloudServicesService extends Service
 					}
 					else
 					{
-						File file = new File(foundItem.getPath());	
-						if( isFileDirty(foundItem.getPath(), CLOUD_DROPBOX) )
+						File file = new File(foundItem.getPath());
+						if(foundItem.findMatch(file.getAbsolutePath()).getIsDirty(CLOUD_DROPBOX))
 						{
 							// We have a conflict so rename our device file and then upload and delete our device file of original name.
 							// get the current date
@@ -421,9 +432,17 @@ public class KMMDCloudServicesService extends Service
 				        						String.valueOf(c.get(Calendar.MINUTE)) + "-" +
 				        						String.valueOf(c.get(Calendar.SECOND)) + filename[1]);
 							file.renameTo(newFile);
-							if( !upload(foundItem.getServerPath() + file.getName()) )
+							KMMDDeviceItem dkiUpload = new KMMDDeviceItem(file);
+							String newRev = upload(dkiUpload);
+							if( newRev == null )
 							{
 								// We had an issue uploading our file we need to handle this.
+							}
+							else
+							{
+								// We need to mark this new item's revCode.
+								dkiUpload.setRevCode(newRev, CLOUD_DROPBOX);
+								savedDeviceState.add(dkiUpload);
 							}
 							
 							// Delete the file the server has removed.
@@ -454,34 +473,92 @@ public class KMMDCloudServicesService extends Service
 				// If we have a file, see if we have a conflict b/c our local device isDirty and download service file or handle conflict.
 				else
 				{
-					if(isFileDirty(metaData.path, CLOUD_DROPBOX))
+					// First we have to see if this file from the service is even in our savedDeviceState.
+					KMMDDeviceItem foundItem = null;
+					for(KMMDDeviceItem diItem : savedDeviceState)
 					{
-						// We have a conflict so rename our device file and then upload and delete our device file of original name.
-				        // get the current date
-				        final Calendar c = Calendar.getInstance();
-				        File localFile = new File(metaData.path);
-				        String[] filename = metaData.fileName().split(".");
-				        File newFile = new File(filename[0] + "-" + String.valueOf(c.get(Calendar.MONTH)+ 1) + 
-				        						String.valueOf(c.get(Calendar.DAY_OF_MONTH)) +
-				        						String.valueOf(c.get(Calendar.YEAR)) + ":" +
-				        						String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + "-" +
-				        						String.valueOf(c.get(Calendar.MINUTE)) + "-" +
-				        						String.valueOf(c.get(Calendar.SECOND)) + filename[1]);
-				        localFile.renameTo(newFile);
-				        // upload the new localfile to the service.
-				        upload(localFile.getPath());
-				        
-				        // download the services file.
-				        download(metaData.path);
+						foundItem = diItem.findMatch(metaData.path);
+						if(foundItem != null)
+							break;
+					}
+					
+					// If we found this file in our savedDeviceState, see if it is dirty.
+					if( foundItem != null)
+					{
+						if(foundItem.getIsDirty(CLOUD_DROPBOX))
+						{
+							// We have a conflict so rename our device file and then upload and delete our device file of original name.
+							// get the current date
+							final Calendar c = Calendar.getInstance();
+							File localFile = new File(metaData.path);
+							String[] filename = metaData.fileName().split(".");
+							File newFile = new File(filename[0] + "-" + String.valueOf(c.get(Calendar.MONTH)+ 1) + 
+									String.valueOf(c.get(Calendar.DAY_OF_MONTH)) +
+									String.valueOf(c.get(Calendar.YEAR)) + ":" +
+									String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + "-" +
+									String.valueOf(c.get(Calendar.MINUTE)) + "-" +
+									String.valueOf(c.get(Calendar.SECOND)) + filename[1]);
+							localFile.renameTo(newFile);
+							// upload the new localfile to the service.
+							KMMDDeviceItem dkiUpload = new KMMDDeviceItem(localFile);
+							String newRev = upload(dkiUpload);
+							if(newRev == null)
+							{
+								// We have a problem, what should we do?
+							}
+							else
+							{
+								// We need to mark this foundItem with it's new revCode
+								dkiUpload.setRevCode(newRev, CLOUD_DROPBOX);
+								savedDeviceState.add(dkiUpload);
+							}
+							
+							// download the services file.
+							KMMDDeviceItem kmmdItem = download(metaData.path);
+							if(kmmdItem == null)
+							{
+								// We have a problem, what should we do?
+							}
+							else
+							{
+								// We need to mark this foundItem with it's new revCode
+								savedDeviceState.add(kmmdItem);
+							}
+						}
+						else
+						{
+							// No conflict so just download the file.
+							KMMDDeviceItem kmmdItem = download(metaData.path);
+							if(kmmdItem == null)
+							{
+								// We have a problem, what should we do?
+							}
+							else
+							{
+								// We need to mark this foundItem with it's new revCode
+								savedDeviceState.add(kmmdItem);
+							}
+						}
 					}
 					else
 					{
 						// No conflict so just download the file.
-						download(metaData.path);
-					}
+						KMMDDeviceItem kmmdItem = download(metaData.path);
+						if(kmmdItem == null)
+						{
+							// We have a problem, what should we do?
+						}
+						else
+						{
+							// We need to mark this foundItem with it's new revCode
+							savedDeviceState.add(kmmdItem);
+						}
+					}						
 				}
 			}
-		}		
+		}	
+		// Need to re-write our new device state to disk.
+		writeDeviceState(savedDeviceState);
 	}
 	
 	private DeltaPage<Entry> getDropboxChanges()
@@ -529,10 +606,9 @@ public class KMMDCloudServicesService extends Service
         }
     }
 
-    private boolean isFileDirty(String serviceFullPath, int service)
+/*    private boolean isFileDirty(String serviceFullPath, int service)
     {
         SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-	
         String[] fileDirty = prefs.getString(serviceFullPath, "0:0:0").split(":");
 
         if(fileDirty[service].equalsIgnoreCase("1"))
@@ -540,10 +616,10 @@ public class KMMDCloudServicesService extends Service
         else
         	return false;
     }
-    
-    private List<DeviceItem> getDeviceState(String folderPath)
+*/    
+    private List<KMMDDeviceItem> getDeviceState(String folderPath)
     {
-    	List<DeviceItem> files = new ArrayList<DeviceItem>();
+    	List<KMMDDeviceItem> files = new ArrayList<KMMDDeviceItem>();
 		File startFolder = new File(folderPath);
 		// Get the top level files and any folders that might be here
 		File[] dirs = startFolder.listFiles();
@@ -554,11 +630,11 @@ public class KMMDCloudServicesService extends Service
 			{
 				if(file.isDirectory())
 				{
-					files.add(new DeviceItem(file.getName(), "Folder", file.getAbsolutePath()));
+					files.add(new KMMDDeviceItem(file.getName(), "Folder", file.getAbsolutePath()));
 					files.addAll(getDeviceState(file.getAbsolutePath()));
 				}
 				else
-					files.add(new DeviceItem(file.getName(), "File", file.getAbsolutePath()));
+					files.add(new KMMDDeviceItem(file.getName(), "File", file.getAbsolutePath()));
 			}
 		}
 		catch (Exception e)
@@ -570,16 +646,16 @@ public class KMMDCloudServicesService extends Service
 		return files;
     }
     
-    private void syncDeviceState(List<DeviceItem> currentDeviceState)
+    private List<KMMDDeviceItem> syncDeviceState(List<KMMDDeviceItem> currentDeviceState)
     {
-    	DeviceItem diItem;
-    	List<DeviceItem> itemToRemove = new ArrayList<DeviceItem>();
-    	List<DeviceItem> itemsToUpload = new ArrayList<DeviceItem>();
+    	KMMDDeviceItem diItem;
+    	List<KMMDDeviceItem> itemToRemove = new ArrayList<KMMDDeviceItem>();
+    	List<KMMDDeviceItem> itemsToUpload = new ArrayList<KMMDDeviceItem>();
     	boolean itemMatched = false;
     	
     	// Read in the saved deviceState from the xml file and put it into a List<>.
-    	List<DeviceItem> savedDeviceState = new ArrayList<DeviceItem>();
-    	DeviceItemParser parser = new DeviceItemParser(DEVICE_STATE_FILE);
+    	List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
+    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(DEVICE_STATE_FILE, getBaseContext());
     	savedDeviceState = parser.parse();
     	
     	// If savedDeviceState is null then we didn't have a stateFile yet OR somehow it got deleted, so just skip this and don't update
@@ -607,24 +683,31 @@ public class KMMDCloudServicesService extends Service
     		// Now we have our items to remove, remove them from the Service
     		if(itemToRemove.size() > 0)
     		{
-    			for(DeviceItem item : itemToRemove)
+    			for(KMMDDeviceItem item : itemToRemove)
     				delete(item);
     		}
     		
     		// loop over each ArrayList to compare each item and see if we have anything in our current state that needs to be uploaded.
-    		for(int i=0; i<currentDeviceState.size(); i++)
+    		for(int i=0; i<savedDeviceState.size(); i++)
     		{
-    			diItem = currentDeviceState.get(i);
-    			for(int j=0; j<savedDeviceState.size(); j++)
+    			diItem = savedDeviceState.get(i);
+    			for(int j=0; j<currentDeviceState.size(); j++)
     			{
-    				itemMatched = diItem.equals(savedDeviceState.get(j));
+    				itemMatched = diItem.equals(currentDeviceState.get(j));
     			
     				if(itemMatched)
-    					j = savedDeviceState.size();
+    					j = currentDeviceState.size();
     			}
     		
     			if(!itemMatched)
     				itemsToUpload.add(diItem);
+    			else
+    			{
+    				// since we have the same items, we need to see if this item is dirty or not, if so then upload it.
+    				Log.d(TAG, "Checking to see if file isDirty: " + diItem.getPath());
+    				if(diItem.getIsDirty(CLOUD_DROPBOX))
+    					itemsToUpload.add(diItem);
+    			}
     			
     			diItem = null;
     		}
@@ -633,16 +716,42 @@ public class KMMDCloudServicesService extends Service
     		Log.d(TAG, "Files to upload: " + itemsToUpload.size());
     		if(itemsToUpload.size() > 0)
     		{
-    			for(DeviceItem item : itemsToUpload)
+    			for(int i= 0; i<itemsToUpload.size(); i++)
     			{
-    				Log.d(TAG, "File we are uploading: " + item.getServerPath());
-    				upload(item.getServerPath());
+    				Log.d(TAG, "File we are uploading: " + itemsToUpload.get(i).getServerPath());
+    				String newRev = upload(itemsToUpload.get(i));
+    				if(newRev == null)
+    				{
+    					// We have a problem, what should we do??
+    				}
+    				else
+    				{
+    					// We need to mark this item with it's new revCode and as not dirty.
+    					itemsToUpload.get(i).setRevCode(newRev, CLOUD_DROPBOX);
+    					itemsToUpload.get(i).setIsDirty(false, CLOUD_ALL);
+    				}
+    			}
+    			
+    			// We uploaded everything and got our new revCodes, now update the savedDeviceState with the new codes.
+    			for(int i=0; i<itemsToUpload.size(); i++)
+    			{
+    				if(itemsToUpload.get(i).equals(savedDeviceState.get(i)))
+    					savedDeviceState.get(i).setRevCode(itemsToUpload.get(i).getRevCode(CLOUD_DROPBOX), CLOUD_DROPBOX);
+    			}
+    			
+    			// Last remove the items that we deleted from our savedDeviceState.
+    			for(int i=0; i<itemToRemove.size(); i++)
+    			{
+    				if(itemToRemove.get(i).equals(savedDeviceState.get(i)))
+    					savedDeviceState.remove(i);
     			}
     		}
     	}
+    	
+    	return savedDeviceState;
     }
     
-    private void writeDeviceState(List<DeviceItem> deviceState)
+    private void writeDeviceState(List<KMMDDeviceItem> deviceState)
     {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
@@ -651,9 +760,8 @@ public class KMMDCloudServicesService extends Service
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
             serializer.startTag("", "DeviceState");
-            for (DeviceItem item: deviceState)
+            for (KMMDDeviceItem item: deviceState)
             {
-            	Log.d(TAG, "Testing getServerPath(): " + item.getServerPath());
            		serializer.startTag("", "item");
            		serializer.startTag("", "type");
            		serializer.text(item.getType());
@@ -664,6 +772,16 @@ public class KMMDCloudServicesService extends Service
            		serializer.startTag("", "path");
            		serializer.text(item.getPath());
            		serializer.endTag("", "path");
+           		serializer.startTag("", "dirtyservices");
+           		serializer.attribute("", "Dropbox", String.valueOf(item.getIsDirty(CLOUD_DROPBOX)));
+           		serializer.attribute("", "GoogleDrive", String.valueOf(item.getIsDirty(CLOUD_GOOGLEDRIVE)));
+           		serializer.attribute("", "UbutntoOne", String.valueOf(item.getIsDirty(CLOUD_UBUNTUONE)));
+           		serializer.endTag("", "dirtyservices");
+           		serializer.startTag("", "revcodes");
+           		serializer.attribute("", "Dropbox", item.getRevCode(CLOUD_DROPBOX));
+           		serializer.attribute("", "GoogleDrive", item.getRevCode(CLOUD_GOOGLEDRIVE));
+           		serializer.attribute("", "UbuntuOne", item.getRevCode(CLOUD_UBUNTUONE));
+           		serializer.endTag("", "revcodes");
            		serializer.endTag("", "item");
             }
             serializer.endTag("", "DeviceState");
@@ -694,7 +812,7 @@ public class KMMDCloudServicesService extends Service
 		}
     }
 
-	private class DeviceItem implements Comparable<DeviceItem>
+	/*private class DeviceItem implements Comparable<DeviceItem>
 	{
 		private String name;
 		private String type;
@@ -750,15 +868,10 @@ public class KMMDCloudServicesService extends Service
 		}
 		
 		public boolean equals(DeviceItem diItem)
-		{
-			Log.d(TAG, "Comapring the following two items:");
-			Log.d(TAG, this.toString());
-			Log.d(TAG, diItem.toString());
-			
+		{		
 			if(this.getType().equals(diItem.getType()))
 			{
 				// We have the same type (File or Folder) now see if the path is the same, return true if yes, false if not.
-				Log.d(TAG, "Doing comparaison of the two paths.");
 				return this.getPath().equals(diItem.getPath());
 			}
 			else
@@ -825,7 +938,7 @@ public class KMMDCloudServicesService extends Service
 		}
 	}
 	
-	private class DeviceItemParser extends BaseDeviceItemParser
+	/*private class DeviceItemParser extends BaseDeviceItemParser
 	{
 		public DeviceItemParser(String xmlFile)
 		{
@@ -843,7 +956,6 @@ public class KMMDCloudServicesService extends Service
 			{
 				public void end()
 				{
-					Log.d(TAG, "currentDeviceItem: " + currentDeviceItem.toString());
 					deviceItems.add(currentDeviceItem.copy());
 				}
 			});
@@ -887,8 +999,9 @@ public class KMMDCloudServicesService extends Service
 	
 	public interface DeviceStateParser
 	{
-		List<DeviceItem> parse();
-	}
+		List<KMMDDeviceItem> parse();
+	}*/
+	
     /**************************************************************************************************************
 	 * Thread that will perform the actual syncing with Dropbox
 	 *************************************************************************************************************/

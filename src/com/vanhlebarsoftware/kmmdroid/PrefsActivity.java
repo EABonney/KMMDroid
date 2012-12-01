@@ -41,7 +41,7 @@ public class PrefsActivity extends PreferenceActivity
     // Change this to DROPBOX if we need access to the users entire Dropbox structure.
     // Use APP_FOLDER to limit access to just that location under Dropbox.
     final static private AccessType ACCESS_TYPE = AccessType.APP_FOLDER;
-    final static private String ACCOUNT_PREFS_NAME = "prefs";
+    //final static private String ACCOUNT_PREFS_NAME = "prefs";
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
     DropboxAPI<AndroidAuthSession> mApi;
@@ -103,37 +103,6 @@ public class PrefsActivity extends PreferenceActivity
         {
         	KMMDapp.openDB();
         }
-        
-        // Get the accounts to populate the ListPreference with.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		Log.d(TAG, "Cursor size: " + cursor.getCount());
-		CharSequence[] entries = new CharSequence[1];
-		CharSequence[] entryValues = new CharSequence[1];
-		entries[0] = "No accounts found!";
-		entryValues[0] = "";
-		
-		if(cursor.getCount() > 0)
-		{
-			entries = new CharSequence[cursor.getCount()];
-			entryValues = new CharSequence[cursor.getCount()];
-			
-			int i=0;
-			while(!cursor.isAfterLast())
-			{
-				entries[i] = cursor.getString(0);
-				entryValues[i] = cursor.getString(1);
-				Log.d(TAG, "Account name: " + cursor.getString(0));
-				Log.d(TAG, "Account Id: " + cursor.getString(1));
-				cursor.moveToNext();
-				i++;
-			}
-		}
-		
-		//Accounts.setEntries(entries);
-		//Accounts.setEntryValues(entryValues);
 	}
 	
 	@Override
@@ -167,7 +136,7 @@ public class PrefsActivity extends PreferenceActivity
        			{
        				//info = mApi.metadata("/Apps/KMMDroid", 0, null, true, null);    				
        				//if( !info.isDir )
-       					info = mApi.createFolder("/KMMDroid");
+       					info = mApi.createFolder("");
        				//else
        					needToSync = true;
        			}
@@ -193,8 +162,8 @@ public class PrefsActivity extends PreferenceActivity
 				KMMDroidDirectory.mkdirs();
 				
 				// Now retrieve any data that we might need.
-				Intent i = new Intent(this, KMMDCloudServicesService.class);
-				i.putExtra("cloudService", KMMDCloudServicesService.CLOUD_DROPBOX);
+				Intent i = new Intent(this, KMMDDropboxService.class);
+				i.putExtra("cloudService", KMMDDropboxService.CLOUD_DROPBOX);
 				i.putExtra("syncing", true);
 				startService(i);
        		}
@@ -274,9 +243,9 @@ public class PrefsActivity extends PreferenceActivity
      */
     private String[] getKeys()
     {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String key = prefs.getString(ACCESS_KEY_NAME, null);
-        String secret = prefs.getString(ACCESS_SECRET_NAME, null);
+        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        String key = KMMDapp.prefs.getString(ACCESS_KEY_NAME, null);
+        String secret = KMMDapp.prefs.getString(ACCESS_SECRET_NAME, null);
         if (key != null && secret != null)
         {
         	String[] ret = new String[2];
@@ -298,8 +267,8 @@ public class PrefsActivity extends PreferenceActivity
     private void storeKeys(String key, String secret) 
     {
         // Save the access key for later
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        Editor edit = prefs.edit();
+        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        Editor edit = KMMDapp.prefs.edit();
         edit.putString(ACCESS_KEY_NAME, key);
         edit.putString(ACCESS_SECRET_NAME, secret);
         edit.commit();
@@ -307,8 +276,8 @@ public class PrefsActivity extends PreferenceActivity
 
     private void clearKeys() 
     {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        Editor edit = prefs.edit();
+        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
+        Editor edit = KMMDapp.prefs.edit();
         edit.clear();
         edit.commit();
     }

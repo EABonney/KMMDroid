@@ -489,7 +489,12 @@
 	    all you have to do is click OK.</string>
 	<string name="crash_dialog_comment_prompt">Please give us more information about what you where doing at the time of the crash:</string>
 	<string name="crash_dialog_ok_toast">Thank you for helping make KMMDroid a better applicaition.</string>
-	<string name="pref_disable_acra">Disable error reporting entirely</string>
+	<string name="pref_disable_acra">Report crashes?</string>
 	<string name="pref_acra_enabled">Error reporting is on</string>
 	<string name="pref_acra_disabled">Error reporting is off</string>
+	<string name="titleSynchronization">Synchronization</string>
+	<string name="messageLinkSuccessful">Your account has been successfully linked!</string>
+	<string name="messageDropboxLinkError">Couldn\'t authenticate with Dropbox: </string>
+	<string name="messageLogOut">Logging out!</string>
+	<string name="defaultNotificationTime">Default notification time</string>
 </resources>

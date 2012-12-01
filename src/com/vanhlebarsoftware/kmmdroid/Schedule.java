@@ -1036,8 +1036,8 @@ public class Schedule
 		switch (occurenceRate)
 		{
 			case OCCUR_ONCE:
-				if(this.DueDate.before(this.EndDate) || this.EndDate == null)
-					this.DueDate = this.EndDate;
+				//if(this.DueDate.before(this.EndDate) || this.EndDate == null)
+					//this.DueDate = this.EndDate;
 				break;
 			case OCCUR_DAILY:
 				if(this.DueDate.before(this.EndDate) || this.EndDate == null)

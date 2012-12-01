@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.6.2.4"
+      android:versionName="0.6.2.5"
       android:installLocation="auto">
-    <uses-sdk android:minSdkVersion="10" />
+    <uses-sdk 
+        android:minSdkVersion="10"
+        android:targetSdkVersion="17" />
 
     <permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS"
         		android:label="@string/send_home_update_notifications_permission_label"
@@ -25,9 +27,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
-    <application android:icon="@drawable/kmymoney" 
+    <application 
+        android:icon="@drawable/kmymoney" 
     	android:label="@string/app_name"
-    	android:name=".KMMDroidApp">
+    	android:name=".KMMDroidApp"
+    	android:allowBackup="true">
     	
         <activity android:name=".WelcomeActivity"
                   android:label="@string/app_name"
@@ -42,11 +46,11 @@
         		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".NewDatabaseActivity"
-        		  andrid.label="@string/titleNewDatabase"
+        		  android:label="@string/titleNewDatabase"
         		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".HomeActivity"
-        		  android.label="@string/titleHome"
+        		  android:label="@string/titleHome"
         		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".LedgerActivity"
@@ -147,7 +151,7 @@
 		</activity>
 		
 		<activity android:name=".PrefsActivity"
-				  android.label=".@string/titlePrefs"
+				  android:label="@string/titlePrefs"
 				  android:screenOrientation="portrait">
 		</activity>
 	
@@ -282,7 +286,7 @@
 		</service>
 		<service android:name=".KMMDNotificationsService">
 		</service>
-		<service android:name=".KMMDCloudServicesService">
+		<service android:name="com.vanhlebarsoftware.kmmdroid.KMMDDropboxService">
 		</service>
     </application>
 </manifest>

@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -563,6 +564,10 @@ public class CreateModifyTransactionActivity extends Activity
 				}
 				// need to close the database as it is keeping it open here and causing issues.
 				//KMMDapp.closeDB();
+				
+				// Mark the file as dirty
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				// If we are coming from the home widget, we need to close the db.
 				if( fromHomeWidget )
 					KMMDapp.closeDB();
@@ -1087,7 +1092,7 @@ public class CreateModifyTransactionActivity extends Activity
 				amount = amount * -1;		//change the sign of the amount for the form only.
 			}
 			else
-				intTransType = Transaction.WITHDRAW;
+				intTransType = Transaction.DEPOSIT;
 			
 			editAmount.setText(String.valueOf(amount));
 			

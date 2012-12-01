@@ -342,8 +342,8 @@ public class HomeActivity extends Activity
 				startActivity(new Intent(this, AboutActivity.class));
 				break;
 			case R.id.syncDropbox:
-				i = new Intent(this, KMMDCloudServicesService.class);
-				i.putExtra("cloudService", KMMDCloudServicesService.CLOUD_DROPBOX);
+				i = new Intent(this, KMMDDropboxService.class);
+				i.putExtra("cloudService", KMMDDropboxService.CLOUD_DROPBOX);
 				startService(i);
 				break;
 		}

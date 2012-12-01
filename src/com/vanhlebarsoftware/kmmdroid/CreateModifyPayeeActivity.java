@@ -227,6 +227,10 @@ public class CreateModifyPayeeActivity extends TabActivity
 		else
 		{
 			returnFromDelete = false;
+			
+			//Mark file as dirty
+			KMMDapp.markFileIsDirty(true, "9999");
+			
 			finish();
 		}
 	}
@@ -337,6 +341,10 @@ public class CreateModifyPayeeActivity extends TabActivity
 						break;
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
+				
+				//Mark file as dirty
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				finish();
 				break;
 			case R.id.itemDelete:

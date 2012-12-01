@@ -406,6 +406,10 @@ public class CreateModifyScheduleActivity extends TabActivity
 					Intent intent = new Intent(KMMDService.DATA_CHANGED);
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
+				
+				// Mark the file as dirty.
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				// need to close the database as it is keeping it open here and causing issues.
 				KMMDapp.closeDB();
 				finish();
