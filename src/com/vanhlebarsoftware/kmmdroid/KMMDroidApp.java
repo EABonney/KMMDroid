@@ -1,8 +1,17 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import org.acra.*;
+import org.acra.annotation.*;
+import org.xmlpull.v1.XmlSerializer;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import android.app.AlarmManager;
 import android.app.Application;
@@ -13,15 +22,30 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.Xml;
 
 @SuppressWarnings("unused")
+@ReportsCrashes(formKey="",
+mailTo = "bugs@vanhlebarsoftware.com",
+customReportContent = { ReportField.REPORT_ID, ReportField.USER_COMMENT, ReportField.ANDROID_VERSION, ReportField.APP_VERSION_NAME, 
+						ReportField.BRAND, ReportField.PHONE_MODEL, ReportField.CUSTOM_DATA, ReportField.STACK_TRACE },
+mode = ReportingInteractionMode.DIALOG,
+resToastText = R.string.crash_toast_text, // optional, displayed as soon as the crash occurs, before collecting data which can take a few seconds
+resDialogText = R.string.crash_dialog_text,
+resDialogIcon = android.R.drawable.ic_dialog_info, //optional. default is a warning sign
+resDialogTitle = R.string.crash_dialog_title, // optional. default is your application name
+resDialogCommentPrompt = R.string.crash_dialog_comment_prompt, // optional. when defined, adds a user text field input with this text resource as a label
+resDialogOkToast = R.string.crash_dialog_ok_toast // optional. displays a Toast message when the user accepts to send a report.
+)
 public class KMMDroidApp extends Application implements OnSharedPreferenceChangeListener
 {
 	private static final String TAG = KMMDroidApp.class.getSimpleName();
+    final static public String DEVICE_STATE_FILE = "device_state";
 	public static final int ALARM_HOMEWIDGET = 1001;
 	public static final int ALARM_NOTIFICATIONS = 1002;
 	public SharedPreferences prefs;
@@ -34,9 +58,11 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public ArrayList<Split> Splits;	
 	public long flSplitsTotal = 0;
 	
+
 	@Override
 	public void onCreate()
 	{
+		ACRA.init(this);
 		super.onCreate();
 		this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		this.prefs.registerOnSharedPreferenceChangeListener((OnSharedPreferenceChangeListener) this);
@@ -110,7 +136,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 				// clear the users preferences in settings.
 				Editor edit = this.prefs.edit();
 				edit.putBoolean("openLastUsed", false);
-				edit.putString("Full Path", "");
+				edit.remove("Full Path");
 				edit.apply();
 			
 				// make sure that we no longer show the database open or have a path set for it.
@@ -129,7 +155,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 			// clear the users preferences in settings.
 			Editor edit = this.prefs.edit();
 			edit.putBoolean("openLastUsed", false);
-			edit.putString("Full Path", "");
+			edit.remove("Full Path");
 			edit.apply();
 		
 			// make sure that we no longer show the database open or have a path set for it.
@@ -152,7 +178,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	
 	public void setFullPath(String path)
 	{
-		fullPath = path;
+		this.fullPath = path;
 	}
 	
 	public String getFullPath()
@@ -440,4 +466,110 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	{
 		return this.splitsAreDirty;
 	}
+	
+	public void markFileIsDirty(Boolean dirty, String widgetId)
+	{
+		// Need to mark the file as dirty for our cloud services.
+    	// Read in the saved deviceState from the xml file and put it into a List<>.
+    	List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
+    	KMMDDeviceItem currentFile = null;
+    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(KMMDDropboxService.DEVICE_STATE_FILE, this);
+    	savedDeviceState = parser.parse();
+    	
+		// Get the correct database
+		// If widgetId is 9999, then we are already in the application and need to get the default database.
+		// If widgetId is null, then we are coming from a scheduled event for checking schedules of the main app.
+		String prefString = null;
+		if( widgetId == null )
+			prefString = "Full Path";
+		else if( widgetId.equals("9999") )
+			prefString = "currentOpenedDatabase";
+		else
+			prefString = "widgetDatabasePath" + String.valueOf(widgetId);
+
+		String path = prefs.getString(prefString, "");
+		Log.d(TAG, "Path for the database marked dirty: " + path);
+    	
+		// Find the correct file in our saved state and mark it as dirty.
+		for(KMMDDeviceItem item : savedDeviceState)
+		{
+			currentFile = item.findMatch(path);
+			if(currentFile != null)
+				break;
+		}
+		currentFile.setIsDirty(true, KMMDDropboxService.CLOUD_ALL);
+		
+		// Replace this in the savedDeviceState list then write it to disk.
+		for(int i=0; i<savedDeviceState.size(); i++)
+		{
+			if(savedDeviceState.get(i).equals(currentFile))
+			{
+				savedDeviceState.add(i, currentFile);
+				savedDeviceState.remove(i+1);
+				i = savedDeviceState.size() + 1;
+			}
+		}
+		writeDeviceState(savedDeviceState);
+	}
+	
+    private void writeDeviceState(List<KMMDDeviceItem> deviceState)
+    {
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try 
+        {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag("", "DeviceState");
+            for (KMMDDeviceItem item: deviceState)
+            {
+           		serializer.startTag("", "item");
+           		serializer.startTag("", "type");
+           		serializer.text(item.getType());
+           		serializer.endTag("", "type");
+           		serializer.startTag("", "name");
+           		serializer.text(item.getName());
+           		serializer.endTag("", "name");
+           		serializer.startTag("", "path");
+           		serializer.text(item.getPath());
+           		serializer.endTag("", "path");
+           		serializer.startTag("", "dirtyservices");
+           		serializer.attribute("", "Dropbox", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_DROPBOX)));
+           		serializer.attribute("", "GoogleDrive", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_GOOGLEDRIVE)));
+           		serializer.attribute("", "UbutntoOne", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_UBUNTUONE)));
+           		serializer.endTag("", "dirtyservices");
+           		serializer.startTag("", "revcodes");
+           		serializer.attribute("", "Dropbox", item.getRevCode(KMMDDropboxService.CLOUD_DROPBOX));
+           		serializer.attribute("", "GoogleDrive", item.getRevCode(KMMDDropboxService.CLOUD_GOOGLEDRIVE));
+           		serializer.attribute("", "UbuntuOne", item.getRevCode(KMMDDropboxService.CLOUD_UBUNTUONE));
+           		serializer.endTag("", "revcodes");
+           		serializer.endTag("", "item");
+            }
+            serializer.endTag("", "DeviceState");
+            serializer.endDocument();
+        } 
+        catch (Exception e) 
+        {
+            throw new RuntimeException(e);
+        }
+        		
+        // Attempt to write the state file to the private storage area.
+        String FILENAME = DEVICE_STATE_FILE;
+        try 
+        {
+			FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fos.write(writer.toString().getBytes());
+			fos.close();
+		} 
+        catch (FileNotFoundException e) 
+        {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+        catch (IOException e) 
+        {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }

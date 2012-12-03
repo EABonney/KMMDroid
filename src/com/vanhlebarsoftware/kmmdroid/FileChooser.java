@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,11 @@ import android.widget.TextView;
 
 public class FileChooser extends ListActivity
 {
+	private static final String TAG = FileChooser.class.getSimpleName();
 	private File currentDir;
 	private FileArrayAdapter adapter;
 	private final String strFileExtension = ".sqlite";
+	private String strSDcard = null;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -30,6 +33,7 @@ public class FileChooser extends ListActivity
 		super.onCreate(savedInstanceState);
         
 		currentDir = Environment.getExternalStorageDirectory();
+		strSDcard =  currentDir.getName();
 		fill(currentDir);
 	}
 	
@@ -62,7 +66,7 @@ public class FileChooser extends ListActivity
 		Collections.sort(files);
 		dir.addAll(files);
 		
-		if(!f.getName().equalsIgnoreCase("sdcard"))
+		if(!f.getName().equalsIgnoreCase(strSDcard))
 			dir.add(0, new Option("..", getString(R.string.FileChooserParentDirectory), f.getParent()));
 		
 		adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view, dir);

@@ -96,13 +96,13 @@ public class CreateModifyScheduleActivity extends TabActivity
         intent = new Intent().setClass(this, SchedulePaymentInfoActivity.class);
         
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("paymentifno").setIndicator("Payment Info")
+        spec = tabHost.newTabSpec("paymentifno").setIndicator(getString(R.string.titleSchedulePaymentInfo))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, ScheduleOptionsActivity.class);
-        spec = tabHost.newTabSpec("options").setIndicator("Options")
+        spec = tabHost.newTabSpec("options").setIndicator(getString(R.string.titleScheduleOptions))
                       .setContent(intent);
         tabHost.addTab(spec);
         
@@ -264,10 +264,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 				nStatus = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getScheduleStatus();
 				ckNumber = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getCheckNumber();
 				nPaymentType = ((SchedulePaymentInfoActivity) schedulePaymentInfo).getSchedulePaymentMethod();
-				
-				Log.d(TAG, "nSchOccurence: " + nSchOccurence);
-				Log.d(TAG, "nSchOccurenceMultiplier: " + nSchOccurenceMultiplier);
-				Log.d(TAG, "scheduleOccurenceString: " + scheduleOccurenceString);
+
 				// Get the PaymentOptions elements
 				getTabHost().setCurrentTab(1);
 				Activity scheduleOptions = this.getCurrentActivity();
@@ -286,7 +283,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 				scheduleValues.put("typeString", getTypeDescription(nSchType));
 				scheduleValues.put("occurence", nSchOccurence);
 				scheduleValues.put("occurenceMultiplier", nSchOccurenceMultiplier);
-				scheduleValues.put("occurenceString", Schedule.getOccurrenceToString(nSchOccurenceMultiplier, scheduleOccurenceString));
+				scheduleValues.put("occurenceString", Schedule.getOccurrenceToString(nSchOccurenceMultiplier, scheduleOccurenceString, this));
 				scheduleValues.put("paymentType", nSchType);
 				scheduleValues.put("paymentTypeString", getPaymentTypeToString(nPaymentType));
 				scheduleValues.put("startDate", scheduleStartDate);
@@ -409,6 +406,10 @@ public class CreateModifyScheduleActivity extends TabActivity
 					Intent intent = new Intent(KMMDService.DATA_CHANGED);
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
+				
+				// Mark the file as dirty.
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				// need to close the database as it is keeping it open here and causing issues.
 				KMMDapp.closeDB();
 				finish();

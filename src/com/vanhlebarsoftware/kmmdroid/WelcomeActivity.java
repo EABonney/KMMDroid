@@ -276,9 +276,15 @@ public class WelcomeActivity extends Activity
 	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
 	{
+		// Hide the sync menu if the user is not logged into at least one of the services.
+		if( !KMMDapp.prefs.getBoolean("dropboxSync", false) )
+			menu.findItem(R.id.Sync).setVisible(false);
+		else
+			menu.findItem(R.id.Sync).setVisible(true);
+		
 		// remove the New and Recent menu items for now.
-		menu.getItem(0).setVisible(false);
-		menu.getItem(2).setVisible(false);
+		menu.findItem(R.id.itemNew).setVisible(false);
+		menu.findItem(R.id.itemRecent).setVisible(false);
 		
 		return true;
 	}
@@ -300,6 +306,14 @@ public class WelcomeActivity extends Activity
 				break;
 			case R.id.itemRecent:
 				break;
+			case R.id.itemPrefs:
+				startActivity(new Intent(this, PrefsActivity.class));
+				break;
+			case R.id.syncDropbox:
+				i = new Intent(this, KMMDDropboxService.class);
+				i.putExtra("cloudService", KMMDDropboxService.CLOUD_DROPBOX);
+				startService(i);
+				break;
 		}
 		
 		return true;
@@ -319,6 +333,10 @@ public class WelcomeActivity extends Activity
     			String path = data.getStringExtra("FullPath");
     			Log.d(TAG, "Full Path: " + path);
     			KMMDapp.setFullPath(path);
+        		// Save the currently opened database in the preferences.
+    			Editor edit = KMMDapp.prefs.edit();
+        		edit.putString("currentOpenedDatabase", KMMDapp.getFullPath());
+        		edit.apply();
     			i = new Intent(this, HomeActivity.class);
     			startActivity(i);
     			finish();

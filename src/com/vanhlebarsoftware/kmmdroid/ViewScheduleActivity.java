@@ -67,14 +67,14 @@ public class ViewScheduleActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_schedule);
+        //setContentView(R.layout.view_schedule);
 
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
         listSplits = (ListView) findViewById(R.id.listSplits);
-        textTitleViewSch = (TextView) findViewById(R.id.titleViewSchedule);
+        //textTitleViewSch = (TextView) findViewById(R.id.titleViewSchedule);
         textDate = (TextView) findViewById(R.id.vtDate);
         textChkNum = (TextView) findViewById(R.id.vtNumber);
         textAmount = (TextView) findViewById(R.id.vtAmount);

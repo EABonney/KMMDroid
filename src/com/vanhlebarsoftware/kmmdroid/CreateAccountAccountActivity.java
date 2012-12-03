@@ -498,16 +498,19 @@ public class CreateAccountAccountActivity extends Activity implements OnCheckedC
 	}
 	
 	public void putOpeningDate(String date)
-	{
-		Log.d(TAG, "putOpeningDate date: " + date);
-		date = date.trim();
-		String dates[] = date.split("-");
+	{	
+		// need to see if we have a null string for some reason, if so do nothing.
+		if( date != null )
+		{
+			date = date.trim();
+			String dates[] = date.split("-");
 		
-		// Date was stored YYYY-MM-DD
-		intYear = Integer.valueOf(dates[0]);
-		// Since updateDisplay uses a zero based month we need to subract one now.
-		intMonth = Integer.valueOf(dates[1]) - 1;
-		intDay = Integer.valueOf(dates[2]);		
+			// Date was stored YYYY-MM-DD
+			intYear = Integer.valueOf(dates[0]);
+			// Since updateDisplay uses a zero based month we need to subract one now.
+			intMonth = Integer.valueOf(dates[1]) - 1;
+			intDay = Integer.valueOf(dates[2]);		
+		}
 	}
 	
 	public void putOpeningBalance(String balance)

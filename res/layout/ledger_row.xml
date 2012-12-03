@@ -16,7 +16,6 @@
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/lrDate"
-			android:text="Date"
 			android:textColor="@android:color/black" />
 			
 		<TextView
@@ -25,7 +24,6 @@
 			android:layout_weight="1"
 			android:gravity="left"
 			android:id="@+id/lrDetails"
-			android:text="Details"
 			android:textColor="@android:color/black" />
 			
 		<TextView
@@ -34,7 +32,6 @@
 			android:layout_weight="1"
 			android:gravity="right"
 			android:id="@+id/lrAmount"
-			android:text="Amount"
 			android:textColor="@android:color/black" />
 			
 		<TextView
@@ -43,7 +40,6 @@
 			android:layout_weight="1"
 			android:gravity="right"
 			android:id="@+id/lrBalance"
-			android:text="Amount"
 			android:textColor="@android:color/black" />
 	</LinearLayout>
 </LinearLayout>

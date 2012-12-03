@@ -29,9 +29,59 @@ public class Account
 	public static final int ACCOUNT_STOCK = 15;
 	public static final int ACCOUNT_EQUITY = 16;
 	
+	private String id;
+	private String parentId;
+	private String accountName;
+	private String balance;
+	private boolean isParent;
+	
 
 	Account()
 	{		
+		this.id = null;
+		this.parentId = null;
+		this.accountName = null;
+		this.balance = null;
+		this.isParent = false;
+	}
+	
+	Account(Cursor cur)
+	{
+		this.id = cur.getString(cur.getColumnIndex("_id"));
+		this.parentId = cur.getString(cur.getColumnIndex("parentId"));
+		this.accountName = cur.getString(cur.getColumnIndex("accountName"));
+		this.balance = cur.getString(cur.getColumnIndex("balance"));
+		this.isParent = false;
+	}
+	
+	public String getName()
+	{
+		return this.accountName;
+	}
+	
+	public String getId()
+	{
+		return this.id;
+	}
+	
+	public String getBalance()
+	{
+		return this.balance;
+	}
+	
+	public String getParentId()
+	{
+		return this.parentId;
+	}
+	
+	public boolean getIsParent()
+	{
+		return this.isParent;
+	}
+	
+	public void setIsParent(boolean flag)
+	{
+		this.isParent = flag;
 	}
 	
 	static public void updateAccount(SQLiteDatabase db, String accountId, String transValue, int nChange)

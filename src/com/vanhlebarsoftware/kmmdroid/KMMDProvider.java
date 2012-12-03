@@ -1,11 +1,20 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import org.xmlpull.v1.XmlSerializer;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.UriMatcher;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
@@ -14,6 +23,7 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+import android.util.Xml;
 
 public class KMMDProvider extends ContentProvider 
 {
@@ -49,8 +59,8 @@ public class KMMDProvider extends ContentProvider
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
-												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
-												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
+												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
+												" AND kmmSplits.splitId = 0"; // AND kmmSplits.accountId=";
 	private static final String[] schedulesSingleSelectionColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 		"nextPaymentDue", "startDate", "endDate", "lastPayment" };
 	private static final String scheduleSingleSelection = "kmmSchedules.id = kmmSplits.transactionId" +
@@ -148,6 +158,20 @@ public class KMMDProvider extends ContentProvider
 	{
 		String widgetId = uri.getFragment();
 		
+		// Need to get the prefs for our application so we can update the file used as dirty.
+		Context context = getContext();
+		Context cont = null;
+		try 
+		{
+			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
+		} 
+		catch (NameNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+
 		// See if we need to open the database.
 		if( !db.isOpen() )
 			db = openDatabase(widgetId);
@@ -184,6 +208,11 @@ public class KMMDProvider extends ContentProvider
 		
 		// perform the insert.
 		db.insert(dbTable, null, contentValues);
+		
+		// Need to mark the file as dirty for our cloud services.
+		Editor editor = prefs.edit();
+		editor.putString(db.getPath(), "1:1:1");
+		editor.apply();
 		
 		// close the database.
 		db.close();
@@ -247,10 +276,20 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case SCHEDULES:
 				SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
-				accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
+				// See if we have a widgetId or not, if so we need to get the accountId for that specific widget, if not leave off the accountId
+				if( widgetId != null )
+				{
+					accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
+					dbSelection = schedulesSelection + " AND kmmSplits.accountId='" + accountUsed + "'";
+				}
+				else
+				{
+					dbSelection = schedulesSelection;
+				}
+					
 				dbTable = schedulesTable;
 				dbColumns = schedulesColumns;
-				dbSelection = schedulesSelection + "'" + accountUsed + "'";
+				//dbSelection = schedulesSelection + "'" + accountUsed + "'";
 				dbOrderBy = schedulesOrderBy;
 				break;
 			case SCHEDULES_ID:
@@ -328,6 +367,20 @@ public class KMMDProvider extends ContentProvider
 		int result = 0;
 		String widgetId = uri.getFragment();
 		
+		// Need to get the prefs for our application so we can update the file used as dirty.
+		Context context = getContext();
+		Context cont = null;
+		try 
+		{
+			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
+		} 
+		catch (NameNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+		
 		// See if we need to open the database.
 		if( !db.isOpen() )
 			db = openDatabase(widgetId);
@@ -370,6 +423,31 @@ public class KMMDProvider extends ContentProvider
 			default:
 				break;
 		}
+		
+		// Need to mark the file as dirty for our cloud services.
+    	// Read in the saved deviceState from the xml file and put it into a List<>.
+    	/*List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
+    	KMMDDeviceItem currentFile = null;
+    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(KMMDDropboxService.DEVICE_STATE_FILE, cont);
+    	savedDeviceState = parser.parse();
+		for(KMMDDeviceItem item : savedDeviceState)
+		{
+			currentFile = item.findMatch(db.getPath());
+			if(currentFile != null)
+				break;
+		}
+		currentFile.setIsDirty(true, KMMDDropboxService.CLOUD_ALL);
+		// Replace this in the savedDeviceState list then write it to disk.
+		for(int i=0; i<savedDeviceState.size(); i++)
+		{
+			if(savedDeviceState.get(i).equals(currentFile))
+			{
+				savedDeviceState.add(i, currentFile);
+				savedDeviceState.remove(i+1);
+				i = savedDeviceState.size() + 1;
+			}
+		}
+		writeDeviceState(savedDeviceState);*/
 		
 		// clean up, close the database.
 		db.close();
@@ -427,8 +505,13 @@ public class KMMDProvider extends ContentProvider
 		
 		// Open the correct database
 		// If widgetId is 9999, then we are already in the application and need to open the default database.
+		// If widgetId is null, then we are coming from a scheduled event for checking schedules of the main app.
 		String prefString = null;
-		if( widgetId.equals("9999") )
+		if( widgetId == null )
+		{
+			prefString = "Full Path";
+		}
+		else if( widgetId.equals("9999") )
 		{
 			prefString = "currentOpenedDatabase";
 		}
@@ -610,4 +693,76 @@ public class KMMDProvider extends ContentProvider
 		db.update("kmmFileInfo", values, null, null);
 	}
 
+/*    private void writeDeviceState(List<KMMDDeviceItem> deviceState)
+    {
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try 
+        {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag("", "DeviceState");
+            for (KMMDDeviceItem item: deviceState)
+            {
+           		serializer.startTag("", "item");
+           		serializer.startTag("", "type");
+           		serializer.text(item.getType());
+           		serializer.endTag("", "type");
+           		serializer.startTag("", "name");
+           		serializer.text(item.getName());
+           		serializer.endTag("", "name");
+           		serializer.startTag("", "path");
+           		serializer.text(item.getPath());
+           		serializer.endTag("", "path");
+           		serializer.startTag("", "dirtyservices");
+           		serializer.attribute("", "Dropbox", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_DROPBOX)));
+           		serializer.attribute("", "GoogleDrive", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_GOOGLEDRIVE)));
+           		serializer.attribute("", "UbutntoOne", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_UBUNTUONE)));
+           		serializer.endTag("", "dirtyservices");
+           		serializer.startTag("", "revcodes");
+           		serializer.attribute("", "Dropbox", item.getRevCode(KMMDDropboxService.CLOUD_DROPBOX));
+           		serializer.attribute("", "GoogleDrive", item.getRevCode(KMMDDropboxService.CLOUD_GOOGLEDRIVE));
+           		serializer.attribute("", "UbuntuOne", item.getRevCode(KMMDDropboxService.CLOUD_UBUNTUONE));
+           		serializer.endTag("", "revcodes");
+           		serializer.endTag("", "item");
+            }
+            serializer.endTag("", "DeviceState");
+            serializer.endDocument();
+        } 
+        catch (Exception e) 
+        {
+            throw new RuntimeException(e);
+        }
+        
+		Context context = getContext();
+		Context cont = null;
+		try 
+		{
+			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
+		} 
+		catch (NameNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        // Attempt to write the state file to the private storage area.
+        String FILENAME = KMMDDropboxService.DEVICE_STATE_FILE;
+        try 
+        {
+			FileOutputStream fos = cont.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			fos.write(writer.toString().getBytes());
+			fos.close();
+		} 
+        catch (FileNotFoundException e) 
+        {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+        catch (IOException e) 
+        {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }*/
 }

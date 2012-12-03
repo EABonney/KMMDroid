@@ -16,10 +16,11 @@
     	android:gravity="center_vertical"
     	android:textColor="@android:color/white"
     	android:paddingLeft="10sp"
+    	android:id="@+id/GroupHeading"
     />
    	
    	<!-- Layout for Account Listing Area -->
-   	<ListView
+   	<ExpandableListView
    		android:layout_height="0dp"
    		android:layout_width="fill_parent"
    		android:layout_weight="8"
@@ -30,7 +31,7 @@
    		android:layout_marginLeft="10sp"
     	android:layout_marginRight="10sp"
    		android:layout_marginBottom="10sp">    
-   	</ListView>
+   	</ExpandableListView>
    	
    	<include
    	    layout="@layout/navigationbar"/>

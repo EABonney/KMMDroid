@@ -116,6 +116,9 @@ public class KMMDService extends Service
 					// We need to make sure we have the correct database open for this widget.
 					skipSchedule(skippedScheduleId, widgetId);
 					
+					// Mark the file as dirty.
+					kmmdApp.markFileIsDirty(true, widgetId);
+					
 					// Need to refresh the widget now.
 					this.runFlag = true;
 					this.kmmdApp.setServiceRunning(true);

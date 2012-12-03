@@ -21,8 +21,8 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	private static final String TAG = "PayeeDefaultAccountActivity";
 	private static final String dbTable = "kmmAccounts";
 	private static final String[] dbColumns = { "accountName", "id AS _id"};
-	private static final String strSelectionInc = "accountTypeString='Income' AND (balance != '0/1')";
-	private static final String strSelectionExp = "accountTypeString='Expense' AND (balance != '0/1')";
+	private static final String strSelectionInc = "accountTypeString=? AND (balance != '0/1')";
+	private static final String strSelectionExp = "accountTypeString=? AND (balance != '0/1')";
 	private static final String strOrderBy = "accountName ASC";
 	static final String[] FROM = { "accountName" };
 	static final int[] TO = { android.R.id.text1 };
@@ -96,9 +96,9 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		super.onResume();
 		
 		//Get all the accounts to be displayed.
-		cursorInc = KMMDapp.db.query(dbTable, dbColumns, strSelectionInc, null, null, null, strOrderBy);
+		cursorInc = KMMDapp.db.query(dbTable, dbColumns, strSelectionInc, new String[] { getString(R.string.Income) }, null, null, strOrderBy);
 		startManagingCursor(cursorInc);
-		cursorExp = KMMDapp.db.query(dbTable, dbColumns, strSelectionExp, null, null, null, strOrderBy);
+		cursorExp = KMMDapp.db.query(dbTable, dbColumns, strSelectionExp, new String[] { getString(R.string.Expense) }, null, null, strOrderBy);
 		startManagingCursor(cursorExp);
 		
 		// Set up the adapter

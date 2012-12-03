@@ -1,15 +1,24 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.List;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class AboutActivity extends Activity
 {
-	private static final String TAG = "AboutActivity";
+	private static final String TAG = AboutActivity.class.getSimpleName();
 	private static int VERSION = 0;
 	private static int CREATED = 1;
 	private static int LASTMODIFIED = 2;

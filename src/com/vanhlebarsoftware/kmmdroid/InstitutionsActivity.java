@@ -82,7 +82,6 @@ public class InstitutionsActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), HomeActivity.class));
-				finish();
 			}
 		});
         
@@ -91,7 +90,6 @@ public class InstitutionsActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-				finish();
 			}
 		});
         
@@ -100,17 +98,9 @@ public class InstitutionsActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
-				finish();
 			}
 		});
         
-        /*btnInstitutions.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
-			}
-		});*/
         btnInstitutions.setVisibility(View.GONE);
         
         btnPayees.setOnClickListener(new View.OnClickListener()
@@ -118,7 +108,6 @@ public class InstitutionsActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
-				finish();
 			}
 		});
         
@@ -127,7 +116,6 @@ public class InstitutionsActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
-				finish();
 			}
 		});
         

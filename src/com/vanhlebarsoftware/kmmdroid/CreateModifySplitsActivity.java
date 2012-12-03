@@ -33,8 +33,6 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
-	private static int WITHDRAW = 2;
-	private static int DEPOSIT = 0;
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM = { "accountName" };
 	private int Action = ACTION_NEW;
@@ -537,7 +535,7 @@ public class CreateModifySplitsActivity extends Activity implements OnClickListe
 			}
 		}
 		
-		if( nTransType == DEPOSIT)
+		if( nTransType == Transaction.DEPOSIT)
 			lUnassigned = lTotal + lSumofSplits;
 		else
 			lUnassigned = lTotal - lSumofSplits;

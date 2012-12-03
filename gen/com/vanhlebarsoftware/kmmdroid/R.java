@@ -9,8 +9,11 @@ package com.vanhlebarsoftware.kmmdroid;
 
 public final class R {
     public static final class array {
+        public static final int DropboxFreq=0x7f06000e;
+        public static final int DropboxFreqValues=0x7f06000f;
         public static final int Reports=0x7f06000c;
         public static final int SchedulePaymentMethod=0x7f06000b;
+        public static final int ShortMonthNames=0x7f06000d;
         public static final int TransactionStatus=0x7f060003;
         public static final int TransactionTypes=0x7f060002;
         public static final int UpdateFreqValues=0x7f060005;
@@ -24,6 +27,46 @@ public final class R {
         public static final int scheduleWeekendOptions=0x7f060008;
     }
     public static final class attr {
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int overlayHeight=0x7f010001;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int overlayScrollThumbWidth=0x7f010003;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int overlayTextSize=0x7f010002;
+        /** <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+         */
+        public static final int overlayWidth=0x7f010000;
     }
     public static final class drawable {
         public static final int account_add=0x7f020000;
@@ -36,37 +79,40 @@ public final class R {
         public static final int account_types_loan=0x7f020007;
         public static final int account_types_savings=0x7f020008;
         public static final int accounts_view=0x7f020009;
-        public static final int background=0x7f02000a;
-        public static final int bg_texture=0x7f02000b;
-        public static final int calendar_day=0x7f02000c;
-        public static final int categories_view=0x7f02000d;
-        public static final int home_view=0x7f02000e;
-        public static final int homewidget_icon=0x7f02000f;
-        public static final int homewidget_refresh=0x7f020010;
-        public static final int homewidget_wrench=0x7f020011;
-        public static final int ic_tab_grey=0x7f020012;
-        public static final int ic_tab_white=0x7f020013;
-        public static final int icon=0x7f020014;
-        public static final int institutions_view=0x7f020015;
-        public static final int kmymoney=0x7f020016;
-        public static final int kmymoney1=0x7f020017;
-        public static final int ledgers_view=0x7f020018;
-        public static final int newacct=0x7f020019;
-        public static final int payees_tab_address=0x7f02001a;
-        public static final int payees_tab_default=0x7f02001b;
-        public static final int payees_tab_matching=0x7f02001c;
-        public static final int payees_tab_transactions=0x7f02001d;
-        public static final int payees_view=0x7f02001e;
-        public static final int reports_view=0x7f02001f;
-        public static final int schedule=0x7f020020;
-        public static final int schedule_enter=0x7f020021;
-        public static final int schedule_skip=0x7f020022;
-        public static final int schedules_view=0x7f020023;
-        public static final int split=0x7f020024;
-        public static final int startlogo=0x7f020025;
-        public static final int titlelabel_background=0x7f020026;
-        public static final int titlelabel_background_orig=0x7f020027;
-        public static final int transaction_add=0x7f020028;
+        public static final int arrow=0x7f02000a;
+        public static final int background=0x7f02000b;
+        public static final int bg_texture=0x7f02000c;
+        public static final int calendar_day=0x7f02000d;
+        public static final int categories_view=0x7f02000e;
+        public static final int home_view=0x7f02000f;
+        public static final int homewidget_icon=0x7f020010;
+        public static final int homewidget_refresh=0x7f020011;
+        public static final int homewidget_wrench=0x7f020012;
+        public static final int ic_launcher=0x7f020013;
+        public static final int ic_tab_grey=0x7f020014;
+        public static final int ic_tab_white=0x7f020015;
+        public static final int icon=0x7f020016;
+        public static final int institutions_view=0x7f020017;
+        public static final int kmymoney=0x7f020018;
+        public static final int kmymoney1=0x7f020019;
+        public static final int ledgers_view=0x7f02001a;
+        public static final int newacct=0x7f02001b;
+        public static final int payees_tab_address=0x7f02001c;
+        public static final int payees_tab_default=0x7f02001d;
+        public static final int payees_tab_matching=0x7f02001e;
+        public static final int payees_tab_transactions=0x7f02001f;
+        public static final int payees_view=0x7f020020;
+        public static final int reports_view=0x7f020021;
+        public static final int schedule=0x7f020022;
+        public static final int schedule_enter=0x7f020023;
+        public static final int schedule_skip=0x7f020024;
+        public static final int schedules_view=0x7f020025;
+        public static final int scrollbar_handle_accelerated_anim2=0x7f020026;
+        public static final int split=0x7f020027;
+        public static final int startlogo=0x7f020028;
+        public static final int titlelabel_background=0x7f020029;
+        public static final int titlelabel_background_orig=0x7f02002a;
+        public static final int transaction_add=0x7f02002b;
     }
     public static final class id {
         public static final int Account=0x7f090062;
@@ -82,11 +128,21 @@ public final class R {
         public static final int BalanceAmount7=0x7f090040;
         public static final int BalanceAmount8=0x7f090045;
         public static final int BalanceAmount9=0x7f09004a;
+<<<<<<< HEAD
         public static final int SumofSplits=0x7f0900a5;
         public static final int Sync=0x7f09014b;
         public static final int TableAddSplits=0x7f0900a8;
         public static final int TransAmount=0x7f0900a7;
         public static final int Unassigned=0x7f0900a6;
+=======
+        public static final int GroupHeading=0x7f090069;
+        public static final int LinearLayout01=0x7f0900ca;
+        public static final int SumofSplits=0x7f0900a7;
+        public static final int Sync=0x7f09014b;
+        public static final int TableAddSplits=0x7f0900aa;
+        public static final int TransAmount=0x7f0900a9;
+        public static final int Unassigned=0x7f0900a8;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int aboutAppName=0x7f090001;
         public static final int aboutFileCreated=0x7f090004;
         public static final int aboutFileVersion=0x7f090003;
@@ -105,86 +161,97 @@ public final class R {
         public static final int aboutNumTransactions=0x7f090009;
         public static final int aboutVerNumber=0x7f090002;
         public static final int about_kmmicon=0x7f090000;
-        public static final int accountCurrency=0x7f090081;
-        public static final int accountIBAN=0x7f090090;
-        public static final int accountInstitution=0x7f09008b;
-        public static final int accountName=0x7f09007d;
-        public static final int accountNumber=0x7f09008e;
-        public static final int accountOpenBalance=0x7f090086;
-        public static final int accountOpenDate=0x7f090084;
+        public static final int accountCurrency=0x7f090083;
+        public static final int accountIBAN=0x7f090092;
+        public static final int accountInstitution=0x7f09008d;
+        public static final int accountName=0x7f09007f;
+        public static final int accountNumber=0x7f090090;
+        public static final int accountOpenBalance=0x7f090088;
+        public static final int accountOpenDate=0x7f090086;
         public static final int accountRow=0x7f090013;
-        public static final int accountSubAccount=0x7f090092;
-        public static final int accountType=0x7f09007f;
-        public static final int amount=0x7f0900bc;
+        public static final int accountSubAccount=0x7f090094;
+        public static final int accountType=0x7f090081;
+        public static final int amount=0x7f0900be;
         public static final int arAccountBalance=0x7f090017;
         public static final int arAccountName=0x7f090015;
         public static final int arAccountType=0x7f090016;
         public static final int arIcon=0x7f090014;
-        public static final int btnDeleteSchedule=0x7f0900c5;
-        public static final int btnEditSchedule=0x7f0900c4;
-        public static final int btnEnterSchedule=0x7f0900c2;
-        public static final int btnSkipSchedule=0x7f0900c3;
-        public static final int buttonAccounts=0x7f0900e0;
-        public static final int buttonAll=0x7f0900dd;
-        public static final int buttonCancel=0x7f0900e8;
-        public static final int buttonCategories=0x7f0900e1;
-        public static final int buttonChooseCategory=0x7f0900b5;
+        public static final int btnDeleteSchedule=0x7f0900c7;
+        public static final int btnEditSchedule=0x7f0900c6;
+        public static final int btnEnterSchedule=0x7f0900c4;
+        public static final int btnSkipSchedule=0x7f0900c5;
+        public static final int buttonAccounts=0x7f0900e5;
+        public static final int buttonAll=0x7f0900e2;
+        public static final int buttonCancel=0x7f0900ed;
+        public static final int buttonCategories=0x7f0900e6;
+        public static final int buttonChooseCategory=0x7f0900b7;
         public static final int buttonEndDate=0x7f09011a;
-        public static final int buttonHome=0x7f0900df;
-        public static final int buttonInstitutions=0x7f0900e2;
-        public static final int buttonLogin=0x7f090078;
-        public static final int buttonLogout=0x7f090079;
-        public static final int buttonNewInstitution=0x7f09008c;
-        public static final int buttonOk=0x7f0900e7;
-        public static final int buttonOneMonth=0x7f0900db;
-        public static final int buttonOneYear=0x7f0900dc;
-        public static final int buttonPayees=0x7f0900e3;
-        public static final int buttonReports=0x7f0900e5;
-        public static final int buttonSchedules=0x7f0900e4;
-        public static final int buttonSetDate=0x7f090082;
-        public static final int buttonSplit=0x7f0900b6;
+        public static final int buttonHome=0x7f0900e4;
+        public static final int buttonInstitutions=0x7f0900e7;
+        public static final int buttonLogin=0x7f09007a;
+        public static final int buttonLogout=0x7f09007b;
+        public static final int buttonNewInstitution=0x7f09008e;
+        public static final int buttonOk=0x7f0900ec;
+        public static final int buttonOneMonth=0x7f0900e0;
+        public static final int buttonOneYear=0x7f0900e1;
+        public static final int buttonPayees=0x7f0900e8;
+        public static final int buttonReports=0x7f0900ea;
+        public static final int buttonSchedules=0x7f0900e9;
+        public static final int buttonSetDate=0x7f090084;
+        public static final int buttonSplit=0x7f0900b8;
         public static final int buttonSubmit=0x7f090068;
         public static final int cashReqRow=0x7f09005c;
-        public static final int category=0x7f0900b4;
-        public static final int categoryCurrency=0x7f090070;
-        public static final int categoryName=0x7f09006b;
-        public static final int categoryNotes=0x7f090072;
-        public static final int categorySubAccount=0x7f090074;
-        public static final int categoryType=0x7f09006e;
-        public static final int checkNumber=0x7f0900b8;
-        public static final int checkboxAccountPreferred=0x7f090087;
+        public static final int category=0x7f0900b6;
+        public static final int categoryCurrency=0x7f090071;
+        public static final int categoryName=0x7f09006c;
+        public static final int categoryNotes=0x7f090073;
+        public static final int categorySubAccount=0x7f090075;
+        public static final int categoryType=0x7f09006f;
+        public static final int checkNumber=0x7f0900ba;
+        public static final int checkboxAccountPreferred=0x7f090089;
         public static final int checkboxAutoEnter=0x7f090115;
         public static final int checkboxEnd=0x7f090117;
         public static final int checkboxEstimate=0x7f090113;
+<<<<<<< HEAD
         public static final int checkboxNoInstitution=0x7f090089;
         public static final int checkboxPayeeDefaultExpense=0x7f0900f9;
         public static final int checkboxPayeeDefaultIncome=0x7f0900f7;
         public static final int close=0x7f09014a;
         public static final int crAccountBalance=0x7f090077;
         public static final int crAccountName=0x7f090076;
+=======
+        public static final int checkboxNoInstitution=0x7f09008b;
+        public static final int checkboxPayeeDefaultExpense=0x7f0900fe;
+        public static final int checkboxPayeeDefaultIncome=0x7f0900fc;
+        public static final int close=0x7f09014a;
+        public static final int crAccountBalance=0x7f090079;
+        public static final int crAccountName=0x7f090078;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int crAmount=0x7f09005f;
         public static final int crBalance=0x7f090060;
         public static final int crDescription=0x7f09005e;
         public static final int crDueDate=0x7f09005d;
-        public static final int crRow=0x7f090075;
-        public static final int date=0x7f0900ba;
+        public static final int crRow=0x7f090076;
+        public static final int date=0x7f0900bc;
         public static final int editBegDate=0x7f090064;
-        public static final int editCategory=0x7f0900b3;
-        public static final int editDatabaseName=0x7f0900e6;
+        public static final int editCategory=0x7f0900b5;
+        public static final int editDatabaseName=0x7f0900eb;
         public static final int editEndDate=0x7f090066;
         public static final int editScheduleName=0x7f09011e;
         public static final int endDate=0x7f090119;
+        public static final int expandIcon=0x7f090077;
+        public static final int fast_scroll_view=0x7f0900d9;
         public static final int footer=0x7f090067;
-        public static final int homeConfigDatabaseBtn=0x7f0900cb;
-        public static final int homeConfigDatabaseTitle=0x7f0900ca;
-        public static final int homeConfigDefaultAccountSpinner=0x7f0900cd;
-        public static final int homeConfigDefaultAccountTitle=0x7f0900cc;
-        public static final int homeConfigDefaultUpdateFreqSpinner=0x7f0900cf;
-        public static final int homeConfigDefaultUpdateFreqTitle=0x7f0900ce;
-        public static final int homeConfigInstructions=0x7f0900c9;
-        public static final int homeConfigNumWeeksDisplaySpinner=0x7f0900d1;
-        public static final int homeConfigNumWeeksDisplayTitle=0x7f0900d0;
-        public static final int homeConfigSave=0x7f0900d2;
+        public static final int homeConfigDatabaseBtn=0x7f0900cf;
+        public static final int homeConfigDatabaseTitle=0x7f0900ce;
+        public static final int homeConfigDefaultAccountSpinner=0x7f0900d1;
+        public static final int homeConfigDefaultAccountTitle=0x7f0900d0;
+        public static final int homeConfigDefaultUpdateFreqSpinner=0x7f0900d3;
+        public static final int homeConfigDefaultUpdateFreqTitle=0x7f0900d2;
+        public static final int homeConfigInstructions=0x7f0900cd;
+        public static final int homeConfigNumWeeksDisplaySpinner=0x7f0900d5;
+        public static final int homeConfigNumWeeksDisplayTitle=0x7f0900d4;
+        public static final int homeConfigSave=0x7f0900d6;
         public static final int hrAccountBalance=0x7f09001d;
         public static final int hrAccountName=0x7f09001c;
         public static final int hwRowEight=0x7f090041;
@@ -199,6 +266,7 @@ public final class R {
         public static final int hwRowThree=0x7f090028;
         public static final int hwRowTwelve=0x7f090055;
         public static final int hwRowTwo=0x7f090023;
+<<<<<<< HEAD
         public static final int institutionBIC=0x7f0900a2;
         public static final int institutionCity=0x7f09009a;
         public static final int institutionName=0x7f090096;
@@ -225,23 +293,48 @@ public final class R {
         public static final int itemReports=0x7f090144;
         public static final int itemSchedules=0x7f090143;
         public static final int itemsave=0x7f09014f;
+=======
+        public static final int institutionBIC=0x7f0900a4;
+        public static final int institutionCity=0x7f09009c;
+        public static final int institutionName=0x7f090098;
+        public static final int institutionPhone=0x7f0900a0;
+        public static final int institutionPostalCode=0x7f09009e;
+        public static final int institutionRoutingNumber=0x7f0900a2;
+        public static final int institutionStreet=0x7f09009a;
+        public static final int itemAbout=0x7f090145;
+        public static final int itemAccounts=0x7f090146;
+        public static final int itemCancel=0x7f090149;
+        public static final int itemCategories=0x7f090140;
+        public static final int itemClearAll=0x7f090150;
+        public static final int itemDelete=0x7f090148;
+        public static final int itemEdit=0x7f090147;
+        public static final int itemHome=0x7f09013f;
+        public static final int itemInsertRow=0x7f09014f;
+        public static final int itemInstitutions=0x7f090142;
+        public static final int itemNew=0x7f09013d;
+        public static final int itemOpen=0x7f090151;
+        public static final int itemPayees=0x7f090141;
+        public static final int itemPrefs=0x7f09013e;
+        public static final int itemRecent=0x7f090152;
+        public static final int itemReports=0x7f090144;
+        public static final int itemSchedules=0x7f090143;
+        public static final int itemsave=0x7f09014e;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int kmmd_addTransaction=0x7f09001a;
         public static final int kmmd_icon=0x7f090018;
         public static final int kmmd_refresh=0x7f090019;
         public static final int kmmd_widgetSettings=0x7f09001b;
         public static final int listAccountsView=0x7f090012;
-        public static final int listAutoEntered=0x7f09010c;
         public static final int listCashRequirements=0x7f09005a;
-        public static final int listCategoriesView=0x7f090069;
-        public static final int listDueTodayTransactions=0x7f09010a;
-        public static final int listHomeView=0x7f0900c8;
-        public static final int listInstitutionsView=0x7f0900d3;
-        public static final int listPastDueTransactions=0x7f090108;
-        public static final int listPayeeTransView=0x7f090100;
-        public static final int listPayeesView=0x7f0900e9;
-        public static final int listReports=0x7f090106;
+        public static final int listCategoriesView=0x7f09006a;
+        public static final int listHomeView=0x7f0900cc;
+        public static final int listInstitutionsView=0x7f0900d7;
+        public static final int listPayeeTransView=0x7f090105;
+        public static final int listPayeesView=0x7f0900ee;
+        public static final int listReports=0x7f09010b;
         public static final int listSchedules=0x7f090129;
         public static final int listSplits=0x7f09013b;
+<<<<<<< HEAD
         public static final int listTransactions=0x7f0900d5;
         public static final int lrAmount=0x7f0900d9;
         public static final int lrBalance=0x7f0900da;
@@ -271,6 +364,38 @@ public final class R {
         public static final int ptrDetails=0x7f090104;
         public static final int radioGroup1=0x7f0900fb;
         public static final int row=0x7f0900d6;
+=======
+        public static final int listTransactions=0x7f0900da;
+        public static final int lrAmount=0x7f0900de;
+        public static final int lrBalance=0x7f0900df;
+        public static final int lrDate=0x7f0900dc;
+        public static final int lrDetails=0x7f0900dd;
+        public static final int memo=0x7f0900c2;
+        public static final int navBar=0x7f0900e3;
+        public static final int payee=0x7f0900b3;
+        public static final int payeeAddress=0x7f0900f2;
+        public static final int payeeAvailable=0x7f090103;
+        public static final int payeeDefaultExpense=0x7f0900ff;
+        public static final int payeeDefaultIncome=0x7f0900fd;
+        public static final int payeeEmail=0x7f0900f8;
+        public static final int payeeMatchonName=0x7f090102;
+        public static final int payeeName=0x7f0900f0;
+        public static final int payeeNoMatching=0x7f090101;
+        public static final int payeeNotes=0x7f0900fa;
+        public static final int payeePostalCode=0x7f0900f4;
+        public static final int payeeTelephone=0x7f0900f6;
+        public static final int payeeTransRow=0x7f090106;
+        public static final int payeeUseDefault=0x7f0900fb;
+        public static final int prPayeeName=0x7f090104;
+        public static final int prefTimePicker=0x7f090133;
+        public static final int ptrAccount=0x7f090108;
+        public static final int ptrAmount=0x7f09010a;
+        public static final int ptrDate=0x7f090107;
+        public static final int ptrDetails=0x7f090109;
+        public static final int radioGroup1=0x7f090100;
+        public static final int row=0x7f0900db;
+        public static final int schNotificationsRow=0x7f09010c;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int scheduleAccount=0x7f090127;
         public static final int scheduleAmount=0x7f09010f;
         public static final int scheduleAmount1=0x7f090021;
@@ -298,7 +423,7 @@ public final class R {
         public static final int scheduleDate7=0x7f09003d;
         public static final int scheduleDate8=0x7f090042;
         public static final int scheduleDate9=0x7f090047;
-        public static final int scheduleDescription=0x7f0900c1;
+        public static final int scheduleDescription=0x7f0900c3;
         public static final int scheduleFrequencyDescription=0x7f090121;
         public static final int scheduleFrequencyNumber=0x7f090120;
         public static final int scheduleName=0x7f09010e;
@@ -318,10 +443,17 @@ public final class R {
         public static final int schedulePaymentMethod=0x7f090123;
         public static final int scheduleType=0x7f090125;
         public static final int scheduleWeekendOption=0x7f090111;
+<<<<<<< HEAD
         public static final int splitAmount=0x7f0900ac;
         public static final int splitCategory=0x7f0900aa;
         public static final int splitEntryRow=0x7f0900a9;
         public static final int splitMemo=0x7f0900ab;
+=======
+        public static final int splitAmount=0x7f0900ae;
+        public static final int splitCategory=0x7f0900ac;
+        public static final int splitEntryRow=0x7f0900ab;
+        public static final int splitMemo=0x7f0900ad;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int splitsAccountName=0x7f090130;
         public static final int splitsAmount=0x7f090132;
         public static final int splitsMemo=0x7f090131;
@@ -330,62 +462,63 @@ public final class R {
         public static final int srFrequency=0x7f09012c;
         public static final int srNextDueDate=0x7f09012d;
         public static final int srPayee=0x7f09012b;
+<<<<<<< HEAD
         public static final int status=0x7f0900be;
+=======
+        public static final int status=0x7f0900c0;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int syncAll=0x7f09014d;
         public static final int syncDropbox=0x7f09014c;
         public static final int title=0x7f09012f;
         public static final int titleAccount=0x7f090061;
-        public static final int titleAccountCurrency=0x7f090080;
-        public static final int titleAccountIBAN=0x7f09008f;
-        public static final int titleAccountInstitution=0x7f09008a;
-        public static final int titleAccountInstructions=0x7f090088;
-        public static final int titleAccountInstructions2=0x7f09007b;
-        public static final int titleAccountName=0x7f09007c;
-        public static final int titleAccountNumber=0x7f09008d;
-        public static final int titleAccountOpenBalance=0x7f090085;
-        public static final int titleAccountOpenDate=0x7f090083;
-        public static final int titleAccountSubAccount=0x7f090091;
-        public static final int titleAccountTransactions=0x7f090073;
-        public static final int titleAccountType=0x7f09007e;
-        public static final int titleAmount=0x7f0900bb;
-        public static final int titleAutoEntered=0x7f09010b;
+        public static final int titleAccountCurrency=0x7f090082;
+        public static final int titleAccountIBAN=0x7f090091;
+        public static final int titleAccountInstitution=0x7f09008c;
+        public static final int titleAccountInstructions=0x7f09008a;
+        public static final int titleAccountInstructions2=0x7f09007d;
+        public static final int titleAccountName=0x7f09007e;
+        public static final int titleAccountNumber=0x7f09008f;
+        public static final int titleAccountOpenBalance=0x7f090087;
+        public static final int titleAccountOpenDate=0x7f090085;
+        public static final int titleAccountSubAccount=0x7f090093;
+        public static final int titleAccountTransactions=0x7f090074;
+        public static final int titleAccountType=0x7f090080;
+        public static final int titleAmount=0x7f0900bd;
         public static final int titleBegDate=0x7f090063;
-        public static final int titleCategory=0x7f0900b2;
-        public static final int titleCategoryCurrency=0x7f09006f;
-        public static final int titleCategoryName=0x7f09006a;
-        public static final int titleCategoryNotes=0x7f090071;
-        public static final int titleCategoryType=0x7f09006d;
-        public static final int titleCreateModAccount=0x7f09007a;
-        public static final int titleCreateModPayee=0x7f090093;
-        public static final int titleCreateModifySchedule=0x7f0900a3;
-        public static final int titleCreateModifySplits=0x7f0900a4;
-        public static final int titleCreateModifyTransactions=0x7f0900ad;
-        public static final int titleDate=0x7f0900b9;
-        public static final int titleDueToday=0x7f090109;
+        public static final int titleCategory=0x7f0900b4;
+        public static final int titleCategoryCurrency=0x7f090070;
+        public static final int titleCategoryName=0x7f09006b;
+        public static final int titleCategoryNotes=0x7f090072;
+        public static final int titleCategoryType=0x7f09006e;
+        public static final int titleCreateModAccount=0x7f09007c;
+        public static final int titleCreateModPayee=0x7f090095;
+        public static final int titleCreateModifySchedule=0x7f0900a5;
+        public static final int titleCreateModifySplits=0x7f0900a6;
+        public static final int titleCreateModifyTransactions=0x7f0900af;
+        public static final int titleDate=0x7f0900bb;
         public static final int titleEndDate=0x7f090065;
-        public static final int titleFCDescription=0x7f0900c7;
-        public static final int titleFCName=0x7f0900c6;
-        public static final int titleInstitutionBIC=0x7f0900a1;
-        public static final int titleInstitutionCity=0x7f090099;
-        public static final int titleInstitutionName=0x7f090095;
-        public static final int titleInstitutionPhone=0x7f09009d;
-        public static final int titleInstitutionPostalCode=0x7f09009b;
-        public static final int titleInstitutionRoutingNumber=0x7f09009f;
-        public static final int titleInstitutionStreet=0x7f090097;
-        public static final int titleLedger=0x7f0900d4;
-        public static final int titleMemo=0x7f0900bf;
-        public static final int titleNewInstitution=0x7f090094;
+        public static final int titleFCDescription=0x7f0900c9;
+        public static final int titleFCName=0x7f0900c8;
+        public static final int titleInstitutionBIC=0x7f0900a3;
+        public static final int titleInstitutionCity=0x7f09009b;
+        public static final int titleInstitutionName=0x7f090097;
+        public static final int titleInstitutionPhone=0x7f09009f;
+        public static final int titleInstitutionPostalCode=0x7f09009d;
+        public static final int titleInstitutionRoutingNumber=0x7f0900a1;
+        public static final int titleInstitutionStreet=0x7f090099;
+        public static final int titleLedger=0x7f0900d8;
+        public static final int titleMemo=0x7f0900c1;
+        public static final int titleNewInstitution=0x7f090096;
         public static final int titleNoSchedules=0x7f09005b;
-        public static final int titleNumber=0x7f0900b7;
-        public static final int titleOpeningInfo=0x7f09006c;
-        public static final int titlePastDue=0x7f090107;
-        public static final int titlePayeeAddress=0x7f0900ec;
-        public static final int titlePayeeEmail=0x7f0900f2;
-        public static final int titlePayeeName=0x7f0900ea;
-        public static final int titlePayeeNotes=0x7f0900f4;
-        public static final int titlePayeePostalCode=0x7f0900ee;
-        public static final int titlePayeeTelephone=0x7f0900f0;
-        public static final int titlePayeeToFrom=0x7f0900b0;
+        public static final int titleNumber=0x7f0900b9;
+        public static final int titleOpeningInfo=0x7f09006d;
+        public static final int titlePayeeAddress=0x7f0900f1;
+        public static final int titlePayeeEmail=0x7f0900f7;
+        public static final int titlePayeeName=0x7f0900ef;
+        public static final int titlePayeeNotes=0x7f0900f9;
+        public static final int titlePayeePostalCode=0x7f0900f3;
+        public static final int titlePayeeTelephone=0x7f0900f5;
+        public static final int titlePayeeToFrom=0x7f0900b2;
         public static final int titleScheduleAccount=0x7f090126;
         public static final int titleScheduleAutoEnter=0x7f090114;
         public static final int titleScheduleEnd=0x7f090116;
@@ -398,11 +531,20 @@ public final class R {
         public static final int titleScheduleType=0x7f090124;
         public static final int titleScheduleWeekendOption=0x7f090110;
         public static final int titleSchedules=0x7f090128;
+<<<<<<< HEAD
         public static final int titleStatus=0x7f0900bd;
         public static final int titleTransactionType=0x7f0900ae;
         public static final int titleViewSchedule=0x7f090134;
         public static final int titleViewTransaction=0x7f09013c;
         public static final int transactionType=0x7f0900af;
+=======
+        public static final int titleStatus=0x7f0900bf;
+        public static final int titleTransactionType=0x7f0900b0;
+        public static final int titleViewSchedule=0x7f090134;
+        public static final int titleViewTransaction=0x7f09013c;
+        public static final int transactionType=0x7f0900b1;
+        public static final int tvGroup=0x7f0900cb;
+>>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int vtAmount=0x7f090139;
         public static final int vtDate=0x7f090136;
         public static final int vtDescription=0x7f090135;
@@ -437,6 +579,7 @@ public final class R {
         public static final int dialogscheduleactions=0x7f030017;
         public static final int file_view=0x7f030018;
         public static final int file_view_row=0x7f030019;
+<<<<<<< HEAD
         public static final int home=0x7f03001a;
         public static final int home_row=0x7f03001b;
         public static final int homescreenconfiguration=0x7f03001c;
@@ -469,6 +612,41 @@ public final class R {
         public static final int view_schedule=0x7f030037;
         public static final int view_transaction=0x7f030038;
         public static final int welcome=0x7f030039;
+=======
+        public static final int group_layout=0x7f03001a;
+        public static final int home=0x7f03001b;
+        public static final int home_row=0x7f03001c;
+        public static final int homescreenconfiguration=0x7f03001d;
+        public static final int institutions=0x7f03001e;
+        public static final int ledger=0x7f03001f;
+        public static final int ledger_row=0x7f030020;
+        public static final int loadmoretransactions=0x7f030021;
+        public static final int navigationbar=0x7f030022;
+        public static final int new_database=0x7f030023;
+        public static final int payee=0x7f030024;
+        public static final int payee_address=0x7f030025;
+        public static final int payee_defaultaccount=0x7f030026;
+        public static final int payee_matching=0x7f030027;
+        public static final int payee_reassign=0x7f030028;
+        public static final int payee_row=0x7f030029;
+        public static final int payee_transactions=0x7f03002a;
+        public static final int payee_transactions_row=0x7f03002b;
+        public static final int reports=0x7f03002c;
+        public static final int schedule_activity_row=0x7f03002d;
+        public static final int schedule_notifications=0x7f03002e;
+        public static final int schedule_notifications_row=0x7f03002f;
+        public static final int schedule_options=0x7f030030;
+        public static final int schedule_paymentinfo=0x7f030031;
+        public static final int schedules=0x7f030032;
+        public static final int schedules_activity=0x7f030033;
+        public static final int schedules_rows=0x7f030034;
+        public static final int section_header=0x7f030035;
+        public static final int splits_row=0x7f030036;
+        public static final int time_preference=0x7f030037;
+        public static final int view_schedule=0x7f030038;
+        public static final int view_transaction=0x7f030039;
+        public static final int welcome=0x7f03003a;
+>>>>>>> refs/remotes/origin/MoreBugFixes
     }
     public static final class menu {
         public static final int accounts_menu=0x7f080000;
@@ -484,96 +662,146 @@ public final class R {
         public static final int welcome_menu=0x7f08000a;
     }
     public static final class string {
-        public static final int AccountTabAccount=0x7f050131;
-        public static final int AccountTabInstitution=0x7f050130;
-        public static final int AccountTabSubAccount=0x7f050132;
-        public static final int Asset=0x7f050123;
-        public static final int AssetLoan=0x7f050128;
-        public static final int AutoUpdate=0x7f0500b6;
-        public static final int BackActionWarning=0x7f050138;
-        public static final int BankTransfer=0x7f0500ef;
-        public static final int Cash=0x7f05011e;
-        public static final int CategoriesTabGeneral=0x7f05012e;
-        public static final int CategoriesTabHierarchy=0x7f05012f;
-        public static final int Checking=0x7f05011c;
-        public static final int CreditCard=0x7f05011f;
-        public static final int Currency=0x7f050125;
-        public static final int Day=0x7f0500e8;
-        public static final int DirectDeposit=0x7f0500f2;
-        public static final int Equity=0x7f05012a;
-        public static final int Expense=0x7f050127;
-        public static final int FifteenMinutes=0x7f0500b0;
-        public static final int FileChooserFile=0x7f050137;
-        public static final int FileChooserFolder=0x7f050135;
-        public static final int FileChooserLocation=0x7f050134;
-        public static final int FileChooserParentDirectory=0x7f050136;
-        public static final int FourHours=0x7f0500b4;
-        public static final int FourWeeks=0x7f0500be;
-        public static final int HalfMonth=0x7f0500ea;
-        public static final int Income=0x7f050126;
-        public static final int Investment=0x7f050121;
-        public static final int Liability=0x7f050124;
-        public static final int Loan=0x7f050120;
-        public static final int ManualDeposit=0x7f0500f1;
-        public static final int MoneyMarket=0x7f050122;
-        public static final int Month=0x7f0500eb;
+        public static final int AccountTabAccount=0x7f050134;
+        public static final int AccountTabInstitution=0x7f050133;
+        public static final int AccountTabSubAccount=0x7f050135;
+        public static final int Apr=0x7f05014c;
+        public static final int Asset=0x7f050126;
+        public static final int AssetLoan=0x7f05012b;
+        public static final int Aug=0x7f050150;
+        public static final int AutoUpdate=0x7f0500b9;
+        public static final int BackActionWarning=0x7f05013b;
+        public static final int BankTransfer=0x7f0500f2;
+        public static final int Cash=0x7f050121;
+        public static final int CategoriesTabGeneral=0x7f050131;
+        public static final int CategoriesTabHierarchy=0x7f050132;
+        public static final int Checking=0x7f05011f;
+        public static final int CreditCard=0x7f050122;
+        public static final int Currency=0x7f050128;
+        public static final int Day=0x7f0500eb;
+        public static final int Dec=0x7f050154;
+        public static final int DirectDeposit=0x7f0500f5;
+        public static final int Equity=0x7f05012d;
+        public static final int Expense=0x7f05012a;
+        public static final int Feb=0x7f05014a;
+        public static final int FifteenMinutes=0x7f0500b1;
+        public static final int FileChooserFile=0x7f05013a;
+        public static final int FileChooserFolder=0x7f050138;
+        public static final int FileChooserLocation=0x7f050137;
+        public static final int FileChooserParentDirectory=0x7f050139;
+        public static final int FiveMinutes=0x7f0500b0;
+        public static final int FourHours=0x7f0500b5;
+        public static final int FourWeeks=0x7f0500c1;
+        public static final int HalfMonth=0x7f0500ed;
+        public static final int Income=0x7f050129;
+        public static final int Investment=0x7f050124;
+        public static final int Jan=0x7f050149;
+        public static final int Jul=0x7f05014f;
+        public static final int Jun=0x7f05014e;
+        public static final int Liability=0x7f050127;
+        public static final int Loan=0x7f050123;
+        public static final int ManualDeposit=0x7f0500f4;
+        public static final int Mar=0x7f05014b;
+        public static final int May=0x7f05014d;
+        public static final int MoneyMarket=0x7f050125;
+        public static final int Month=0x7f0500ee;
         public static final int None=0x7f0500af;
-        public static final int Once=0x7f0500e7;
-        public static final int OneHour=0x7f0500b2;
-        public static final int OneWeek=0x7f0500bb;
-        public static final int Other=0x7f0500ee;
-        public static final int PayeeTabAddress=0x7f05012b;
-        public static final int PayeeTabDefault=0x7f05012c;
-        public static final int PayeeTabMatching=0x7f05012d;
-        public static final int Savings=0x7f05011d;
-        public static final int SixHours=0x7f0500b5;
-        public static final int StandingOrder=0x7f0500f0;
-        public static final int Stock=0x7f050129;
-        public static final int TabTransactions=0x7f050133;
-        public static final int ThirtyMinutes=0x7f0500b1;
-        public static final int ThreeWeeks=0x7f0500bd;
-        public static final int TwoHours=0x7f0500b3;
-        public static final int TwoWeeks=0x7f0500bc;
-        public static final int Week=0x7f0500e9;
-        public static final int Year=0x7f0500ec;
+        public static final int Nov=0x7f050153;
+        public static final int Oct=0x7f050152;
+        public static final int Once=0x7f0500ea;
+        public static final int OneHour=0x7f0500b3;
+        public static final int OneWeek=0x7f0500be;
+        public static final int Other=0x7f0500f1;
+        public static final int PayeeTabAddress=0x7f05012e;
+        public static final int PayeeTabDefault=0x7f05012f;
+        public static final int PayeeTabMatching=0x7f050130;
+        public static final int Savings=0x7f050120;
+        public static final int Sep=0x7f050151;
+        public static final int SixHours=0x7f0500b6;
+        public static final int StandingOrder=0x7f0500f3;
+        public static final int Stock=0x7f05012c;
+        public static final int TabTransactions=0x7f050136;
+        public static final int ThirtyMinutes=0x7f0500b2;
+        public static final int ThreeWeeks=0x7f0500c0;
+        public static final int TwelveHours=0x7f0500b7;
+        public static final int TwentyFourHours=0x7f0500b8;
+        public static final int TwoHours=0x7f0500b4;
+        public static final int TwoWeeks=0x7f0500bf;
+        public static final int Week=0x7f0500ec;
+        public static final int Year=0x7f0500ef;
         public static final int accountNameNotEntered=0x7f050052;
         public static final int accountNotSupported=0x7f050073;
         public static final int app_key=0x7f050000;
         public static final int app_name=0x7f050002;
         public static final int app_secret=0x7f050001;
-        public static final int buttonAll=0x7f05013e;
+        public static final int buttonAll=0x7f050141;
         public static final int buttonChooseCategory=0x7f050082;
-        public static final int buttonDelete=0x7f0500c9;
-        public static final int buttonEdit=0x7f0500c8;
-        public static final int buttonEnter=0x7f0500c6;
-        public static final int buttonLogin=0x7f050107;
-        public static final int buttonLogout=0x7f050108;
+        public static final int buttonDelete=0x7f0500cc;
+        public static final int buttonEdit=0x7f0500cb;
+        public static final int buttonEnter=0x7f0500c9;
+        public static final int buttonLog=0x7f050146;
+        public static final int buttonLogin=0x7f05010a;
+        public static final int buttonLogout=0x7f05010b;
         public static final int buttonNewInstitution=0x7f050061;
-        public static final int buttonOneMonth=0x7f05013c;
-        public static final int buttonOneYear=0x7f05013d;
-        public static final int buttonSave=0x7f0500d2;
+        public static final int buttonOneMonth=0x7f05013f;
+        public static final int buttonOneYear=0x7f050140;
+        public static final int buttonSave=0x7f0500d5;
         public static final int buttonSetDate=0x7f050068;
-        public static final int buttonSkip=0x7f0500c7;
+        public static final int buttonSkip=0x7f0500ca;
         public static final int buttonSplit=0x7f050080;
         public static final int buttonSubmit=0x7f0500a9;
         public static final int categoryNotFound=0x7f050053;
-        public static final int changeDateAfter=0x7f0500e6;
-        public static final int changeDateBefore=0x7f0500e5;
+        public static final int changeDateAfter=0x7f0500e9;
+        public static final int changeDateBefore=0x7f0500e8;
         public static final int cleared=0x7f05007d;
         public static final int close=0x7f050043;
+        public static final int crash_dialog_comment_prompt=0x7f050174;
+        public static final int crash_dialog_ok_toast=0x7f050175;
+        public static final int crash_dialog_text=0x7f050173;
+        public static final int crash_dialog_title=0x7f050172;
+        public static final int crash_toast_text=0x7f050171;
         public static final int createNewPayee=0x7f05003d;
+        public static final int defaultNotificationTime=0x7f05017d;
         public static final int delete=0x7f050038;
         public static final int deletemsg=0x7f050039;
-        public static final int descriptionAddTransaction=0x7f0500c4;
-        public static final int descriptionRefresh=0x7f0500c3;
-        public static final int doNothing=0x7f0500e4;
+        public static final int descriptionAddTransaction=0x7f0500c7;
+        public static final int descriptionRefresh=0x7f0500c6;
+        public static final int doNothing=0x7f0500e7;
         public static final int error=0x7f05003a;
-        public static final int homeConfigDatabaseTitle=0x7f0500cd;
-        public static final int homeConfigDefaultAccountTitle=0x7f0500ce;
-        public static final int homeConfigDefaultUpdateFreqTitle=0x7f0500cf;
-        public static final int homeConfigInstructions=0x7f0500cc;
-        public static final int homeConfigNumWeeksDisplayTitle=0x7f0500d0;
-        public static final int homeWidgetError=0x7f0500d6;
+        public static final int freq2Months=0x7f050168;
+        public static final int freq2Weeks=0x7f05015f;
+        public static final int freq2Yearly=0x7f05016c;
+        public static final int freq30Days=0x7f05015a;
+        public static final int freq3Months=0x7f050169;
+        public static final int freq3Weeks=0x7f050160;
+        public static final int freq4Months=0x7f05016a;
+        public static final int freq4Weeks=0x7f050161;
+        public static final int freq8Weeks=0x7f050162;
+        public static final int freqAny=0x7f050170;
+        public static final int freqDaily=0x7f050159;
+        public static final int freqDay=0x7f050158;
+        public static final int freqDays=0x7f05015b;
+        public static final int freqEvery=0x7f050155;
+        public static final int freqHalfMonth=0x7f050163;
+        public static final int freqHalfMonths=0x7f050164;
+        public static final int freqHalfMonths2=0x7f050165;
+        public static final int freqMonth=0x7f050166;
+        public static final int freqMonthly=0x7f050167;
+        public static final int freqMonths=0x7f05016b;
+        public static final int freqOnce=0x7f050156;
+        public static final int freqTimes=0x7f050157;
+        public static final int freqWeek=0x7f05015c;
+        public static final int freqWeekly=0x7f05015d;
+        public static final int freqWeeks=0x7f05015e;
+        public static final int freqYear=0x7f05016d;
+        public static final int freqYearly=0x7f05016e;
+        public static final int freqYears=0x7f05016f;
+        public static final int homeConfigDatabaseTitle=0x7f0500d0;
+        public static final int homeConfigDefaultAccountTitle=0x7f0500d1;
+        public static final int homeConfigDefaultUpdateFreqTitle=0x7f0500d2;
+        public static final int homeConfigInstructions=0x7f0500cf;
+        public static final int homeConfigNumWeeksDisplayTitle=0x7f0500d3;
+        public static final int homeWidgetError=0x7f0500d9;
         public static final int itemCancel=0x7f050033;
         public static final int itemClearAll=0x7f050034;
         public static final int itemFileCreated=0x7f05008d;
@@ -594,9 +822,14 @@ public final class R {
         public static final int itemNumTransactions=0x7f050092;
         public static final int itemSave=0x7f050032;
         public static final int itemVersion=0x7f05008b;
-        public static final int lostDatabase=0x7f05011b;
+        public static final int loadMoreRow=0x7f050147;
+        public static final int loadingMoreTransactions=0x7f050148;
+        public static final int lostDatabase=0x7f05011e;
         public static final int menuOpen=0x7f050041;
         public static final int menuRecent=0x7f050042;
+        public static final int messageDropboxLinkError=0x7f05017b;
+        public static final int messageLinkSuccessful=0x7f05017a;
+        public static final int messageLogOut=0x7f05017c;
         public static final int msgPayeeName=0x7f05003e;
         public static final int notreconciled=0x7f05007c;
         public static final int payeeMatching=0x7f05002b;
@@ -604,27 +837,30 @@ public final class R {
         public static final int payeeMoreThanOne=0x7f050040;
         public static final int payeeNoMatching=0x7f05002c;
         public static final int payeeNotFound=0x7f05003f;
-        public static final int receive_home_update_notifications_permission_description=0x7f0500c2;
-        public static final int receive_home_update_notifications_permission_label=0x7f0500c1;
+        public static final int pref_acra_disabled=0x7f050178;
+        public static final int pref_acra_enabled=0x7f050177;
+        public static final int pref_disable_acra=0x7f050176;
+        public static final int receive_home_update_notifications_permission_description=0x7f0500c5;
+        public static final int receive_home_update_notifications_permission_label=0x7f0500c4;
         public static final int reconciled=0x7f05007e;
-        public static final int scheduleDescription=0x7f0500ca;
-        public static final int send_home_update_notifications_permission_description=0x7f0500c0;
-        public static final int send_home_update_notifications_permission_label=0x7f0500bf;
-        public static final int skip=0x7f0500d3;
+        public static final int scheduleDescription=0x7f0500cd;
+        public static final int send_home_update_notifications_permission_description=0x7f0500c3;
+        public static final int send_home_update_notifications_permission_label=0x7f0500c2;
+        public static final int skip=0x7f0500d6;
         public static final int splitTransaction=0x7f050089;
         public static final int splitsNotBalanced=0x7f05009b;
-        public static final int summaryCheckSchedulesStartup=0x7f050101;
-        public static final int summaryDisplayFrequency=0x7f0500ba;
-        public static final int summaryDropboxAutoSync=0x7f050117;
-        public static final int summaryDropboxStartupCheck=0x7f050113;
-        public static final int summaryDropboxUploadonExit=0x7f050115;
+        public static final int summaryCheckSchedulesStartup=0x7f050104;
+        public static final int summaryDisplayFrequency=0x7f0500bd;
+        public static final int summaryDropboxAutoSync=0x7f05011a;
+        public static final int summaryDropboxStartupCheck=0x7f050116;
+        public static final int summaryDropboxUploadonExit=0x7f050118;
         public static final int summaryFrequency=0x7f0500ae;
         public static final int summaryLastUsedFile=0x7f050009;
-        public static final int summaryLinkToDropbox=0x7f05010a;
+        public static final int summaryLinkToDropbox=0x7f05010d;
         public static final int summaryOpenLastUsed=0x7f050007;
         public static final int summaryPayeeReassign=0x7f050035;
-        public static final int summaryPreferenceTimeToRun=0x7f0500fa;
-        public static final int summaryScheduleNotifications=0x7f0500f6;
+        public static final int summaryPreferenceTimeToRun=0x7f0500fd;
+        public static final int summaryScheduleNotifications=0x7f0500f9;
         public static final int titleAbout=0x7f05008a;
         public static final int titleAccount=0x7f0500a6;
         public static final int titleAccountCurrency=0x7f050067;
@@ -642,16 +878,17 @@ public final class R {
         public static final int titleAccountType=0x7f050066;
         public static final int titleAccounts=0x7f05001c;
         public static final int titleAmount=0x7f05007b;
-        public static final int titleAutoEntered=0x7f050105;
-        public static final int titleBackActionWarning=0x7f050139;
+        public static final int titleAutoEntered=0x7f050108;
+        public static final int titleAutoSyncFreq=0x7f05017e;
+        public static final int titleBackActionWarning=0x7f05013c;
         public static final int titleBasicHomeWidget=0x7f0500ab;
         public static final int titleBegDate=0x7f0500a7;
         public static final int titleButtonCancel=0x7f05000d;
         public static final int titleButtonDelete=0x7f05000f;
         public static final int titleButtonEdit=0x7f05000e;
-        public static final int titleButtonNo=0x7f0500d5;
+        public static final int titleButtonNo=0x7f0500d8;
         public static final int titleButtonOK=0x7f05000c;
-        public static final int titleButtonYes=0x7f0500d4;
+        public static final int titleButtonYes=0x7f0500d7;
         public static final int titleCashRequirements=0x7f0500a4;
         public static final int titleCategories=0x7f05001d;
         public static final int titleCategory=0x7f050078;
@@ -666,9 +903,9 @@ public final class R {
         public static final int titleCategoryOptions=0x7f05004d;
         public static final int titleCategoryPriceEntry=0x7f050050;
         public static final int titleCategoryType=0x7f050049;
-        public static final int titleCheckSchedulesStartup=0x7f050100;
-        public static final int titleChooseFrequency=0x7f0500b8;
-        public static final int titleCloudServices=0x7f05010b;
+        public static final int titleCheckSchedulesStartup=0x7f050103;
+        public static final int titleChooseFrequency=0x7f0500bb;
+        public static final int titleCloudServices=0x7f05010e;
         public static final int titleCreateAccountAccount=0x7f050070;
         public static final int titleCreateAccountInstitution=0x7f05006f;
         public static final int titleCreateAccountParent=0x7f050071;
@@ -677,30 +914,30 @@ public final class R {
         public static final int titleCreateModCategory=0x7f050044;
         public static final int titleCreateModPayee=0x7f050023;
         public static final int titleCreateModifyInstitution=0x7f050072;
-        public static final int titleCreateModifySchedule=0x7f0500d8;
+        public static final int titleCreateModifySchedule=0x7f0500db;
         public static final int titleCreateModifySplits=0x7f050087;
         public static final int titleCreateModifyTransactions=0x7f050075;
         public static final int titleDatabaseName=0x7f05000b;
         public static final int titleDate=0x7f05007a;
         public static final int titleDelete=0x7f050021;
         public static final int titleDeleteTransaction=0x7f050083;
-        public static final int titleDialogScheduleActions=0x7f0500c5;
-        public static final int titleDisplayFrequency=0x7f0500b9;
-        public static final int titleDropbox=0x7f050106;
-        public static final int titleDropboxAutoSync=0x7f050116;
-        public static final int titleDropboxStartupCheck=0x7f050112;
-        public static final int titleDropboxSync=0x7f05010e;
-        public static final int titleDropboxUploadonExit=0x7f050114;
-        public static final int titleDueToday=0x7f0500fd;
+        public static final int titleDialogScheduleActions=0x7f0500c8;
+        public static final int titleDisplayFrequency=0x7f0500bc;
+        public static final int titleDropbox=0x7f050109;
+        public static final int titleDropboxAutoSync=0x7f050119;
+        public static final int titleDropboxStartupCheck=0x7f050115;
+        public static final int titleDropboxSync=0x7f050111;
+        public static final int titleDropboxUploadonExit=0x7f050117;
+        public static final int titleDueToday=0x7f050100;
         public static final int titleEdit=0x7f050020;
         public static final int titleEditModAccount=0x7f050055;
         public static final int titleEndDate=0x7f0500a8;
         public static final int titleFileChooser=0x7f05000a;
-        public static final int titleGoogleDrive=0x7f05010c;
-        public static final int titleGoogleDriveSync=0x7f05010f;
+        public static final int titleGoogleDrive=0x7f05010f;
+        public static final int titleGoogleDriveSync=0x7f050112;
         public static final int titleHome=0x7f050011;
-        public static final int titleHomeWidgetConfiguration=0x7f0500d1;
-        public static final int titleHomeWidgetError=0x7f0500d7;
+        public static final int titleHomeWidgetConfiguration=0x7f0500d4;
+        public static final int titleHomeWidgetError=0x7f0500da;
         public static final int titleInstitutionBIC=0x7f05005d;
         public static final int titleInstitutionCity=0x7f050059;
         public static final int titleInstitutionName=0x7f050057;
@@ -709,15 +946,15 @@ public final class R {
         public static final int titleInstitutionRoutingNumber=0x7f05005c;
         public static final int titleInstitutionStreet=0x7f050058;
         public static final int titleInstitutions=0x7f050074;
-        public static final int titleKMMDAlarmReceiver=0x7f0500fe;
+        public static final int titleKMMDAlarmReceiver=0x7f050101;
         public static final int titleLastUsedFile=0x7f050008;
         public static final int titleLedger=0x7f050012;
-        public static final int titleLinkToDropbox=0x7f050109;
-        public static final int titleLoadMore=0x7f05013b;
+        public static final int titleLinkToDropbox=0x7f05010c;
+        public static final int titleLoadMore=0x7f05013e;
         public static final int titleMemo=0x7f050081;
-        public static final int titleMenuNav=0x7f050141;
-        public static final int titleNavBar=0x7f050142;
-        public static final int titleNavigation=0x7f050140;
+        public static final int titleMenuNav=0x7f050144;
+        public static final int titleNavBar=0x7f050145;
+        public static final int titleNavigation=0x7f050143;
         public static final int titleNew=0x7f05001f;
         public static final int titleNewDatabase=0x7f050010;
         public static final int titleNewInstitution=0x7f050056;
@@ -728,7 +965,7 @@ public final class R {
         public static final int titleOpenLastUsed=0x7f050006;
         public static final int titleOpeningInfo=0x7f050048;
         public static final int titleOptions=0x7f0500a5;
-        public static final int titlePastDue=0x7f0500fc;
+        public static final int titlePastDue=0x7f0500ff;
         public static final int titlePayeeAddress=0x7f050026;
         public static final int titlePayeeDefaultAccount=0x7f050024;
         public static final int titlePayeeDefaultCategory=0x7f05002f;
@@ -736,7 +973,7 @@ public final class R {
         public static final int titlePayeeDefaultIncome=0x7f050030;
         public static final int titlePayeeEmail=0x7f050029;
         public static final int titlePayeeMatching=0x7f050025;
-        public static final int titlePayeeName=0x7f05013a;
+        public static final int titlePayeeName=0x7f05013d;
         public static final int titlePayeeNotes=0x7f05002a;
         public static final int titlePayeePostalCode=0x7f050027;
         public static final int titlePayeeTelephone=0x7f050028;
@@ -746,53 +983,54 @@ public final class R {
         public static final int titlePayees=0x7f05001e;
         public static final int titlePayeesAvailable=0x7f050036;
         public static final int titlePreferenceHomeWidget=0x7f0500ac;
-        public static final int titlePreferenceNotifications=0x7f0500f4;
-        public static final int titlePreferenceOverDueSchedules=0x7f0500f7;
-        public static final int titlePreferenceTimeToRun=0x7f0500f9;
-        public static final int titlePreferencesAutoEnterScheduleStartup=0x7f050102;
-        public static final int titlePreferencesAutoEnterSchedulesNotifications=0x7f050104;
-        public static final int titlePreferencesCheckSchedulesNotifications=0x7f050103;
-        public static final int titlePreferencesDueTodaySchedules=0x7f0500f8;
-        public static final int titlePreferencesSchedules=0x7f0500ff;
+        public static final int titlePreferenceNotifications=0x7f0500f7;
+        public static final int titlePreferenceOverDueSchedules=0x7f0500fa;
+        public static final int titlePreferenceTimeToRun=0x7f0500fc;
+        public static final int titlePreferencesAutoEnterScheduleStartup=0x7f050105;
+        public static final int titlePreferencesAutoEnterSchedulesNotifications=0x7f050107;
+        public static final int titlePreferencesCheckSchedulesNotifications=0x7f050106;
+        public static final int titlePreferencesDueTodaySchedules=0x7f0500fb;
+        public static final int titlePreferencesSchedules=0x7f050102;
         public static final int titlePrefs=0x7f05001b;
         public static final int titleReassignPayee=0x7f050037;
-        public static final int titleReports=0x7f05013f;
-        public static final int titleScheduleAccount=0x7f0500dc;
-        public static final int titleScheduleAutoEnter=0x7f0500e0;
-        public static final int titleScheduleEnd=0x7f0500e1;
-        public static final int titleScheduleEndDate=0x7f0500e2;
-        public static final int titleScheduleEstimate=0x7f0500df;
-        public static final int titleScheduleFrequency=0x7f0500db;
-        public static final int titleScheduleName=0x7f0500da;
-        public static final int titleScheduleNotifications=0x7f0500f5;
-        public static final int titleScheduleNumTransactions=0x7f0500e3;
-        public static final int titleScheduleOptions=0x7f0500dd;
-        public static final int titleSchedulePaymentInfo=0x7f0500d9;
-        public static final int titleSchedulePaymentMethod=0x7f0500ed;
-        public static final int titleScheduleWeekendOption=0x7f0500de;
+        public static final int titleReports=0x7f050142;
+        public static final int titleScheduleAccount=0x7f0500df;
+        public static final int titleScheduleAutoEnter=0x7f0500e3;
+        public static final int titleScheduleEnd=0x7f0500e4;
+        public static final int titleScheduleEndDate=0x7f0500e5;
+        public static final int titleScheduleEstimate=0x7f0500e2;
+        public static final int titleScheduleFrequency=0x7f0500de;
+        public static final int titleScheduleName=0x7f0500dd;
+        public static final int titleScheduleNotifications=0x7f0500f8;
+        public static final int titleScheduleNumTransactions=0x7f0500e6;
+        public static final int titleScheduleOptions=0x7f0500e0;
+        public static final int titleSchedulePaymentInfo=0x7f0500dc;
+        public static final int titleSchedulePaymentMethod=0x7f0500f0;
+        public static final int titleScheduleWeekendOption=0x7f0500e1;
         public static final int titleSchedules=0x7f05009e;
-        public static final int titleSchedulesNotifications=0x7f0500fb;
-        public static final int titleSelectanAccount=0x7f0500b7;
-        public static final int titleSkipSchedule=0x7f0500cb;
+        public static final int titleSchedulesNotifications=0x7f0500fe;
+        public static final int titleSelectanAccount=0x7f0500ba;
+        public static final int titleSkipSchedule=0x7f0500ce;
         public static final int titleSplitConfirmation=0x7f05009c;
         public static final int titleSplitsMessage=0x7f05009d;
         public static final int titleStartNew=0x7f050004;
         public static final int titleStatus=0x7f05007f;
         public static final int titleSubAccount=0x7f050051;
         public static final int titleSumofSplits=0x7f050084;
-        public static final int titleSync=0x7f05011a;
-        public static final int titleSyncAll=0x7f050118;
-        public static final int titleSyncDropbox=0x7f050119;
+        public static final int titleSync=0x7f05011d;
+        public static final int titleSyncAll=0x7f05011b;
+        public static final int titleSyncDropbox=0x7f05011c;
+        public static final int titleSynchronization=0x7f050179;
         public static final int titleTransactionAmount=0x7f050086;
         public static final int titleTransactionType=0x7f050076;
-        public static final int titleUbuntuOne=0x7f05010d;
-        public static final int titleUbuntuOneSync=0x7f050110;
+        public static final int titleUbuntuOne=0x7f050110;
+        public static final int titleUbuntuOneSync=0x7f050113;
         public static final int titleUnassigned=0x7f050085;
         public static final int titleUpdateFrequency=0x7f0500ad;
-        public static final int titleViewSchedule=0x7f0500f3;
+        public static final int titleViewSchedule=0x7f0500f6;
         public static final int titleViewTransaction=0x7f050013;
         public static final int titleWelcome=0x7f050003;
-        public static final int titleWifiOnly=0x7f050111;
+        public static final int titleWifiOnly=0x7f050114;
         public static final int titlesrAmount=0x7f0500a3;
         public static final int titlesrDescription=0x7f05009f;
         public static final int titlesrFrequency=0x7f0500a1;
@@ -816,4 +1054,89 @@ public final class R {
         public static final int basic_widget_info=0x7f040000;
         public static final int prefs=0x7f040001;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a CustomFastScrollView.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #CustomFastScrollView_overlayHeight com.vanhlebarsoftware.kmmdroid:overlayHeight}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomFastScrollView_overlayScrollThumbWidth com.vanhlebarsoftware.kmmdroid:overlayScrollThumbWidth}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomFastScrollView_overlayTextSize com.vanhlebarsoftware.kmmdroid:overlayTextSize}</code></td><td></td></tr>
+           <tr><td><code>{@link #CustomFastScrollView_overlayWidth com.vanhlebarsoftware.kmmdroid:overlayWidth}</code></td><td></td></tr>
+           </table>
+           @see #CustomFastScrollView_overlayHeight
+           @see #CustomFastScrollView_overlayScrollThumbWidth
+           @see #CustomFastScrollView_overlayTextSize
+           @see #CustomFastScrollView_overlayWidth
+         */
+        public static final int[] CustomFastScrollView = {
+            0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.vanhlebarsoftware.kmmdroid.R.attr#overlayHeight}
+          attribute's value can be found in the {@link #CustomFastScrollView} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:overlayHeight
+        */
+        public static final int CustomFastScrollView_overlayHeight = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.vanhlebarsoftware.kmmdroid.R.attr#overlayScrollThumbWidth}
+          attribute's value can be found in the {@link #CustomFastScrollView} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:overlayScrollThumbWidth
+        */
+        public static final int CustomFastScrollView_overlayScrollThumbWidth = 3;
+        /**
+          <p>This symbol is the offset where the {@link com.vanhlebarsoftware.kmmdroid.R.attr#overlayTextSize}
+          attribute's value can be found in the {@link #CustomFastScrollView} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:overlayTextSize
+        */
+        public static final int CustomFastScrollView_overlayTextSize = 2;
+        /**
+          <p>This symbol is the offset where the {@link com.vanhlebarsoftware.kmmdroid.R.attr#overlayWidth}
+          attribute's value can be found in the {@link #CustomFastScrollView} array.
+
+
+          <p>Must be a dimension value, which is a floating point number appended with a unit such as "<code>14.5sp</code>".
+Available units are: px (pixels), dp (density-independent pixels), sp (scaled pixels based on preferred font size),
+in (inches), mm (millimeters).
+<p>This may also be a reference to a resource (in the form
+"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
+theme attribute (in the form
+"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
+containing a value of this type.
+          @attr name android:overlayWidth
+        */
+        public static final int CustomFastScrollView_overlayWidth = 0;
+    };
 }

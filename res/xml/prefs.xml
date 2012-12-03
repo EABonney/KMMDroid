@@ -6,6 +6,12 @@
     	android:key="openLastUsed"
     	android:title="@string/titleOpenLastUsed">
     </CheckBoxPreference>
+    <CheckBoxPreference 
+        android:key="acra.enable"
+        android:title="@string/pref_disable_acra"
+        android:summaryOn="@string/pref_acra_enabled"
+        android:summaryOff="@string/pref_acra_disabled"
+        android:defaultValue="true" />
     <PreferenceCategory 
         android:title="@string/titleNavigation" >
         <CheckBoxPreference 
@@ -19,6 +25,9 @@
             android:defaultValue="false" >
         </CheckBoxPreference>
     </PreferenceCategory>
+	
+    <PreferenceCategory
+        android:title="@string/titleSynchronization" >
     <PreferenceScreen 
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:title="@string/titleCloudServices">
@@ -43,6 +52,11 @@
                 android:summary="@string/summaryDropboxAutoSync"
                 android:title="@string/titleDropboxAutoSync"
                 android:key="dropboxAutoSync"/>
+            <ListPreference
+                android:title="@string/titleAutoSyncFreq"
+                android:entries="@array/DropboxFreq"
+                android:entryValues="@array/DropboxFreqValues"
+                android:key="dropboxFrequency"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/titleGoogleDrive">
@@ -57,12 +71,13 @@
                 android:key="ubuntuoneSync"/>
     	</PreferenceScreen>
     </PreferenceScreen>
+	</PreferenceCategory>
     <PreferenceCategory 
 		android:title="@string/titlePreferenceNotifications">
         	<CheckBoxPreference
         	    android:key="receiveNotifications"
         	    android:title="@string/titleScheduleNotifications"
-        	    android:summary="@string/summaryScheduleNotifications"/>
+        	    android:summary="@string/summaryScheduleNotifications" android:dependency="openLastUsed"/>
         	<CheckBoxPreference
         	    android:title="@string/titlePreferenceOverDueSchedules"
         	    android:key="overdueSchedules"
@@ -75,7 +90,7 @@
         	    android:name="@string/titlePreferenceTimeToRun"
         	    android:summary="@string/summaryPreferenceTimeToRun"
         	    android:dialogLayout="@layout/time_preference"
-        	    android:title="Default notification time"
+        	    android:title="@string/defaultNotificationTime"
         	    android:key="notificationTime"
 				android:dependency="receiveNotifications" />
     </PreferenceCategory>
@@ -95,4 +110,5 @@
             android:key="checkSchedulesNotifications"
             android:dependency="openLastUsed"/>
     </PreferenceCategory>
+    
 </PreferenceScreen>

@@ -212,6 +212,9 @@ public class ViewTransactionActivity extends Activity
 							Intent intent = new Intent(KMMDService.DATA_CHANGED);
 							sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 						}
+						
+						//Mark file as dirty
+						KMMDapp.markFileIsDirty(true, "9999");
 						finish();
 					}
 				});

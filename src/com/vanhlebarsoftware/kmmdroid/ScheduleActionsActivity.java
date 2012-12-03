@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,6 +82,10 @@ public class ScheduleActionsActivity extends Activity
         if(!KMMDapp.isDbOpen())
         {
         	KMMDapp.openDB();
+    		// Set the currently opened database.
+    		Editor edit = KMMDapp.prefs.edit();
+    		edit.putString("currentOpenedDatabase", widgetDatabasePath);
+    		edit.apply();
         }
         
         // Find our views

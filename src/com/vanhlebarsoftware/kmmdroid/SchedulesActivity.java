@@ -1,4 +1,4 @@
-package com.vanhlebarsoftware.kmmdroid;
+	package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
 import android.content.Context;
@@ -32,7 +32,7 @@ public class SchedulesActivity extends Activity
 	private static final String[] dbColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurenceString", "nextPaymentDue", 
 												"endDate", "lastPayment", "valueFormatted", "kmmPayees.name AS Payee" };
 	private static final String strSelection = "kmmSchedules.id = kmmSplits.transactionId AND kmmSplits.payeeId = kmmPayees.id AND nextPaymentDue > 0" + 
-												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')";
+												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)";
 	private static final String strOrderBy = "nextPaymentDue ASC";
 	static final String[] FROM = { "Description", "occurenceString", "nextPaymentDue", "valueFormatted", "Payee" };
 	static final int[] TO = { R.id.srDescription, R.id.srFrequency, R.id.srNextDueDate, R.id.srAmount, R.id.srPayee };
@@ -76,7 +76,6 @@ public class SchedulesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), HomeActivity.class));
-				finish();
 			}
 		});
         
@@ -85,7 +84,6 @@ public class SchedulesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-				finish();
 			}
 		});
         
@@ -94,7 +92,6 @@ public class SchedulesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
-				finish();
 			}
 		});
         
@@ -103,7 +100,6 @@ public class SchedulesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
-				finish();
 			}
 		});
         
@@ -112,17 +108,9 @@ public class SchedulesActivity extends Activity
 			public void onClick(View arg0)
 			{
 				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
-				finish();
 			}
 		});
         
-        /*btnSchedules.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				Toast.makeText(getBaseContext(), "Just a holder for now", Toast.LENGTH_SHORT).show();
-			}
-		});*/
         btnSchedules.setVisibility(View.GONE);
         
         btnReports.setOnClickListener(new View.OnClickListener()

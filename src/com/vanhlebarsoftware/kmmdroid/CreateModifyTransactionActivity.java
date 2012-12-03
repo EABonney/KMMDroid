@@ -12,6 +12,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -58,9 +59,6 @@ public class CreateModifyTransactionActivity extends Activity
 	private static int C_BANKID = 17;
 	private static int T_POSTDATE = 2;
 	private static int T_MEMO = 3;
-	private static int WITHDRAW = 2;
-	private static int DEPOSIT = 0;
-	private static int TRANSFER = 1;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM1 = { "accountName" };
@@ -68,7 +66,7 @@ public class CreateModifyTransactionActivity extends Activity
 	private int intYear;
 	private int intMonth;
 	private int intDay;
-	private int intTransType = WITHDRAW;
+	private int intTransType = Transaction.WITHDRAW;
 	private int intTransStatus = 0;
 	private String strTransPayeeId = null;
 	private String strTransCategoryId = null;		// Only used if we have ONLY one category, use splits if we have more than one.
@@ -115,6 +113,12 @@ public class CreateModifyTransactionActivity extends Activity
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
+        
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
+        }
         
         // Find our views
         spinTransType = (Spinner) findViewById(R.id.transactionType);
@@ -165,12 +169,6 @@ public class CreateModifyTransactionActivity extends Activity
         		KMMDapp.setFullPath(widgetDatabasePath);
         		KMMDapp.openDB();
         	}
-        }
-        
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
         }
         
         // Make it so the user is not able to edit the Category selected without using the Spinner.
@@ -430,17 +428,31 @@ public class CreateModifyTransactionActivity extends Activity
 					String value = null, formatted = null, memo = null;
 					if(i == 0)
 					{
-						if( intTransType == WITHDRAW )
+						/*if( intTransType == WITHDRAW )
 						{
 							value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-							Log.d(TAG, "value: " + value);
 							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 						}
 						else
 						{
 							value = Account.createBalance(Transaction.convertToPennies(strAmount));
 							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);							
+						}*/
+						switch( intTransType )
+						{
+							case Transaction.DEPOSIT:
+								value = Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							case Transaction.TRANSFER:
+								value = Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							case Transaction.WITHDRAW:
+								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+								break;
+							default:
+								break;
 						}
+						formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 						memo = editMemo.getText().toString();
 					}
 					else
@@ -455,7 +467,7 @@ public class CreateModifyTransactionActivity extends Activity
 						}
 						else
 						{
-							if( intTransType == WITHDRAW )
+							/*if( intTransType == Transaction.WITHDRAW )
 							{
 								value = Account.createBalance(Transaction.convertToPennies(strAmount));
 								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
@@ -464,7 +476,23 @@ public class CreateModifyTransactionActivity extends Activity
 							{
 								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
 								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
+							}*/
+							switch( intTransType )
+							{
+								case Transaction.DEPOSIT:
+									value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+									break;
+								case Transaction.TRANSFER:
+									// We have to take the current value and change the sign.
+									value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
+									break;
+								case Transaction.WITHDRAW:
+									value = Account.createBalance(Transaction.convertToPennies(strAmount));
+									break;
+								default:
+								break;
 							}
+							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
 							memo = editMemo.getText().toString();
 							accountUsed = strTransCategoryId;
 						}
@@ -536,6 +564,10 @@ public class CreateModifyTransactionActivity extends Activity
 				}
 				// need to close the database as it is keeping it open here and causing issues.
 				//KMMDapp.closeDB();
+				
+				// Mark the file as dirty
+				KMMDapp.markFileIsDirty(true, "9999");
+				
 				// If we are coming from the home widget, we need to close the db.
 				if( fromHomeWidget )
 					KMMDapp.closeDB();
@@ -979,11 +1011,11 @@ public class CreateModifyTransactionActivity extends Activity
 			float amount = Float.valueOf(Transaction.convertToDollars(Account.convertBalance(Splits.get(0).getValue()), false));
 			if( amount < 0 )
 			{
-				intTransType = WITHDRAW;
+				intTransType = Transaction.WITHDRAW;
 				amount = amount * -1;		//change the sign of the amount for the form only.
 			}
 			else
-				intTransType = DEPOSIT;
+				intTransType = Transaction.DEPOSIT;
 			
 			editAmount.setText(String.valueOf(amount));
 			
@@ -1056,11 +1088,11 @@ public class CreateModifyTransactionActivity extends Activity
 			float amount = Float.valueOf(scheduleToEnter.Splits.get(0).getValueFormatted());
 			if( amount < 0 )
 			{
-				intTransType = WITHDRAW;
+				intTransType = Transaction.WITHDRAW;
 				amount = amount * -1;		//change the sign of the amount for the form only.
 			}
 			else
-				intTransType = DEPOSIT;
+				intTransType = Transaction.DEPOSIT;
 			
 			editAmount.setText(String.valueOf(amount));
 			

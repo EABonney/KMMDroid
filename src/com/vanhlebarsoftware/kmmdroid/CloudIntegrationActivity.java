@@ -108,7 +108,7 @@ public class CloudIntegrationActivity extends Activity
        			// Store it locally in our app for later use
        			//TokenPair tokens = session.getAccessTokenPair();
        			storeKeys(tokens.key, tokens.secret);
-       			showToast("Your account has been successfully linked!");
+       			showToast(getString(R.string.messageLinkSuccessful));
        			
        			// Create our Dropbox folder if it isn't there already.
        			try
@@ -126,7 +126,7 @@ public class CloudIntegrationActivity extends Activity
        		}
        		catch (IllegalStateException e)
        		{
-       			showToast("Couldn't authenticate with Dropbox:" + e.getLocalizedMessage());
+       			showToast(getString(R.string.messageDropboxLinkError) + e.getLocalizedMessage());
        			Log.i(TAG, "Error authenticating", e);
        		}
        	}
@@ -141,7 +141,7 @@ public class CloudIntegrationActivity extends Activity
 
         // Clear our stored keys
         clearKeys();
-        showToast("Logging out!");
+        showToast(getString(R.string.messageLogOut));
     }
 
     private void checkAppKeySetup()

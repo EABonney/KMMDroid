@@ -20,6 +20,10 @@ public class Transaction
 	private static final int C_ENTRYDATE = 4;
 	private static final int C_CURRENCYID = 5;
 	private static final int C_BANKID = 6;
+	public static final int DEPOSIT = 0;
+	public static final int TRANSFER = 1;
+	public static final int WITHDRAW = 2;
+	
 	private long nAmount;
 	private long nBalance;
 	private String strPayee;
@@ -46,7 +50,10 @@ public class Transaction
 		this.strtxType = null;
 		this.strCurrencyId = null;
 		this.strBankId = null;
-		this.Date = convertDate(date);
+		if( date != null)
+			this.Date = convertDate(date);
+		else
+			this.Date = null;
 		this.entryDate = null;
 		this.splits = new ArrayList<Split>();
 	}
