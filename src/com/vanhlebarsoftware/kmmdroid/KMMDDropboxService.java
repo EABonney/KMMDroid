@@ -152,7 +152,7 @@ public class KMMDDropboxService extends Service
 	private void setUpNotification()
 	{
 		this.kmmdNotifcationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		if(Build.VERSION.SDK_INT < 3)
+		if(Build.VERSION.SDK_INT <= 10)
 		{
 			// Set the notification for pre Honeycomb devices.
 			this.kmmdNotification = new Notification(R.drawable.homewidget_icon, "", 0);

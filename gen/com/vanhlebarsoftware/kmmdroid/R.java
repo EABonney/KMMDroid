@@ -128,21 +128,13 @@ containing a value of this type.
         public static final int BalanceAmount7=0x7f090040;
         public static final int BalanceAmount8=0x7f090045;
         public static final int BalanceAmount9=0x7f09004a;
-<<<<<<< HEAD
-        public static final int SumofSplits=0x7f0900a5;
-        public static final int Sync=0x7f09014b;
-        public static final int TableAddSplits=0x7f0900a8;
-        public static final int TransAmount=0x7f0900a7;
-        public static final int Unassigned=0x7f0900a6;
-=======
         public static final int GroupHeading=0x7f090069;
         public static final int LinearLayout01=0x7f0900ca;
         public static final int SumofSplits=0x7f0900a7;
-        public static final int Sync=0x7f09014b;
+        public static final int Sync=0x7f090149;
         public static final int TableAddSplits=0x7f0900aa;
         public static final int TransAmount=0x7f0900a9;
         public static final int Unassigned=0x7f0900a8;
->>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int aboutAppName=0x7f090001;
         public static final int aboutFileCreated=0x7f090004;
         public static final int aboutFileVersion=0x7f090003;
@@ -212,21 +204,12 @@ containing a value of this type.
         public static final int checkboxAutoEnter=0x7f090115;
         public static final int checkboxEnd=0x7f090117;
         public static final int checkboxEstimate=0x7f090113;
-<<<<<<< HEAD
-        public static final int checkboxNoInstitution=0x7f090089;
-        public static final int checkboxPayeeDefaultExpense=0x7f0900f9;
-        public static final int checkboxPayeeDefaultIncome=0x7f0900f7;
-        public static final int close=0x7f09014a;
-        public static final int crAccountBalance=0x7f090077;
-        public static final int crAccountName=0x7f090076;
-=======
         public static final int checkboxNoInstitution=0x7f09008b;
         public static final int checkboxPayeeDefaultExpense=0x7f0900fe;
         public static final int checkboxPayeeDefaultIncome=0x7f0900fc;
-        public static final int close=0x7f09014a;
+        public static final int close=0x7f090148;
         public static final int crAccountBalance=0x7f090079;
         public static final int crAccountName=0x7f090078;
->>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int crAmount=0x7f09005f;
         public static final int crBalance=0x7f090060;
         public static final int crDescription=0x7f09005e;
@@ -266,34 +249,6 @@ containing a value of this type.
         public static final int hwRowThree=0x7f090028;
         public static final int hwRowTwelve=0x7f090055;
         public static final int hwRowTwo=0x7f090023;
-<<<<<<< HEAD
-        public static final int institutionBIC=0x7f0900a2;
-        public static final int institutionCity=0x7f09009a;
-        public static final int institutionName=0x7f090096;
-        public static final int institutionPhone=0x7f09009e;
-        public static final int institutionPostalCode=0x7f09009c;
-        public static final int institutionRoutingNumber=0x7f0900a0;
-        public static final int institutionStreet=0x7f090098;
-        public static final int itemAbout=0x7f090145;
-        public static final int itemAccounts=0x7f090146;
-        public static final int itemCancel=0x7f090149;
-        public static final int itemCategories=0x7f090140;
-        public static final int itemClearAll=0x7f090151;
-        public static final int itemDelete=0x7f090148;
-        public static final int itemEdit=0x7f090147;
-        public static final int itemHome=0x7f09013f;
-        public static final int itemInsertRow=0x7f090150;
-        public static final int itemInstitutions=0x7f090142;
-        public static final int itemLoadMore=0x7f09014e;
-        public static final int itemNew=0x7f09013d;
-        public static final int itemOpen=0x7f090152;
-        public static final int itemPayees=0x7f090141;
-        public static final int itemPrefs=0x7f09013e;
-        public static final int itemRecent=0x7f090153;
-        public static final int itemReports=0x7f090144;
-        public static final int itemSchedules=0x7f090143;
-        public static final int itemsave=0x7f09014f;
-=======
         public static final int institutionBIC=0x7f0900a4;
         public static final int institutionCity=0x7f09009c;
         public static final int institutionName=0x7f090098;
@@ -301,25 +256,24 @@ containing a value of this type.
         public static final int institutionPostalCode=0x7f09009e;
         public static final int institutionRoutingNumber=0x7f0900a2;
         public static final int institutionStreet=0x7f09009a;
-        public static final int itemAbout=0x7f090145;
-        public static final int itemAccounts=0x7f090146;
-        public static final int itemCancel=0x7f090149;
-        public static final int itemCategories=0x7f090140;
-        public static final int itemClearAll=0x7f090150;
-        public static final int itemDelete=0x7f090148;
-        public static final int itemEdit=0x7f090147;
-        public static final int itemHome=0x7f09013f;
-        public static final int itemInsertRow=0x7f09014f;
-        public static final int itemInstitutions=0x7f090142;
-        public static final int itemNew=0x7f09013d;
-        public static final int itemOpen=0x7f090151;
-        public static final int itemPayees=0x7f090141;
-        public static final int itemPrefs=0x7f09013e;
-        public static final int itemRecent=0x7f090152;
-        public static final int itemReports=0x7f090144;
-        public static final int itemSchedules=0x7f090143;
-        public static final int itemsave=0x7f09014e;
->>>>>>> refs/remotes/origin/MoreBugFixes
+        public static final int itemAbout=0x7f090143;
+        public static final int itemAccounts=0x7f090144;
+        public static final int itemCancel=0x7f090147;
+        public static final int itemCategories=0x7f09013e;
+        public static final int itemClearAll=0x7f09014e;
+        public static final int itemDelete=0x7f090146;
+        public static final int itemEdit=0x7f090145;
+        public static final int itemHome=0x7f09013d;
+        public static final int itemInsertRow=0x7f09014d;
+        public static final int itemInstitutions=0x7f090140;
+        public static final int itemNew=0x7f09013b;
+        public static final int itemOpen=0x7f09014f;
+        public static final int itemPayees=0x7f09013f;
+        public static final int itemPrefs=0x7f09013c;
+        public static final int itemRecent=0x7f090150;
+        public static final int itemReports=0x7f090142;
+        public static final int itemSchedules=0x7f090141;
+        public static final int itemsave=0x7f09014c;
         public static final int kmmd_addTransaction=0x7f09001a;
         public static final int kmmd_icon=0x7f090018;
         public static final int kmmd_refresh=0x7f090019;
@@ -333,38 +287,7 @@ containing a value of this type.
         public static final int listPayeesView=0x7f0900ee;
         public static final int listReports=0x7f09010b;
         public static final int listSchedules=0x7f090129;
-        public static final int listSplits=0x7f09013b;
-<<<<<<< HEAD
-        public static final int listTransactions=0x7f0900d5;
-        public static final int lrAmount=0x7f0900d9;
-        public static final int lrBalance=0x7f0900da;
-        public static final int lrDate=0x7f0900d7;
-        public static final int lrDetails=0x7f0900d8;
-        public static final int memo=0x7f0900c0;
-        public static final int navBar=0x7f0900de;
-        public static final int payee=0x7f0900b1;
-        public static final int payeeAddress=0x7f0900ed;
-        public static final int payeeAvailable=0x7f0900fe;
-        public static final int payeeDefaultExpense=0x7f0900fa;
-        public static final int payeeDefaultIncome=0x7f0900f8;
-        public static final int payeeEmail=0x7f0900f3;
-        public static final int payeeMatchonName=0x7f0900fd;
-        public static final int payeeName=0x7f0900eb;
-        public static final int payeeNoMatching=0x7f0900fc;
-        public static final int payeeNotes=0x7f0900f5;
-        public static final int payeePostalCode=0x7f0900ef;
-        public static final int payeeTelephone=0x7f0900f1;
-        public static final int payeeTransRow=0x7f090101;
-        public static final int payeeUseDefault=0x7f0900f6;
-        public static final int prPayeeName=0x7f0900ff;
-        public static final int prefTimePicker=0x7f090133;
-        public static final int ptrAccount=0x7f090103;
-        public static final int ptrAmount=0x7f090105;
-        public static final int ptrDate=0x7f090102;
-        public static final int ptrDetails=0x7f090104;
-        public static final int radioGroup1=0x7f0900fb;
-        public static final int row=0x7f0900d6;
-=======
+        public static final int listSplits=0x7f09013a;
         public static final int listTransactions=0x7f0900da;
         public static final int lrAmount=0x7f0900de;
         public static final int lrBalance=0x7f0900df;
@@ -387,7 +310,7 @@ containing a value of this type.
         public static final int payeeTransRow=0x7f090106;
         public static final int payeeUseDefault=0x7f0900fb;
         public static final int prPayeeName=0x7f090104;
-        public static final int prefTimePicker=0x7f090133;
+        public static final int prefTimePicker=0x7f090132;
         public static final int ptrAccount=0x7f090108;
         public static final int ptrAmount=0x7f09010a;
         public static final int ptrDate=0x7f090107;
@@ -395,7 +318,6 @@ containing a value of this type.
         public static final int radioGroup1=0x7f090100;
         public static final int row=0x7f0900db;
         public static final int schNotificationsRow=0x7f09010c;
->>>>>>> refs/remotes/origin/MoreBugFixes
         public static final int scheduleAccount=0x7f090127;
         public static final int scheduleAmount=0x7f09010f;
         public static final int scheduleAmount1=0x7f090021;
@@ -443,33 +365,21 @@ containing a value of this type.
         public static final int schedulePaymentMethod=0x7f090123;
         public static final int scheduleType=0x7f090125;
         public static final int scheduleWeekendOption=0x7f090111;
-<<<<<<< HEAD
-        public static final int splitAmount=0x7f0900ac;
-        public static final int splitCategory=0x7f0900aa;
-        public static final int splitEntryRow=0x7f0900a9;
-        public static final int splitMemo=0x7f0900ab;
-=======
         public static final int splitAmount=0x7f0900ae;
         public static final int splitCategory=0x7f0900ac;
         public static final int splitEntryRow=0x7f0900ab;
         public static final int splitMemo=0x7f0900ad;
->>>>>>> refs/remotes/origin/MoreBugFixes
-        public static final int splitsAccountName=0x7f090130;
-        public static final int splitsAmount=0x7f090132;
-        public static final int splitsMemo=0x7f090131;
+        public static final int splitsAccountName=0x7f09012f;
+        public static final int splitsAmount=0x7f090131;
+        public static final int splitsMemo=0x7f090130;
         public static final int srAmount=0x7f09012e;
         public static final int srDescription=0x7f09012a;
         public static final int srFrequency=0x7f09012c;
         public static final int srNextDueDate=0x7f09012d;
         public static final int srPayee=0x7f09012b;
-<<<<<<< HEAD
-        public static final int status=0x7f0900be;
-=======
         public static final int status=0x7f0900c0;
->>>>>>> refs/remotes/origin/MoreBugFixes
-        public static final int syncAll=0x7f09014d;
-        public static final int syncDropbox=0x7f09014c;
-        public static final int title=0x7f09012f;
+        public static final int syncAll=0x7f09014b;
+        public static final int syncDropbox=0x7f09014a;
         public static final int titleAccount=0x7f090061;
         public static final int titleAccountCurrency=0x7f090082;
         public static final int titleAccountIBAN=0x7f090091;
@@ -531,26 +441,17 @@ containing a value of this type.
         public static final int titleScheduleType=0x7f090124;
         public static final int titleScheduleWeekendOption=0x7f090110;
         public static final int titleSchedules=0x7f090128;
-<<<<<<< HEAD
-        public static final int titleStatus=0x7f0900bd;
-        public static final int titleTransactionType=0x7f0900ae;
-        public static final int titleViewSchedule=0x7f090134;
-        public static final int titleViewTransaction=0x7f09013c;
-        public static final int transactionType=0x7f0900af;
-=======
         public static final int titleStatus=0x7f0900bf;
         public static final int titleTransactionType=0x7f0900b0;
-        public static final int titleViewSchedule=0x7f090134;
-        public static final int titleViewTransaction=0x7f09013c;
+        public static final int titleViewTransaction=0x7f090133;
         public static final int transactionType=0x7f0900b1;
         public static final int tvGroup=0x7f0900cb;
->>>>>>> refs/remotes/origin/MoreBugFixes
-        public static final int vtAmount=0x7f090139;
-        public static final int vtDate=0x7f090136;
-        public static final int vtDescription=0x7f090135;
-        public static final int vtMemo=0x7f09013a;
-        public static final int vtNumber=0x7f090138;
-        public static final int vtStatus=0x7f090137;
+        public static final int vtAmount=0x7f090138;
+        public static final int vtDate=0x7f090135;
+        public static final int vtDescription=0x7f090134;
+        public static final int vtMemo=0x7f090139;
+        public static final int vtNumber=0x7f090137;
+        public static final int vtStatus=0x7f090136;
     }
     public static final class layout {
         public static final int about=0x7f030000;
@@ -579,40 +480,6 @@ containing a value of this type.
         public static final int dialogscheduleactions=0x7f030017;
         public static final int file_view=0x7f030018;
         public static final int file_view_row=0x7f030019;
-<<<<<<< HEAD
-        public static final int home=0x7f03001a;
-        public static final int home_row=0x7f03001b;
-        public static final int homescreenconfiguration=0x7f03001c;
-        public static final int institutions=0x7f03001d;
-        public static final int ledger=0x7f03001e;
-        public static final int ledger_row=0x7f03001f;
-        public static final int loadmoretransactions=0x7f030020;
-        public static final int navigationbar=0x7f030021;
-        public static final int new_database=0x7f030022;
-        public static final int payee=0x7f030023;
-        public static final int payee_address=0x7f030024;
-        public static final int payee_defaultaccount=0x7f030025;
-        public static final int payee_matching=0x7f030026;
-        public static final int payee_reassign=0x7f030027;
-        public static final int payee_row=0x7f030028;
-        public static final int payee_transactions=0x7f030029;
-        public static final int payee_transactions_row=0x7f03002a;
-        public static final int reports=0x7f03002b;
-        public static final int schedule_activity_row=0x7f03002c;
-        public static final int schedule_notifications=0x7f03002d;
-        public static final int schedule_notifications_row=0x7f03002e;
-        public static final int schedule_options=0x7f03002f;
-        public static final int schedule_paymentinfo=0x7f030030;
-        public static final int schedules=0x7f030031;
-        public static final int schedules_activity=0x7f030032;
-        public static final int schedules_rows=0x7f030033;
-        public static final int section_header=0x7f030034;
-        public static final int splits_row=0x7f030035;
-        public static final int time_preference=0x7f030036;
-        public static final int view_schedule=0x7f030037;
-        public static final int view_transaction=0x7f030038;
-        public static final int welcome=0x7f030039;
-=======
         public static final int group_layout=0x7f03001a;
         public static final int home=0x7f03001b;
         public static final int home_row=0x7f03001c;
@@ -632,21 +499,16 @@ containing a value of this type.
         public static final int payee_transactions=0x7f03002a;
         public static final int payee_transactions_row=0x7f03002b;
         public static final int reports=0x7f03002c;
-        public static final int schedule_activity_row=0x7f03002d;
-        public static final int schedule_notifications=0x7f03002e;
-        public static final int schedule_notifications_row=0x7f03002f;
-        public static final int schedule_options=0x7f030030;
-        public static final int schedule_paymentinfo=0x7f030031;
-        public static final int schedules=0x7f030032;
-        public static final int schedules_activity=0x7f030033;
-        public static final int schedules_rows=0x7f030034;
-        public static final int section_header=0x7f030035;
-        public static final int splits_row=0x7f030036;
-        public static final int time_preference=0x7f030037;
-        public static final int view_schedule=0x7f030038;
-        public static final int view_transaction=0x7f030039;
-        public static final int welcome=0x7f03003a;
->>>>>>> refs/remotes/origin/MoreBugFixes
+        public static final int schedule_notifications=0x7f03002d;
+        public static final int schedule_notifications_row=0x7f03002e;
+        public static final int schedule_options=0x7f03002f;
+        public static final int schedule_paymentinfo=0x7f030030;
+        public static final int schedules=0x7f030031;
+        public static final int schedules_rows=0x7f030032;
+        public static final int splits_row=0x7f030033;
+        public static final int time_preference=0x7f030034;
+        public static final int view_transaction=0x7f030035;
+        public static final int welcome=0x7f030036;
     }
     public static final class menu {
         public static final int accounts_menu=0x7f080000;
