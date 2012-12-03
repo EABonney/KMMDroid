@@ -208,12 +208,15 @@
 	<string name="titleUpdateFrequency">Update frequence</string>
 	<string name="summaryFrequency">Choose an update frequency</string>
 	<string name="None">None</string>
+	<string name="FiveMinutes">5 minutes</string>
 	<string name="FifteenMinutes">15 minutes</string>
 	<string name="ThirtyMinutes">30 minutes</string>
 	<string name="OneHour">1 hour</string>
 	<string name="TwoHours">2 hours</string>
 	<string name="FourHours">4 hours</string>
 	<string name="SixHours">6 hours</string>
+	<string name="TwelveHours">12 hours</string>
+	<string name="TwentyFourHours">24 hours</string>
 	<string name="AutoUpdate">Upon KMyMoney modification</string>
 	<string-array name="UpdateFrequency">
 	    <item>@string/None</item>
@@ -497,4 +500,27 @@
 	<string name="messageDropboxLinkError">Couldn\'t authenticate with Dropbox: </string>
 	<string name="messageLogOut">Logging out!</string>
 	<string name="defaultNotificationTime">Default notification time</string>
+	<string name="titleAutoSyncFreq">Autosync Frequency</string>
+	<string-array name="DropboxFreq">
+	    <item>@string/FiveMinutes</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
+	    <item>@string/TwelveHours</item>
+	    <item>@string/TwentyFourHours</item>
+	</string-array>
+	<string-array name="DropboxFreqValues">
+	    <item>"300000"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"43200000"</item>
+	    <item>"86400000"</item>
+	</string-array>
 </resources>

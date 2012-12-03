@@ -25,6 +25,7 @@ import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session.AccessType;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,6 +34,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -42,6 +46,7 @@ import android.sax.EndTextElementListener;
 import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 public class KMMDDropboxService extends Service 
 {
@@ -50,6 +55,8 @@ public class KMMDDropboxService extends Service
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
     final static public String DEVICE_STATE_FILE = "device_state";
+    private static boolean wifiConnected = false;
+    private static boolean mobileConnected = false;
     public static final int CLOUD_ALL = 0;
 	public static final int CLOUD_DROPBOX = 1;
 	public static final int CLOUD_GOOGLEDRIVE = 2;
@@ -103,28 +110,31 @@ public class KMMDDropboxService extends Service
 		int cloudService = extras.getInt("cloudService");
 		syncing = extras.getBoolean("syncing");
 		
-		// Set the notification to let the user know we are performing a sync.
-		this.kmmdNotifcationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		this.kmmdNotification = new Notification(R.drawable.homewidget_icon, "", 0);
-		this.kmmdNotification.when = System.currentTimeMillis();
-		this.kmmdNotification.flags |= Notification.FLAG_NO_CLEAR;
-		String notificationTitle = "KMMDroid Sync";
-		String notificationSummary = "Syncing with ";
+		// Get our connection state
+		updateConnectedFlags();
 		
-		switch(cloudService)
+		if( wifiConnected || mobileConnected )
 		{
-		case CLOUD_DROPBOX:
-			notificationSummary = notificationSummary + "Dropbox.....";
-			kmmdDropbox.start();
-			break;
-		case CLOUD_GOOGLEDRIVE:
-			break;
-		case CLOUD_UBUNTUONE:
-			break;
+			// Verify our server is setup correctly.
+			//verifyServerSetup();
+					
+			switch(cloudService)
+			{
+			case CLOUD_DROPBOX:
+				setUpNotification();
+				kmmdDropbox.start();
+				break;
+			case CLOUD_GOOGLEDRIVE:
+				break;
+			case CLOUD_UBUNTUONE:
+				break;
+			}
 		}
-
-		this.kmmdNotification.setLatestEventInfo(this, notificationTitle, notificationSummary, PendingIntent.getActivity(getBaseContext(), 0, null, 0));
-		this.kmmdNotifcationMgr.notify(CLOUD_NOTIFICATION, this.kmmdNotification);
+		else
+		{
+			// Notify the user there is no data connection and we couldn't sync, via toast for now.
+			Toast.makeText(this, "No data connection, sync cancelled.", Toast.LENGTH_LONG).show();
+		}
 		
 		return START_NOT_STICKY;
 	}
@@ -137,7 +147,36 @@ public class KMMDDropboxService extends Service
 
 	/****************************************************************************************************************
 	 * Helper Functions
-	 ***************************************************************************************************************/	
+	 ***************************************************************************************************************/
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void setUpNotification()
+	{
+		this.kmmdNotifcationMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		if(Build.VERSION.SDK_INT < 3)
+		{
+			// Set the notification for pre Honeycomb devices.
+			this.kmmdNotification = new Notification(R.drawable.homewidget_icon, "", 0);
+			this.kmmdNotification.when = System.currentTimeMillis();
+			this.kmmdNotification.flags |= Notification.FLAG_NO_CLEAR;
+			String notificationTitle = "KMMDroid Sync";
+			String notificationSummary = "Syncing with ";
+			notificationSummary = notificationSummary + "Dropbox.....";
+			this.kmmdNotification.setLatestEventInfo(this, notificationTitle, notificationSummary, PendingIntent.getActivity(getBaseContext(), 0, null, 0));
+			this.kmmdNotifcationMgr.notify(CLOUD_NOTIFICATION, this.kmmdNotification);
+		}
+		else
+		{
+			// Set the notification for Honeycomb and aftger devices.
+			Notification.Builder builder = new Notification.Builder(this);
+			builder.setSmallIcon(R.drawable.homewidget_icon)
+				   .setTicker("")
+				   .setWhen(System.currentTimeMillis())
+				   .setDefaults(Notification.FLAG_NO_CLEAR);
+			Notification notification = builder.getNotification();
+			this.kmmdNotifcationMgr.notify(CLOUD_NOTIFICATION, notification);
+		}
+	}
+	
 	private void performSync(int service)
 	{
 		/********************************************************************
@@ -1002,6 +1041,56 @@ public class KMMDDropboxService extends Service
 		List<KMMDDeviceItem> parse();
 	}*/
 	
+    public void verifyServerSetup()
+    {
+    	Entry info = null;
+    	
+		// Create our Dropbox folder if it isn't there already.
+		try
+		{
+			info = mApi.metadata("/", 0, null, false, null);    				
+			if( !info.isDir )
+			{
+				Log.d(TAG, "Creating our app folder on the server....");
+				info = mApi.createFolder("");
+			}
+			else
+			{
+				Log.d(TAG, "isDir: " + info.isDir);
+				Log.d(TAG, "file name: " + info.fileName());
+				Log.d(TAG, "path name: " + info.path);
+				Log.d(TAG, "parent path: " + info.parentPath());
+			}
+		}
+		catch( DropboxServerException e)
+		{
+			Log.d(TAG, "Server error: " + e.getMessage());
+			e.printStackTrace();
+		}
+		catch( DropboxException e)
+		{
+			Log.d(TAG, "Error creating our base folder!");
+			e.printStackTrace();
+		}
+    }
+    // Check the networks connect and set the wifiConnected and mobileConnected variables accordingly.
+    public void updateConnectedFlags()
+    {
+    	ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    	
+    	NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
+    	
+    	if( activeInfo != null && activeInfo.isConnected() )
+    	{
+    		wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
+    		mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
+    	}
+    	else
+    	{
+    		wifiConnected = false;
+    		mobileConnected = false;
+    	}
+    }
     /**************************************************************************************************************
 	 * Thread that will perform the actual syncing with Dropbox
 	 *************************************************************************************************************/

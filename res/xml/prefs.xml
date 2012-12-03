@@ -52,6 +52,11 @@
                 android:summary="@string/summaryDropboxAutoSync"
                 android:title="@string/titleDropboxAutoSync"
                 android:key="dropboxAutoSync"/>
+            <ListPreference
+                android:title="@string/titleAutoSyncFreq"
+                android:entries="@array/DropboxFreq"
+                android:entryValues="@array/DropboxFreqValues"
+                android:key="dropboxFrequency"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:title="@string/titleGoogleDrive">

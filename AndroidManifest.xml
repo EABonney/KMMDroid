@@ -6,7 +6,7 @@
       android:installLocation="auto">
     <uses-sdk 
         android:minSdkVersion="10"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="16" />
 
     <permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS"
         		android:label="@string/send_home_update_notifications_permission_label"
@@ -24,8 +24,10 @@
     <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS" />
     <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <application 
         android:icon="@drawable/kmymoney" 
