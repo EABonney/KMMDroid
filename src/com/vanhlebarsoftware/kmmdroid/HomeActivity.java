@@ -1,14 +1,14 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
-import android.text.Layout;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -23,25 +24,14 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class HomeActivity extends Activity
+public class HomeActivity extends FragmentActivity implements
+						  LoaderManager.LoaderCallbacks<List<Account>>
 {
 
-	private static final String TAG = "HomeActivity";
-	private static final int C_ACCOUNTNAME = 0;
-	private static final int C_BALANCE = 1;
-	private static final int C_BALANCEFORMATTED = 2;
-	private static final int C_ID = 3;
-	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balance", "balanceFormatted", "id AS _id"};
-	private static final String strSelection = "(accountType != ? AND accountType != ?) AND " +
-			"(balance != '0/1')";
-	private static final String strOrderBy = "parentID, accountName ASC";
-	static final String[] FROM = { "accountName", "balanceFormatted" };
-	static final int[] TO = { R.id.hrAccountName, R.id.hrAccountBalance };
+	private static final String TAG = HomeActivity.class.getSimpleName();
+	private static final int ACCOUNTS_LOADER = 0x01;
 	KMMDroidApp KMMDapp;
-	Cursor cursor;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
 	ImageButton btnCategories;
@@ -51,7 +41,6 @@ public class HomeActivity extends Activity
 	ImageButton btnReports;
 	LinearLayout navBar;
 	ListView listAccounts;
-	ArrayList<Accounts> accounts = new ArrayList<Accounts>();
 	AccountsAdapter adapterAccounts;
 	
 	/* Called when the activity is first created. */
@@ -59,6 +48,7 @@ public class HomeActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.home);
 
         // Get our application
@@ -129,6 +119,7 @@ public class HomeActivity extends Activity
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
         listAccounts.setOnItemClickListener(mMessageClickedHandler);
+        
 
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -138,6 +129,16 @@ public class HomeActivity extends Activity
 		
 		// Let's display the currently opened file in the label
 		setTitle(KMMDapp.getFullPath());
+		
+        // Create an empty adapter we will use to display the loaded data.
+        adapterAccounts = new AccountsAdapter(this);
+		listAccounts.setAdapter(adapterAccounts);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+		Bundle bundle = new Bundle();
+		bundle.putInt("activity", 2);
+        getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
 	}
 	
 	@Override
@@ -177,33 +178,9 @@ public class HomeActivity extends Activity
 		}
 		else
 		{		
-			// Make sure our ArrayLists are clear.
-			accounts.clear();
-		
 			// Make sure the database is open and ready.
 			if(!KMMDapp.isDbOpen())
 				KMMDapp.openDB();
-		
-			//Get all the accounts to be displayed.
-			cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) },
-										null, null, strOrderBy);
-			cursor.moveToFirst();
-		
-			// Loop over the cursor to build the accounts ArrayList and adjust each account for possible furture transactions.
-			for(int i=0; i < cursor.getCount(); i++)
-			{
-				accounts.add(new Accounts(cursor.getString(C_ID), cursor.getString(C_ACCOUNTNAME),
-						Account.adjustForFutureTransactions(cursor.getString(C_ID), Account.convertBalance(cursor.getString(C_BALANCE)),
-								KMMDapp.db)));
-				cursor.moveToNext();
-			}
-		
-			// close the cursor since we don't need it anymore
-			cursor.close();
-		
-			// Set up the adapter
-			adapterAccounts = new AccountsAdapter(this, R.layout.home_row, accounts);
-			listAccounts.setAdapter(adapterAccounts);
 		}
 		
 		// See if the user has requested the navigation bar.
@@ -217,7 +194,7 @@ public class HomeActivity extends Activity
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	Accounts acct = accounts.get(position);
+	    	Account acct = adapterAccounts.getItem(position); //accounts.get(position);
 	    	Intent i = new Intent(getBaseContext(), LedgerActivity.class);
 	    	i.putExtra("AccountId", acct.getId());
 	    	i.putExtra("AccountName", acct.getName());
@@ -226,28 +203,40 @@ public class HomeActivity extends Activity
 	    }
 	};
 	
-	private class AccountsAdapter extends ArrayAdapter<Accounts>
+	private class AccountsAdapter extends ArrayAdapter<Account>
 	{
-		private ArrayList<Accounts> items;
-		private Context context;
+		private final LayoutInflater mInflater;
 		
-		public AccountsAdapter(Context context, int textViewResourceId, ArrayList<Accounts> items)
+		public AccountsAdapter(Context context)
 		{
-			super(context, textViewResourceId, items);
-			this.context = context;
-			this.items = items;
+			super(context, R.layout.home_row);
+			mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 		
+		public void setData(List<Account> data) 
+	    {
+	        clear();
+	        if (data != null) 
+	        {
+	        	for(Account account : data)
+	        	{
+	        		add(account);
+	        	}
+	        }
+	    }
+	    
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
 			View view = convertView;
 			if(view == null)
 			{
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				view = inflater.inflate(R.layout.home_row, null);
+				view = mInflater.inflate(R.layout.home_row, parent, false);
 			}
+			else
+				view = convertView;
 			
-			Accounts item = items.get(position);
+			Account item = getItem(position);
+			
 			// Load the items into the view now for this schedule.
 			if(item != null)
 			{
@@ -258,7 +247,8 @@ public class HomeActivity extends Activity
 				bal.setText(item.getBalance());
 			}
 			else
-				Log.d(TAG, "Never got a Schedule!");			
+				Log.d(TAG, "Never got an Account!");
+
 			return view;
 		}
 	}
@@ -351,38 +341,23 @@ public class HomeActivity extends Activity
 		return true;
 	}
 	
-	/***********************************************************************************
-	 * 
-	 * 									Helper Functions
-	 */
-
-	private class Accounts extends ArrayList<Object>
-	{
-		private static final long serialVersionUID = -826625428929646643L;
-		private String id;
-		private String Name;
-		private String Balance;
-		
-		Accounts(String accountId, String accountName, String accountBal)
-		{
-			this.id = accountId;
-			this.Name = accountName;
-			this.Balance = accountBal;
-		}
-		
-		public String getId()
-		{
-			return this.id;
-		}
-		
-		public String getName()
-		{
-			return this.Name;
-		}
-		
-		public String getBalance()
-		{
-			return this.Balance;
-		}
-	}
+	// LoaderManager.LoaderCallbacks<List<Accounts> methods:
+    public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+    {
+    	setProgressBarIndeterminateVisibility(true);
+    	return new AccountsLoader(this, args);
+    }
+    
+    public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
+    {
+        // Set the new data in the adapter.
+    	adapterAccounts.setData(accounts);
+    	setProgressBarIndeterminateVisibility(false);
+    }
+    
+    public void onLoaderReset(Loader<List<Account>> loader) 
+    {
+        // clear the data in the adapter.
+    	adapterAccounts.setData(null);
+    }
 }

@@ -4,13 +4,7 @@ import com.vanhlebarsoftware.kmmdroid.KMMDCustomFastScrollView.SectionIndexer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -40,6 +34,18 @@ public class TransactionAdapter extends ArrayAdapter<Transaction> implements Sec
 		this.context = context;
 		this.textViewResourceId = textViewResourceId;
 		this.objects = objects;
+	}
+	
+	public void setData(List<Transaction> transactions)
+	{
+        clear();
+        if (transactions != null) 
+        {
+        	for(Transaction transaction : transactions)
+        	{
+        		add(transaction);
+        	}
+        }		
 	}
 	
 	@Override

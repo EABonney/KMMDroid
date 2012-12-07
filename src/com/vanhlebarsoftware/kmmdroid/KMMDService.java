@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -28,15 +26,12 @@ public class KMMDService extends Service
 	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
-	private boolean runFlag = false;
 	private KMMDUpdater kmmdUpdater;
 	private KMMDroidApp kmmdApp;
 	private int[] appWidgetIds;
 	private int refreshWidgetId = 0;
 	private int deletedWidget = 0;
-	private String widgetDatabasePath = null;
 	private String widgetId = null;
 	
 	@Override
@@ -51,7 +46,6 @@ public class KMMDService extends Service
 	public void onDestroy() 
 	{
 		super.onDestroy();
-		this.runFlag = false;
 		this.kmmdUpdater.interrupt();
 		this.kmmdUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
@@ -79,7 +73,6 @@ public class KMMDService extends Service
 				appWidgetIds = extras.getIntArray("appWidgetIds");
 				refreshWidgetId = extras.getInt("refreshWidgetId");
 				deletedWidget = extras.getInt("widgetDeleted");	
-		        widgetDatabasePath = extras.getString("widgetDatabasePath");
 		        widgetId = extras.getString("widgetId");
 			}
 			else
@@ -104,7 +97,6 @@ public class KMMDService extends Service
 			}
 			else if(refreshWidgetId != 0)
 			{
-				this.runFlag = true;
 				this.kmmdApp.setServiceRunning(true);
 				this.kmmdUpdater.start();
 			}
@@ -120,7 +112,6 @@ public class KMMDService extends Service
 					kmmdApp.markFileIsDirty(true, widgetId);
 					
 					// Need to refresh the widget now.
-					this.runFlag = true;
 					this.kmmdApp.setServiceRunning(true);
 					this.kmmdUpdater.start();
 				}
@@ -140,7 +131,6 @@ public class KMMDService extends Service
 				
 					if(validIds)
 					{
-						this.runFlag = true;
 						this.kmmdApp.setServiceRunning(true);
 						this.kmmdUpdater.start();
 					}
@@ -258,7 +248,6 @@ public class KMMDService extends Service
 				String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
 				Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
 				Intent intentDialog = new Intent(getBaseContext(), ScheduleActionsActivity.class);
-				//intentDialog.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, String.valueOf(appWidgetId));
 				intentDialog.putExtra("Action", ACTION_ENTER_SCHEDULE);
 				intentDialog.putExtra("widgetId", String.valueOf(appWidgetId));
 				String prefString = "widgetDatabasePath" + String.valueOf(appWidgetId);

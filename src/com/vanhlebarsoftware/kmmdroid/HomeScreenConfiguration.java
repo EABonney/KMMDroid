@@ -1,16 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,7 +18,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
 
-public class HomeScreenConfiguration extends Activity 
+public class HomeScreenConfiguration extends FragmentActivity 
 {
 	private static final String TAG = HomeScreenConfiguration.class.getSimpleName();
 	private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
@@ -75,7 +72,6 @@ public class HomeScreenConfiguration extends Activity
 			}
 		});
         
-        final Context context = getApplicationContext();
         btnSave.setOnClickListener(new View.OnClickListener()
         {
 			public void onClick(View arg0)
@@ -132,7 +128,6 @@ public class HomeScreenConfiguration extends Activity
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 

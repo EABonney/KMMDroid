@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,14 +24,9 @@ public class CreateModifyAccountActivity extends TabActivity
 	private static final String TAG = "CreateAccounActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int A_CHECKING = 1;
-	private static final int A_SAVINGS = 2;
 	private static final int A_CREDITCARD = 4;
 	private static final int A_LOAN = 5;
 	private static final int A_INVESTMENT = 7;
-	private static final int A_ASSET = 9;
-	private static final int A_LIABILITY = 10;
-	private static final int A_EQUITY = 16;
 	private static final int C_ID = 0;
 	private static final int C_INSTITUTIONID = 1;
 	private static final int C_PARENTID = 2;
@@ -42,7 +36,6 @@ public class CreateModifyAccountActivity extends TabActivity
 	private static final int C_ACCOUNTTYPESTRING = 8;
 	private static final int C_ACCOUNTNAME = 10;
 	private static final int C_CURRENCYID = 12;
-	private static final int C_BALANCE = 13;
 	private static final int C_BALANCEFORMATTED = 14;	
 	private static final int C_TRANSACTIONCOUNT = 15;
 	
@@ -370,7 +363,6 @@ public class CreateModifyAccountActivity extends TabActivity
 							} 
 							catch (SQLException e)
 							{
-								// TODO Auto-generated catch block
 								Log.d(TAG, "error: " + e.getMessage());
 							}
 							increaseAccountId();
@@ -441,7 +433,6 @@ public class CreateModifyAccountActivity extends TabActivity
 				if( rows != 1 )
 				{
 					Log.d(TAG, "There was an error deleting your category!");
-					// TODO Auto-generated catch block
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 					alert.setTitle(getString(R.string.error));
 					alert.setMessage(getString(R.string.unableToDelete) + "rows deleted=" + 

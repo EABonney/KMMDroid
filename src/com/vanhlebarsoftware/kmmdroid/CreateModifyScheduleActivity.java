@@ -5,13 +5,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -43,13 +40,9 @@ public class CreateModifyScheduleActivity extends TabActivity
 	private static int C_BANKID = 17;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static int WITHDRAW = 2;
-	private static int DEPOSIT = 0;
-	private static int TRANSFER = 1;
 	private int Action = 0;
 	private String schId = null;
 	private String widgetDatabasePath = null;
-	private Boolean fromScheduleActions = false;
 	private Boolean isDirty = false;
 	
 	ArrayList<Split> Splits;
@@ -72,7 +65,6 @@ public class CreateModifyScheduleActivity extends TabActivity
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
         widgetDatabasePath = extras.getString("widgetDatabasePath");
-        fromScheduleActions = extras.getBoolean("fromScheduleActions");
         
         // See if we are editing a schedule, if so get the schedule Id we passed in.
         if( Action == ACTION_EDIT )

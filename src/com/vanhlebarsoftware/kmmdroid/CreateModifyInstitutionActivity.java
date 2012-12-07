@@ -1,12 +1,12 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,12 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-public class CreateModifyInstitutionActivity extends Activity
+public class CreateModifyInstitutionActivity extends FragmentActivity
 {
 	private static final String TAG = "CreateModifyInstitutionsActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int INSTUTION_ID = 0;
 	private static final int INSTUTION_NAME = 1;
 	private static final int INSTUTION_MANAGER = 2;
 	private static final int INSTUTION_ROUTINGCODE = 3;
@@ -298,7 +297,6 @@ public class CreateModifyInstitutionActivity extends Activity
 						} 
 						catch (SQLException e) 
 						{
-							// TODO Auto-generated catch block
 							Log.d(TAG, "Insert error: " + e.getMessage());
 						}
 						increaseId();

@@ -3,11 +3,11 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,7 +27,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateModifySplitsActivity extends Activity implements OnClickListener
+public class CreateModifySplitsActivity extends FragmentActivity implements OnClickListener
 {
 	private static final String TAG = "CreateModifySplitsActivity";
 	private static final int ACTION_NEW = 1;

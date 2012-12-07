@@ -1,14 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
-import org.xmlpull.v1.XmlSerializer;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -21,9 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
-import android.util.Xml;
 
 public class KMMDProvider extends ContentProvider 
 {
@@ -33,6 +23,9 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_SPLIT_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/split");
 	public static final Uri CONTENT_TRANSACTION_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/transaction");
 	public static final Uri CONTENT_FILEINFO_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/fileinfo");
+	public static final Uri CONTENT_INSTITUTION_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/institution");
+	public static final Uri CONTENT_PAYEE_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/payee");
+	public static final Uri CONTENT_LEDGER_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/ledger");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
@@ -42,6 +35,11 @@ public class KMMDProvider extends ContentProvider
 	public static final String TRANSACTION_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.transaction";
 	public static final String TRANSACTIONS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.transactions";
 	public static final String FILEINFO_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.fileinfo";
+	public static final String INSTITUTION_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.institution";
+	public static final String INSTITUTIONS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.institutions";
+	public static final String PAYEE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.payee";
+	public static final String PAYEES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.payees";
+	public static final String LEDGER_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.ledger";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -61,8 +59,8 @@ public class KMMDProvider extends ContentProvider
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
 												" AND kmmSplits.splitId = 0"; // AND kmmSplits.accountId=";
-	private static final String[] schedulesSingleSelectionColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-		"nextPaymentDue", "startDate", "endDate", "lastPayment" };
+	//private static final String[] schedulesSingleSelectionColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
+	//	"nextPaymentDue", "startDate", "endDate", "lastPayment" };
 	private static final String scheduleSingleSelection = "kmmSchedules.id = kmmSplits.transactionId" +
 			" AND kmmSplits.splitId = 0 AND kmmSchedules.Id=?";
 	private static final String schedulesOrderBy = "nextPaymentDue ASC";
@@ -83,10 +81,11 @@ public class KMMDProvider extends ContentProvider
 	 * Parameters used for querying the fileinfo table
 	 ********************************************************************************************************************/
 	private static final String fileinfoTable = "kmmFileInfo";
-	
+		
 	private String dbTable = null;
 	private String[] dbColumns = null;
 	private String dbSelection = null;
+	private String[] dbSelectionArgs = null;
 	private String dbOrderBy = null;
 	private String accountUsed = null;
 	private String path = null;
@@ -100,6 +99,11 @@ public class KMMDProvider extends ContentProvider
 	private static final int TRANSACTIONS = 7;
 	private static final int TRANSACTIONS_ID= 8;
 	private static final int FILEINFO = 9;
+	private static final int INSTITUTIONS = 10;
+	private static final int INSTITUTIONS_ID = 11;
+	private static final int PAYEES = 12;
+	private static final int PAYEES_ID = 13;
+	private static final int LEDGER = 14;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -112,15 +116,19 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "transaction", TRANSACTIONS);
 		sURIMatcher.addURI(authority, "transaction/*", TRANSACTIONS_ID);
 		sURIMatcher.addURI(authority, "fileinfo", FILEINFO);
+		sURIMatcher.addURI(authority, "institution", INSTITUTIONS);
+		sURIMatcher.addURI(authority, "institution/*", INSTITUTIONS_ID);
+		sURIMatcher.addURI(authority, "payee", PAYEES);
+		sURIMatcher.addURI(authority, "payee/*", PAYEES_ID);
+		sURIMatcher.addURI(authority, "ledger", LEDGER);
 	}
-	private boolean firstRun = true;
 	public SharedPreferences prefs;
-	SQLiteDatabase db = null;
+	private SQLiteDatabase db = null;
+	private int queryCall = 1;
 	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) 
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -141,13 +149,23 @@ public class KMMDProvider extends ContentProvider
 		case SPLITS:
 			return SPLITS_MIME_TYPE;
 		case SPLITS_ID:
-			return SPLITS_MIME_TYPE;
+			return SPLIT_MIME_TYPE;
 		case TRANSACTIONS:
 			return TRANSACTIONS_MIME_TYPE;
 		case TRANSACTIONS_ID:
 			return TRANSACTION_MIME_TYPE;
 		case FILEINFO:
 			return FILEINFO_MIME_TYPE;
+		case INSTITUTIONS:
+			return INSTITUTIONS_MIME_TYPE;
+		case INSTITUTIONS_ID:
+			return INSTITUTION_MIME_TYPE;
+		case PAYEES:
+			return PAYEES_MIME_TYPE;
+		case PAYEES_ID:
+			return PAYEE_MIME_TYPE;
+		case LEDGER:
+			return LEDGER_MIME_TYPE;
 		default:
 			return null;
 		}
@@ -167,7 +185,6 @@ public class KMMDProvider extends ContentProvider
 		} 
 		catch (NameNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
@@ -229,13 +246,15 @@ public class KMMDProvider extends ContentProvider
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) 
 	{
-		Log.d(TAG, "Uri provided to query(): " + uri.toString());
 		String id = null;
 		String widgetId = uri.getFragment();
-		Log.d(TAG, "Fragment passed to query: " + widgetId);
 		
-		// We need to open the database.
-		db = openDatabase(widgetId);
+		// see if we need to open the database.
+		if( db == null || !db.isOpen() )
+		{
+			// We need to open the database.
+			db = openDatabase(widgetId);
+		}
 		
 		// Need to get the prefs for our application so we can update the account used..
 		Context context = getContext();
@@ -246,20 +265,28 @@ public class KMMDProvider extends ContentProvider
 		} 
 		catch (NameNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		// See which content uri is requested.
-		int match = sURIMatcher.match(uri);
-		Log.d(TAG, "Matcher returned: " + match);		
+		int match = sURIMatcher.match(uri);	
 		switch(match)
 		{
 			case ACCOUNTS:
 				dbTable = accountsTable;
-				dbColumns = accountsColumns;
-				dbSelection = accountsSelection;
-				dbOrderBy = accountsOrderBy;
+				if(projection != null)
+					dbColumns = projection;
+				else
+					dbColumns = accountsColumns;
+				if(selection != null)
+					dbSelection = selection;
+				else
+					dbSelection = accountsSelection;
+				if(sortOrder != null)
+					dbOrderBy = sortOrder;
+				else
+					dbOrderBy = accountsOrderBy;
+				dbSelectionArgs = selectionArgs;
 				break;
 			case ACCOUNTS_ID:
 				dbTable = accountsTable;
@@ -273,24 +300,36 @@ public class KMMDProvider extends ContentProvider
 					dbSelection = accountsSingleSelection;
 				dbOrderBy = accountsOrderBy;
 				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
 				break;
 			case SCHEDULES:
 				SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
 				// See if we have a widgetId or not, if so we need to get the accountId for that specific widget, if not leave off the accountId
-				if( widgetId != null )
+				if( widgetId != null && !widgetId.equals("9999") )
 				{
 					accountUsed = prefs.getString("accountUsed" + String.valueOf(widgetId), "");
 					dbSelection = schedulesSelection + " AND kmmSplits.accountId='" + accountUsed + "'";
+					dbTable = schedulesTable;
+					dbColumns = schedulesColumns;
+					dbOrderBy = schedulesOrderBy;
+					dbSelectionArgs = selectionArgs;
+				}
+				else if( widgetId != null && widgetId.equals("9999"))
+				{
+					dbTable = "kmmSchedules, kmmSplits, kmmPayees";
+					dbColumns = projection;
+					dbSelection = selection;
+					dbSelectionArgs = selectionArgs;
+					dbOrderBy = sortOrder;
 				}
 				else
 				{
 					dbSelection = schedulesSelection;
+					dbTable = schedulesTable;
+					dbColumns = schedulesColumns;
+					dbOrderBy = schedulesOrderBy;
+					dbSelectionArgs = selectionArgs;
 				}
-					
-				dbTable = schedulesTable;
-				dbColumns = schedulesColumns;
-				//dbSelection = schedulesSelection + "'" + accountUsed + "'";
-				dbOrderBy = schedulesOrderBy;
 				break;
 			case SCHEDULES_ID:
 				dbTable = schedulesTable;
@@ -303,7 +342,9 @@ public class KMMDProvider extends ContentProvider
 				else
 					dbSelection = scheduleSingleSelection;
 				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
 				dbOrderBy = schedulesOrderBy;	
+				dbSelectionArgs = selectionArgs;
 				break;
 			case TRANSACTIONS_ID:
 				dbTable = transactionsTable;
@@ -313,19 +354,63 @@ public class KMMDProvider extends ContentProvider
 				id = this.getId(uri);
 				break;
 			case SPLITS:
+				dbTable = splitsTable;
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;
 			case SPLITS_ID:
 				dbTable = splitsTable;
 				dbColumns = splitsColumns;
 				dbSelection = splitsSingleSelection;
 				dbOrderBy = splitsOrderBy;
 				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
 				break;
 			case FILEINFO:
-				Log.d(TAG, "Getting kmmFileInfo table items.");
 				dbTable = fileinfoTable;
 				dbColumns = projection;
 				dbSelection = selection;
 				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;
+			case INSTITUTIONS:
+				dbTable = "kmmInstitutions";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;				
+			case INSTITUTIONS_ID:
+				dbTable = "kmmInstitutions";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
+				break;
+			case PAYEES:
+				dbTable = "kmmPayees";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;
+			case PAYEES_ID:
+				dbTable = "kmmPayees";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
+				break;
+			case LEDGER:
+				dbTable = "kmmSplits, kmmPayees";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
 				break;
 			default:
 				break;
@@ -336,8 +421,7 @@ public class KMMDProvider extends ContentProvider
 		{
 			if(db != null)
 			{
-				cur = db.query(dbTable, dbColumns, dbSelection, null, null, null, dbOrderBy);
-				Log.d(TAG, "Size of cursor to be returned: " + cur.getCount());
+				cur = db.query(dbTable, dbColumns, dbSelection, dbSelectionArgs, null, null, dbOrderBy);
 			}
 			else
 			{	
@@ -348,7 +432,7 @@ public class KMMDProvider extends ContentProvider
 		else
 		{
 			if(db != null)
-				cur = db.query(dbTable, dbColumns, dbSelection, new String[] { id }, null, null, dbOrderBy);
+				cur = db.query(dbTable, dbColumns, dbSelection, dbSelectionArgs, null, null, dbOrderBy);
 			else
 			{
 				Log.d(TAG, "Database is not open!");
@@ -356,31 +440,16 @@ public class KMMDProvider extends ContentProvider
 			}
 		}
 		
-//		db.close();
+		queryCall++;
 		return cur;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues contentvalues, String selection, String[] selectionArgs) 
 	{
-		String id = null;
 		int result = 0;
 		String widgetId = uri.getFragment();
-		
-		// Need to get the prefs for our application so we can update the file used as dirty.
-		Context context = getContext();
-		Context cont = null;
-		try 
-		{
-			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
-		} 
-		catch (NameNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
-		
+			
 		// See if we need to open the database.
 		if( !db.isOpen() )
 			db = openDatabase(widgetId);
@@ -424,31 +493,6 @@ public class KMMDProvider extends ContentProvider
 				break;
 		}
 		
-		// Need to mark the file as dirty for our cloud services.
-    	// Read in the saved deviceState from the xml file and put it into a List<>.
-    	/*List<KMMDDeviceItem> savedDeviceState = new ArrayList<KMMDDeviceItem>();
-    	KMMDDeviceItem currentFile = null;
-    	KMMDDeviceItemParser parser = new KMMDDeviceItemParser(KMMDDropboxService.DEVICE_STATE_FILE, cont);
-    	savedDeviceState = parser.parse();
-		for(KMMDDeviceItem item : savedDeviceState)
-		{
-			currentFile = item.findMatch(db.getPath());
-			if(currentFile != null)
-				break;
-		}
-		currentFile.setIsDirty(true, KMMDDropboxService.CLOUD_ALL);
-		// Replace this in the savedDeviceState list then write it to disk.
-		for(int i=0; i<savedDeviceState.size(); i++)
-		{
-			if(savedDeviceState.get(i).equals(currentFile))
-			{
-				savedDeviceState.add(i, currentFile);
-				savedDeviceState.remove(i+1);
-				i = savedDeviceState.size() + 1;
-			}
-		}
-		writeDeviceState(savedDeviceState);*/
-		
 		// clean up, close the database.
 		db.close();
 		
@@ -460,8 +504,6 @@ public class KMMDProvider extends ContentProvider
 		String lastPathSegment = uri.getLastPathSegment();
 		
 		int match = sURIMatcher.match(uri);
-		Log.d(TAG, "Uri provided to getId(): " + uri.toString());
-		Log.d(TAG, "Matcher returned: " + match);
 		switch(match)
 		{
 		case ACCOUNTS:
@@ -498,7 +540,6 @@ public class KMMDProvider extends ContentProvider
 		} 
 		catch (NameNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
@@ -519,12 +560,9 @@ public class KMMDProvider extends ContentProvider
 		{
 			// Get the path to the database the user wants to use for this widget.
 			prefString = "widgetDatabasePath" + String.valueOf(widgetId);
-			Log.d(TAG, "Attempting to locate databasePath for widget " + widgetId + " with prefrence string: " + prefString);
 		}
 		
-		path = prefs.getString(prefString, "");
-		Log.d(TAG, "Path for KMMDProvider database: " + path);
-		
+		path = prefs.getString(prefString, "");		
 		try 
 		{
 			return SQLiteDatabase.openDatabase(path, null, 0);
@@ -541,7 +579,6 @@ public class KMMDProvider extends ContentProvider
 	{
 		Cursor cursor;
 		ContentValues values = new ContentValues();
-		Log.d(TAG, "updating File Info: " + updateColumn);
 		
 		if( updateColumn.equals("lastModified") )
 		{
@@ -692,77 +729,4 @@ public class KMMDProvider extends ContentProvider
 		
 		db.update("kmmFileInfo", values, null, null);
 	}
-
-/*    private void writeDeviceState(List<KMMDDeviceItem> deviceState)
-    {
-        XmlSerializer serializer = Xml.newSerializer();
-        StringWriter writer = new StringWriter();
-        try 
-        {
-            serializer.setOutput(writer);
-            serializer.startDocument("UTF-8", true);
-            serializer.startTag("", "DeviceState");
-            for (KMMDDeviceItem item: deviceState)
-            {
-           		serializer.startTag("", "item");
-           		serializer.startTag("", "type");
-           		serializer.text(item.getType());
-           		serializer.endTag("", "type");
-           		serializer.startTag("", "name");
-           		serializer.text(item.getName());
-           		serializer.endTag("", "name");
-           		serializer.startTag("", "path");
-           		serializer.text(item.getPath());
-           		serializer.endTag("", "path");
-           		serializer.startTag("", "dirtyservices");
-           		serializer.attribute("", "Dropbox", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_DROPBOX)));
-           		serializer.attribute("", "GoogleDrive", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_GOOGLEDRIVE)));
-           		serializer.attribute("", "UbutntoOne", String.valueOf(item.getIsDirty(KMMDDropboxService.CLOUD_UBUNTUONE)));
-           		serializer.endTag("", "dirtyservices");
-           		serializer.startTag("", "revcodes");
-           		serializer.attribute("", "Dropbox", item.getRevCode(KMMDDropboxService.CLOUD_DROPBOX));
-           		serializer.attribute("", "GoogleDrive", item.getRevCode(KMMDDropboxService.CLOUD_GOOGLEDRIVE));
-           		serializer.attribute("", "UbuntuOne", item.getRevCode(KMMDDropboxService.CLOUD_UBUNTUONE));
-           		serializer.endTag("", "revcodes");
-           		serializer.endTag("", "item");
-            }
-            serializer.endTag("", "DeviceState");
-            serializer.endDocument();
-        } 
-        catch (Exception e) 
-        {
-            throw new RuntimeException(e);
-        }
-        
-		Context context = getContext();
-		Context cont = null;
-		try 
-		{
-			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
-		} 
-		catch (NameNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-        // Attempt to write the state file to the private storage area.
-        String FILENAME = KMMDDropboxService.DEVICE_STATE_FILE;
-        try 
-        {
-			FileOutputStream fos = cont.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			fos.write(writer.toString().getBytes());
-			fos.close();
-		} 
-        catch (FileNotFoundException e) 
-        {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-        catch (IOException e) 
-        {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }*/
 }

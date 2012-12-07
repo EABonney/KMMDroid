@@ -66,7 +66,6 @@ public class KMMDDeviceItemParser extends BaseDeviceItemParser
 
 			public void start(Attributes attributes) 
 			{
-				// TODO Auto-generated method stub
 				currentDeviceItem.setIsDirty(Boolean.valueOf(attributes.getValue("Dropbox")), KMMDDropboxService.CLOUD_DROPBOX);
 				currentDeviceItem.setIsDirty(Boolean.valueOf(attributes.getValue("GoogleDrive")), KMMDDropboxService.CLOUD_GOOGLEDRIVE);
 				currentDeviceItem.setIsDirty(Boolean.valueOf(attributes.getValue("UbuntuOne")), KMMDDropboxService.CLOUD_UBUNTUONE);				
@@ -79,7 +78,6 @@ public class KMMDDeviceItemParser extends BaseDeviceItemParser
 
 			public void start(Attributes attributes) 
 			{
-				// TODO Auto-generated method stub
 				currentDeviceItem.setRevCode(attributes.getValue("Dropbox"), KMMDDropboxService.CLOUD_DROPBOX);
 				currentDeviceItem.setRevCode(attributes.getValue("GoogleDrive"), KMMDDropboxService.CLOUD_GOOGLEDRIVE);
 				currentDeviceItem.setRevCode(attributes.getValue("UbuntuOne"), KMMDDropboxService.CLOUD_UBUNTUONE);				

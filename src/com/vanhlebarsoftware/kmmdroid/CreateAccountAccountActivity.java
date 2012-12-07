@@ -2,15 +2,13 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.Calendar;
 
-import com.vanhlebarsoftware.kmmdroid.PayeeDefaultAccountActivity.PayeeDefaultOnItemSelectedListener;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -29,20 +27,12 @@ import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
-public class CreateAccountAccountActivity extends Activity implements OnCheckedChangeListener
+public class CreateAccountAccountActivity extends FragmentActivity implements OnCheckedChangeListener
 {
 	private static final String TAG = "CreateAccountAccountActivity";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final int SET_DATE_ID = 0;
-	private static final int A_CHECKING = 1;
-	private static final int A_SAVINGS = 2;
-	private static final int A_CREDITCARD = 4;
-	private static final int A_LOAN = 5;
-	private static final int A_INVESTMENT = 7;
-	private static final int A_ASSET = 9;
-	private static final int A_LIABILITY = 10;
-	private static final int A_EQUITY = 16;
 	private int intYear;
 	private int intMonth;
 	private int intDay;
@@ -443,7 +433,6 @@ public class CreateAccountAccountActivity extends Activity implements OnCheckedC
 		String tmp = openDate.getText().toString();
 		String dates[] = tmp.split("-");
 		
-		//tmp = String.valueOf(dates[2]) + "-" + String.valueOf(dates[0]) + "-" + String.valueOf(dates[1]);
 		return new StringBuilder()
 		.append(dates[2]).append("-")
 		.append(dates[0]).append("-")

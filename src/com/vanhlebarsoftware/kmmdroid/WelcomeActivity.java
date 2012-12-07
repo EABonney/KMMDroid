@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,19 +13,16 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class WelcomeActivity extends Activity
+public class WelcomeActivity extends FragmentActivity
 {
-	@SuppressWarnings("unused")
 	private static final String TAG = "WelcomeActivity";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the schedules table
@@ -37,7 +31,7 @@ public class WelcomeActivity extends Activity
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
-												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
+												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=";
 	private static final String schedulesOrderBy = "nextPaymentDue ASC";
 	boolean closedDB = false;
@@ -46,7 +40,7 @@ public class WelcomeActivity extends Activity
 	
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) 
+    public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         

@@ -7,14 +7,11 @@
 
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.DialogPreference;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 
@@ -51,7 +48,6 @@ public class KMMDTimePreference extends DialogPreference
 			SharedPreferences.Editor editor = getEditor();
 			editor.putInt(getKey() + ".hour", timePicker.getCurrentHour());
 			editor.putInt(getKey() + ".minute", timePicker.getCurrentMinute());
-			Log.d(TAG, "Saved time: " + timePicker.getCurrentHour() + ":" + timePicker.getCurrentMinute());
 			editor.commit();			
 		}
 	}

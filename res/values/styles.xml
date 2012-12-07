@@ -7,4 +7,8 @@
 	<style name="AlertDialogNoTitle" parent="@style/DialogNoTitle" >
 		<item name="android:windowNoTitle">true</item>
 	</style>
+	
+	<style name="ListFont" parent="@android:style/Widget.ListView">
+	    <item name="android:textColor">@android:color/black</item>
+	</style>
 </resources>

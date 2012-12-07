@@ -2,12 +2,12 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -17,7 +17,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class CashRequirementsOptionsActivity extends Activity
+public class CashRequirementsOptionsActivity extends FragmentActivity
 {
 	protected static final String TAG = "CashRequirementsOptionsActivity";
 	static final int SET_DATE_BEG = 0;
@@ -62,7 +62,6 @@ public class CashRequirementsOptionsActivity extends Activity
         {
 			public void onClick(View arg0)
 			{
-				// TODO Auto-generated method stub
 				Intent i = new Intent(getBaseContext(), CashRequirementsActivity.class);
 				i.putExtra("Account", strAccountId);
 				i.putExtra("AccountBalance", nAccountBalance);
@@ -77,7 +76,6 @@ public class CashRequirementsOptionsActivity extends Activity
         {
 			
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				showDialog(SET_DATE_BEG);
 			}
 		});
@@ -86,7 +84,6 @@ public class CashRequirementsOptionsActivity extends Activity
         {
 			
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				showDialog(SET_DATE_END);
 			}
 		});
@@ -138,7 +135,6 @@ public class CashRequirementsOptionsActivity extends Activity
 			{				
 				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
 				{
-					// TODO Auto-generated method stub
 					intYear = year;
 					intMonth = monthOfYear;
 					intDay = dayOfMonth;
@@ -151,7 +147,6 @@ public class CashRequirementsOptionsActivity extends Activity
 					{				
 						public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
 						{
-							// TODO Auto-generated method stub
 							intYear = year;
 							intMonth = monthOfYear;
 							intDay = dayOfMonth;
@@ -189,7 +184,6 @@ public class CashRequirementsOptionsActivity extends Activity
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}

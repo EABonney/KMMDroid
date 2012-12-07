@@ -1,11 +1,10 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,7 +15,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
-public class PayeeDefaultAccountActivity extends Activity implements OnCheckedChangeListener
+public class PayeeDefaultAccountActivity extends FragmentActivity implements OnCheckedChangeListener
 {
 	private static final String TAG = "PayeeDefaultAccountActivity";
 	private static final String dbTable = "kmmAccounts";
@@ -119,7 +118,6 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -139,7 +137,6 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();
@@ -263,21 +260,17 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 			{
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 			
-				// TODO Auto-generated method stub
 				switch ( parent.getId() )
 				{
 					case R.id.payeeDefaultIncome:
-						Log.d(TAG, "Default Income account selected.");
 						strIncAccountSelected = c.getString(1);
 						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.payeeDefaultExpense:
-						Log.d(TAG, "Default Expense account selected");
 						strExpAccountSelected = c.getString(1);
 						parentTabHost.setIsDirty(true);
 						break;
 					default:
-						Log.d(TAG, "Somehow it thinks we did not select an account but we did!");
 						break;
 				}
 			}
@@ -286,7 +279,6 @@ public class PayeeDefaultAccountActivity extends Activity implements OnCheckedCh
 		}
 
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
 			// do nothing.
 		}		
 	}

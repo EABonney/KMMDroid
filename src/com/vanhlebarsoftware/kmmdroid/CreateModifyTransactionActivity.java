@@ -3,18 +3,16 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.StringTokenizer;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -33,7 +31,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class CreateModifyTransactionActivity extends Activity
+public class CreateModifyTransactionActivity extends FragmentActivity
 {
 	private static final String TAG = "CreateModifyTransactionActivity";
 	private static final int ACTION_NEW = 1;
@@ -81,7 +79,6 @@ public class CreateModifyTransactionActivity extends Activity
 	boolean fromScheduleActions = false;
 	private String widgetDatabasePath = null;
 	private boolean isDirty = false;
-	private boolean firstRun = true;
 	ArrayList<Split> Splits;
 	ArrayList<Split> OrigSplits;
 	Spinner spinTransType;
@@ -236,18 +233,6 @@ public class CreateModifyTransactionActivity extends Activity
 			{
 				spinCategory.refreshDrawableState();
 				spinCategory.performClick();
-				
-				/*if( !spinCategory.performClick() )
-				{
-					Log.d(TAG, "User never selected anything!");
-					spinCategory.setVisibility(View.INVISIBLE);
-					buttonChooseCategory.setVisibility(View.VISIBLE);
-				}
-				else
-				{
-					Log.d(TAG, "User must have selected something!");
-					buttonChooseCategory.setVisibility(View.INVISIBLE);
-				}*/
 			}
 		});
         
@@ -428,16 +413,6 @@ public class CreateModifyTransactionActivity extends Activity
 					String value = null, formatted = null, memo = null;
 					if(i == 0)
 					{
-						/*if( intTransType == WITHDRAW )
-						{
-							value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-						}
-						else
-						{
-							value = Account.createBalance(Transaction.convertToPennies(strAmount));
-							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);							
-						}*/
 						switch( intTransType )
 						{
 							case Transaction.DEPOSIT:
@@ -467,16 +442,6 @@ public class CreateModifyTransactionActivity extends Activity
 						}
 						else
 						{
-							/*if( intTransType == Transaction.WITHDRAW )
-							{
-								value = Account.createBalance(Transaction.convertToPennies(strAmount));
-								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
-							}
-							else
-							{
-								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-								formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
-							}*/
 							switch( intTransType )
 							{
 								case Transaction.DEPOSIT:
@@ -562,8 +527,6 @@ public class CreateModifyTransactionActivity extends Activity
 					Intent intent = new Intent(KMMDService.DATA_CHANGED);
 					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				}
-				// need to close the database as it is keeping it open here and causing issues.
-				//KMMDapp.closeDB();
 				
 				// Mark the file as dirty
 				KMMDapp.markFileIsDirty(true, "9999");
@@ -694,11 +657,9 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							intTransType = 0;
 							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
 										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -706,11 +667,9 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							intTransType = 1;
 							// Populate the categories spinner with the balance sheet accounts instead of income statement.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_ASSET),
 										String.valueOf(Account.ACCOUNT_LIABILITY) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -718,11 +677,9 @@ public class CreateModifyTransactionActivity extends Activity
 						{
 							intTransType = 2;
 							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
 										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -739,8 +696,6 @@ public class CreateModifyTransactionActivity extends Activity
 						Log.d(TAG, "Inside category: " + c.getString(0).toString());
 						editCategory.setText(c.getString(0).toString());
 						strTransCategoryId = c.getString(1).toString();
-						//spinCategory.setVisibility(4);
-						//buttonChooseCategory.setVisibility(0);
 						isDirty = true;
 						break;
 					case R.id.status:
@@ -852,7 +807,6 @@ public class CreateModifyTransactionActivity extends Activity
 		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
 		String dates[] = date.split("-");
 		
-		//tmp = String.valueOf(dates[2]) + "-" + String.valueOf(dates[0]) + "-" + String.valueOf(dates[1]);
 		return new StringBuilder()
 		.append(dates[2]).append("-")
 		.append(dates[0]).append("-")

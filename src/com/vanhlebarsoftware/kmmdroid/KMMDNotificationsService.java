@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,7 +19,6 @@ public class KMMDNotificationsService extends Service
 {
 	private static final String TAG = KMMDNotificationsService.class.getSimpleName();
 	public static final String CHECK_SCHEDULES = "com.vanhlebarsoftware.kmmdroid.CHECK_SCHEDULES";
-	private boolean runFlag = false;
 	private KMMDNotificationScheduleUpdater kmmdNotificationScheduleUpdater;
 	private NotificationManager kmmdNotifcationMgr;
 	private Notification kmmdNotification;
@@ -39,15 +36,9 @@ public class KMMDNotificationsService extends Service
 	public void onDestroy() 
 	{
 		super.onDestroy();
-		this.runFlag = false;
 		this.kmmdNotificationScheduleUpdater.interrupt();
 		this.kmmdNotificationScheduleUpdater = null;
 		this.kmmdApp.setServiceRunning(false);
-		/*if(this.kmmdApp.isDbOpen())
-		{
-			Log.d(TAG, "Closing database....");
-			this.kmmdApp.closeDB();
-		}*/
 	}
 	
 	@Override
@@ -55,7 +46,6 @@ public class KMMDNotificationsService extends Service
 	{
 		super.onStartCommand(intent, flags, startId);
 		
-		this.runFlag = true;
 		this.kmmdApp.setServiceRunning(true);
 		this.kmmdNotificationScheduleUpdater.start();
 
@@ -156,7 +146,6 @@ public class KMMDNotificationsService extends Service
     				getContentResolver().insert(KMMDProvider.CONTENT_SPLIT_URI, valuesSplit);
     				valuesSplit.clear();
     			}
-    			//transaction.enter(kmmdApp.db);
     			schedule = null;
     			
     			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
@@ -170,7 +159,6 @@ public class KMMDNotificationsService extends Service
 				values.put("lastPayment", transaction.formatEntryDateString());
 				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schedule.getId());
 				getContentResolver().update(u, values, null, new String[] { schedule.getId() });
-				//kmmdApp.db.update("kmmSchedules", values, "id=?", new String[] { schedule.getId() });
 				//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
 				for(int i=0; i < schedule.Splits.size(); i++)
 				{
@@ -201,7 +189,6 @@ public class KMMDNotificationsService extends Service
     				valuesSplit.clear();
     				// Need to update the Accounts for this split.
     				updateAccountInfo(s.getAccountId(), s.getValueFormatted(), 1);
-					//s.commitSplit(true, kmmdApp.db);
 					s = null;
 					// Save this transactionId for the ScheduleNotificationsActivity.
 					newTransactionIds.add(transaction.getTransId());
@@ -212,17 +199,11 @@ public class KMMDNotificationsService extends Service
 				u = null;
 				u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schedule.getId());
 				getContentResolver().update(u, values, null, new String[] { schedule.getId() });
-				//kmmdApp.db.update("kmmTransactions", values, "id=?", new String[] { schedule.getId() });
-				
     			//Now update the kmmFileInfo row for the entered items.
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "hiTransactionId", new String[] { "1" });
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "transactions", new String[] { "1" });
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "splits", new String[] { String.valueOf(transaction.splits.size()) });	
 				getContentResolver().update(KMMDProvider.CONTENT_FILEINFO_URI, null, "lastModified", new String[] { "0" });
-				//kmmdApp.updateFileInfo("hiTransactionId", 1);
-				//kmmdApp.updateFileInfo("transactions", 1);
-				//kmmdApp.updateFileInfo("splits", transaction.splits.size());
-				//kmmdApp.updateFileInfo("lastModified", 0);
     			transaction = null;
     			schedule = null;
     			
@@ -276,10 +257,6 @@ public class KMMDNotificationsService extends Service
     
 	private Schedule getSchedule(String schId)
 	{
-		Log.d(TAG, "schId: " + schId);
-		//Cursor schedule = kmmdApp.db.query("kmmschedules",new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
-		//Cursor splits = kmmdApp.db.query("kmmsplits", new String[] { "*" }, "transactionId=?", new String[] { schId }, null, null, "splitId");
-		//Cursor transaction = kmmdApp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schId);
 		Cursor schedule = getContentResolver().query(u, new String[] { "*" }, "id=?", null, null);
 		u = null;
@@ -288,7 +265,6 @@ public class KMMDNotificationsService extends Service
 		u = null;
 		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schId);
 		Cursor transaction = getContentResolver().query(u, null, null, null, null);
-		Log.d(TAG, "Number of transactions returned: " + transaction.getCount());
 		return new Schedule(schedule, splits, transaction);
 	}
 
@@ -297,7 +273,6 @@ public class KMMDNotificationsService extends Service
 		final String[] dbColumns = { "hiTransactionId"};
 		final String strOrderBy = "hiTransactionId DESC";
 		// Run a query to get the Transaction ids so we can create a new one.
-		//Cursor cursor = kmmdApp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
 		Cursor cursor = getContentResolver().query(KMMDProvider.CONTENT_FILEINFO_URI, dbColumns, null, null, strOrderBy);
 		cursor.moveToFirst();
 

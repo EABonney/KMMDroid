@@ -244,6 +244,7 @@
     	<activity
     	    	  android:name=".ReportsActivity"
     	    	  android:label="@string/titleReports"
+    	    	  android:theme="@style/ListFont"
     	    	  android:screenOrientation="portrait" >    	    
     	</activity>
     	
@@ -256,7 +257,8 @@
       	</activity>
       	
 		<provider android:name=".KMMDProvider"
-				  android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider">
+				  android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider"
+				  android:exported="false">
 		</provider>
 		
 		<receiver android:name=".BasicHomeWidget"

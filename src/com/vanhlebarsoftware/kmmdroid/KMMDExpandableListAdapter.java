@@ -1,15 +1,12 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.*;
 import android.graphics.*;
 
@@ -18,7 +15,6 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
     private Context context;
     private ArrayList<String> groups;
     private ArrayList<ArrayList<Account>> children;
-    KMMDroidApp kmmdApp;
 
     @Override
     public boolean areAllItemsEnabled()
@@ -31,12 +27,28 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
         this.context = context;
         this.groups = groups;
         this.children = children;
-        this.kmmdApp = kmmdApp;
     }
     
+	public void setData(List<Account> data) 
+    {
+        clear();
+        if (data != null) 
+        {
+        	for(Account account : data)
+        	{
+        		addItem(account.getAccountTypeString(), account);
+        	}
+        }
+    }
+	
+	private void clear()
+	{
+		groups.clear();
+		children.clear();
+	}
 
     /**
-     * A general add method, that allows you to add a Vehicle to this list
+     * A general add method, that allows you to add an Account to this list
      * 
      * Depending on if the parentId of the account is present or not,
      * the corresponding item will either be added to an existing group if it 
@@ -84,26 +96,22 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
 			row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
 		
     	Account account = (Account) getChild(groupPosition, childPosition); 
-    	// See if this account is used as a parent, if so display the arrow in the row and set the isParent flag of the account.
-    	Cursor c = this.kmmdApp.db.query("kmmAccounts", new String[] {"id"}, "parentId=?", new String[] {account.getId()}, null, null, null);
     	ImageView imgView = (ImageView) convertView.findViewById(R.id.expandIcon);
     	String accountName = null;
-    	if( c.getCount() > 0 )
+    	if( account.getIsParent() )
         {
         	imgView.setVisibility(View.VISIBLE);
-        	account.setIsParent(true);
-        	accountName = account.getName() + " (" + c.getCount() + ")";
+        	accountName = account.getName() + " (" + account.getNumberSubAccounts(context) + ")";
         }
         else
         {
         	imgView.setVisibility(View.GONE);
-        	account.setIsParent(false);
         	accountName = account.getName();
         }
     	TextView tvName = (TextView) convertView.findViewById(R.id.crAccountName);
     	TextView tvBalance = (TextView) convertView.findViewById(R.id.crAccountBalance);
         tvName.setText(accountName);
-        tvBalance.setText(String.format(Transaction.convertToDollars(Account.convertBalance(account.getBalance()), true)));
+        tvBalance.setText(account.getBalance());
         return convertView;
     }
 

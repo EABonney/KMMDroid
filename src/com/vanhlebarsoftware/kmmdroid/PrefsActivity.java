@@ -236,7 +236,6 @@ public class PrefsActivity extends PreferenceActivity
     private void storeKeys(String key, String secret) 
     {
         // Save the access key for later
-        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
         Editor edit = KMMDapp.prefs.edit();
         edit.putString(ACCESS_KEY_NAME, key);
         edit.putString(ACCESS_SECRET_NAME, secret);
@@ -245,7 +244,6 @@ public class PrefsActivity extends PreferenceActivity
 
     private void clearKeys() 
     {
-        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
         Editor edit = KMMDapp.prefs.edit();
         edit.clear();
         edit.commit();
@@ -328,15 +326,7 @@ public class PrefsActivity extends PreferenceActivity
 						info = mApi.metadata("/", 0, null, false, null);    				
 						if( !info.isDir )
 						{
-							Log.d(TAG, "Creating our app folder on the server....");
 							info = mApi.createFolder("");
-						}
-						else
-						{
-							Log.d(TAG, "isDir: " + info.isDir);
-							Log.d(TAG, "file name: " + info.fileName());
-							Log.d(TAG, "path name: " + info.path);
-							Log.d(TAG, "parent path: " + info.parentPath());
 						}
 					}
 					catch( DropboxServerException e)

@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -12,9 +11,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,18 +26,15 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class SchedulePaymentInfoActivity extends Activity 
+public class SchedulePaymentInfoActivity extends FragmentActivity 
 {
 	private static final String TAG = SchedulePaymentInfoActivity.class.getSimpleName();
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
 	static final String[] FROM = { "name" };
 	static final String[] FROM1 = { "accountName" };
 	static final int[] TO = { android.R.id.text1 };
 	static final int SET_DATE_ID = 0;
 	private static int WITHDRAW = 2;
-	private static int DEPOSIT = 0;
-	private static int TRANSFER = 1;
 	private int Action = ACTION_NEW;
 	private int intYear;
 	private int intMonth;
@@ -49,14 +45,11 @@ public class SchedulePaymentInfoActivity extends Activity
 	private int intSchAccountPos = 0;
 	private int intSchPayeePos = 0;
 	private int intSchStatusPos = 0;
-	private int intSchCategoryPos = 0;
 	
 	private int intSchType = WITHDRAW;
 	private int intSchStatus = 0;
 	private int intSchFreq = 0;
 	private int intSchFreqDesc = 0;
-	private int intSchPaymentMethod = 0;
-	private int intSchOccurence = Schedule.OCCUR_ONCE;
 	private String strSchAccountId = null;
 	private String strSchPayeeId = null;
 	private String strSchCategoryId = null;		// Only used if we have ONLY one category, use splits if we have more than one.
@@ -333,7 +326,6 @@ public class SchedulePaymentInfoActivity extends Activity
 		// Setup the category Name
 		if(strSchCategoryId != null)
 		{
-			Log.d(TAG, "Setting the spinCategory with categoryId: " + strSchCategoryId);
 			spinCategory.setSelection(setCategoryUsed(strSchCategoryId));		
 		}
 	}
@@ -341,7 +333,6 @@ public class SchedulePaymentInfoActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -361,7 +352,6 @@ public class SchedulePaymentInfoActivity extends Activity
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();
@@ -400,7 +390,6 @@ public class SchedulePaymentInfoActivity extends Activity
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			Log.d(TAG, "Inside onItemSelected");
 			if( iNumberofPasses > 7 )
 			{
 				switch( parent.getId())
@@ -432,11 +421,9 @@ public class SchedulePaymentInfoActivity extends Activity
 						{
 							intSchType = Schedule.TYPE_DEPOSIT;
 							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
 										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -444,11 +431,9 @@ public class SchedulePaymentInfoActivity extends Activity
 						{
 							intSchType = Schedule.TYPE_TRANSFER;
 							// Populate the categories spinner with the balance sheet accounts instead of income statement.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_ASSET),
 										String.valueOf(Account.ACCOUNT_LIABILITY) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -456,11 +441,9 @@ public class SchedulePaymentInfoActivity extends Activity
 						{
 							intSchType = Schedule.TYPE_BILL;
 							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories.close();
 							cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
 									"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
 										String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//startManagingCursor(cursorCategories);
 							adapterCategories.changeCursor(cursorCategories);
 							adapterCategories.notifyDataSetChanged();
 						}
@@ -473,7 +456,6 @@ public class SchedulePaymentInfoActivity extends Activity
 						parentTabHost.setIsDirty(true);
 						break;
 					case R.id.category:
-						//intSchCategoryPos = parent.getSelectedItemPosition();
 						c = (Cursor) parent.getAdapter().getItem(pos);
 						strCategoryName = c.getString(0).toString();
 						editCategory.setText(strCategoryName);
@@ -492,7 +474,6 @@ public class SchedulePaymentInfoActivity extends Activity
 						parentTabHost.setIsDirty(true);
 						break;
 					default:
-						Log.d(TAG, "parentId: " + String.valueOf(parent.getId()));
 						break;
 				}
 			}
@@ -900,7 +881,7 @@ public class SchedulePaymentInfoActivity extends Activity
 	}
 	
 	// Take the occurence value and return the index to our internal array for the description.
-	private int getOccurenceDescFromOccurence(int occ)
+	/*private int getOccurenceDescFromOccurence(int occ)
 	{
 		switch(occ)
 		{
@@ -931,7 +912,7 @@ public class SchedulePaymentInfoActivity extends Activity
 		default:
 			return 0;
 		}
-	}
+	}*/
 	
 	private int setPayee(String payeeId)
 	{
@@ -989,7 +970,6 @@ public class SchedulePaymentInfoActivity extends Activity
 				//check to see if we have moved past the last item in the cursor, if so return current i.
 				if(cursorCategories.isAfterLast())
 				{
-					Log.d(TAG, "Curosor location: " + String.valueOf(i));
 					return i;
 				}
 				i++;

@@ -563,12 +563,10 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		} 
         catch (FileNotFoundException e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
         catch (IOException e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }

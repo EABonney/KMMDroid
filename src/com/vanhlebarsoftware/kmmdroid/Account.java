@@ -5,8 +5,10 @@ import java.util.Calendar;
 import java.util.StringTokenizer;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 public class Account 
@@ -33,6 +35,8 @@ public class Account
 	private String parentId;
 	private String accountName;
 	private String balance;
+	private String accountTypeString;
+	private int accountType;
 	private boolean isParent;
 	
 
@@ -42,7 +46,20 @@ public class Account
 		this.parentId = null;
 		this.accountName = null;
 		this.balance = null;
+		this.accountTypeString = null;
+		this.accountType = 0;
 		this.isParent = false;
+	}
+	
+	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP)
+	{
+		this.id = id;
+		this.parentId = null;
+		this.accountName = name;
+		this.balance = bal;
+		this.accountTypeString = acctTypeStr;
+		this.accountType = acctType;
+		this.isParent = isP;
 	}
 	
 	Account(Cursor cur)
@@ -51,6 +68,8 @@ public class Account
 		this.parentId = cur.getString(cur.getColumnIndex("parentId"));
 		this.accountName = cur.getString(cur.getColumnIndex("accountName"));
 		this.balance = cur.getString(cur.getColumnIndex("balance"));
+		this.accountTypeString = null;
+		this.accountType = 0;
 		this.isParent = false;
 	}
 	
@@ -77,6 +96,28 @@ public class Account
 	public boolean getIsParent()
 	{
 		return this.isParent;
+	}
+	
+	public int getAccountType()
+	{
+		return this.accountType;
+	}
+	
+	public String getAccountTypeString()
+	{
+		return this.accountTypeString;
+	}
+	
+	public int getNumberSubAccounts(Context context)
+	{
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, this.getId() + frag);
+		u = Uri.parse(u.toString());
+		Cursor c = context.getContentResolver().query(u, new String[] { "id" }, "parentId=?", new String[] {this.getId()}, null);
+		int subAccts = c.getCount();
+		c.close();
+		
+		return subAccts;
 	}
 	
 	public void setIsParent(boolean flag)
@@ -173,6 +214,21 @@ public class Account
 		{
 			// Since our current balance includes the future transactions we need to do the opposite of the transaction to correct the balance
 			balance = balance - Transaction.convertToPennies(c.getString(0));
+		}
+		
+		newBalanceFormatted = Transaction.convertToDollars(balance, true);
+		
+		return newBalanceFormatted;
+	}
+
+	static public String adjustForFutureTransactions(String accountId, Long balance, Cursor splits)
+	{
+		String newBalanceFormatted = null;
+
+		while(splits.moveToNext())
+		{
+			// Since our current balance includes the future transactions we need to do the opposite of the transaction to correct the balance
+			balance = balance - Transaction.convertToPennies(splits.getString(0));
 		}
 		
 		newBalanceFormatted = Transaction.convertToDollars(balance, true);

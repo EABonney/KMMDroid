@@ -1,17 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,11 +18,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-@SuppressWarnings("unused")
-public class ViewTransactionActivity extends Activity
+public class ViewTransactionActivity extends FragmentActivity
 {
 	private static final String TAG = "ViewTransactionActivity";
-	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static int C_TRANSACTIONID = 0;
 	private static int C_TXTYPE = 1;
@@ -200,7 +194,6 @@ public class ViewTransactionActivity extends Activity
 						// Need to update the accounts for the transaction that was just deleted.
 						for(int i=0; i < Splits.size(); i++)
 						{
-							Log.d(TAG, "Split amount: " + Splits.get(i).getValueFormatted());
 							Account.updateAccount(KMMDapp.db, Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
 						}
 						// Update the number of transactions for the accounts used.
@@ -221,7 +214,6 @@ public class ViewTransactionActivity extends Activity
 				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						// Canceled.
-						Log.d(TAG, "User cancelled delete.");
 					}
 					});				
 				alertDel.show();

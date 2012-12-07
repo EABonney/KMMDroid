@@ -1,14 +1,12 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-public class LoadMoreTransactionsActivity extends Activity
+public class LoadMoreTransactionsActivity extends FragmentActivity
 {
 	private final static String TAG = LoadMoreTransactionsActivity.class.getSimpleName();
 	Button btnOneMonth;
@@ -35,7 +33,6 @@ public class LoadMoreTransactionsActivity extends Activity
         {
 			public void onClick(View arg0)
 			{
-				Log.d(TAG, "User clicked One Month!");
 				i.putExtra("LoadMore", "Month");
 				setResult(1, i);
 				finish();
@@ -46,7 +43,6 @@ public class LoadMoreTransactionsActivity extends Activity
         {
 			public void onClick(View arg0)
 			{
-				Log.d(TAG, "User clicked One Year!");
 				i.putExtra("LoadMore", "Year");
 				setResult(1, i);
 				finish();

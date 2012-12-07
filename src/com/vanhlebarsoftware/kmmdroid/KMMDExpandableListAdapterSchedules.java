@@ -1,6 +1,7 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -32,7 +33,24 @@ public class KMMDExpandableListAdapterSchedules extends BaseExpandableListAdapte
         this.kmmdApp = kmmdApp;
     }
     
-
+	public void setData(List<Schedule> data) 
+    {
+        clear();
+        if (data != null) 
+        {
+        	for(Schedule schedule : data)
+        	{
+        		addItem(schedule.getTitle(), schedule);
+        	}
+        }
+    }
+	
+	private void clear()
+	{
+		groups.clear();
+		children.clear();
+	}
+	
     /**
      * A general add method, that allows you to add a Vehicle to this list
      * 

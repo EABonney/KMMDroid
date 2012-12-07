@@ -1,34 +1,37 @@
-	package com.vanhlebarsoftware.kmmdroid;
+package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class SchedulesActivity extends Activity
+public class SchedulesActivity extends FragmentActivity implements
+											LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final String TAG = SchedulesActivity.class.getSimpleName();
+	private static final int SCHEDULES_LOADER = 0x6;
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
-	private static final String dbTable = "kmmSchedules, kmmSplits, kmmPayees";
 	private static final String[] dbColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurenceString", "nextPaymentDue", 
 												"endDate", "lastPayment", "valueFormatted", "kmmPayees.name AS Payee" };
 	private static final String strSelection = "kmmSchedules.id = kmmSplits.transactionId AND kmmSplits.payeeId = kmmPayees.id AND nextPaymentDue > 0" + 
@@ -48,12 +51,14 @@ public class SchedulesActivity extends Activity
 	LinearLayout navBar;
 	ListView listSchedules;
 	ScheduleCursorAdapter adapter;
+	boolean afterLoadFinished = false;
 	
 	/* Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.schedules);
 
         // Get our application
@@ -130,6 +135,13 @@ public class SchedulesActivity extends Activity
         {
         	KMMDapp.openDB();
         }
+        
+		// Set up the adapter
+		adapter = new ScheduleCursorAdapter(this, R.layout.schedules_rows, null, FROM, TO, 0);
+		listSchedules.setAdapter(adapter);
+		
+		// Initilize the loader
+		getSupportLoaderManager().initLoader(SCHEDULES_LOADER, null, this);
 	}
 
 	@Override
@@ -148,15 +160,6 @@ public class SchedulesActivity extends Activity
         {
         	KMMDapp.openDB();
         }
-        
-		//Run the query on the database to get the transactions.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, null, null, null, strOrderBy, null);
-		startManagingCursor(cursor);
-		
-		// Set up the adapter
-		adapter = new ScheduleCursorAdapter(this, R.layout.schedules_rows, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
-		listSchedules.setAdapter(adapter);
 		
 		// See if the user has requested the navigation bar.
 		if(!KMMDapp.prefs.getBoolean("navBar", false))
@@ -176,38 +179,6 @@ public class SchedulesActivity extends Activity
 	    	i.putExtra("Action", 3);
 	    	startActivity(i);
 	    }
-	};
-	
-	// View binder to do alternating of background colors.
-	static final ViewBinder VIEW_BINDER = new ViewBinder() 
-	{
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
-		{
-			TextView amount = (TextView) view.findViewById(R.id.srAmount);
-			TextView desc = (TextView) view.findViewById(R.id.srDescription);
-			TextView payee = (TextView) view.findViewById(R.id.srPayee);
-			TextView freq = (TextView) view.findViewById(R.id.srFrequency);
-			TextView next = (TextView) view.findViewById(R.id.srNextDueDate);
-			Log.d(TAG, "Cursor: " + cursor.getPosition());
-			if( cursor.getPosition() % 2 == 0)
-			{
-				amount.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-				desc.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-				payee.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-				freq.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-				next.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-			}
-			else
-			{
-				amount.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-				desc.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-				payee.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-				freq.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-				next.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-			}
-	
-			return true;
-		}
 	};
 	
 	// Called first time the user clicks on the menu button
@@ -285,16 +256,11 @@ public class SchedulesActivity extends Activity
 	}
 	
 	public class ScheduleCursorAdapter extends SimpleCursorAdapter
-	{
-		private Cursor c;
-		private Context context;
-		
+	{		
 		public ScheduleCursorAdapter(Context context, int layout, Cursor c,
-				String[] from, int[] to)
+				String[] from, int[] to, int observer)
 		{
-			super(context, layout, c, from, to);
-			this.c = c;
-			this.context = context;
+			super(context, layout, c, from, to, observer);
 		}
 		
 		public View getView(int pos, View inView, ViewGroup parent)
@@ -305,14 +271,14 @@ public class SchedulesActivity extends Activity
 			TextView txtNextPaymentDue;
 			TextView txtAmount;
 			TextView txtPayee;
+			TableLayout row;
 			
 			if(view == null)
 			{
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				view = inflater.inflate(R.layout.schedules_rows, null);
 			}
-			
-			this.c.moveToPosition(pos);
+			this.mCursor.moveToPosition(pos);
 			
 			// Find our views
 			txtDesc = (TextView) view.findViewById(R.id.srDescription);
@@ -320,15 +286,43 @@ public class SchedulesActivity extends Activity
 			txtNextPaymentDue = (TextView) view.findViewById(R.id.srNextDueDate);
 			txtAmount = (TextView) view.findViewById(R.id.srAmount);
 			txtPayee = (TextView) view.findViewById(R.id.srPayee);
+			row = (TableLayout) view.findViewById(R.id.srRow);
 			
+			// Alternate background colors.
+			if( this.mCursor.getPosition() % 2 == 0)
+				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+			else
+				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				
 			// load up the current record.
-			txtDesc.setText(this.c.getString(1));
-			txtOccurence.setText(this.c.getString(2));
-			txtNextPaymentDue.setText(this.c.getString(3));
-			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.c.getString(6)), true));
-			txtPayee.setText(this.c.getString(7));
-			
+			txtDesc.setText(this.mCursor.getString(1));
+			txtOccurence.setText(this.mCursor.getString(2));
+			txtNextPaymentDue.setText(this.mCursor.getString(3));
+			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.mCursor.getString(6)), true));
+			txtPayee.setText(this.mCursor.getString(7));
+
 			return view;
 		}
+	}
+
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
+	{
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, frag);
+		u = Uri.parse(u.toString());
+		setProgressBarIndeterminateVisibility(true);
+		return new CursorLoader(SchedulesActivity.this, u, dbColumns, strSelection, null, strOrderBy);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) 
+	{
+		adapter.swapCursor(cursor);
+		afterLoadFinished = true;
+		setProgressBarIndeterminateVisibility(false);
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) 
+	{
+		adapter.swapCursor(null);
 	}
 }

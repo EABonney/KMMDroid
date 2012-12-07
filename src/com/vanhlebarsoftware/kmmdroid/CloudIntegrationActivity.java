@@ -3,26 +3,21 @@ package com.vanhlebarsoftware.kmmdroid;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.android.AuthActivity;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
-import com.dropbox.client2.session.TokenPair;
 import com.dropbox.client2.session.Session.AccessType;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class CloudIntegrationActivity extends Activity 
+public class CloudIntegrationActivity extends FragmentActivity 
 {
     private static final String TAG = CloudIntegrationActivity.class.getSimpleName();
     private String APP_KEY;
@@ -35,7 +30,6 @@ public class CloudIntegrationActivity extends Activity
     final static private String ACCESS_KEY_NAME = "ACCESS_KEY";
     final static private String ACCESS_SECRET_NAME = "ACCESS_SECRET";
     DropboxAPI<AndroidAuthSession> mApi;
-    private boolean mLoggedIn = false;
     Button btnLogin;
     Button btnLogout;
     
@@ -57,19 +51,14 @@ public class CloudIntegrationActivity extends Activity
         AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
         AndroidAuthSession session = new AndroidAuthSession(appKeys, ACCESS_TYPE);
         mApi = new DropboxAPI<AndroidAuthSession>(session);
-        //AndroidAuthSession session = buildSession();
-        //mApi = new DropboxAPI<AndroidAuthSession>(session);
-        //checkAppKeySetup();
         
         // Set our OnClickListener events
         btnLogin.setOnClickListener(new View.OnClickListener() 
         {	
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
                 // Start the remote authentication
                 mApi.getSession().startAuthentication(CloudIntegrationActivity.this);
-		        mLoggedIn = true;
 			}
 		});
         
@@ -77,9 +66,7 @@ public class CloudIntegrationActivity extends Activity
         {	
 			public void onClick(View v)
 			{
-				// TODO Auto-generated method stub
 				logOut();
-				mLoggedIn = false;
 			}
 		});
     }
@@ -106,7 +93,6 @@ public class CloudIntegrationActivity extends Activity
        			AccessTokenPair tokens = mApi.getSession().getAccessTokenPair();
        			
        			// Store it locally in our app for later use
-       			//TokenPair tokens = session.getAccessTokenPair();
        			storeKeys(tokens.key, tokens.secret);
        			showToast(getString(R.string.messageLinkSuccessful));
        			
@@ -144,53 +130,10 @@ public class CloudIntegrationActivity extends Activity
         showToast(getString(R.string.messageLogOut));
     }
 
-    private void checkAppKeySetup()
-    {
-        // Check if the app has set up its manifest properly.
-        Intent testIntent = new Intent(Intent.ACTION_VIEW);
-        String scheme = "db-" + APP_KEY;
-        String uri = scheme + "://" + AuthActivity.AUTH_VERSION + "/test";
-        testIntent.setData(Uri.parse(uri));
-        PackageManager pm = getPackageManager();
-        if (0 == pm.queryIntentActivities(testIntent, 0).size())
-        {
-            showToast("URL scheme in your app's " +
-                    "manifest is not set up correctly. You should have a " +
-                    "com.dropbox.client2.android.AuthActivity with the " +
-                    "scheme: " + scheme);
-            finish();
-        }
-    }
-
     private void showToast(String msg)
     {
         Toast error = Toast.makeText(this, msg, Toast.LENGTH_LONG);
         error.show();
-    }
-
-    /**
-     * Shows keeping the access keys returned from Trusted Authenticator in a local
-     * store, rather than storing user name & password, and re-authenticating each
-     * time (which is not to be done, ever).
-     *
-     * @return Array of [access_key, access_secret], or null if none stored
-     */
-    private String[] getKeys()
-    {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String key = prefs.getString(ACCESS_KEY_NAME, null);
-        String secret = prefs.getString(ACCESS_SECRET_NAME, null);
-        if (key != null && secret != null)
-        {
-        	String[] ret = new String[2];
-        	ret[0] = key;
-        	ret[1] = secret;
-        	return ret;
-        }
-        else
-        {
-        	return null;
-        }
     }
 
     /**
@@ -215,24 +158,4 @@ public class CloudIntegrationActivity extends Activity
         edit.clear();
         edit.commit();
     }
-
-/*    private AndroidAuthSession buildSession() 
-    {
-        AppKeyPair appKeyPair = new AppKeyPair(APP_KEY, APP_SECRET);
-        AndroidAuthSession session;
-
-        String[] stored = getKeys();
-        if (stored != null) 
-        {
-            AccessTokenPair accessToken = new AccessTokenPair(stored[0], stored[1]);
-            session = new AndroidAuthSession(appKeyPair, ACCESS_TYPE, accessToken);
-        } 
-        else 
-        {
-            session = new AndroidAuthSession(appKeyPair, ACCESS_TYPE);
-        }
-
-        return session;
-    }
-    */
 }

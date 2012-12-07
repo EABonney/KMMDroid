@@ -23,21 +23,11 @@ public class CreateModifyCategoriesActivity extends TabActivity
 	private static final String TAG = "CreateModifyCategoriesActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int C_ID = 0;
-	private static final int C_INSTITUTIONID = 1;
 	private static final int C_PARENTID = 2;
-	private static final int C_LASTRECONCILED = 3;
-	private static final int C_LASTMODIFIED = 4;
-	private static final int C_OPENINGDATE = 5;
-	private static final int C_ACCOUNTNUMBER = 6;
 	private static final int C_ACCOUNTTYPE = 7;
-	private static final int C_ACCOUNTTYPESTRING = 8;
-	private static final int C_ISSTOCKACCOUNT = 9;
 	private static final int C_ACCOUNTNAME = 10;
 	private static final int C_DESCRIPTION = 11;
 	private static final int C_CURRENCYID = 12;
-	private static final int C_BALANCE = 13;
-	private static final int C_BALANCEFORMATTED = 14;
 	private static final int C_TRANSACTIONCOUNT = 15;
 	private static final String dbTable = "kmmAccounts";
 	private int Action = 0;
@@ -235,7 +225,7 @@ public class CreateModifyCategoriesActivity extends TabActivity
 		{
 			case R.id.itemsave:
 				String id, parentId, accountType, accountTypeString, accountName;
-				String description, currencyId, balance, balanceFormatted;
+				String description, currencyId;
 				int transactionCount = 0;
 				
 				// Get the Address elements
@@ -313,7 +303,6 @@ public class CreateModifyCategoriesActivity extends TabActivity
 							} 
 							catch (SQLException e)
 							{
-								// TODO Auto-generated catch block
 								Log.d(TAG, "error: " + e.getMessage());
 							}
 							increaseAccountId();
@@ -324,7 +313,6 @@ public class CreateModifyCategoriesActivity extends TabActivity
 							effected = KMMDapp.db.update(dbTable, valuesCategory, "id=?", new String[] { id });
 							Log.d(TAG, "rows effected: " + String.valueOf(effected));
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							Log.d(TAG, "Did NOT update categoryId: " + id);
 						}
 							break;
@@ -343,7 +331,6 @@ public class CreateModifyCategoriesActivity extends TabActivity
 				if( rows != 1)
 				{
 					Log.d(TAG, "There was an error deleting your category!");
-					// TODO Auto-generated catch block
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 					alert.setTitle(getString(R.string.error));
 					alert.setMessage(getString(R.string.unableToDelete) + "rows deleted=" + 
@@ -440,16 +427,6 @@ public class CreateModifyCategoriesActivity extends TabActivity
 		ContentValues values = new ContentValues();
 		values.put("hiAccountId", lastId);
 		KMMDapp.db.update("kmmFileInfo", values, null, null);
-	}
-	
-	private String createBalance(String formattedValue)
-	{
-		StringTokenizer split = new StringTokenizer(formattedValue, ".");
-		String dollars = split.nextToken();
-		String cents = split.nextToken();
-		String balance = dollars + cents;
-		String denominator = "/100";
-		return balance + denominator;
 	}
 	
 	public void setIsDirty(boolean flag)

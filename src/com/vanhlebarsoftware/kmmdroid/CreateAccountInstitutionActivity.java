@@ -1,11 +1,11 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,19 +23,17 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class CreateAccountInstitutionActivity extends Activity implements OnClickListener,
+public class CreateAccountInstitutionActivity extends FragmentActivity implements OnClickListener,
 	OnCheckedChangeListener
 {
 	private static final String TAG = "CreateAccountInstitutionActivity";
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	private String institutionSelected = null;
 	private String institutionId = null;
 	private int columnUsed = 1;
 	private int numberOfPasses = 0;
-	private boolean firstRun = true;
 	private CreateModifyAccountActivity parentTabHost;
 	EditText accountNumber;
 	EditText accountIBAN;

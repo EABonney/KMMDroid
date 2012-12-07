@@ -1,22 +1,16 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.util.List;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-public class AboutActivity extends Activity
+public class AboutActivity extends FragmentActivity implements
+								LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final String TAG = AboutActivity.class.getSimpleName();
 	private static int VERSION = 0;
@@ -103,7 +97,6 @@ public class AboutActivity extends Activity
 																"securities", "prices", "currencies", "schedules",
 																"reports", "kvps", "budgets"}, 
 				null, null, null, null, null);
-		startManagingCursor(cursor);
 		cursor.moveToFirst();
 		
 		// append the file Info into the various text views.
@@ -132,5 +125,23 @@ public class AboutActivity extends Activity
 		txtReports.setText(txtReports.getText().toString() + " " + cursor.getString(REPORTS));
 		txtKVPS.setText(txtKVPS.getText().toString() + " " + cursor.getString(KVPS));
 		txtBudgets.setText(txtBudgets.getText().toString() + " " + cursor.getString(BUDGETS));
+	}
+
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) 
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) 
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void onLoaderReset(Loader<Cursor> arg0) 
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,16 +1,15 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
-public class ReportsActivity extends Activity 
+public class ReportsActivity extends FragmentActivity 
 {
 	private final static String TAG = ReportsActivity.class.getSimpleName();
 	ListView listReports;

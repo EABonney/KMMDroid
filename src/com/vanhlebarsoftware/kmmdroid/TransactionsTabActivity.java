@@ -1,12 +1,11 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,7 +14,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class TransactionsTabActivity extends Activity
+public class TransactionsTabActivity extends FragmentActivity
 {
 	private static final String TAG = "PayeeActivity";
 	private static final String dbTable = "kmmSplits, kmmAccounts";
@@ -61,10 +60,6 @@ public class TransactionsTabActivity extends Activity
         // Find our views
         listPayeeTrans = (ListView) findViewById(R.id.listPayeeTransView);
 
-    	// Now hook into listAccounts ListView and set its onItemClickListener member
-    	// to our class handler object.
-        //listPayeeTrans.setOnItemClickListener(mMessageClickedHandler);
-
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
         {
@@ -108,7 +103,6 @@ public class TransactionsTabActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		boolean isDirty = false;
 		
         // Get the correct tabHost based on the parent.
@@ -142,7 +136,6 @@ public class TransactionsTabActivity extends Activity
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();
@@ -158,7 +151,6 @@ public class TransactionsTabActivity extends Activity
 	{
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
 		{
-			Log.d(TAG, "Cursor row: " + cursor.getPosition() + " of " + cursor.getCount());
 			LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.payeeTransRow);
 			
 			if( row != null)
@@ -172,17 +164,13 @@ public class TransactionsTabActivity extends Activity
 			switch(view.getId())
 			{
 			case R.id.ptrDate:
-				Log.d(TAG, "ViewBinder: Date");
 				return false;
 			case R.id.ptrAccount:
-				Log.d(TAG, "ViewBinder: Account name");
 				return false;
 			case R.id.ptrDetails:
-				Log.d(TAG, "ViewBinder: Details");
 				((TextView) view).setText(cursor.getString(columnIndex));
 				return true;
 			case R.id.ptrAmount:
-				Log.d(TAG, "ViewBinder: Amount");
 				// Format the Amount properly.
 				((TextView) view).setText(Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true));
 				return true;

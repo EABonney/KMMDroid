@@ -1,45 +1,45 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import com.vanhlebarsoftware.kmmdroid.PayeeActivity.KMMDCursorAdapter;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AlphabetIndexer;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class InstitutionsActivity extends Activity
+public class InstitutionsActivity extends FragmentActivity implements
+							LoaderManager.LoaderCallbacks<Cursor>
 {
-	private static final String TAG = "InstitutionsActivity";
-	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
-	private static final int C_PAYEENAME = 0;
-	private static final int C_ID = 1;
-	private static final String dbTable = "kmmInstitutions";
+	private static final String TAG = InstitutionsActivity.class.getSimpleName();
+	private static final int INSTITUTIONS_LOADER = 0x04;
 	private static final String[] dbColumns = { "name", "id AS _id"};
 	private static final String strOrderBy = "name ASC";
 	static final String[] FROM = { "name" };
-	static final int[] TO = { R.id.prPayeeName };
+	static final int[] TO = { R.id.irInstitutionName };
+	private static final int ACTION_NEW = 1;
+	private static final int ACTION_EDIT = 2;
 	private String selectedInstitutionId = null;
 	private String selectedInstitutionName = null;
 	KMMDroidApp KMMDapp;
@@ -53,13 +53,14 @@ public class InstitutionsActivity extends Activity
 	ImageButton btnReports;
 	LinearLayout navBar;
 	ListView listInstitutions;
-	KMMDCursorAdapter adapter;
+	InstitutionsAdapter adapterInstitutions;
 	
 	/* Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.institutions);
         
         // Get our application
@@ -138,6 +139,14 @@ public class InstitutionsActivity extends Activity
         {
         	KMMDapp.openDB();
         }
+        
+        // Create an empty adapter we will use to display the loaded data.
+        adapterInstitutions = new InstitutionsAdapter(this,R.layout.institution_row, null, FROM, TO, 0);
+		listInstitutions.setAdapter(adapterInstitutions);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(INSTITUTIONS_LOADER, null, this);
 	}
 	
 	@Override
@@ -156,15 +165,6 @@ public class InstitutionsActivity extends Activity
 		selectedInstitutionId = null;
 		selectedInstitutionName = null;
 		
-		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		// Set up the adapter
-		adapter = new KMMDCursorAdapter(getApplicationContext(), R.layout.payee_row, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
-		listInstitutions.setAdapter(adapter);
-		
 		// See if the user has requested the navigation bar.
 		if(!KMMDapp.prefs.getBoolean("navBar", false))
 			navBar.setVisibility(View.GONE);
@@ -176,32 +176,15 @@ public class InstitutionsActivity extends Activity
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	cursor.moveToPosition(position);
-	    	selectedInstitutionId = cursor.getString(C_ID);
-	    	selectedInstitutionName = cursor.getString(C_PAYEENAME);
-	    	Log.d(TAG, "institutionId: " + selectedInstitutionId);
+			Cursor c = (Cursor) parent.getAdapter().getItem(position);
+	    	selectedInstitutionId = c.getString(c.getColumnIndex("_id"));
+	    	selectedInstitutionName = c.getString(c.getColumnIndex("name"));
 			Intent i = new Intent(getBaseContext(), CreateModifyInstitutionActivity.class);
 			i.putExtra("Action", ACTION_EDIT);
 			i.putExtra("instId", selectedInstitutionId);
 			i.putExtra("InstitutionName", selectedInstitutionName);
 			startActivity(i);
 	    }
-	};
-	
-	// View binder to do alternating of background colors.
-	static final ViewBinder VIEW_BINDER = new ViewBinder() 
-	{
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
-		{
-			TextView row = (TextView) view.findViewById(R.id.prPayeeName);
-			row.setText(cursor.getString(columnIndex));
-			if( cursor.getPosition() % 2 == 0)
-				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-			else
-				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-	
-			return true;
-		}
 	};
 	
 	// Called first time the user clicks on the menu button
@@ -278,33 +261,88 @@ public class InstitutionsActivity extends Activity
 		return true;
 	}
 	
-	class KMMDCursorAdapter extends SimpleCursorAdapter implements SectionIndexer
+	class InstitutionsAdapter extends SimpleCursorAdapter implements SectionIndexer
 	{
 		AlphabetIndexer alphaIndexer;
 		
-		public KMMDCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to)
+		public InstitutionsAdapter(Context context, int layout, Cursor c,
+				String[] from, int[] to, int observer)
 		{
-			super(context, layout, c, from, to);
-			alphaIndexer = new AlphabetIndexer(c, cursor.getColumnIndex("name"), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			super(context, layout, c, from, to, observer);
+		}
+		
+		@Override
+		public Cursor swapCursor(Cursor c) 
+		{
+			if( c != null)
+				alphaIndexer = new AlphabetIndexer(c, c.getColumnIndex("name"), " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 			
+			return super.swapCursor(c);
 		}
 
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View view = convertView;
+
+			if(view == null)
+			{
+				LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				view = inflater.inflate(R.layout.institution_row, null);
+			}
+			else
+				view = convertView;
+			
+			this.mCursor.moveToPosition(position);
+			
+			// Load the items into the view now for this schedule.
+			if(this.mCursor != null)
+			{
+				TextView row = (TextView) view.findViewById(R.id.irInstitutionName);
+				row.setText(this.mCursor.getString(this.mCursor.getColumnIndex("name")));
+				if( position % 2 == 0)
+					row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				else
+					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+			}
+			else
+				Log.d(TAG, "Never got an Payee!");
+
+			return view;
+		}
+		
 		public int getPositionForSection(int section)
 		{
-			// TODO Auto-generated method stub
 			return alphaIndexer.getPositionForSection(section);
 		}
 
 		public int getSectionForPosition(int position)
 		{
-			// TODO Auto-generated method stub
 			return alphaIndexer.getSectionForPosition(position);
 		}
 
 		public Object[] getSections() 
 		{
-			// TODO Auto-generated method stub
 			return alphaIndexer.getSections();
 		}
+	}
+
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
+	{
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_INSTITUTION_URI, frag);
+		u = Uri.parse(u.toString());
+		setProgressBarIndeterminateVisibility(true);
+		return new CursorLoader(InstitutionsActivity.this, u, dbColumns, null, null, strOrderBy);
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor institutions) 
+	{
+		adapterInstitutions.swapCursor(institutions);
+		setProgressBarIndeterminateVisibility(false);
+	}
+
+	public void onLoaderReset(Loader<Cursor> institutions) 
+	{
+		adapterInstitutions.swapCursor(null);
 	}
 }

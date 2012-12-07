@@ -2,61 +2,33 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Set;
+import java.util.List;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.content.Context;
+
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SectionIndexer;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
-import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
-public class LedgerActivity extends Activity
+public class LedgerActivity extends FragmentActivity implements
+								LoaderManager.LoaderCallbacks<List<Transaction>>
 {
-	private static final String TAG = "LedgerActivity";
+	private static final String TAG = LedgerActivity.class.getSimpleName();
+	private static final int TRANSACTIONS_LOADER = 0x07;
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
-	private static final int C_TRANSID = 0;
-	private static final int C_PAYEEID = 1;
-	private static final int C_AMOUNT = 2;
-	private static final int C_MEMO = 3;
-	private static final int C_DATE = 4;
-	private static final int C_PAYEE = 5;
-	private static final int C_CKNUM = 6;
-	private static final int C_STATUS = 7;
-	private String sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
-					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
-					"AND postDate <= ? AND postDate >= ?" +
-					" UNION SELECT transactionId, payeeId, value, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
-					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' AND postDate <= ? AND postDate >= ?";
-	static final String[] FROM = { "valueFormatted", "postDate", "name", "memo" };
-	static final int[] TO = { R.id.lrAmount, R.id.lrDate, R.id.lrDetails, R.id.lrBalance  };
 	String AccountID = null;
 	String AccountName = null;
 	boolean bChangeBackground = false;
@@ -64,7 +36,6 @@ public class LedgerActivity extends Activity
 	long Balance = 0;
 	private int previousLocation = 0;
 	private int prevTotalTrans = 0;
-	ArrayList<Transaction> Transactions;
 	Cursor cursor;
 	TransactionAdapter adapter;
 	KMMDroidApp KMMDapp;
@@ -84,6 +55,7 @@ public class LedgerActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.ledger);
 
         // Get our application
@@ -93,8 +65,6 @@ public class LedgerActivity extends Activity
         listTransactions = (ListView) findViewById(R.id.listTransactions);
         textTitleLedger = (TextView) findViewById(R.id.titleLedger);
         fastScrollView = (KMMDCustomFastScrollView) findViewById(R.id.fast_scroll_view);
-        
-        //listTransactions.setFastScrollEnabled(true);
  
     	// Now hook into listTransactions ListView and set its onItemClickListener member
     	// to our class handler object.
@@ -112,17 +82,26 @@ public class LedgerActivity extends Activity
         AccountName = extras.getString("AccountName");
         Balance = Transaction.convertToPennies(extras.getString("Balance"));
         
-        Transactions = new ArrayList<Transaction>();
-        
         // Setup our baseline of one year for the transactions query.
         today = Calendar.getInstance();
-        //strToday = String.valueOf(today.get(Calendar.YEAR)) + "-" + String.valueOf(today.get(Calendar.MONTH) + 1) + "-" +
-				//String.valueOf(today.get(Calendar.DAY_OF_MONTH));
 		strToday = getDatabaseFormattedString(today);
         today.add(Calendar.YEAR, -1);
         lastyear = (Calendar) today.clone();
-        //strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
-				//String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
+        strLastYear = getDatabaseFormattedString(lastyear);
+        
+		String selection[] = { AccountID, strToday, strLastYear };
+		selectionArgs = selection;
+		Bundle bundle = new Bundle();
+		bundle.putStringArray("selectionArgs", selectionArgs);
+		bundle.putBoolean("showAll", showAll);
+		
+		// Setup the blank adapter
+		adapter = new TransactionAdapter(this, R.layout.ledger_row, new ArrayList<Transaction>());
+		listTransactions.setAdapter(adapter);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(TRANSACTIONS_LOADER, bundle, this);
 	}
 
 	@Override
@@ -137,104 +116,31 @@ public class LedgerActivity extends Activity
 		super.onResume();
 		
 		strLastYear = getDatabaseFormattedString(lastyear);
-		long balance = Balance;
-		Cursor curBalance = KMMDapp.db.query("kmmAccounts", new String[] { "balance" }, "id=?", new String[] { AccountID },
-											null, null, null);
-		startManagingCursor(curBalance);
-		curBalance.moveToFirst();
-		balance = Account.convertBalance(curBalance.getString(0));
 		
 		// Display the Account we are looking at in the TextView TitleLedger
 		textTitleLedger.setText(AccountName);
-
-		// Put the AccountID into a String array
-		if( !showAll )
-		{
-			selectionArgs[0] = AccountID;
-			selectionArgs[1] = strToday;
-			selectionArgs[2] = strLastYear;
-		}
-		else
-		{
-			String selection[] = { AccountID };
-			selectionArgs = selection;
-		}
-		
-		//Run the query on the database to get the transactions.
-		cursor = KMMDapp.db.rawQuery(sql, selectionArgs);
-		startManagingCursor(cursor);
-		
-		// Load up our transactions into our ArrayList
-		// This probably is extremely ineffecient, may want to review this better.
-		Transaction trans = null;
-		cursor.moveToFirst();
-		// Make sure Transactions are empty.
-		Transactions.clear();
-		
-		for(int i=0; i < cursor.getCount(); i++)
-		{
-			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(cursor.getString(C_AMOUNT)), true),
-									cursor.getString(C_PAYEE), cursor.getString(C_DATE), cursor.getString(C_MEMO), 
-									cursor.getString(C_TRANSID), cursor.getString(C_STATUS), cursor.getString(C_CKNUM));
-			Transactions.add(trans);
-
-			cursor.moveToNext();
-		}
-		
-		// Ensure that we are in date order.
-		TransactionComparator comparator = new TransactionComparator();
-		Collections.sort(Transactions, comparator);	
-
-		// Calc the balances now.
-		for(int i = Transactions.size() - 1; i >= 0; i--)
-		{
-			if(i == Transactions.size() - 1)
-				Transactions.get(i).setBalance(balance);
-			else if (i == 0)
-				balance = Transactions.get(i).calcBalance(balance, 0);
-			else
-				balance = Transactions.get(i).calcBalance(balance, Transactions.get(i+1).getAmount());
-		}
-		
-		// Create our "load more" option as a transaction to be displayed at the "end" of the list.
-		if( !showAll )
-		{
-			Transaction loadMore = new Transaction("0.00", getString(R.string.loadMoreRow), null, null, "999999", null, null);
-			Transactions.add(0, loadMore);
-		}
-		
-		// Set up the adapter
-		adapter = new TransactionAdapter(this, R.layout.ledger_row, Transactions);
-		listTransactions.setAdapter(adapter); 
-        
-    	adapter.refreshSections();
-		fastScrollView.listItemsChanged();
 		
         if( previousLocation == 0 )
-        	previousLocation = Transactions.size();
+        	previousLocation = adapter.getCount();
         else if( previousLocation == prevTotalTrans )
-        	previousLocation = Transactions.size() - prevTotalTrans;
+        	previousLocation = adapter.getCount() - prevTotalTrans;
         
-		listTransactions.setSelection(previousLocation);
+		//listTransactions.setSelection(previousLocation);
 		
-		// Close the cursor to free up memory.
-		cursor.close();
-		
-		Log.d(TAG, "Number of transactions displayed: " + Transactions.size());
-		prevTotalTrans = Transactions.size();
+		prevTotalTrans = adapter.getCount();
 	}
 	
 	// Message Handler for our listTransactions List View clicks
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	Transaction trans = Transactions.get(position);
+	    	Transaction trans = adapter.getItem(position);
 	    	
 	    	if(trans.getTransId().equals("999999"))
 	    	{
 	    		Intent i = new Intent(getBaseContext(), LoadMoreTransactionsActivity.class);
 				startActivityForResult(i, 0);
-				previousLocation = Transactions.size();
+				previousLocation = adapter.getCount();
 	    	}
 	    	else
 	    	{
@@ -291,174 +197,36 @@ public class LedgerActivity extends Activity
     	{ 		
     		String response = data.getStringExtra("LoadMore");
     		if(response.equalsIgnoreCase("Month"))
-    		{
-    			Log.d(TAG, "User wants us to add one month.");
     			lastyear.add(Calendar.MONTH, -1);
-    		}
     		else if(response.equalsIgnoreCase("Year"))
-    		{
-    			Log.d(TAG, "User wants us to add one year.");
     			lastyear.add(Calendar.YEAR, -1);
-    		}
     		else if(response.equalsIgnoreCase("All"))
-    		{
-    			Log.d(TAG, "User wants us to add all.");
-    			sql = "SELECT transactionId AS _id, payeeId, value, memo, postDate, name, checkNumber, reconcileFlag FROM " +
-    					"kmmSplits, kmmPayees WHERE (kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
-    					//"AND postDate <= ? AND postDate >= ?" +
-    					" UNION SELECT transactionId, payeeId, value, memo, postDate, bankId, checkNumber, reconcileFlag FROM" +
-    					" kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N'";// AND postDate <= ? AND postDate >= ?";
     			showAll = true;
-    		}
     		else
     			Log.d(TAG, "Unexpected result returned from LoadMoreTransactionsActivity!");
     		
             strLastYear = String.valueOf(lastyear.get(Calendar.YEAR)) + "-" + String.valueOf(lastyear.get(Calendar.MONTH) + 1) + "-" +
     				String.valueOf(lastyear.get(Calendar.DAY_OF_MONTH));
+            
+            // refresh the loader.
+    		// Put the AccountID into a String array
+    		if( !showAll )
+    		{
+    			String[] array = { AccountID, strToday, strLastYear };
+    			selectionArgs = array;
+    		}
+    		else
+    		{
+    			String selection[] = { AccountID };
+    			selectionArgs = selection;
+    		}
+    		Bundle bundle = new Bundle();
+    		bundle.putStringArray("selectionArgs", selectionArgs);
+    		bundle.putBoolean("showAll", showAll);
+    		
+    		getSupportLoaderManager().restartLoader(TRANSACTIONS_LOADER, bundle, this);
     	}
     }
-    
-/*	private class TransactionAdapter extends ArrayAdapter<Transaction> implements SectionIndexer
-	{
-		private ArrayList<Transaction> items;
-		private Context context;
-        LinkedHashMap<String, Integer> dateIndexer;
-        String[] sections;
-		
-		public TransactionAdapter(Context context, int textViewResourceId, ArrayList<Transaction> items)
-		{
-			super(context, textViewResourceId, items);
-			this.context = context;
-			this.items = items;
-			this.dateIndexer = new LinkedHashMap<String, Integer>();
-            int size = items.size();
-            String prDate = " ";
-
-            dateIndexer.clear();
-            for (int x = 0; x < size; x++)
-            {
-            	Transaction tr = items.get(x);
-            	if( !tr.getTransId().equals("999999") )
-            	{
-            		Calendar date = tr.getDate();
-            		String month = date.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US);
-            		String year = String.valueOf(date.get(Calendar.YEAR));
-            		String shortDate = month + " " + year;
-            	
-            		if( !shortDate.equals(prDate))
-            		{
-            			this.dateIndexer.put(shortDate, x);
-            			prDate = shortDate;
-            		}
-            	}
-            }
-
-            Set<String> sectionDates = this.dateIndexer.keySet();
-            
-            // create a list from the set to sort
-            ArrayList<String> sectionList = new ArrayList<String>(sectionDates);
-            this.sections = new String[sectionList.size()];
-            sectionList.toArray(this.sections);
-		}
-		
-		public int getPositionForSection(int section) 
-		{
-			return dateIndexer.get(this.sections[section]);
-		}
-
-		public int getSectionForPosition(int position) 
-		{
-			return 0;
-		}
-
-		public Object[] getSections() 
-		{
-			return this.sections;
-		}
-		
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			View view = convertView;
-			if(view == null)
-			{
-				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				view = inflater.inflate(R.layout.ledger_row, null);
-			}
-			
-			Transaction item = items.get(position);
-			// Load the items into the view now for this schedule.
-			if(item != null)
-			{
-				TextView DatePaid = (TextView) view.findViewById(R.id.lrDate);
-				TextView Payee = (TextView) view.findViewById(R.id.lrDetails);
-				TextView Amount = (TextView) view.findViewById(R.id.lrAmount);
-				TextView Balance = (TextView) view.findViewById(R.id.lrBalance);
-				LinearLayout row = (LinearLayout) view.findViewById(R.id.row);
-
-				if(bChangeBackground)
-				{
-					row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-					bChangeBackground = false;
-				}
-				else
-				{
-					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-					bChangeBackground = true;
-				}
-				
-				// See if this is a future transaction, if so change to italics.
-				if(item.getTransId().equals("999999"))
-				{
-					DatePaid.setTypeface(Typeface.DEFAULT);
-					DatePaid.setTextColor(Color.BLACK);
-					Payee.setTypeface(Typeface.DEFAULT);
-					Payee.setTextColor(Color.BLACK);
-					Amount.setTypeface(Typeface.DEFAULT);
-					Amount.setTextColor(Color.BLACK);
-					Balance.setTypeface(Typeface.DEFAULT);
-					Balance.setTextColor(Color.BLACK);	
-					DatePaid.setText("");
-					Payee.setText(item.getPayee());
-					Amount.setText("");
-					Balance.setText("");
-				}
-				else
-				{
-					if(item.isFuture())
-					{
-						DatePaid.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
-						DatePaid.setTextColor(Color.LTGRAY);
-						Payee.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
-						Payee.setTextColor(Color.LTGRAY);
-						Amount.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
-						Amount.setTextColor(Color.LTGRAY);
-						Balance.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC), Typeface.ITALIC);
-						Balance.setTextColor(Color.LTGRAY);
-					}
-					else
-					{
-						DatePaid.setTypeface(Typeface.DEFAULT);
-						DatePaid.setTextColor(Color.BLACK);
-						Payee.setTypeface(Typeface.DEFAULT);
-						Payee.setTextColor(Color.BLACK);
-						Amount.setTypeface(Typeface.DEFAULT);
-						Amount.setTextColor(Color.BLACK);
-						Balance.setTypeface(Typeface.DEFAULT);
-						Balance.setTextColor(Color.BLACK);
-					}
-				
-					DatePaid.setText(item.formatDateString());
-					Payee.setText(item.getPayee());
-					Amount.setText(Transaction.convertToDollars(item.getAmount(), true));
-					Balance.setText(Transaction.convertToDollars(item.getBalance(), true));
-				}
-			}
-			else
-				Log.d(TAG, "Never got a Schedule!");
-			
-			return view;
-		}
-	}*/
 	
 	public class TransactionComparator implements Comparator<Transaction>
 	{
@@ -513,5 +281,28 @@ public class LedgerActivity extends Activity
 		}
 		
 		return String.valueOf(date.get(Calendar.YEAR) + "-" + strMonth + "-" + strDay);
+	}
+
+	public Loader<List<Transaction>> onCreateLoader(int id, Bundle args) 
+	{
+		setProgressBarIndeterminateVisibility(true);
+		return new TransactionsLoader(this, args);
+	}
+
+	public void onLoadFinished(Loader<List<Transaction>> loader, List<Transaction> transactions) 
+	{
+		adapter.setData(transactions);
+    	adapter.refreshSections();
+		fastScrollView.listItemsChanged();
+		if(previousLocation == 0)
+			previousLocation = adapter.getCount();
+		
+		listTransactions.setSelection(previousLocation);
+		setProgressBarIndeterminateVisibility(false);
+	}
+
+	public void onLoaderReset(Loader<List<Transaction>> loader) 
+	{	
+		adapter.setData(null);
 	}
 }

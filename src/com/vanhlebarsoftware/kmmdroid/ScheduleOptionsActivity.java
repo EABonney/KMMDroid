@@ -2,22 +2,16 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.Calendar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,16 +25,13 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class ScheduleOptionsActivity extends Activity implements OnCheckedChangeListener
+public class ScheduleOptionsActivity extends FragmentActivity implements OnCheckedChangeListener
 {
 	private static final String TAG = ScheduleOptionsActivity.class.getSimpleName();
-	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
 	private static final int MOVE_BEFORE = 0;
 	private static final int MOVE_AFTER = 1;
 	private static final int MOVE_NOTHING = 2;
 	static final int SET_DATE_ID = 0;
-	private int Action = 0;
 	private int intYear;
 	private int intMonth;
 	private int intDay;
@@ -138,7 +129,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 	@Override
@@ -157,7 +147,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -177,7 +166,6 @@ public class ScheduleOptionsActivity extends Activity implements OnCheckedChange
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();

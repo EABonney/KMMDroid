@@ -2,13 +2,12 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +18,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 
-public class ViewScheduleActivity extends Activity 
+public class ViewScheduleActivity extends FragmentActivity 
 {
 	private static final String TAG = ViewScheduleActivity.class.getSimpleName();
-	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static int C_TRANSACTIONID = 0;
 	private static int C_TXTYPE = 1;
@@ -74,7 +72,6 @@ public class ViewScheduleActivity extends Activity
         
         // Find our views
         listSplits = (ListView) findViewById(R.id.listSplits);
-        //textTitleViewSch = (TextView) findViewById(R.id.titleViewSchedule);
         textDate = (TextView) findViewById(R.id.vtDate);
         textChkNum = (TextView) findViewById(R.id.vtNumber);
         textAmount = (TextView) findViewById(R.id.vtAmount);
@@ -96,7 +93,6 @@ public class ViewScheduleActivity extends Activity
 	@Override
 	protected void onDestroy() 
 	{
-		// TODO Auto-generated method stub
 		super.onDestroy();
 	}
 
@@ -196,7 +192,6 @@ public class ViewScheduleActivity extends Activity
 				alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						// Canceled.
-						Log.d(TAG, "User cancelled delete.");
 					}
 					});				
 				alertDel.show();

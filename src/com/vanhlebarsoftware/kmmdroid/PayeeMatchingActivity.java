@@ -1,15 +1,14 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-public class PayeeMatchingActivity extends Activity
+public class PayeeMatchingActivity extends FragmentActivity
 {
 	private static final String TAG = "PayeeMatchingActivity";
 	private CreateModifyPayeeActivity parentTabHost;
@@ -44,7 +43,6 @@ public class PayeeMatchingActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -64,7 +62,6 @@ public class PayeeMatchingActivity extends Activity
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();

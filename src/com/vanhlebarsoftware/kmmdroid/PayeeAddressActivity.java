@@ -1,19 +1,17 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.widget.EditText;
 
-public class PayeeAddressActivity extends Activity
+public class PayeeAddressActivity extends FragmentActivity
 {
 	private final String TAG = PayeeAddressActivity.class.getSimpleName();
-	private String strAddress = null;
 	private CreateModifyPayeeActivity parentTabHost;
 	EditText payeeName;
 	EditText payeeAddress;
@@ -46,7 +44,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -62,7 +59,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -78,7 +74,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -94,7 +89,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -110,7 +104,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -126,7 +119,6 @@ public class PayeeAddressActivity extends Activity
 			public void afterTextChanged(Editable s) 
 			{
 				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -140,7 +132,6 @@ public class PayeeAddressActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		Log.d(TAG, "User clicked the back button");
 		if( parentTabHost.getIsDirty() )
 		{
 			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
@@ -160,7 +151,6 @@ public class PayeeAddressActivity extends Activity
 				public void onClick(DialogInterface dialog, int whichButton) 
 				{
 					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
 				}
 			});				
 			alertDel.show();

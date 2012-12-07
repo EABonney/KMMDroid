@@ -1,29 +1,36 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
+import java.util.List;
+
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter.ViewBinder;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 
-public class AccountsActivity extends Activity
+public class AccountsActivity extends FragmentActivity implements
+								LoaderManager.LoaderCallbacks<List<Account>>
 {
-	private static final String TAG = "AccountsActivity";
+	private static final String TAG = AccountsActivity.class.getSimpleName();
+	private static final int ACCOUNTS_LOADER = 0x02;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	// Define our Account Type Constants
@@ -32,19 +39,7 @@ public class AccountsActivity extends Activity
 	private static final int AT_CREDITCARD = 4;
 	private static final int AT_INVESTMENT = 7;
 	private static final int AT_LIABILITY = 10;
-	private static final int AT_INCOME = 12;
-	private static final int AT_EXPENSE = 13;
-	private static final int AT_EQUITY = 16;
-	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balance", "accountTypeString",
-												"accountType", "id AS _id"};
-	private static final String strSelection = "(accountType != ? AND accountType != ?)";
-	private static final String strOrderBy = "accountName ASC";
-	static final String[] FROM = { "accountName", "accountTypeString", "balance", "accountType" };
-	static final int[] TO = { R.id.arAccountName, R.id.arAccountType, R.id.arAccountBalance, R.id.arIcon };
-	private String strAccountId = null;
 	KMMDroidApp KMMDapp;
-	Cursor cursor;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
 	ImageButton btnCategories;
@@ -54,13 +49,14 @@ public class AccountsActivity extends Activity
 	ImageButton btnReports;
 	LinearLayout navBar;
 	ListView listAccounts;
-	SimpleCursorAdapter adapter;
+	AccountsAdapter adapterAccounts;
 	
 	/* Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.accounts);
         
         // Get our application
@@ -137,6 +133,16 @@ public class AccountsActivity extends Activity
         {
         	KMMDapp.openDB();
         }
+        
+        // Create an empty adapter we will use to display the loaded data.
+        adapterAccounts = new AccountsAdapter(this);
+		listAccounts.setAdapter(adapterAccounts);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+		Bundle bundle = new Bundle();
+		bundle.putInt("activity", 1);
+        getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
 	}
 	
 	@Override
@@ -150,16 +156,6 @@ public class AccountsActivity extends Activity
 	{
 		super.onResume();
 		
-		//Get all the accounts to be displayed.
-		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) },
-									null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		// Set up the adapter
-		adapter = new SimpleCursorAdapter(this, R.layout.accounts_row, cursor, FROM, TO);
-		adapter.setViewBinder(VIEW_BINDER);
-		listAccounts.setAdapter(adapter);
-		
 		// See if the user has requested the navigation bar.
 		if(!KMMDapp.prefs.getBoolean("navBar", false))
 			navBar.setVisibility(View.GONE);
@@ -171,75 +167,104 @@ public class AccountsActivity extends Activity
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	cursor.moveToPosition(position);
-	    	strAccountId = cursor.getString(4);
+	    	Account account = adapterAccounts.getItem(position);
 			Intent i = new Intent(getBaseContext(), CreateModifyAccountActivity.class);
 			i.putExtra("Action", ACTION_EDIT);
-			i.putExtra("AccountId", strAccountId);
+			i.putExtra("AccountId", account.getId());
 			startActivity(i);
 	    }
 	};
 	
-	// View binder to do formatting of the string values to numbers with commas and parenthesis
-	static final ViewBinder VIEW_BINDER = new ViewBinder() 
+	private class AccountsAdapter extends ArrayAdapter<Account>
 	{
-		public boolean setViewValue(View view, Cursor cursor, int columnIndex) 
+		private final LayoutInflater mInflater;
+		
+		public AccountsAdapter(Context context)
 		{
-			LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.accountRow);
-			if( cursor.getPosition() % 2 == 0)
-				row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
-			else
-				row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
-			
-			//if(view.getId() != R.id.arAccountBalance)
-				//return false;
-			switch (view.getId())
-			{
-				case R.id.arAccountBalance:
-					// Format the Amount properly.
-					((TextView) view).setText(Transaction.convertToDollars(Account.convertBalance(cursor.getString(columnIndex)), true));
-					break;
-				case R.id.arIcon:
-					// Set the correct icon based on accountType
-					switch (cursor.getInt(columnIndex))
-					{
-						/*case AT_ASSET:
-							((ImageView) view).setImageResource(R.drawable.account_types_asset);
-							break;	
-						case AT_CASH:
-							((ImageView) view).setImageResource(R.drawable.account_types_cash);
-							break;*/
-						case AT_CHECKING:
-							((ImageView) view).setImageResource(R.drawable.account_types_checking);
-							break;
-						case AT_CREDITCARD:
-							((ImageView) view).setImageResource(R.drawable.account_types_credit_card);
-							break;
-						case AT_INVESTMENT:
-							((ImageView) view).setImageResource(R.drawable.account_types_investments);
-							break;
-						case AT_LIABILITY:
-							((ImageView) view).setImageResource(R.drawable.account_types_liability);
-							break;
-						/*case AT_LOAN:
-							((ImageView) view).setImageResource(R.drawable.account_types_loan);
-							break;*/
-						case AT_SAVINGS:
-							((ImageView) view).setImageResource(R.drawable.account_types_savings);
-							break;
-						/*case AT_EQUITY:
-							((ImageView) view).setImageResource(R.drawable.account_types_equity);
-							break;*/
-					}
-					break;
-				default:
-					return false;
-			}
-
-			return true;
+			super(context, R.layout.accounts_row);
+			mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
-	};
-	
+		
+		public void setData(List<Account> data) 
+	    {
+	        clear();
+	        if (data != null) 
+	        {
+	        	for(Account account : data)
+	        	{
+	        		add(account);
+	        	}
+	        }
+	    }
+	    
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View view = convertView;
+			if(view == null)
+			{
+				view = mInflater.inflate(R.layout.accounts_row, parent, false);
+			}
+			else
+				view = convertView;
+			
+			Account item = getItem(position);
+			
+			// Load the items into the view now for this schedule.
+			if(item != null)
+			{
+				LinearLayout row = (LinearLayout) view.getRootView().findViewById(R.id.accountRow);
+				if( position % 2 == 0)
+					row.setBackgroundColor(Color.rgb(0x62, 0xB1, 0xF6));
+				else
+					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
+				
+				TextView name = (TextView) view.findViewById(R.id.arAccountName);
+				TextView balance = (TextView) view.findViewById(R.id.arAccountBalance);
+				TextView type = (TextView) view.findViewById(R.id.arAccountType);
+				ImageView icon = (ImageView) view.findViewById(R.id.arIcon);
+				
+				name.setText(item.getName());
+				balance.setText(item.getBalance());
+				type.setText(item.getAccountTypeString());
+				
+				// Set the correct icon based on the account type.
+				switch (item.getAccountType())
+				{
+					/*case AT_ASSET:
+						icon.setImageResource(R.drawable.account_types_asset);
+						break;	
+					case AT_CASH:
+						icon.setImageResource(R.drawable.account_types_cash);
+						break;*/
+					case AT_CHECKING:
+						icon.setImageResource(R.drawable.account_types_checking);
+						break;
+					case AT_CREDITCARD:
+						icon.setImageResource(R.drawable.account_types_credit_card);
+						break;
+					case AT_INVESTMENT:
+						icon.setImageResource(R.drawable.account_types_investments);
+						break;
+					case AT_LIABILITY:
+						icon.setImageResource(R.drawable.account_types_liability);
+						break;
+					/*case AT_LOAN:
+						icon.setImageResource(R.drawable.account_types_loan);
+						break;*/
+					case AT_SAVINGS:
+						icon.setImageResource(R.drawable.account_types_savings);
+						break;
+					/*case AT_EQUITY:
+						icon.setImageResource(R.drawable.account_types_equity);
+						break;*/
+				}
+			}
+			else
+				Log.d(TAG, "Never got an Account!");
+
+			return view;
+		}
+	}
 	// Called first time the user clicks on the menu button
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -313,5 +338,24 @@ public class AccountsActivity extends Activity
 		}
 		
 		return true;
+	}
+
+	public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+	{
+		setProgressBarIndeterminateVisibility(true);
+    	return new AccountsLoader(this, args);
+	}
+
+	public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
+	{
+        // Set the new data in the adapter.
+    	adapterAccounts.setData(accounts);	
+		setProgressBarIndeterminateVisibility(false);
+	}
+
+	public void onLoaderReset(Loader<List<Account>> accounts) 
+	{
+        // clear the data in the adapter.
+    	adapterAccounts.setData(null);		
 	}
 }

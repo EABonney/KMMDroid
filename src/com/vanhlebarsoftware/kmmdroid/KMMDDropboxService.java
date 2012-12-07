@@ -40,10 +40,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
-import android.sax.Element;
-import android.sax.EndElementListener;
-import android.sax.EndTextElementListener;
-import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 import android.widget.Toast;
@@ -114,10 +110,7 @@ public class KMMDDropboxService extends Service
 		updateConnectedFlags();
 		
 		if( wifiConnected || mobileConnected )
-		{
-			// Verify our server is setup correctly.
-			//verifyServerSetup();
-					
+		{				
 			switch(cloudService)
 			{
 			case CLOUD_DROPBOX:
@@ -141,7 +134,6 @@ public class KMMDDropboxService extends Service
 	@Override
 	public IBinder onBind(Intent intent) 
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -210,14 +202,6 @@ public class KMMDDropboxService extends Service
 			while( hasMorePages )
 			{
 				dropboxChanges = getDropboxChanges();
-				// if files is empty we have nothing locally and we can just do the dropbox changes.
-				//if(files.length == 0)
-				//	performDropboxChanges(dropboxChanges);
-				// if dropboxChanges is empty we have no changes on the service, just upload local maybe.
-				//else if( !dropboxChanges.isEmpty() )
-				//	upload(files);
-				// we have a mixed bag and need to do more work now.
-				//else
 				applyDropboxDeltaPages(dropboxChanges);
 				// See if we have more pages to retrieve
 				hasMorePages = dropboxChanges.hasMore;
@@ -247,12 +231,6 @@ public class KMMDDropboxService extends Service
     	savedDeviceState = parser.parse();
 		File KMMDroidDirectory = new File(Environment.getExternalStorageDirectory(), "/KMMDroid");
 		String prevRev = itemUpload.getRevCode(CLOUD_DROPBOX);
-		//String individualPrevRev[] = { null, null, null };
-        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        //Editor editor = prefs.edit();
-		
-		// Get any previous revs we might have.
-        //Log.d(TAG, "Attempting to get prevRev for: " + fileName + "prevRev");
 			
 		FileInputStream inputStream = null;
 		try 
@@ -262,12 +240,6 @@ public class KMMDDropboxService extends Service
 		    Entry newEntry = mApi.putFile("/" + itemUpload.getName(), inputStream,
 		            file.length(), prevRev, null);
 
-		    // Need to store the key value pair of the file name and rev hash in the prefences so that we can use it later
-		    // to see if the file has changed or not to see if we need to redownload or upload the file.
-			//editor.putString(newEntry.fileName() + "prevRev", newEntry.rev);
-			// Mark the file as being clean now for Dropbox.
-			//editor.putString(newEntry.fileName(), "0:0:0");
-			//editor.apply();
 			return newEntry.rev;
 		} 
 		catch (DropboxUnlinkedException e) 
@@ -315,10 +287,6 @@ public class KMMDDropboxService extends Service
 			DropboxFileInfo fileInfo = mApi.getFile("/" + fileName, null, outputStream, null);
 			KMMDDeviceItem newItem = new KMMDDeviceItem(file);
 			newItem.setRevCode(fileInfo.getMetadata().rev, CLOUD_DROPBOX);
-			Log.d(TAG, "newItem name: " + newItem.getName());
-			Log.d(TAG, "newItem type: " + newItem.getType());
-			Log.d(TAG, "newItem path: " + newItem.getPath());
-			Log.d(TAG, "newItem revCode: " + newItem.getRevCode(CLOUD_DROPBOX));
 			return newItem;
 		} 
 		catch (DropboxException e) 
@@ -346,10 +314,7 @@ public class KMMDDropboxService extends Service
 	}
 	
 	private void delete(KMMDDeviceItem removedItem)
-	{
-        //SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        //Editor edit = prefs.edit();
-        
+	{      
         // Try and delete the item from the service.
         try
         {
@@ -615,7 +580,6 @@ public class KMMDDropboxService extends Service
 		} 
 		catch (DropboxException e) 
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -644,18 +608,7 @@ public class KMMDDropboxService extends Service
         	return null;
         }
     }
-
-/*    private boolean isFileDirty(String serviceFullPath, int service)
-    {
-        SharedPreferences prefs = getSharedPreferences(ACCOUNT_PREFS_NAME, 0);
-        String[] fileDirty = prefs.getString(serviceFullPath, "0:0:0").split(":");
-
-        if(fileDirty[service].equalsIgnoreCase("1"))
-        	return true;
-        else
-        	return false;
-    }
-*/    
+   
     private List<KMMDDeviceItem> getDeviceState(String folderPath)
     {
     	List<KMMDDeviceItem> files = new ArrayList<KMMDDeviceItem>();
@@ -680,7 +633,6 @@ public class KMMDDropboxService extends Service
 		{
 			
 		}
-		//Collections.sort(files);
 		
 		return files;
     }
@@ -841,205 +793,13 @@ public class KMMDDropboxService extends Service
 		} 
         catch (FileNotFoundException e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
         catch (IOException e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
-
-	/*private class DeviceItem implements Comparable<DeviceItem>
-	{
-		private String name;
-		private String type;
-		private String path;
-		
-		public DeviceItem()
-		{
-			this.name = null;
-			this.type = null;
-			this.path = null;
-		}
-		public DeviceItem(String n, String t, String p)
-		{
-			this.name = n;
-			this.type = t;
-			this.path = p;
-		}
-		
-		public String getName()
-		{
-			return this.name;
-		}
-		
-		public void setName(String n)
-		{
-			this.name = n;
-		}
-		
-		public String getType()
-		{
-			return this.type;
-		}
-		
-		public void setType(String t)
-		{
-			this.type = t;
-		}
-		
-		public String getPath()
-		{
-			return this.path;
-		}
-		
-		public void setPath(String p)
-		{
-			this.path = p;
-		}
-		
-		public String getServerPath()
-		{
-			int start = this.path.indexOf("/KMMDroid");
-			return this.path.substring(start).substring(9);
-		}
-		
-		public boolean equals(DeviceItem diItem)
-		{		
-			if(this.getType().equals(diItem.getType()))
-			{
-				// We have the same type (File or Folder) now see if the path is the same, return true if yes, false if not.
-				return this.getPath().equals(diItem.getPath());
-			}
-			else
-			{
-				Log.d(TAG, "We didn't have the same type, no comparison done!");
-				return false;
-			}
-		}
-		
-		public int compareTo(DeviceItem o)
-		{			
-			if(this.name != null)
-				return this.name.toLowerCase().compareTo(o.getName().toLowerCase());
-			else
-				throw new IllegalArgumentException();
-		}
-		
-		public String toString()
-		{
-			String tmp = "Type: " + this.type + " Name: " + this.name + " Path: " + this.path + "Server Path: " + this.getServerPath();
-			return tmp;
-		}
-		
-		public DeviceItem copy()
-		{
-			DeviceItem tmp = new DeviceItem(this.name, this.type, this.path);
-			return tmp;
-		}
-		
-		public DeviceItem findMatch(String path)
-		{
-			// Returns the current DeviceItem if our path matches the path of this DeviceItem, otherwise returns null.
-			if(this.path.equalsIgnoreCase(path))
-				return this;
-			else
-				return null;
-		}
-	}
-	
-	private abstract class BaseDeviceItemParser implements DeviceStateParser
-	{
-		// names of our XML tags
-		static final String ITEM = "item";
-		static final String NAME = "name";
-		static final String PATH = "path";
-		static final String TYPE = "type";		
-		final String xmlDeviceState;
-		
-		protected BaseDeviceItemParser(String deviceStateFile)
-		{
-			this.xmlDeviceState = deviceStateFile;
-		}
-		
-		protected FileInputStream getInputStream()
-		{
-			try
-			{
-				return openFileInput(this.xmlDeviceState);	
-			}
-	        catch (FileNotFoundException e) 
-	        {
-	        	return null;
-			} 
-		}
-	}
-	
-	/*private class DeviceItemParser extends BaseDeviceItemParser
-	{
-		public DeviceItemParser(String xmlFile)
-		{
-			super(xmlFile);
-		}
-		
-		public List<DeviceItem> parse()
-		{
-			final DeviceItem currentDeviceItem = new DeviceItem();
-			final List<DeviceItem> deviceItems = new ArrayList<DeviceItem>();
-			RootElement root = new RootElement("DeviceState");
-			Element item = root.getChild(ITEM);
-			
-			item.setEndElementListener(new EndElementListener()
-			{
-				public void end()
-				{
-					deviceItems.add(currentDeviceItem.copy());
-				}
-			});
-			
-			item.getChild(NAME).setEndTextElementListener(new EndTextElementListener()
-			{
-				public void end(String name)
-				{
-					currentDeviceItem.setName(name);
-				}
-			});
-			
-			item.getChild(PATH).setEndTextElementListener(new EndTextElementListener()
-			{
-				public void end(String path)
-				{
-					currentDeviceItem.setPath(path);
-				}
-			});
-			
-			item.getChild(TYPE).setEndTextElementListener(new EndTextElementListener()
-			{
-				public void end(String data)
-				{
-					currentDeviceItem.setType(data);
-				}
-			});
-			
-			try
-			{
-				Xml.parse(this.getInputStream(), Xml.Encoding.UTF_8, root.getContentHandler());
-			}
-			catch (Exception e)
-			{
-				return null;
-			}
-			
-			return deviceItems;
-		}
-	}
-	
-	public interface DeviceStateParser
-	{
-		List<KMMDDeviceItem> parse();
-	}*/
 	
     public void verifyServerSetup()
     {
@@ -1073,6 +833,7 @@ public class KMMDDropboxService extends Service
 			e.printStackTrace();
 		}
     }
+    
     // Check the networks connect and set the wifiConnected and mobileConnected variables accordingly.
     public void updateConnectedFlags()
     {

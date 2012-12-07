@@ -3,42 +3,39 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import android.app.Activity;
+import java.util.List;
+
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.ContextMenu;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class SchedulesNotificationsActivity extends Activity
+public class SchedulesNotificationsActivity extends FragmentActivity  implements
+											LoaderManager.LoaderCallbacks<List<Schedule>>
 {
 	private static final String TAG = SchedulesNotificationsActivity.class.getSimpleName();
-	private static final String schedulesTable = "kmmSchedules, kmmSplits";
-	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
-	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
-												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
-												" AND kmmSplits.splitId = 0";
-	private static final String schedulesOrderBy = "nextPaymentDue ASC";
+	private static final int SCHEDULES_NOTIFICATIONS_LOADER = 0x08;
+	//private static final String schedulesTable = "kmmSchedules, kmmSplits";
+	//private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
+	//											"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
+	//private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
+	//											" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
+	//											" AND kmmSplits.splitId = 0";
+	//private static final String schedulesOrderBy = "nextPaymentDue ASC";
 	private static final int ENTER = 1001;
 	private static final int SKIP = 1003;
 	private static final int ACTION_ENTERSCHEDULE = 3;
@@ -65,6 +62,7 @@ public class SchedulesNotificationsActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.schedule_notifications);
 
         // Get our application
@@ -80,10 +78,7 @@ public class SchedulesNotificationsActivity extends Activity
         {
             public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id)
             {
-            	Schedule schedule = (Schedule) adapter.getChild(groupPosition, childPosition);
-				Log.d(TAG, "Descripition: " + schedule.getDescription());
-				Log.d(TAG, "groupPos: " + groupPosition + " childPos: " + childPosition);         	
-                return false;
+                 return false;
             }
         });
         
@@ -97,11 +92,7 @@ public class SchedulesNotificationsActivity extends Activity
 				ExpandableListView.ExpandableListContextMenuInfo info =
 					(ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 				int type =
-					ExpandableListView.getPackedPositionType(info.packedPosition);
-				int group =
-					ExpandableListView.getPackedPositionGroup(info.packedPosition);
-				int child =
-					ExpandableListView.getPackedPositionChild(info.packedPosition);					
+					ExpandableListView.getPackedPositionType(info.packedPosition);				
 
 				//Only create a context menu for child items and isParent() is true
 				if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) 
@@ -121,9 +112,22 @@ public class SchedulesNotificationsActivity extends Activity
         // Get the AccountId
         Bundle extras = getIntent().getExtras();
         accountUsed = extras.getString("accountUsed");
-        dbSelection = schedulesSelection;// + "'" + accountUsed + "'";
+        //dbSelection = schedulesSelection;// + "'" + accountUsed + "'";
         autoEnteredScheduleIds = extras.getStringArrayList("autoEnteredScheduleIds");
         autoTransactionIds = extras.getStringArrayList("newTransactionIds");
+        
+        // Add in our preferences for showing dueToday and overDue schedules.
+        extras.putBoolean("showOverDue", KMMDapp.prefs.getBoolean("overdueSchedules", false));
+        extras.putBoolean("showDueToday", KMMDapp.prefs.getBoolean("dueTodaySchedules", false));
+        
+		// Set up the adapters
+		// Initialize the adapter with a blanck groups and children.
+		adapter = new KMMDExpandableListAdapterSchedules(this, new ArrayList<String>(), new ArrayList<ArrayList<Schedule>>(), KMMDapp);
+		listScheduledTrans.setAdapter(adapter);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+		getSupportLoaderManager().initLoader(SCHEDULES_NOTIFICATIONS_LOADER, extras, this);
 	}
 	
 	@Override
@@ -131,8 +135,7 @@ public class SchedulesNotificationsActivity extends Activity
 	{
 		ExpandableListContextMenuInfo info =
 			(ExpandableListContextMenuInfo) menuItem.getMenuInfo();
-		//int groupPos = 0, childPos = 0;
-		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		//int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 		final int groupPos = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 		final int childPos = ExpandableListView.getPackedPositionChild(info.packedPosition);
 		
@@ -161,9 +164,7 @@ public class SchedulesNotificationsActivity extends Activity
 						intent.putExtra("skipScheduleId", schedId);
 						intent.putExtra("widgetId", "9999");
 						startService(intent);
-						Schedule schedule = (Schedule) adapter.getChild(groupPos, childPos);
-						Log.d(TAG, "Descripition: " + schedule.getDescription());
-						Log.d(TAG, "groupPos: " + groupPos + " childPos: " + childPos);
+						//Schedule schedule = (Schedule) adapter.getChild(groupPos, childPos);
 						adapter.removeItem(groupPos, childPos);
 						adapter.notifyDataSetChanged();
 					}
@@ -178,7 +179,6 @@ public class SchedulesNotificationsActivity extends Activity
 				alertSkip.show();
 				return true;
 			default:
-				Log.d(TAG, "We reached the defualt spot somehow.");
 				return false;
 		}
 	}
@@ -194,100 +194,92 @@ public class SchedulesNotificationsActivity extends Activity
 	{
 		super.onResume();
 		
-		Cursor cursor = KMMDapp.db.query(schedulesTable, schedulesColumns, dbSelection, null, null, null, schedulesOrderBy);
+		//Cursor cursor = KMMDapp.db.query(schedulesTable, schedulesColumns, dbSelection, null, null, null, schedulesOrderBy);
 		
-		GregorianCalendar calToday = new GregorianCalendar();
-		GregorianCalendar calYesterday = new GregorianCalendar();
-		calYesterday = (GregorianCalendar) calToday.clone();
-		calYesterday.add(Calendar.DAY_OF_MONTH, -1);
-		String strToday = String.valueOf(calToday.get(Calendar.YEAR)) + "-" + String.valueOf(calToday.get(Calendar.MONTH)+ 1) + "-"
-				+ String.valueOf(calToday.get(Calendar.DAY_OF_MONTH));
-		String strYesterday = String.valueOf(calYesterday.get(Calendar.YEAR)) + "-" + String.valueOf(calYesterday.get(Calendar.MONTH)+ 1) + "-"
-				+ String.valueOf(calYesterday.get(Calendar.DAY_OF_MONTH));
+		//GregorianCalendar calToday = new GregorianCalendar();
+		//GregorianCalendar calYesterday = new GregorianCalendar();
+		//calYesterday = (GregorianCalendar) calToday.clone();
+		//calYesterday.add(Calendar.DAY_OF_MONTH, -1);
+		//String strToday = String.valueOf(calToday.get(Calendar.YEAR)) + "-" + String.valueOf(calToday.get(Calendar.MONTH)+ 1) + "-"
+		//		+ String.valueOf(calToday.get(Calendar.DAY_OF_MONTH));
+		//String strYesterday = String.valueOf(calYesterday.get(Calendar.YEAR)) + "-" + String.valueOf(calYesterday.get(Calendar.MONTH)+ 1) + "-"
+		//		+ String.valueOf(calYesterday.get(Calendar.DAY_OF_MONTH));
 		
 		// Make sure all the ArrayLists are clear.
-		Schedules.clear();
-		pastDueSchedules.clear();
-		dueTodaySchedules.clear();
-		autoEnteredSchedules.clear();
+		//Schedules.clear();
+		//pastDueSchedules.clear();
+		//dueTodaySchedules.clear();
+		//autoEnteredSchedules.clear();
 		
 		// We have our open schedules from the database, now create the user defined period of cash flow.
-		Schedules = Schedule.BuildCashRequired(cursor, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
+		//Schedules = Schedule.BuildCashRequired(cursor, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
 
 		// Seperate out the schedules for use in the adapters.
-		for(int i=0; i < Schedules.size(); i++)
-		{
-			if(Schedules.get(i).isPastDue())
-				pastDueSchedules.add(Schedules.get(i));
-			else if(Schedules.get(i).isDueToday())
-				dueTodaySchedules.add(Schedules.get(i));
-		}
+		//for(int i=0; i < Schedules.size(); i++)
+		//{
+		//	if(Schedules.get(i).isPastDue())
+		//		pastDueSchedules.add(Schedules.get(i));
+		//	else if(Schedules.get(i).isDueToday())
+		//		dueTodaySchedules.add(Schedules.get(i));
+		//}
 		
 		// Need to get the schedules that where entered based on auto enter preferences.
-		Cursor cur = null;
-		String selection = dbSelection + " AND id=?";
-		for(int i=0; i<autoEnteredScheduleIds.size(); i++)
-		{
-			cur = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, new String[] { autoEnteredScheduleIds.get(i) }, null, null, null);
-			cur.moveToFirst();
-			Calendar today = new GregorianCalendar();
-			autoEnteredSchedules.add(new Schedule(cur.getString(1), today, cur.getString(9)));
-			cur.close();
-		}
+		//Cursor cur = null;
+		//String selection = dbSelection + " AND id=?";
+		//for(int i=0; i<autoEnteredScheduleIds.size(); i++)
+		//{
+		//	cur = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, new String[] { autoEnteredScheduleIds.get(i) }, null, null, null);
+		//	cur.moveToFirst();
+		//	Calendar today = new GregorianCalendar();
+		//	autoEnteredSchedules.add(new Schedule(cur.getString(1), today, cur.getString(9)));
+		//	cur.close();
+		//}
 		
 		// Set up the adapters
 		// Initialize the adapter with a blanck groups and children.
-		adapter = new KMMDExpandableListAdapterSchedules(this, new ArrayList<String>(), new ArrayList<ArrayList<Schedule>>(), KMMDapp);
-		listScheduledTrans.setAdapter(adapter);
+		//adapter = new KMMDExpandableListAdapterSchedules(this, new ArrayList<String>(), new ArrayList<ArrayList<Schedule>>(), KMMDapp);
+		//listScheduledTrans.setAdapter(adapter);
 		
 		// Add the items that are past due.
-		if(KMMDapp.prefs.getBoolean("overdueSchedules", false))
-		{
-			for(int i=0; i<pastDueSchedules.size(); i++)
-				adapter.addItem(getString(R.string.titlePastDue), pastDueSchedules.get(i));
-		}
+		//if(KMMDapp.prefs.getBoolean("overdueSchedules", false))
+		//{
+		//	for(int i=0; i<pastDueSchedules.size(); i++)
+		//		adapter.addItem(getString(R.string.titlePastDue), pastDueSchedules.get(i));
+		//}
 		
 		// Add the items that are due today.
-		if(KMMDapp.prefs.getBoolean("dueTodaySchedules", false))
-		{
-			for(int i=0; i<dueTodaySchedules.size(); i++)
-				adapter.addItem(getString(R.string.titleDueToday), dueTodaySchedules.get(i));
-		}
+		//if(KMMDapp.prefs.getBoolean("dueTodaySchedules", false))
+		//{
+		//	for(int i=0; i<dueTodaySchedules.size(); i++)
+		//		adapter.addItem(getString(R.string.titleDueToday), dueTodaySchedules.get(i));
+		//}
 		
 		// Add the items that where auto entered.
-		for(int i=0; i<autoEnteredSchedules.size(); i++)
-			adapter.addItem(getString(R.string.titleAutoEntered), autoEnteredSchedules.get(i));
+		//for(int i=0; i<autoEnteredSchedules.size(); i++)
+		//	adapter.addItem(getString(R.string.titleAutoEntered), autoEnteredSchedules.get(i));
 		
 		// Close the cursor to free up memory.
-		cursor.close();
+		//cursor.close();
+	}
+
+	public Loader<List<Schedule>> onCreateLoader(int id, Bundle args) 
+	{
+		setProgressBarIndeterminateVisibility(true);
+		return new SchedulesLoader(this, args);
+	}
+
+	public void onLoadFinished(Loader<List<Schedule>> loader, List<Schedule> schedules) 
+	{
+		adapter.setData(schedules);
+    	adapter.notifyDataSetChanged();
+		setProgressBarIndeterminateVisibility(true);
+	}
+
+	public void onLoaderReset(Loader<List<Schedule>> loader) 
+	{
+		adapter.setData(null);
 	}
 
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************	
-	/*private ArrayList<Split> getSplits(String transId)
-	{
-		ArrayList<Split> splits = new ArrayList<Split>();
-		
-		Cursor cursor = KMMDapp.db.query("kmmSplits", new String[] { "*" }, "transactionId=?", new String[] { transId }, null, null, "splitId ASC");
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		// put all the splits information into the ArrayList and then return that as a single object
-		while( !cursor.isAfterLast() )
-		{
-			splits.add(new Split(cursor.getString(C_TRANSACTIONID), cursor.getString(C_TXTYPE),
-								 cursor.getInt(C_SPLITID), cursor.getString(C_PAYEEID),
-								 cursor.getString(C_RECONCILEDATE), cursor.getString(C_ACTION),
-								 cursor.getString(C_RECONCILEFLAG), cursor.getString(C_VALUE),
-								 cursor.getString(C_VALUEFORMATTED), cursor.getString(C_SHARES),
-								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
-								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
-								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
-								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
-			cursor.moveToNext();
-		}
-		
-		cursor.close();
-		return splits;
-	}*/
 }

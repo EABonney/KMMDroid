@@ -1,10 +1,10 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -13,7 +13,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class CategoriesHierarchyActivity extends Activity
+public class CategoriesHierarchyActivity extends FragmentActivity
 {
 	private static final String TAG = "CategoriesGeneralActivity";
 	private static final String[] dbColumns = { "accountName", "id AS _id"};

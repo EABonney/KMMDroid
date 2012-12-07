@@ -1,14 +1,14 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class NewDatabaseActivity extends Activity implements OnClickListener
+public class NewDatabaseActivity extends FragmentActivity implements OnClickListener
 {
 	EditText editDatabaseName;
 	Button btnOk;
@@ -35,7 +35,6 @@ public class NewDatabaseActivity extends Activity implements OnClickListener
 	{
 		Intent i = this.getIntent();
 		
-		// TODO Auto-generated method stub
 		switch(v.getId())
 		{
 			case R.id.buttonCancel:

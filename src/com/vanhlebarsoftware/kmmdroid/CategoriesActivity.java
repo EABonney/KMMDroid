@@ -1,12 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -15,45 +16,25 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.Window;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-//import android.widget.AdapterView.OnItemClickListener;
-//import android.widget.SimpleCursorAdapter.ViewBinder;
-//import android.view.*;
 
-public class CategoriesActivity extends Activity
+public class CategoriesActivity extends FragmentActivity implements
+									LoaderManager.LoaderCallbacks<List<Account>>
 {
-	@SuppressWarnings("unused")
-	private static final String TAG = "CategoriesActivity";
+	private static final String TAG = CategoriesActivity.class.getSimpleName();
+	private static final int ACCOUNTS_LOADER = 0x03;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int C_ACCOUNTNAME = 0;
-	private static final int C_BALANCE = 1;
-	private static final int C_ID = 2;
-	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "balance", "id AS _id", "parentId" };
-	private static final String strSelectionExp = "(parentId='AStd::Expense')"; /* + " OR accountType=" + Account.ACCOUNT_INCOME +
-			") AND (balance != '0/1')*/
-	private static final String strSelectionInc = "(parentId='AStd::Income')"; /* + " OR accountType=" + Account.ACCOUNT_INCOME +
-	") AND (balance != '0/1')*/	
-	private static final String strOrderBy = "accountName ASC";
-	static final String[] FROM = { "accountName", "balance" };
-	static final int[] TO = { R.id.crAccountName, R.id.crAccountBalance };
 	private static String strCategoryId = null;
 	private static String strCategoryName = null;
-	private String accountType = null;
 	private String newGroupId = null;
 	private String newGroupName = null;
 	KMMDroidApp KMMDapp;
-	Cursor cursorExp;
-	Cursor cursorInc;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
 	ImageButton btnCategories;
@@ -71,6 +52,7 @@ public class CategoriesActivity extends Activity
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.categories);
         
         // Get our application
@@ -200,14 +182,25 @@ public class CategoriesActivity extends Activity
         {
         	KMMDapp.openDB();
         }
-        
+
+		Bundle bundle = new Bundle();
+		bundle.putInt("activity", 3);
         // See if we are coming from a previous list
         Bundle extras = getIntent().getExtras();
         if( extras != null )
         {
+        	bundle.putBundle("parentAccount", extras);
         	newGroupId = extras.getString("newGroupId");
             newGroupName = extras.getString("newGroupName");
         }
+        
+        // Create an empty adapter we will use to display the loaded data.
+		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>(), KMMDapp);
+        listCategories.setAdapter(adapter);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
 	}
 	
 	@Override
@@ -251,52 +244,6 @@ public class CategoriesActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		
-		// Initialize the adapter with a blanck groups and children.
-		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>(), KMMDapp);
-		//adapter.setViewBinder(VIEW_BINDER);
-		listCategories.setAdapter(adapter);
-		
-		//Get all the accounts to be displayed OR just get the sub-accounts for the passed in ParentId.
-		if( newGroupId == null )
-		{
-			cursorExp = KMMDapp.db.query(dbTable, dbColumns, strSelectionExp, null, null, null, strOrderBy);
-			cursorInc = KMMDapp.db.query(dbTable, dbColumns, strSelectionInc, null, null, null, strOrderBy);
-			
-			// Add the items from our expense cursor
-			cursorExp.moveToFirst();	
-			for(int i=0; i < cursorExp.getCount(); i++)
-			{
-				Account account = new Account(cursorExp);
-				adapter.addItem(getString(R.string.Expense), account);
-				cursorExp.moveToNext();
-			}
-			
-			// Add the items from our income cursor
-			cursorInc.moveToFirst();
-			for(int i=0; i < cursorInc.getCount(); i++)
-			{
-				Account account = new Account(cursorInc);
-				adapter.addItem(getString(R.string.Income), account);
-				cursorInc.moveToNext();
-			}
-		}
-		else
-		{
-			Cursor cur = KMMDapp.db.query(dbTable, dbColumns, "parentId=?", new String[] { newGroupId }, null, null, strOrderBy);
-			
-			if( cur.getCount() > 0 )
-			{
-				cur.moveToFirst();
-				for(int i=0; i < cur.getCount(); i++)
-				{
-					Account account = new Account(cur);
-					adapter.addItem(newGroupName, account);
-					cur.moveToNext();
-				}
-			}
-			listCategories.expandGroup(0);
-		}
 		
 		// See if the user has requested the navigation bar.
 		if(!KMMDapp.prefs.getBoolean("navBar", false))
@@ -380,15 +327,25 @@ public class CategoriesActivity extends Activity
 		return true;
 	}
 	
-// *********************************************************************************************
-// ************************************ Helper Functions ***************************************
-	public void putAccountType(String name)
+	public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
 	{
-		accountType = name;
+		setProgressBarIndeterminateVisibility(true);
+    	return new AccountsLoader(this, args);
 	}
-	
-	public String getAccountType()
+
+	public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
 	{
-		return accountType;
+        // Set the new data in the adapter.
+    	adapter.setData(accounts);	
+    	adapter.notifyDataSetChanged();
+    	if(newGroupId != null)
+    		listCategories.expandGroup(0);
+    	setProgressBarIndeterminateVisibility(false);
+	}
+
+	public void onLoaderReset(Loader<List<Account>> accounts) 
+	{
+        // clear the data in the adapter.
+    	adapter.setData(null);	
 	}
 }

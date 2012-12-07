@@ -108,6 +108,7 @@ public class Schedule
 	private long nAmount;		//Holds the amount of this transaction in pennies.
 	private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 								//Held in pennies.
+	private String title;
 	ArrayList<Split> Splits;	// All the actual details of a particular schedule
 	Transaction Transaction;
 
@@ -137,6 +138,7 @@ public class Schedule
 		this.nBalance = 0;
 		this.Splits = null;
 		this.Transaction = null;
+		this.title = null;
 	}
 	
 	Schedule(Cursor c)
@@ -179,6 +181,7 @@ public class Schedule
 		this.nBalance = 0;
 		this.Splits = null;
 		this.Transaction = null;
+		this.title = null;
 	}
 	
 	Schedule(Cursor curSchedule, Cursor curSplits)
@@ -248,6 +251,7 @@ public class Schedule
 			this.Splits.add(new Split(curSplits, i));
 		
 		this.Transaction = null;
+		this.title = null;
 	}
 	
 	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction)
@@ -328,6 +332,7 @@ public class Schedule
 		
 		// Now populate the transaction for this schedule
 		this.Transaction = new Transaction(curTransaction);
+		this.title = null;
 	}
 	
 	public String getDescription()
@@ -378,6 +383,17 @@ public class Schedule
 	public int getOccurenceMultiplier()
 	{
 		return this.occurenceMultiplier;
+	}
+	
+	public String getTitle()
+	{
+		return this.title;
+	}
+	
+	
+	public void setTitle(String t)
+	{
+		this.title = t;
 	}
 	
 	public void setEndDate(String end)

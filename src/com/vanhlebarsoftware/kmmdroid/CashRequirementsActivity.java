@@ -1,18 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.lang.Math;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,18 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class CashRequirementsActivity extends Activity
+public class CashRequirementsActivity extends FragmentActivity
 {
 	public static final String TAG = "CashRequirementsActivity";
-	private static final int C_DESCRIPTION = 1;
-	private static final int C_OCCURENCE = 2;
-	private static final int C_OCCURENCESTRING = 3;
-	private static final int C_OCCURENCEMULTIPLIER = 4;
-	private static final int C_NEXTPAYMENTDUE = 5;
-	private static final int C_STARTDATE = 6;
-	private static final int C_ENDDATE = 7;
-	private static final int C_LASTPAYMENT = 8;
-	private static final int C_VALUEFORMATTED = 9;
 	private static final String dbTable = "kmmSchedules, kmmSplits";
 	private static final String[] dbColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
 												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
@@ -44,7 +30,6 @@ public class CashRequirementsActivity extends Activity
 												" AND ((occurenceString = 'Once' AND lastPayment IS NULL) OR occurenceString != 'Once')" +
 												" AND kmmSplits.splitId = 0 AND kmmSplits.accountId=?";
 	private static final String strOrderBy = "nextPaymentDue ASC";
-	private int nAccountBalance = 0;
 	private String strStartDate = null;
 	private String strEndDate = null;
 	private String strAccountId = null;

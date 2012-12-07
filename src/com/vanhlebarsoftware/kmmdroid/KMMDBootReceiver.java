@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 public class KMMDBootReceiver extends BroadcastReceiver 
 {
@@ -39,7 +38,6 @@ public class KMMDBootReceiver extends BroadcastReceiver
         {
     		prefEditor.putBoolean("notificationAlarmSet", false);
     		prefEditor.apply();
-    		Log.d(TAG, "Notifications where NOT set up at bootup");
         }
 	}
 
@@ -56,9 +54,5 @@ public class KMMDBootReceiver extends BroadcastReceiver
 			
 		//alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
 		alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, updateTime.getTimeInMillis(), AlarmManager.INTERVAL_DAY, service);
-		
-		Log.d(TAG, "Notifications where set at bootup");
-		Log.d(TAG, "Alarms will go off at: " + updateTime.get(Calendar.HOUR_OF_DAY) + ":" + updateTime.get(Calendar.MINUTE));
-		Log.d(TAG, "updateTime.getTimInMillis(): " + updateTime.getTimeInMillis());
 	}
 }
