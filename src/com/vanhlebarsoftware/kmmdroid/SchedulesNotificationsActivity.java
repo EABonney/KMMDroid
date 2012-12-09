@@ -272,7 +272,7 @@ public class SchedulesNotificationsActivity extends FragmentActivity  implements
 	{
 		adapter.setData(schedules);
     	adapter.notifyDataSetChanged();
-		setProgressBarIndeterminateVisibility(true);
+		setProgressBarIndeterminateVisibility(false);
 	}
 
 	public void onLoaderReset(Loader<List<Schedule>> loader) 

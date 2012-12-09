@@ -30,6 +30,7 @@ import android.widget.ImageButton;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.*;
 
 public class CreateModifyTransactionActivity extends FragmentActivity
 {
@@ -280,6 +281,23 @@ public class CreateModifyTransactionActivity extends FragmentActivity
 	public void onDestroy()
 	{
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle extras)
+	{
+		super.onSaveInstanceState(extras);
+		
+		extras.putString("savedState", "This was saved!");
+		Toast.makeText(this, "Saving state.....", Toast.LENGTH_SHORT).show();
+	}
+	
+	@Override
+	public void onRestoreInstanceState(Bundle extras)
+	{
+		super.onRestoreInstanceState(extras);
+		
+		Toast.makeText(this, extras.getString("savedState"), Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override

@@ -6,71 +6,45 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.TextView;
+import android.support.v4.content.*;
+import android.net.*;
+import android.widget.*;
+import android.view.Window;
 
 public class AboutActivity extends FragmentActivity implements
 								LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final String TAG = AboutActivity.class.getSimpleName();
-	private static int VERSION = 0;
-	private static int CREATED = 1;
-	private static int LASTMODIFIED = 2;
-	private static int INSTITUTIONS = 3;
-	private static int ACCOUNTS = 4;
-	private static int PAYEES = 5;
-	private static int TRANSACTIONS = 6;
-	private static int SPLITS = 7;
-	private static int SECURITIES = 8;
-	private static int PRICES = 9;
-	private static int CURRENCIES = 10;
-	private static int SCHEDULES = 11;
-	private static int REPORTS = 12;
-	private static int KVPS = 13;
-	private static int BUDGETS = 14;
+	private static final String[] FROM = { "version", "created", "lastModified", "institutions",
+											"accounts", "payees", "transactions", "splits",
+											"securities", "prices", "currencies", "schedules",
+											"reports", "kvps", "budgets" };
+	private static final int[] TO = { R.id.aboutFileVersion, R.id.aboutFileCreated, R.id.aboutLastModified, R.id.aboutNumInstitutions,
+		R.id.aboutNumAccounts, R.id.aboutNumPayees, R.id.aboutNumTransactions, R.id.aboutNumSplits,
+		R.id.aboutNumSecurities, R.id.aboutNumPrices, R.id.aboutNumCurrencies, R.id.aboutNumSchedules,
+		R.id.aboutNumReports, R.id.aboutNumKVPS, R.id.aboutNumBudgets };
+	private static final int ABOUT_LOADER = 0x09;
 	TextView txtAboutVers;
-	TextView txtVersion;
-	TextView txtCreated;
-	TextView txtLastMod;
-	TextView txtInst;
-	TextView txtAccounts;
-	TextView txtPayees;
-	TextView txtTrans;
-	TextView txtSplits;
-	TextView txtSecurities;
-	TextView txtPrices;
-	TextView txtCurrencies;
-	TextView txtSchedules;
-	TextView txtReports;
-	TextView txtKVPS;
-	TextView txtBudgets;
+	ListView lvAbout;
 	Cursor cursor;
+	SimpleCursorAdapter adapter;
 	KMMDroidApp KMMDapp;
+
 	/* Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.about);
         
         // Get our views
         txtAboutVers = (TextView) findViewById(R.id.aboutVerNumber);
-        txtVersion = (TextView) findViewById(R.id.aboutFileVersion);
-        txtCreated = (TextView) findViewById(R.id.aboutFileCreated);
-        txtLastMod = (TextView) findViewById(R.id.aboutLastModified);
-        txtInst = (TextView) findViewById(R.id.aboutNumInstitutions);
-        txtAccounts = (TextView) findViewById(R.id.aboutNumAccounts);
-        txtPayees = (TextView) findViewById(R.id.aboutNumPayees);
-        txtTrans = (TextView) findViewById(R.id.aboutNumTransactions);
-        txtSplits = (TextView) findViewById(R.id.aboutNumSplits);
-        txtSecurities = (TextView) findViewById(R.id.aboutNumSecurities);
-        txtPrices = (TextView) findViewById(R.id.aboutNumPrices);
-        txtCurrencies = (TextView) findViewById(R.id.aboutNumCurrencies);
-        txtSchedules = (TextView) findViewById(R.id.aboutNumSchedules);
-        txtReports = (TextView) findViewById(R.id.aboutNumReports);
-        txtKVPS = (TextView) findViewById(R.id.aboutNumKVPS);
-        txtBudgets = (TextView) findViewById(R.id.aboutNumBudgets);
-        
+        lvAbout = (ListView) findViewById(R.id.aboutList);
+		
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
@@ -79,6 +53,14 @@ public class AboutActivity extends FragmentActivity implements
         {
         	KMMDapp.openDB();
         }
+		
+        // Create an empty adapter we will use to display the loaded data.
+        adapter = new SimpleCursorAdapter(this,R.layout.about_row, null, FROM, TO, 0);
+		lvAbout.setAdapter(adapter);
+
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(ABOUT_LOADER, null, this);
 	}
 	
 	@Override
@@ -92,13 +74,6 @@ public class AboutActivity extends FragmentActivity implements
 	{
 		super.onResume();
 		
-		cursor = KMMDapp.db.query("kmmFileInfo", new String[] { "version", "created", "lastModified", "institutions",
-																"accounts", "payees", "transactions", "splits",
-																"securities", "prices", "currencies", "schedules",
-																"reports", "kvps", "budgets"}, 
-				null, null, null, null, null);
-		cursor.moveToFirst();
-		
 		// append the file Info into the various text views.
 		String versionName = null;
 		try
@@ -110,38 +85,30 @@ public class AboutActivity extends FragmentActivity implements
 			Log.e(TAG, e.getMessage());
 		}
 		txtAboutVers.setText(txtAboutVers.getText().toString() + " " + versionName);
-		txtVersion.setText(txtVersion.getText().toString() + " " + cursor.getString(VERSION));
-		txtCreated.setText(txtCreated.getText().toString() + " " + cursor.getString(CREATED));
-		txtLastMod.setText(txtLastMod.getText().toString() + " " + cursor.getString(LASTMODIFIED));
-		txtInst.setText(txtInst.getText().toString() + " " + cursor.getString(INSTITUTIONS));
-		txtAccounts.setText(txtAccounts.getText().toString() + " " + cursor.getString(ACCOUNTS));
-		txtPayees.setText(txtPayees.getText().toString() + " " + cursor.getString(PAYEES));
-		txtTrans.setText(txtTrans.getText().toString() + " " + cursor.getString(TRANSACTIONS));
-		txtSplits.setText(txtSplits.getText().toString() + " " + cursor.getString(SPLITS));
-		txtSecurities.setText(txtSecurities.getText().toString() + " " + cursor.getString(SECURITIES));
-		txtPrices.setText(txtPrices.getText().toString() + " " + cursor.getString(PRICES));
-		txtCurrencies.setText(txtCurrencies.getText().toString() + " " + cursor.getString(CURRENCIES));
-		txtSchedules.setText(txtSchedules.getText().toString() + " " + cursor.getString(SCHEDULES));
-		txtReports.setText(txtReports.getText().toString() + " " + cursor.getString(REPORTS));
-		txtKVPS.setText(txtKVPS.getText().toString() + " " + cursor.getString(KVPS));
-		txtBudgets.setText(txtBudgets.getText().toString() + " " + cursor.getString(BUDGETS));
 	}
 
-	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) 
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+		u = Uri.parse(u.toString());
+		setProgressBarIndeterminateVisibility(true);
+	
+		return new CursorLoader(AboutActivity.this, u,
+								new String[] { "version", "created", "lastModified", "institutions",
+											   "accounts", "payees", "transactions", "splits",
+											   "securities", "prices", "currencies", "schedules",
+											   "reports", "kvps", "budgets", "fixLevel AS _id" }, null, null, null);
 	}
 
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) 
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) 
 	{
-		// TODO Auto-generated method stub
-		
+		adapter.swapCursor(cursor);
+		setProgressBarIndeterminateVisibility(false);
 	}
 
-	public void onLoaderReset(Loader<Cursor> arg0) 
+	public void onLoaderReset(Loader<Cursor> loader) 
 	{
-		// TODO Auto-generated method stub
-		
+		adapter.swapCursor(null);
 	}
 }

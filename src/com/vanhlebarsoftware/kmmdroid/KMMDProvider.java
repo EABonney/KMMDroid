@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.*;
 
 public class KMMDProvider extends ContentProvider 
 {
@@ -125,6 +126,13 @@ public class KMMDProvider extends ContentProvider
 	public SharedPreferences prefs;
 	private SQLiteDatabase db = null;
 	private int queryCall = 1;
+
+	@Override
+	public boolean onCreate() 
+	{         
+		Toast.makeText(getContext(), "Still need to fix this routine!!!", Toast.LENGTH_LONG).show();
+		return false;
+	}
 	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) 
@@ -198,6 +206,7 @@ public class KMMDProvider extends ContentProvider
 		switch(match)
 		{
 			case ACCOUNTS:
+				dbTable = "kmmAccounts";
 				break;
 			case ACCOUNTS_ID:
 				break;
@@ -219,6 +228,12 @@ public class KMMDProvider extends ContentProvider
 			case FILEINFO:
 				dbTable = "kmmFileInfo";
 				break;
+			case INSTITUTIONS:
+				dbTable = "kmmInstitutions";
+				break;
+			case PAYEES:
+				dbTable = "kmmPayees";
+				break;
 			default:
 				break;
 		}
@@ -235,12 +250,6 @@ public class KMMDProvider extends ContentProvider
 		db.close();
 		
 		return null;
-	}
-
-	@Override
-	public boolean onCreate() 
-	{         
-		return false;
 	}
 
 	@Override
@@ -489,6 +498,12 @@ public class KMMDProvider extends ContentProvider
 			case FILEINFO:
 				updateFileInfo(selection, Integer.valueOf(selectionArgs[0]));
 				break;
+			case PAYEES_ID:
+				dbTable = "kmmPayees";
+				break;
+			case INSTITUTIONS_ID:
+				dbTable = "kmmInstitutions";
+				break;
 			default:
 				break;
 		}
@@ -524,6 +539,14 @@ public class KMMDProvider extends ContentProvider
 			return lastPathSegment;
 		case FILEINFO:
 			return null;
+		case INSTITUTIONS:
+			return null;
+		case INSTITUTIONS_ID:
+			return lastPathSegment;
+		case PAYEES:
+			return null;
+		case PAYEES_ID:
+			return lastPathSegment;
 		default:
 			return null;
 		}		
