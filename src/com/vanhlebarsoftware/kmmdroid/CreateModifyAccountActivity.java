@@ -325,28 +325,17 @@ public class CreateModifyAccountActivity extends TabActivity
 						accountId = createAccountId();
 
 					valuesAccount.put("id", accountId);
-					Log.d(TAG, "id: " + accountId);
 					valuesAccount.put("institutionId", instId);
-					Log.d(TAG, "instId: " + instId);
 					valuesAccount.put("parentId", parentId);
-					Log.d(TAG, "parentId: " + parentId);
 					valuesAccount.put("openingDate", openDate);
-					Log.d(TAG, "openDate: " + openDate);
 					valuesAccount.put("accountNumber", accountNumber);
-					Log.d(TAG, "accountNumber: " + accountNumber);
 					valuesAccount.put("accountType", accountType);
-					Log.d(TAG, "accountType" + String.valueOf(accountType));
 					valuesAccount.put("accountTypeString", accountTypeString);
-					Log.d(TAG, "accountTypeString: " + accountTypeString);
 					valuesAccount.put("accountName", accountName);
-					Log.d(TAG, "accountName: " + accountName);
 					valuesAccount.put("description", "");
 					valuesAccount.put("currencyId", currencyId);
-					Log.d(TAG, "currencyId: " + currencyId);
 					valuesAccount.put("balance", createBalance(balance));
-					Log.d(TAG, "balance: " + createBalance(balance));
 					valuesAccount.put("balanceFormatted", balance);
-					Log.d(TAG, "balanceFormatted: " + balance);
 					
 					switch(Action)
 					{
@@ -359,11 +348,11 @@ public class CreateModifyAccountActivity extends TabActivity
 							try 
 							{
 								String frag = "#9999";
-								Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, parentId + frag);
+								Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
 								u = Uri.parse(u.toString());
 								getBaseContext().getContentResolver().insert(u,valuesAccount);
 								frag = "#9999";
-								u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, parentId + frag);
+								u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
 								u = Uri.parse(u.toString());
 								getBaseContext().getContentResolver().update(u, null, "transactions", new String[] { "1" });
 								getBaseContext().getContentResolver().update(u, null, "hiAccountId", new String[] { "1" });
@@ -384,7 +373,11 @@ public class CreateModifyAccountActivity extends TabActivity
 							valuesKVP.put("kvpId", kvpId);
 							valuesKVP.put("kvpKey", "IBAN");
 							valuesKVP.put("kvpData", accountIBAN);
-							KMMDapp.db.insert("kmmKeyValuePairs", null, valuesKVP);
+							String frag = "#9999";
+							Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+							u = Uri.parse(u.toString());
+							getBaseContext().getContentResolver().insert(u, valuesKVP);
+							//KMMDapp.db.insert("kmmKeyValuePairs", null, valuesKVP);
 							valuesKVP.clear();
 							if( preferredAcct.equalsIgnoreCase("Yes") )
 							{
@@ -392,11 +385,16 @@ public class CreateModifyAccountActivity extends TabActivity
 								valuesKVP.put("kvpId", kvpId);
 								valuesKVP.put("kvpKey", "PreferredAccount");
 								valuesKVP.put("kvpData", "Yes");
-								KMMDapp.db.insert("kmmKeyValuePairs", null, valuesKVP);
+								getBaseContext().getContentResolver().insert(u, valuesKVP);
+								//KMMDapp.db.insert("kmmKeyValuePairs", null, valuesKVP);
 							}
 							break;
 						case ACTION_EDIT:
-							KMMDapp.db.update("kmmAccounts", valuesAccount, "id=?", new String[] { accountId });
+							frag = "#9999";
+							u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+							u = Uri.parse(u.toString());
+							getBaseContext().getContentResolver().update(u, valuesAccount, "id=?", new String[] { accountId });
+							//KMMDapp.db.update("kmmAccounts", valuesAccount, "id=?", new String[] { accountId });
 							// We need to put the additional information in the kmmKeyValuePairs table for this account.
 							kvpType = "ACCOUNT";
 							kvpId = accountId;
@@ -405,7 +403,11 @@ public class CreateModifyAccountActivity extends TabActivity
 							valuesKVP.put("kvpId", kvpId);
 							valuesKVP.put("kvpKey", "IBAN");
 							valuesKVP.put("kvpData", accountIBAN);
-							KMMDapp.db.update("kmmKeyValuePairs", valuesKVP, "kvpId=?", new String[] { accountId });
+							frag = "#9999";
+							u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+							u = Uri.parse(u.toString());
+							getBaseContext().getContentResolver().update(u, valuesKVP, "kvpId=?", new String[] { accountId });
+							//KMMDapp.db.update("kmmKeyValuePairs", valuesKVP, "kvpId=?", new String[] { accountId });
 							valuesKVP.clear();
 							if( preferredAcct.equalsIgnoreCase("Yes") )
 							{
@@ -413,7 +415,8 @@ public class CreateModifyAccountActivity extends TabActivity
 								valuesKVP.put("kvpId", kvpId);
 								valuesKVP.put("kvpKey", "PreferredAccount");
 								valuesKVP.put("kvpData", "Yes");
-								KMMDapp.db.update("kmmKeyValuePairs", valuesKVP, "kvpId=?", new String[] { accountId } );
+								getBaseContext().getContentResolver().update(u, valuesKVP, "kvpId=?", new String[] { accountId } );
+								//KMMDapp.db.update("kmmKeyValuePairs", valuesKVP, "kvpId=?", new String[] { accountId } );
 							}
 							else
 							{
@@ -429,7 +432,11 @@ public class CreateModifyAccountActivity extends TabActivity
 							break;
 					}
 				}
-				KMMDapp.updateFileInfo("lastModified", 0);
+				String frag = "#9999";
+				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+				u = Uri.parse(u.toString());
+				getBaseContext().getContentResolver().update(u, null, "lastModified", new String[] { "0" });
+				//KMMDapp.updateFileInfo("lastModified", 0);
 				
 				//Mark file as dirty
 				KMMDapp.markFileIsDirty(true, "9999");
@@ -437,9 +444,20 @@ public class CreateModifyAccountActivity extends TabActivity
 				finish();
 				break;
 			case R.id.itemDelete:
-				KMMDapp.db.delete("kmmKeyValuePairs", "kvpId=?", new String [] { accountId });
-				int rows = KMMDapp.db.delete("kmmAccounts", "id=?", new String[] { accountId });
-				KMMDapp.updateFileInfo("accounts", -1);
+				frag = "#9999";
+				u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+				u = Uri.parse(u.toString());
+				getBaseContext().getContentResolver().delete(u, "kvpId=?", new String [] { accountId });
+				//KMMDapp.db.delete("kmmKeyValuePairs", "kvpId=?", new String [] { accountId });
+				frag = "#9999";
+				u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+				u = Uri.parse(u.toString());				
+				int rows = getBaseContext().getContentResolver().delete(u, "id=?", new String[] { accountId });
+				frag = "#9999";
+				u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+				u = Uri.parse(u.toString());
+				getBaseContext().getContentResolver().update(u, null, "accounts", new String[] { "-1" });
+				//KMMDapp.updateFileInfo("accounts", -1);
 				if( rows != 1 )
 				{
 					Log.d(TAG, "There was an error deleting your category!");
@@ -458,7 +476,11 @@ public class CreateModifyAccountActivity extends TabActivity
 				else
 				{
 					returnFromDelete = true;
-					KMMDapp.updateFileInfo("lastModified", 0);
+					frag = "#9999";
+					u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+					u = Uri.parse(u.toString());
+					getBaseContext().getContentResolver().update(u, null, "lastModified", new String[] { "0" });
+					//KMMDapp.updateFileInfo("lastModified", 0);
 					
 					//Mark file as dirty
 					KMMDapp.markFileIsDirty(true, "9999");

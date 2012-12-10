@@ -27,6 +27,7 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_INSTITUTION_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/institution");
 	public static final Uri CONTENT_PAYEE_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/payee");
 	public static final Uri CONTENT_LEDGER_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/ledger");
+	public static final Uri CONTENT_KVP_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmprovider/kvp");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
@@ -41,6 +42,8 @@ public class KMMDProvider extends ContentProvider
 	public static final String PAYEE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.payee";
 	public static final String PAYEES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.payees";
 	public static final String LEDGER_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.ledger";
+	public static final String KVP_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.kvp";
+	public static final String KVPS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.kvps";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -105,6 +108,8 @@ public class KMMDProvider extends ContentProvider
 	private static final int PAYEES = 12;
 	private static final int PAYEES_ID = 13;
 	private static final int LEDGER = 14;
+	private static final int KVPS = 15;
+	private static final int KVPS_ID = 16;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -122,6 +127,9 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "payee", PAYEES);
 		sURIMatcher.addURI(authority, "payee/*", PAYEES_ID);
 		sURIMatcher.addURI(authority, "ledger", LEDGER);
+		sURIMatcher.addURI(authority, "kvp", KVPS);
+		sURIMatcher.addURI(authority, "kvp/*", KVPS_ID);
+		
 	}
 	public SharedPreferences prefs;
 	private SQLiteDatabase db = null;
@@ -130,13 +138,13 @@ public class KMMDProvider extends ContentProvider
 	@Override
 	public boolean onCreate() 
 	{         
-		Toast.makeText(getContext(), "Still need to fix this routine!!!", Toast.LENGTH_LONG).show();
 		return false;
 	}
 	
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) 
 	{
+		Toast.makeText(getContext(), "Still need to fix this routine!!!", Toast.LENGTH_LONG).show();
 		return 0;
 	}
 
@@ -174,6 +182,10 @@ public class KMMDProvider extends ContentProvider
 			return PAYEE_MIME_TYPE;
 		case LEDGER:
 			return LEDGER_MIME_TYPE;
+		case KVPS:
+			return KVPS_MIME_TYPE;
+		case KVPS_ID:
+			return KVP_MIME_TYPE;
 		default:
 			return null;
 		}
@@ -233,6 +245,9 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case PAYEES:
 				dbTable = "kmmPayees";
+				break;
+			case KVPS:
+				dbTable = "kmmKeyValuePairs";
 				break;
 			default:
 				break;
@@ -421,6 +436,21 @@ public class KMMDProvider extends ContentProvider
 				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
 				break;
+			case KVPS:
+				dbTable = "kmmKeyValuePairs";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;
+			case KVPS_ID:
+				dbTable = "kmmKeyValuePairs";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
+				break;
 			default:
 				break;
 		}
@@ -504,6 +534,9 @@ public class KMMDProvider extends ContentProvider
 			case INSTITUTIONS_ID:
 				dbTable = "kmmInstitutions";
 				break;
+			case KVPS_ID:
+				dbTable = "kmmKeyValuePairs";
+				break;
 			default:
 				break;
 		}
@@ -547,6 +580,10 @@ public class KMMDProvider extends ContentProvider
 			return null;
 		case PAYEES_ID:
 			return lastPathSegment;
+		case KVPS:
+				return null;
+		case KVPS_ID:
+				return lastPathSegment;
 		default:
 			return null;
 		}		
