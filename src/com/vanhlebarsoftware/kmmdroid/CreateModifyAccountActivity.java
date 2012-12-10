@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.net.*;
 
 public class CreateModifyAccountActivity extends TabActivity
 {
@@ -357,9 +358,18 @@ public class CreateModifyAccountActivity extends TabActivity
 
 							try 
 							{
-								KMMDapp.db.insertOrThrow("kmmAccounts", null, valuesAccount);
-								KMMDapp.updateFileInfo("hiAccountId", 1);
-								KMMDapp.updateFileInfo("accounts", 1);
+								String frag = "#9999";
+								Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, parentId + frag);
+								u = Uri.parse(u.toString());
+								getBaseContext().getContentResolver().insert(u,valuesAccount);
+								frag = "#9999";
+								u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, parentId + frag);
+								u = Uri.parse(u.toString());
+								getBaseContext().getContentResolver().update(u, null, "transactions", new String[] { "1" });
+								getBaseContext().getContentResolver().update(u, null, "hiAccountId", new String[] { "1" });
+								getBaseContext().getContentResolver().update(u, null, "accounts", new String[] { "1" });
+								//KMMDapp.updateFileInfo("hiAccountId", 1);
+								//KMMDapp.updateFileInfo("accounts", 1);
 							} 
 							catch (SQLException e)
 							{
