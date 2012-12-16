@@ -1,46 +1,50 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.util.Calendar;
-
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
-public class CreateAccountAccountActivity extends FragmentActivity implements OnCheckedChangeListener
+public class CreateAccountAccountActivity extends Fragment implements
+LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final String TAG = "CreateAccountAccountActivity";
+	private static final int CAACCOUNT_LOADER = 0x13;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final int SET_DATE_ID = 0;
-	private int intYear;
-	private int intMonth;
-	private int intDay;
 	private int TypeSelected = 0;
 	private int numberOfPasses = 0;
 	private String strTypeSelected = null;
 	private String currencySelected = null;
-	private CreateModifyAccountActivity parentTabHost;
+	private OnAccountPreferredCheckedListener onAccountPreferredCheckedListener;
+	private OnSendAccountDataListener onSendAccountData;
+	private Activity ParentActivity;
 	Button buttonDate;
 	EditText accountName;
 	EditText openDate;
@@ -49,42 +53,75 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 	Spinner spinCurrency;
 	CheckBox checkPreferred;
 	TextView txtTotTrans;
-	Cursor cursorCurrency;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
 	KMMDroidApp KMMDapp;
 	
 	@Override
-    public void onCreate(Bundle savedInstanceState) 
+	public void onCreate(Bundle savedState)
 	{
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.createaccount_account);
-        
+		super.onCreate(savedState);
+
         // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
+        KMMDapp = ((KMMDroidApp) getActivity().getApplication());
         
-        // Get the activity for the tabHost.
-        parentTabHost = ((CreateModifyAccountActivity) this.getParent());
+        // See if the database is already open, if not open it Read/Write.
+        if(!KMMDapp.isDbOpen())
+        {
+        	KMMDapp.openDB();
+        }
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	{
+		View view = inflater.inflate(R.layout.createaccount_account, container, false);
+		
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
         
         // Find our views
-        spinCurrency = (Spinner) findViewById(R.id.accountCurrency);
-        spinType = (Spinner) findViewById(R.id.accountType);
-        accountName = (EditText) findViewById(R.id.accountName);
-        openDate = (EditText) findViewById(R.id.accountOpenDate);
-        openBalance = (EditText) findViewById(R.id.accountOpenBalance);
-        checkPreferred = (CheckBox) findViewById(R.id.checkboxAccountPreferred);
-        buttonDate = (Button) findViewById(R.id.buttonSetDate);
-        txtTotTrans = (TextView) findViewById(R.id.titleAccountTransactions);
+        spinCurrency = (Spinner) view.findViewById(R.id.accountCurrency);
+        spinType = (Spinner) view.findViewById(R.id.accountType);
+        accountName = (EditText) view.findViewById(R.id.accountName);
+        openDate = (EditText) view.findViewById(R.id.accountOpenDate);
+        openBalance = (EditText) view.findViewById(R.id.accountOpenBalance);
+        checkPreferred = (CheckBox) view.findViewById(R.id.checkboxAccountPreferred);
+        buttonDate = (Button) view.findViewById(R.id.buttonSetDate);
+        txtTotTrans = (TextView) view.findViewById(R.id.titleAccountTransactions);
         
         // Set our OnClickListener events
         buttonDate.setOnClickListener(new View.OnClickListener() 
         {	
 			public void onClick(View v)
 			{
-				showDialog(SET_DATE_ID);
-				parentTabHost.setIsDirty(true);
+				DialogFragment dateFrag = new KMMDDatePickerFragment(openDate);
+				dateFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
+				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 		});
+        
+        checkPreferred.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+			public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
+			{
+				switch( buttonView.getId() )
+				{
+					case R.id.checkboxAccountPreferred:
+						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+						break;
+				}
+			}
+        });
         
         // Set the OnItemSelectedListeners for the spinners.
         spinType.setOnItemSelectedListener(new AccountOnItemSelectedListener());
@@ -96,8 +133,7 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 
 			public void afterTextChanged(Editable s) 
 			{
-				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
+				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -112,8 +148,7 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 
 			public void afterTextChanged(Editable s) 
 			{
-				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from openBalance!");
+				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -123,25 +158,52 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 					int count) {}
         });
         
-        // get the current date
-        final Calendar c = Calendar.getInstance();
-        intYear = c.get(Calendar.YEAR);
-        intMonth = c.get(Calendar.MONTH);
-        intDay = c.get(Calendar.DAY_OF_MONTH);
+		// Set up the adapters
+		adapterTypes = ArrayAdapter.createFromResource(getActivity().getBaseContext(), R.array.arrayAccountTypes, android.R.layout.simple_spinner_item);
+		adapterTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinType.setAdapter(adapterTypes);
+
+		adapterCurrency = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, null, FROM, TO, 0);
+		adapterCurrency.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinCurrency.setAdapter(adapterCurrency);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(CAACCOUNT_LOADER, null, this);
         
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
-        
-        // Set the base currency from the file.
-        currencySelected = getBaseCurrency();
-        
-        // display the current date
-        updateDisplay();
-	}
+        return view;
+    }
 	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) 
+	{
+		super.onAttach(activity);
+		
+		// Save our parent activity.
+		ParentActivity = activity;
+		
+		try 
+		{
+			onAccountPreferredCheckedListener = (OnAccountPreferredCheckedListener) activity;
+		} 
+		catch (ClassCastException e) 
+		{
+			throw new ClassCastException(activity.toString() + "must implment OnAccountPreferredCheckedListener");
+		}
+		
+		try
+		{
+			onSendAccountData = (OnSendAccountDataListener) activity;
+		}
+		catch (ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + "must implement OnSendAccountDataListener");
+		}
+	}
+
 	@Override
 	public void onDestroy()
 	{
@@ -149,52 +211,9 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 	}
 
 	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
-		
-		//Get all the currencies to be displayed.
-		cursorCurrency = KMMDapp.db.query("kmmCurrencies", new String[] { "ISOCode AS _id", "name" }, null, null, null, null, null);
-		startManagingCursor(cursorCurrency);
-		
-		// Set up the adapters
-		adapterCurrency = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCurrency, FROM, TO);
-		adapterCurrency.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		spinCurrency.setAdapter(adapterCurrency);
-		adapterTypes = ArrayAdapter.createFromResource(this, R.array.arrayAccountTypes, android.R.layout.simple_spinner_item);
-		adapterTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		spinType.setAdapter(adapterTypes);
-		
-		// Set the account type and currency type selected.
-		spinType.setSelection(TypeSelected);
-		spinCurrency.setSelection(setCurrency(currencySelected));
-		
-		// Update the date EditBox.
-		updateDisplay();
-	}
-
-	// the callback received with the user "sets" the opening date in the dialog
-	private DatePickerDialog.OnDateSetListener mDateSetListener = 
-			new DatePickerDialog.OnDateSetListener() 
-			{				
-				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
-				{
-					intYear = year;
-					intMonth = monthOfYear;
-					intDay = dayOfMonth;
-					updateDisplay();
-				}
-			};
-			
-	@Override
-	protected Dialog onCreateDialog(int id)
-	{
-		switch(id)
-		{
-			case SET_DATE_ID:
-				return new DatePickerDialog(this, mDateSetListener, intYear, intMonth, intDay);
-		}
-		return null;
 	}
 	
 	public class AccountOnItemSelectedListener implements OnItemSelectedListener
@@ -211,45 +230,32 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 			
 						if( strTypeSelected.matches(getString(R.string.Asset)) )
 						{	
-							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-								" AND balance !='0/1')");
 							TypeSelected = 0;
 						}
 						else if( strTypeSelected.matches(getString(R.string.Checking)) )
 						{
-							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-									" AND balance !='0/1')");
 							TypeSelected = 1;
 						}
 						else if( strTypeSelected.matches(getString(R.string.Equity)) )
 						{
-							CreateAccountParentActivity.setSelected("id='AStd::Equity' OR (parentId='AStd::Equity'" +
-									" AND balance !='0/1')");
 							TypeSelected = 2;
 						}
 						else if( strTypeSelected.matches(getString(R.string.Liability)) )
 						{	
-							CreateAccountParentActivity.setSelected("id='AStd::Liability' OR (parentId='AStd::Liability'" +
-								" AND balance !='0/1')");
 							TypeSelected = 3;
 						}
 						else if( strTypeSelected.matches(getString(R.string.Savings)) )
 						{
-							CreateAccountParentActivity.setSelected("id='AStd::Asset' OR (parentId='AStd::Asset'" +
-								" AND balance !='0/1')");
 							TypeSelected = 4;
 						}
 						else
 							Log.d(TAG, "ERROR!!!");
-						Log.d(TAG, "Number of passes: " + numberOfPasses);
-						parentTabHost.setIsDirty(true);
+						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 						break;
 					case R.id.accountCurrency:
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						currencySelected = c.getString(0);
-						Log.d(TAG, "Number of passes: " + numberOfPasses);
-						parentTabHost.setIsDirty(true);
-						Log.d(TAG, "currencyId: " + currencySelected);
+						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 						break;
 				}
 			}
@@ -271,120 +277,76 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 		switch( buttonView.getId() )
 		{
 			case R.id.checkboxAccountPreferred:
-				parentTabHost.setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 				break;
 		}
 	}
 	
-	@Override
-	public void onBackPressed()
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
-		Log.d(TAG, "User clicked the back button");
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
+		String dbColumns[] = { "ISOCode AS _id", "name" };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
+		u = Uri.parse(u.toString());
 
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
+		return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, null, null, null);
 	}
-	
-	// **************************************************************************************************
-	// ************************************ Helper methods **********************************************
-	
-	private void updateDisplay()
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor currencies) 
 	{
-		String strDay = null;
-		String strMonth = null;
-		switch(intDay)
-		{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
-				strDay = "0" + String.valueOf(intDay);
-				break;
-			default:
-				strDay = String.valueOf(intDay);
-			break;
-		}
+		Log.d(TAG, "loader is done and we have our cursor");
+		adapterCurrency.swapCursor(currencies);
 		
-		switch(intMonth)
-		{
-			case 0:
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			//case 9:
-				strMonth = "0" + String.valueOf(intMonth + 1);
-				break;
-			default:
-				strMonth = String.valueOf(intMonth + 1);
-				break;
-		}
+		// Notify parent activity to send the Account data.
+		sendAccountData();
 		
-		openDate.setText(
-				new StringBuilder()
-					// Month is 0 based so add 1
-					.append(strMonth).append("-")
-					.append(strDay).append("-")
-					.append(intYear));
+		updateUIElements();
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) 
+	{
+		adapterCurrency.swapCursor(null);
+	}
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnAccountPreferredCheckedListener
+	{
+		public void onAccountPreferredChecked(CompoundButton btn, boolean arg1);
 	}
 	
+	public interface OnSendAccountDataListener
+	{
+		public void onSendAccountData();
+	}
+	// **************************************************************************************************
+	// ************************************ Helper methods **********************************************	
 	private String getBaseCurrency()
 	{
-		Cursor c = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor c = getActivity().getBaseContext().getContentResolver().query(u, new String[] { "baseCurrency" }, null, null, null);
+		//Cursor c = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
 		c.moveToFirst();
 		String currency = c.getString(0);
-		
+		c.close();
 		return currency;
 	}
 	
 	private int setCurrency(String baseCur)
 	{
 		int i = 0;
-		cursorCurrency.moveToFirst();
+		Cursor c = adapterCurrency.getCursor();
+		c.moveToFirst();
 		
 		if( baseCur != null )
 		{
-			while(!baseCur.equals(cursorCurrency.getString(0)))
+			while(!baseCur.equals(c.getString(0)))
 			{
-				cursorCurrency.moveToNext();
+				c.moveToNext();
 			
 				//check to see if we have moved past the last item in the cursor, if so return current i.
-				if(cursorCurrency.isAfterLast())
+				if(c.isAfterLast())
 					return i;
 			
 				i++;
@@ -441,7 +403,12 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 	
 	public String getOpeningBalance()
 	{
-		return openBalance.getText().toString();
+		String tmp = openBalance.getText().toString();
+		
+		if( tmp.isEmpty() )
+			tmp = "0.00";
+		
+		return tmp;
 	}
 	
 	public boolean getPreferredAccount()
@@ -492,13 +459,9 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 		if( date != null )
 		{
 			date = date.trim();
-			String dates[] = date.split("-");
-		
-			// Date was stored YYYY-MM-DD
-			intYear = Integer.valueOf(dates[0]);
-			// Since updateDisplay uses a zero based month we need to subract one now.
-			intMonth = Integer.valueOf(dates[1]) - 1;
-			intDay = Integer.valueOf(dates[2]);		
+			String dates[] = date.split("-");	
+			
+			openDate.setText(dates[1] + "-" + dates[2] + "-" + dates[0]);
 		}
 	}
 	
@@ -515,5 +478,41 @@ public class CreateAccountAccountActivity extends FragmentActivity implements On
 	public void putTransactionCount(String strCount)
 	{
 		txtTotTrans.setText(txtTotTrans.getText().toString() + " " + strCount);
+	}
+	
+	public void sendAccountData()
+	{
+		onSendAccountData.onSendAccountData();
+	}
+	
+	private void updateUIElements()
+	{
+		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+		
+		String accountName = prefs.getString("AccountName", null);
+		int accountType = prefs.getInt("AccountType", 0);
+		String currencyId = prefs.getString("CurrencyId", null);
+		String openDate = prefs.getString("OpenDate", null);
+		String openBalance = prefs.getString("OpenBalance", null);
+		boolean preferredAcct = prefs.getBoolean("PreferredAccount", false);
+		
+        // Set the base currency from the file.
+        currencySelected = getBaseCurrency();
+        
+		if( accountName != null )
+			this.accountName.setText(accountName);
+		if( accountType != 0 )
+			this.putAccountType(accountType);
+		this.spinType.setSelection(this.TypeSelected);
+		if( currencyId != null )
+			this.spinCurrency.setSelection(setCurrency(currencyId));
+		else
+			this.spinCurrency.setSelection(setCurrency(this.currencySelected));
+		if( openDate != null )
+			this.openDate.setText(openDate);
+		if( openBalance != null )
+			this.openBalance.setText(openBalance);
+		if( prefs.contains("PreferredAccount") )
+			this.checkPreferred.setChecked(preferredAcct);
 	}
 }

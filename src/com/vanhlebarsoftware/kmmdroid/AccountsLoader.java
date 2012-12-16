@@ -113,6 +113,12 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
             deliverResult(mAccounts);
         }
         
+        // Start monitoring the data source.
+        //if( this.mObserver == null)
+        //{
+        //	this.mObserver = this.mContext.getContentResolver().registerContentObserver(KMMDProvider.CONTENT_ACCOUNT_URI, true, mObserver);
+        //}
+        
         if (takeContentChanged() || mAccounts == null )
         {
             // If the data has changed since the last time it was loaded
@@ -153,7 +159,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
         
         // Ensure the loader is stopped
         onStopLoading();
-
+        
         // At this point we can release the resources associated with 'apps'
         // if needed.
         if (mAccounts != null) 

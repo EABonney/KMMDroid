@@ -27,7 +27,8 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_INSTITUTION_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/institution");
 	public static final Uri CONTENT_PAYEE_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/payee");
 	public static final Uri CONTENT_LEDGER_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/ledger");
-	public static final Uri CONTENT_KVP_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmprovider/kvp");
+	public static final Uri CONTENT_KVP_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/kvp");
+	public static final Uri CONTENT_CURRENCY_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/currency");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
@@ -44,6 +45,8 @@ public class KMMDProvider extends ContentProvider
 	public static final String LEDGER_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.ledger";
 	public static final String KVP_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.kvp";
 	public static final String KVPS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.kvps";
+	public static final String CURRENCY_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.currency";
+	public static final String CURRENCIES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.currencies";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -110,6 +113,8 @@ public class KMMDProvider extends ContentProvider
 	private static final int LEDGER = 14;
 	private static final int KVPS = 15;
 	private static final int KVPS_ID = 16;
+	private static final int CURRENCY = 17;
+	private static final int CURRENCIES = 18;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -129,7 +134,8 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "ledger", LEDGER);
 		sURIMatcher.addURI(authority, "kvp", KVPS);
 		sURIMatcher.addURI(authority, "kvp/*", KVPS_ID);
-		
+		sURIMatcher.addURI(authority, "currency", CURRENCIES);
+		sURIMatcher.addURI(authority, "currency/*", CURRENCY);
 	}
 	public SharedPreferences prefs;
 	private SQLiteDatabase db = null;
@@ -139,13 +145,6 @@ public class KMMDProvider extends ContentProvider
 	public boolean onCreate() 
 	{         
 		return false;
-	}
-	
-	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) 
-	{
-		Toast.makeText(getContext(), "Still need to fix this routine!!!", Toast.LENGTH_LONG).show();
-		return 0;
 	}
 
 	@Override
@@ -186,11 +185,99 @@ public class KMMDProvider extends ContentProvider
 			return KVPS_MIME_TYPE;
 		case KVPS_ID:
 			return KVP_MIME_TYPE;
+		case CURRENCY:
+			return CURRENCY_MIME_TYPE;
+		case CURRENCIES:
+			return CURRENCIES_MIME_TYPE;
 		default:
 			return null;
 		}
 	}
 
+	@Override
+	public int delete(Uri uri, String selection, String[] selectionArgs) 
+	{
+		// Need to get the prefs for our application so we can update the file used as dirty.
+		Context context = getContext();
+		Context cont = null;
+		try 
+		{
+			cont = context.createPackageContext("com.vanhlebarsoftware.kmmdroid", Context.CONTEXT_IGNORE_SECURITY);
+		} 
+		catch (NameNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		SharedPreferences prefs = cont.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_WORLD_READABLE);
+		
+		String widgetId = uri.getFragment();
+		
+		// See if we need to open the database.
+		if( !db.isOpen() )
+			db = openDatabase(widgetId);
+		
+		// See which content uri is requested.
+		int match = sURIMatcher.match(uri);
+		switch(match)
+		{
+			case ACCOUNTS:
+				dbTable = "kmmAccounts";
+				break;
+			case ACCOUNTS_ID:
+				break;
+			case SCHEDULES:
+				dbTable = "kmmSchedules";
+				break;
+			case SCHEDULES_ID:
+				break;
+			case SPLITS:
+				dbTable = "kmmSplits";
+				break;
+			case SPLITS_ID:
+				break;
+			case TRANSACTIONS:
+				dbTable = "kmmTransactions";
+				break;
+			case TRANSACTIONS_ID:
+				break;
+			case FILEINFO:
+				dbTable = "kmmFileInfo";
+				break;
+			case INSTITUTIONS:
+				dbTable = "kmmInstitutions";
+				break;
+			case PAYEES:
+				dbTable = "kmmPayees";
+				break;
+			case KVPS:
+				dbTable = "kmmKeyValuePairs";
+				break;
+			case CURRENCY:
+				break;
+			case CURRENCIES:
+				dbTable = "kmmCurrencies";
+				break;
+			default:
+				break;
+		}
+		
+		// perform the insert.
+		int rows = db.delete(dbTable, selection, selectionArgs);
+		
+		// Need to mark the file as dirty for our cloud services.
+		Editor editor = prefs.edit();
+		editor.putString(db.getPath(), "1:1:1");
+		editor.apply();
+		
+		// close the database.
+		db.close();
+		
+		// notifiy of the delete.
+		context.getContentResolver().notifyChange(Uri.parse(uri.getEncodedFragment()), null);
+
+		return rows;
+	}
+	
 	@Override
 	public Uri insert(Uri uri, ContentValues contentValues) 
 	{
@@ -249,6 +336,11 @@ public class KMMDProvider extends ContentProvider
 			case KVPS:
 				dbTable = "kmmKeyValuePairs";
 				break;
+			case CURRENCY:
+				break;
+			case CURRENCIES:
+				dbTable = "kmmCurrencies";
+				break;
 			default:
 				break;
 		}
@@ -297,19 +389,10 @@ public class KMMDProvider extends ContentProvider
 		switch(match)
 		{
 			case ACCOUNTS:
-				dbTable = accountsTable;
-				if(projection != null)
-					dbColumns = projection;
-				else
-					dbColumns = accountsColumns;
-				if(selection != null)
-					dbSelection = selection;
-				else
-					dbSelection = accountsSelection;
-				if(sortOrder != null)
-					dbOrderBy = sortOrder;
-				else
-					dbOrderBy = accountsOrderBy;
+				dbTable = "kmmAccounts";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
 				break;
 			case ACCOUNTS_ID:
@@ -451,7 +534,23 @@ public class KMMDProvider extends ContentProvider
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
 				break;
+			case CURRENCY:
+				dbTable = "kmmCurrencies";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
+				break;
+			case CURRENCIES:
+				dbTable = "kmmCurrencies";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				break;				
 			default:
+				Log.d(TAG, "We didn't get a macth!");
 				break;
 		}
 		
@@ -501,29 +600,42 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case ACCOUNTS_ID:
 				dbTable = "kmmAccounts";
-				dbSelection = selection;
-				result = db.update(dbTable, contentvalues, selection, selectionArgs);
+				dbSelection = "id=?";
+				Log.d(TAG, "Before content provider call");
+				Log.d(TAG, "id: " + contentvalues.get("id"));
+				Log.d(TAG, "institutionId: " + contentvalues.get("institutionId"));
+				Log.d(TAG, "parentId: " + contentvalues.get("parentId"));
+				Log.d(TAG, "openDate: " + contentvalues.get("openingDate"));
+				Log.d(TAG, "accountNumber: " + contentvalues.get("accountNumber"));
+				Log.d(TAG, "accountType: " + contentvalues.get("accountType"));
+				Log.d(TAG, "accountTypeString: " + contentvalues.get("accountTypeString"));
+				Log.d(TAG, "accountName: " + contentvalues.get("accountName"));
+				Log.d(TAG, "description: " + contentvalues.get("description"));
+				Log.d(TAG, "currencyId: " + contentvalues.get("currencyId"));
+				Log.d(TAG, "balance: " + contentvalues.get("balance"));
+				Log.d(TAG, "balanceFormatted: " + contentvalues.get("balanceFormatted"));
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case SCHEDULES:
 				break;
 			case SCHEDULES_ID:
 				dbTable = "kmmSchedules";
 				dbSelection = "id=?";
-				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case SPLITS:
 				break;
 			case SPLITS_ID:
 				dbTable = "kmmSplits";
 				dbSelection = "transactionId=? AND splitId=?";
-				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case TRANSACTIONS:
 				break;
 			case TRANSACTIONS_ID:
 				dbTable = "kmmTransactions";
 				dbSelection = "id=?";
-				result = db.update(dbTable, contentvalues, dbSelection, selectionArgs);
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case FILEINFO:
 				updateFileInfo(selection, Integer.valueOf(selectionArgs[0]));
@@ -536,6 +648,9 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case KVPS_ID:
 				dbTable = "kmmKeyValuePairs";
+				break;
+			case CURRENCY:
+				dbTable = "kmmCurrencies";
 				break;
 			default:
 				break;
@@ -581,9 +696,13 @@ public class KMMDProvider extends ContentProvider
 		case PAYEES_ID:
 			return lastPathSegment;
 		case KVPS:
-				return null;
+			return null;
 		case KVPS_ID:
-				return lastPathSegment;
+			return lastPathSegment;
+		case CURRENCY:
+			return lastPathSegment;
+		case CURRENCIES:
+			return null;
 		default:
 			return null;
 		}		

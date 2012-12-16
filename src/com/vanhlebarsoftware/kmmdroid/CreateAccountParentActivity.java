@@ -1,47 +1,72 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+//import android.app.AlertDialog;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class CreateAccountParentActivity extends FragmentActivity
+public class CreateAccountParentActivity extends Fragment implements
+LoaderManager.LoaderCallbacks<Cursor>
 {
 	private final String TAG = CreateAccountParentActivity.class.getSimpleName();
-	static private String strSelection = null;
-	static private String strParentId = null;
+	private final static int PARENT_LOADER = 0x12;
+	private final static String[] FROM = { "accountName" };
+	private final static int[] TO = { android.R.id.text1 };
+	private OnSendParentDataListener onSendParentData;
+	private Activity ParentActivity;
+	//private String strSelection = null;
+	private String strParentId = null;
 	Spinner spinParent;
-	Cursor cursor;
 	SimpleCursorAdapter adapter;
 	KMMDroidApp KMMDapp;
 	private boolean firstRun = true;
-	private CreateModifyAccountActivity parentTabHost;
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) 
+	{
+		super.onAttach(activity);
+		
+		// Save our parent activity.
+		ParentActivity = activity;
+		
+		Log.d(TAG, "onAttach()");
+		try
+		{
+			onSendParentData = (OnSendParentDataListener) activity;
+		}
+		catch (ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + "must implment OnSendParentListener");
+		}
+	}
 	
 	@Override
-    public void onCreate(Bundle savedInstanceState) 
+	public void onCreate(Bundle savedState)
 	{
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.createaccount_parent);
-        
+		super.onCreate(savedState);
         // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // Get the activity for the tabHost.
-        parentTabHost = ((CreateModifyAccountActivity) this.getParent());
-        
-        // Find our views
-        spinParent = (Spinner) findViewById(R.id.accountSubAccount);
-        
-        // Set our listeners for our items.
-        spinParent.setOnItemSelectedListener(new AccountParentOnItemSelectedListener());
+        KMMDapp = ((KMMDroidApp) getActivity().getApplication());
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -51,64 +76,51 @@ public class CreateAccountParentActivity extends FragmentActivity
 	}
 	
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+		View view = inflater.inflate(R.layout.createaccount_parent, container, false);
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
+        
+        // Find our views
+        spinParent = (Spinner) view.findViewById(R.id.accountSubAccount);
+        
+        // Set our listeners for our items.
+        spinParent.setOnItemSelectedListener(new AccountParentOnItemSelectedListener());
+        
+		// Set up the adapters
+		adapter = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, null, FROM, TO, 0);
+		adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinParent.setAdapter(adapter);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(PARENT_LOADER, null, this);
+        
+        return view;
+	}
+	
+	@Override
 	public void onDestroy()
 	{
 		super.onDestroy();
 	}
 
 	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
-		Log.d(TAG, "strSelection: " + strSelection);
-		cursor = KMMDapp.db.query("kmmAccounts", new String[] { "id AS _id", "accountName" }, strSelection, null, null, null, null);
-		startManagingCursor(cursor);
-		
-		// Set up the adapters
-		adapter = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursor, 
-				new String[] { "accountName" }, new int[] { android.R.id.text1 });
-		adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		spinParent.setAdapter(adapter);
-		
-		// Set the spinner location.
-		if( strParentId != null )
-			spinParent.setSelection(setParent(strParentId));
 	}
-		
-	@Override
-	public void onBackPressed()
-	{
-		Log.d(TAG, "User clicked the back button");
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
-	}
-
+	
 	public class AccountParentOnItemSelectedListener implements OnItemSelectedListener
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
@@ -117,7 +129,7 @@ public class CreateAccountParentActivity extends FragmentActivity
 			{
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);			
 				strParentId = c.getString(0);
-				parentTabHost.setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 			else
 				firstRun = false;
@@ -127,22 +139,57 @@ public class CreateAccountParentActivity extends FragmentActivity
 			// do nothing.
 		}		
 	}
+	
+	public Loader<Cursor> onCreateLoader(int id, Bundle args)
+	{
+		String dbColumns[] = { "id AS _id", "accountName" };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		u = Uri.parse(u.toString());
+
+		return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, null, null, null);
+	}
+	
+	public void onLoadFinished(Loader<Cursor> loader, Cursor accounts)
+	{
+		Log.d(TAG, "loader is done and we have our cursor");
+		adapter.swapCursor(accounts);
+		
+		// Set the initial value of strParentId
+		Cursor c = (Cursor) adapter.getItem(0);
+		strParentId = c.getString(c.getColumnIndex("_id"));
+		
+		// Notify the ParentActivity to send us the Parent data.
+		sendParentData();
+		
+		updateUIElements();
+	}
+	
+	public void onLoaderReset(Loader<Cursor> loader) 
+	{
+		adapter.swapCursor(null);
+	}
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnSendParentDataListener
+	{
+		public void onSendParentData();
+	}
 	// ***********************************************************************************************
 	// ********************************* Helper Functions ********************************************
 	private int setParent(String parentId)
 	{
 		int i = 0;
-		cursor.moveToFirst();
+		Cursor c = adapter.getCursor();
+		c.moveToFirst();
 		
 		if( parentId != null )
 		{
-			while(!parentId.equals(cursor.getString(0)))
+			while(!parentId.equals(c.getString(0)))
 			{
-				Log.d(TAG, "parentId: " + parentId + "cursor: " + cursor.getString(0));
-				cursor.moveToNext();
-			
+				c.moveToNext();
 				//check to see if we have moved past the last item in the cursor, if so return current i.
-				if(cursor.isAfterLast())
+				if(c.isAfterLast())
 					return i;
 			
 				i++;
@@ -151,28 +198,29 @@ public class CreateAccountParentActivity extends FragmentActivity
 		return i;
 	}
 	
-	static public void setSelected(String selection)
-	{
-		strSelection = selection;
-	}
-	
-	public String getParentName()
-	{
-		return strSelection;
-	}
-	
 	public String getParentId()
 	{
 		return strParentId;
 	}
 	
-	public void putParentName(String name)
-	{
-		strSelection = name;
-	}
-	
 	public void putParentId(String id)
 	{
 		strParentId = id;
+	}
+	
+	public void sendParentData()
+	{
+		onSendParentData.onSendParentData();
+	}
+	
+	private void updateUIElements()
+	{
+		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+		String id = prefs.getString("ParentId", "");
+		
+		if( !id.isEmpty() )
+			putParentId(prefs.getString("ParentId", ""));
+		
+		spinParent.setSelection(setParent(this.strParentId));
 	}
 }
