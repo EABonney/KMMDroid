@@ -346,6 +346,9 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.save_menu, menu);
+		
+		// Let's add a close option if the account is open and balance is zero.
+		//menu.add(0, 0x99, 0, "Hide Closed").setCheckable(true);
 		return true;
 	}
 	

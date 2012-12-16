@@ -523,4 +523,6 @@
 	    <item>"43200000"</item>
 	    <item>"86400000"</item>
 	</string-array>
+	<string name="titleHideClosed">Hide closed accounts</string>
+	<string name="titleShowClosed">Show closed accounts</string>
 </resources>

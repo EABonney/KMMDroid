@@ -271,6 +271,7 @@ public class AccountsActivity extends FragmentActivity implements
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.accounts_menu, menu);
+
 		return true;
 	}
 	
@@ -334,6 +335,16 @@ public class AccountsActivity extends FragmentActivity implements
 				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
+				break;
+			case R.id.itemHideShowClosed:
+				if ( item.isChecked() )
+				{
+					item.setTitle(R.string.titleShowClosed);
+				}
+				else 
+				{
+					item.setTitle(R.string.titleHideClosed);
+				}
 				break;
 		}
 		
