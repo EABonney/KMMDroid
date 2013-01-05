@@ -57,7 +57,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	CheckBox checkboxNoInstitution;
 	TextView textInstitutions;
 	SimpleCursorAdapter adapterInst;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
 	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
@@ -105,13 +105,13 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		
         Log.d(TAG, "CreatAccountInstitutionActivity::onCreate()");
         // Get our application
-        KMMDapp = ((KMMDroidApp) getActivity().getApplication());
+        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
         
         // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
+        //if(!KMMDapp.isDbOpen())
+        //{
+        //	KMMDapp.openDB();
+        //}
 	}
 	
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -251,7 +251,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
 		{
-			if( numberOfPasses > 1 )
+			if( numberOfPasses > 0 )
 			{
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 			
@@ -355,9 +355,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	
 	public String getInstitutionId()
 	{
-		String id = institutionId;
-		
-		return id;
+		return institutionId;
 	}
 	
 	public String getAccountNumber()
@@ -382,7 +380,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	
 	public void putInstitutionId(String id)
 	{
-		institutionSelected = id;
+		institutionId = id;
 		columnUsed = 0;
 	}
 	
@@ -412,15 +410,15 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		String strId = prefs.getString("InstitutionId", null);
 		boolean buseIns = prefs.getBoolean("UseInstitution", true);
 			
-		
+		// We need to do the inverse of whatever buseIns is.
 		if( prefs.contains("UseInstitution") )
-			checkboxNoInstitution.setChecked(buseIns);
+			checkboxNoInstitution.setChecked(!buseIns);
 		else
-			checkboxNoInstitution.setChecked(this.bUseInst);
+			checkboxNoInstitution.setChecked(!this.bUseInst);
 		if( strId != null )
 			spinInstitutions.setSelection(setInstitution(strId, columnUsed));
 		else
-			spinInstitutions.setSelection(setInstitution(this.institutionSelected, columnUsed));
+			spinInstitutions.setSelection(setInstitution(this.institutionId, columnUsed));
 		if( strAN != null )
 			accountNumber.setText(strAN);
 		else

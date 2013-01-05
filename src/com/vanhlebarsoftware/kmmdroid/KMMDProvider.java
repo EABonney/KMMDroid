@@ -577,7 +577,7 @@ public class KMMDProvider extends ContentProvider
 				return null;
 			}
 		}
-		
+			
 		queryCall++;
 		return cur;
 	}
@@ -601,19 +601,6 @@ public class KMMDProvider extends ContentProvider
 			case ACCOUNTS_ID:
 				dbTable = "kmmAccounts";
 				dbSelection = "id=?";
-				Log.d(TAG, "Before content provider call");
-				Log.d(TAG, "id: " + contentvalues.get("id"));
-				Log.d(TAG, "institutionId: " + contentvalues.get("institutionId"));
-				Log.d(TAG, "parentId: " + contentvalues.get("parentId"));
-				Log.d(TAG, "openDate: " + contentvalues.get("openingDate"));
-				Log.d(TAG, "accountNumber: " + contentvalues.get("accountNumber"));
-				Log.d(TAG, "accountType: " + contentvalues.get("accountType"));
-				Log.d(TAG, "accountTypeString: " + contentvalues.get("accountTypeString"));
-				Log.d(TAG, "accountName: " + contentvalues.get("accountName"));
-				Log.d(TAG, "description: " + contentvalues.get("description"));
-				Log.d(TAG, "currencyId: " + contentvalues.get("currencyId"));
-				Log.d(TAG, "balance: " + contentvalues.get("balance"));
-				Log.d(TAG, "balanceFormatted: " + contentvalues.get("balanceFormatted"));
 				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case SCHEDULES:
@@ -624,11 +611,10 @@ public class KMMDProvider extends ContentProvider
 				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case SPLITS:
+				dbTable = "kmmSplits";
+				result = db.update(dbTable, contentvalues, selection, selectionArgs);
 				break;
 			case SPLITS_ID:
-				dbTable = "kmmSplits";
-				dbSelection = "transactionId=? AND splitId=?";
-				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case TRANSACTIONS:
 				break;
@@ -645,6 +631,10 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case INSTITUTIONS_ID:
 				dbTable = "kmmInstitutions";
+				break;
+			case KVPS:
+				dbTable = "kmmKeyValuePairs";
+				result = db.update(dbTable, contentvalues, selection, selectionArgs);
 				break;
 			case KVPS_ID:
 				dbTable = "kmmKeyValuePairs";

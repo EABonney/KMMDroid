@@ -490,25 +490,42 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		String path = prefs.getString(prefString, "");
 		Log.d(TAG, "Path for the database marked dirty: " + path);
     	
-		// Find the correct file in our saved state and mark it as dirty.
-		for(KMMDDeviceItem item : savedDeviceState)
+		if( savedDeviceState != null )
 		{
-			currentFile = item.findMatch(path);
-			if(currentFile != null)
-				break;
+			// Find the correct file in our saved state and mark it as dirty.
+			for(KMMDDeviceItem item : savedDeviceState)
+			{
+				currentFile = item.findMatch(path);
+				if(currentFile != null)
+					break;
+			}
+		}
+		else
+		{
+			// This is the first time we have run this routine and we only have one file to mark.
+			currentFile = new KMMDDeviceItem(new File(path));
 		}
 		currentFile.setIsDirty(true, KMMDDropboxService.CLOUD_ALL);
 		
-		// Replace this in the savedDeviceState list then write it to disk.
-		for(int i=0; i<savedDeviceState.size(); i++)
+		if( savedDeviceState != null )
 		{
-			if(savedDeviceState.get(i).equals(currentFile))
+			// Replace this in the savedDeviceState list then write it to disk.
+			for(int i=0; i<savedDeviceState.size(); i++)
 			{
-				savedDeviceState.add(i, currentFile);
-				savedDeviceState.remove(i+1);
-				i = savedDeviceState.size() + 1;
+				if(savedDeviceState.get(i).equals(currentFile))
+				{
+					savedDeviceState.add(i, currentFile);
+					savedDeviceState.remove(i+1);
+					i = savedDeviceState.size() + 1;
+				}
 			}
 		}
+		else
+		{
+			savedDeviceState = new ArrayList<KMMDDeviceItem>();
+			savedDeviceState.add(currentFile);
+		}
+		
 		writeDeviceState(savedDeviceState);
 	}
 	

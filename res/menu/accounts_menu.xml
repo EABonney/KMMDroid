@@ -22,4 +22,10 @@
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
     </item>  
+	<item
+ 	 	android:id="@+id/itemHideShowClosed"
+ 	 	android:checkable="true"
+ 	 	android:checked="false"
+ 	 	android:title="@string/titleHideClosed">
+ 	</item>
 </menu>

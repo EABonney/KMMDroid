@@ -55,7 +55,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 	TextView txtTotTrans;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
 	
 	@Override
 	public void onCreate(Bundle savedState)
@@ -63,13 +63,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 		super.onCreate(savedState);
 
         // Get our application
-        KMMDapp = ((KMMDroidApp) getActivity().getApplication());
+        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
         
         // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
+        //if(!KMMDapp.isDbOpen())
+        //{
+        //	KMMDapp.openDB();
+        //}
 	}
 	
 	@Override

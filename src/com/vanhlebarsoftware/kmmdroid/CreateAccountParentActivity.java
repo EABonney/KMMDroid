@@ -33,10 +33,10 @@ LoaderManager.LoaderCallbacks<Cursor>
 	private OnSendParentDataListener onSendParentData;
 	private Activity ParentActivity;
 	//private String strSelection = null;
-	private String strParentId = null;
+	private String strParentId = "AStd::Asset";
 	Spinner spinParent;
 	SimpleCursorAdapter adapter;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
 	private boolean firstRun = true;
 	
 	/* (non-Javadoc)
@@ -66,13 +66,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	{
 		super.onCreate(savedState);
         // Get our application
-        KMMDapp = ((KMMDroidApp) getActivity().getApplication());
+        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
         
         // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
+        //if(!KMMDapp.isDbOpen())
+        //{
+        //	KMMDapp.openDB();
+        //}
 	}
 	
 	@Override

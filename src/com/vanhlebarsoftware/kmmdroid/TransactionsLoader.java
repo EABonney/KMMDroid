@@ -149,18 +149,21 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
     	String[] selectionArgs = this.mBundle.getStringArray("selectionArgs");
     	long balance = getBalance(selectionArgs[0]);
     	
+    	for(int i=0; i < selectionArgs.length; i++)
+    		Log.d(TAG, "selectionArgs[" + i + "]: " + selectionArgs[i]);
+    	
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		final Context context = getContext();
 		String[] dbColumns = {"transactionId AS _id", "payeeId", "value", "memo", "postDate", "name", "checkNumber", "reconcileFlag"};
 		if(this.mBundle.getBoolean("showAll"))
 		{
-			dbSelection = "(kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') UNION SELECT transactionId, payeeId," +
+			dbSelection = "(kmmSplits.payeeId = kmmPayees.id AND accountId = ? AND txType = 'N') UNION SELECT transactionId, payeeId," +
 					" value, memo, postDate, bankId, checkNumber, reconcileFlag FROM kmmSplits WHERE payeeID IS NULL AND accountId = ?" +
 					" AND txType = 'N'";
 		}
 		else
 		{
-			dbSelection = "(kmmSplits.payeeID = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
+			dbSelection = "(kmmSplits.payeeId = kmmPayees.id AND accountId = ? AND txType = 'N') " + 
 				"AND postDate <= ? AND postDate >= ? UNION SELECT transactionId, payeeId, value, memo, postDate, " +
 				"bankId, checkNumber, reconcileFlag FROM kmmSplits WHERE payeeID IS NULL AND accountId = ? AND txType = 'N' AND postDate <= ?" +
 				" AND postDate >= ?";

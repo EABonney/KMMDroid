@@ -4,7 +4,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +41,7 @@ public class AccountsActivity extends FragmentActivity implements
 	private static final int AT_CREDITCARD = 4;
 	private static final int AT_INVESTMENT = 7;
 	private static final int AT_LIABILITY = 10;
+	private boolean hideClosed = false;
 	KMMDroidApp KMMDapp;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
@@ -50,6 +53,7 @@ public class AccountsActivity extends FragmentActivity implements
 	LinearLayout navBar;
 	ListView listAccounts;
 	AccountsAdapter adapterAccounts;
+	AccountsAdapter adapterNoClosed;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -136,6 +140,7 @@ public class AccountsActivity extends FragmentActivity implements
         
         // Create an empty adapter we will use to display the loaded data.
         adapterAccounts = new AccountsAdapter(this);
+        adapterNoClosed = new AccountsAdapter(this);
 		listAccounts.setAdapter(adapterAccounts);
 		
         // Prepare the loader.  Either re-connect with an existing one,
@@ -143,6 +148,9 @@ public class AccountsActivity extends FragmentActivity implements
 		Bundle bundle = new Bundle();
 		bundle.putInt("activity", 1);
         getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
+        
+        // Get the user's preference on hiding closed accounts.
+        hideClosed = KMMDapp.prefs.getBoolean("hideClosed", false);
 	}
 	
 	@Override
@@ -167,7 +175,11 @@ public class AccountsActivity extends FragmentActivity implements
 	private OnItemClickListener mMessageClickedHandler = new OnItemClickListener() {
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
-	    	Account account = adapterAccounts.getItem(position);
+	    	Account account = null;
+	    	if(hideClosed)
+	    		account = adapterNoClosed.getItem(position);
+	    	else
+	    		account = adapterAccounts.getItem(position);
 			Intent i = new Intent(getBaseContext(), CreateModifyAccountActivity.class);
 			i.putExtra("Action", ACTION_EDIT);
 			i.putExtra("AccountId", account.getId());
@@ -199,13 +211,7 @@ public class AccountsActivity extends FragmentActivity implements
 	    
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
-			View view = convertView;
-			if(view == null)
-			{
-				view = mInflater.inflate(R.layout.accounts_row, parent, false);
-			}
-			else
-				view = convertView;
+			View view = mInflater.inflate(R.layout.accounts_row, parent, false);
 			
 			Account item = getItem(position);
 			
@@ -218,11 +224,26 @@ public class AccountsActivity extends FragmentActivity implements
 				else
 					row.setBackgroundColor(Color.rgb(0x62, 0xa1, 0xc6));
 				
+				
 				TextView name = (TextView) view.findViewById(R.id.arAccountName);
 				TextView balance = (TextView) view.findViewById(R.id.arAccountBalance);
 				TextView type = (TextView) view.findViewById(R.id.arAccountType);
 				ImageView icon = (ImageView) view.findViewById(R.id.arIcon);
-				
+
+				// if the account is closed, show it with strike thru text.
+				if(item.getIsClosed())
+				{
+					name.setPaintFlags(name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+					balance.setPaintFlags(balance.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+					type.setPaintFlags(type.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+				}
+				else
+				{
+					name.setPaintFlags(name.getPaintFlags() &(~ Paint.STRIKE_THRU_TEXT_FLAG));
+					balance.setPaintFlags(balance.getPaintFlags() &(~ Paint.STRIKE_THRU_TEXT_FLAG));
+					type.setPaintFlags(type.getPaintFlags() &(~ Paint.STRIKE_THRU_TEXT_FLAG));
+				}	
+			
 				name.setText(item.getName());
 				balance.setText(item.getBalance());
 				type.setText(item.getAccountTypeString());
@@ -264,6 +285,18 @@ public class AccountsActivity extends FragmentActivity implements
 
 			return view;
 		}
+		
+		public AccountsAdapter getOpenAccounts()
+		{
+			AccountsAdapter tmp = new AccountsAdapter(getBaseContext());
+			for(int i=0; i<this.getCount(); i++)
+			{
+				if( !this.getItem(i).getIsClosed() )
+					tmp.add(this.getItem(i));
+			}
+			
+			return tmp;
+		}
 	}
 	// Called first time the user clicks on the menu button
 	@Override
@@ -271,12 +304,25 @@ public class AccountsActivity extends FragmentActivity implements
 	{
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.accounts_menu, menu);
+
 		return true;
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
 	{	
+		// See if the user wants to hide closed accounts.
+		if( hideClosed )
+		{
+			menu.findItem(R.id.itemHideShowClosed).setTitle(R.string.titleShowClosed);	
+			menu.findItem(R.id.itemHideShowClosed).setChecked(true);
+		}
+		else
+		{
+			menu.findItem(R.id.itemHideShowClosed).setTitle(R.string.titleHideClosed);
+			menu.findItem(R.id.itemHideShowClosed).setChecked(false);
+		}
+		
 		// See if the user wants us to navigation menu items.
 		if( !KMMDapp.prefs.getBoolean("navMenu", true))
 		{
@@ -299,7 +345,7 @@ public class AccountsActivity extends FragmentActivity implements
 		
 		return true;
 	}
-	
+
 	// Called when an options item is clicked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
@@ -335,6 +381,27 @@ public class AccountsActivity extends FragmentActivity implements
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
 				break;
+			case R.id.itemHideShowClosed:
+				Editor edit = KMMDapp.prefs.edit();
+				if( hideClosed )
+				{
+					item.setTitle(R.string.titleHideClosed);
+					item.setChecked(false);
+					listAccounts.setAdapter(adapterAccounts);
+					hideClosed = false;
+				}
+				else
+				{
+					item.setTitle(R.string.titleShowClosed);
+					item.setChecked(true);
+					listAccounts.setAdapter(adapterNoClosed);
+					hideClosed = true;
+				}
+				edit.putBoolean("hideClosed", this.hideClosed);
+				edit.apply();
+				listAccounts.setVisibility(View.INVISIBLE);
+				listAccounts.setVisibility(View.VISIBLE);
+				break;
 		}
 		
 		return true;
@@ -349,13 +416,23 @@ public class AccountsActivity extends FragmentActivity implements
 	public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
 	{
         // Set the new data in the adapter.
-    	adapterAccounts.setData(accounts);	
-		setProgressBarIndeterminateVisibility(false);
+    	adapterAccounts.setData(accounts);
+    	
+		// let's create a 2nd adapter without the closed accounts.
+		adapterNoClosed = adapterAccounts.getOpenAccounts();
+		
+		if( hideClosed )
+		{
+			// Set the adapter for no closed accounts.
+			listAccounts.setAdapter(adapterNoClosed);
+		}	
+		
+    	setProgressBarIndeterminateVisibility(false);
 	}
 
 	public void onLoaderReset(Loader<List<Account>> accounts) 
 	{
         // clear the data in the adapter.
-    	adapterAccounts.setData(null);		
+    	adapterAccounts.setData(null);	
 	}
 }

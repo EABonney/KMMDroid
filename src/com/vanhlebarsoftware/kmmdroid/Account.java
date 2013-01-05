@@ -38,6 +38,7 @@ public class Account
 	private String accountTypeString;
 	private int accountType;
 	private boolean isParent;
+	private boolean isClosed;
 	
 
 	Account()
@@ -49,6 +50,7 @@ public class Account
 		this.accountTypeString = null;
 		this.accountType = 0;
 		this.isParent = false;
+		this.isClosed = false;
 	}
 	
 	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP)
@@ -60,6 +62,7 @@ public class Account
 		this.accountTypeString = acctTypeStr;
 		this.accountType = acctType;
 		this.isParent = isP;
+		this.isClosed = false;
 	}
 	
 	Account(Cursor cur)
@@ -71,6 +74,7 @@ public class Account
 		this.accountTypeString = null;
 		this.accountType = 0;
 		this.isParent = false;
+		this.isClosed = false;
 	}
 	
 	public String getName()
@@ -120,9 +124,19 @@ public class Account
 		return subAccts;
 	}
 	
+	public boolean getIsClosed()
+	{
+		return this.isClosed;
+	}
+	
 	public void setIsParent(boolean flag)
 	{
 		this.isParent = flag;
+	}
+	
+	public void setIsClosed(boolean flag)
+	{
+		this.isClosed = flag;
 	}
 	
 	static public void updateAccount(SQLiteDatabase db, String accountId, String transValue, int nChange)

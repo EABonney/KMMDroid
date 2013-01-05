@@ -30,7 +30,7 @@ public class HomeActivity extends FragmentActivity implements
 {
 
 	private static final String TAG = HomeActivity.class.getSimpleName();
-	private static final int ACCOUNTS_LOADER = 0x01;
+	private static final int HOMEACCOUNTS_LOADER = 0x01;
 	KMMDroidApp KMMDapp;
 	ImageButton btnHome;
 	ImageButton btnAccounts;
@@ -136,9 +136,7 @@ public class HomeActivity extends FragmentActivity implements
 		
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-		Bundle bundle = new Bundle();
-		bundle.putInt("activity", 2);
-        getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
+        getSupportLoaderManager().initLoader(HOMEACCOUNTS_LOADER, null, this);
 	}
 	
 	@Override
@@ -345,7 +343,7 @@ public class HomeActivity extends FragmentActivity implements
     public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
     {
     	setProgressBarIndeterminateVisibility(true);
-    	return new AccountsLoader(this, args);
+    	return new HomeLoader(this, args);
     }
     
     public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
