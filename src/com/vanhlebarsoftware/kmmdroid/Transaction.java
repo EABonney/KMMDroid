@@ -6,8 +6,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 public class Transaction 
@@ -356,7 +358,7 @@ public class Transaction
 		return cDate;
 	}
 	
-	public void enter(SQLiteDatabase db)
+	public void enter(Context context)
 	{
 		// create the ContentValue pairs
 		ContentValues valuesTrans = new ContentValues();
@@ -369,14 +371,17 @@ public class Transaction
 		valuesTrans.put("bankId", this.strBankId);
 		
 		// Enter this transaction into the kmmTransactions table.
-		db.insertOrThrow("kmmTransactions", null, valuesTrans);
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, frag);
+		u = Uri.parse(u.toString());
+		context.getContentResolver().insert(u, valuesTrans);
 		
 		// Enter the splits into the kmmSplits table.
 		for(int i=0; i<this.splits.size(); i++)
 		{
 			Log.d(TAG, "Trans Split #" + i + ": " + this.splits.get(i).getPostDate());
-			this.splits.get(i).commitSplit(false, db);
-			Account.updateAccount(db, this.splits.get(i).getAccountId(), this.splits.get(i).getValueFormatted(), 1);
+			this.splits.get(i).commitSplit(false, context);
+			Account.updateAccount(context, this.splits.get(i).getAccountId(), this.splits.get(i).getValueFormatted(), 1);
 		}
 	}
 }

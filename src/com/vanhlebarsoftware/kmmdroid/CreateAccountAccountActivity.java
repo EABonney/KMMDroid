@@ -1,8 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,7 +14,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +39,10 @@ LoaderManager.LoaderCallbacks<Cursor>
 	private int numberOfPasses = 0;
 	private String strTypeSelected = null;
 	private String currencySelected = null;
+	private String strAccountName = null;
+	private String strOpenDate = null;
+	private String strOpenBalance = null;
+	private boolean bPreferred = false;
 	private OnAccountPreferredCheckedListener onAccountPreferredCheckedListener;
 	private OnSendAccountDataListener onSendAccountData;
 	private Activity ParentActivity;
@@ -55,21 +56,11 @@ LoaderManager.LoaderCallbacks<Cursor>
 	TextView txtTotTrans;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
-	//KMMDroidApp KMMDapp;
 	
 	@Override
 	public void onCreate(Bundle savedState)
 	{
 		super.onCreate(savedState);
-
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
 	@Override
@@ -357,7 +348,10 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public String getAccountName()
 	{
-		return accountName.getText().toString();
+		if( accountName != null )
+			return accountName.getText().toString();
+		else
+			return this.strAccountName;
 	}
 	
 	public int getAccountType()
@@ -392,7 +386,12 @@ LoaderManager.LoaderCallbacks<Cursor>
 	public String getOpeningDate()
 	{
 		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
-		String tmp = openDate.getText().toString();
+		String tmp = null;
+		if( openDate != null )
+			tmp = openDate.getText().toString();
+		else
+			tmp = this.strOpenDate;
+		
 		String dates[] = tmp.split("-");
 		
 		return new StringBuilder()
@@ -403,7 +402,11 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public String getOpeningBalance()
 	{
-		String tmp = openBalance.getText().toString();
+		String tmp = null;
+		if( openBalance != null )
+			tmp = openBalance.getText().toString();
+		else
+			tmp = this.strOpenBalance;
 		
 		if( tmp.isEmpty() )
 			tmp = "0.00";
@@ -413,12 +416,16 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public boolean getPreferredAccount()
 	{
-		return checkPreferred.isChecked();
+		if( checkPreferred != null )
+			return checkPreferred.isChecked();
+		else
+			return this.bPreferred;
 	}
 	
 	public void putAccountName(String name)
 	{
-		accountName.setText(name);
+		//accountName.setText(name);
+		this.strAccountName = name;
 	}
 	
 	public void putAccountType(int type)
@@ -461,18 +468,20 @@ LoaderManager.LoaderCallbacks<Cursor>
 			date = date.trim();
 			String dates[] = date.split("-");	
 			
-			openDate.setText(dates[1] + "-" + dates[2] + "-" + dates[0]);
+			this.strOpenDate = dates[1] + "-" + dates[2] + "-" + dates[0];
 		}
 	}
 	
 	public void putOpeningBalance(String balance)
 	{
-		openBalance.setText(balance);
+		//openBalance.setText(balance);
+		this.strOpenBalance = balance;
 	}
 	
 	public void putPreferredAccount(boolean preferred)
 	{
-		checkPreferred.setChecked(preferred);
+		//checkPreferred.setChecked(preferred);
+		this.bPreferred = preferred;
 	}
 	
 	public void putTransactionCount(String strCount)
@@ -501,6 +510,8 @@ LoaderManager.LoaderCallbacks<Cursor>
         
 		if( accountName != null )
 			this.accountName.setText(accountName);
+		else
+			this.accountName.setText(this.strAccountName);
 		if( accountType != 0 )
 			this.putAccountType(accountType);
 		this.spinType.setSelection(this.TypeSelected);
@@ -510,9 +521,15 @@ LoaderManager.LoaderCallbacks<Cursor>
 			this.spinCurrency.setSelection(setCurrency(this.currencySelected));
 		if( openDate != null )
 			this.openDate.setText(openDate);
+		else
+			this.openDate.setText(this.strOpenDate);
 		if( openBalance != null )
 			this.openBalance.setText(openBalance);
+		else
+			this.openBalance.setText(this.strOpenBalance);
 		if( prefs.contains("PreferredAccount") )
 			this.checkPreferred.setChecked(preferredAcct);
+		else
+			this.checkPreferred.setChecked(this.bPreferred);
 	}
 }

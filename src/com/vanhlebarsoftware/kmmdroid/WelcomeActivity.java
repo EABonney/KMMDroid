@@ -158,7 +158,7 @@ public class WelcomeActivity extends FragmentActivity
         			schedule = getSchedule(scheduleId);
         			Transaction transaction = schedule.convertToTransaction(createTransId());
         			transaction.setEntryDate(calToday);
-        			transaction.enter(KMMDapp.db);
+        			transaction.enter(this);
         			schedule = null;
         			
         			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
@@ -176,7 +176,7 @@ public class WelcomeActivity extends FragmentActivity
         			{
         				Split s = schedule.Splits.get(i);
         				s.setPostDate(schedule.getDatabaseFormattedString());
-        				s.commitSplit(true, KMMDapp.db);
+        				s.commitSplit(true, this);
         				s = null;
         			}		
         			//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.

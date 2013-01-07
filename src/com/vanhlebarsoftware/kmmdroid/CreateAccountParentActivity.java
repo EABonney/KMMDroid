@@ -1,10 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-//import android.app.AlertDialog;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +27,9 @@ LoaderManager.LoaderCallbacks<Cursor>
 	private final static int[] TO = { android.R.id.text1 };
 	private OnSendParentDataListener onSendParentData;
 	private Activity ParentActivity;
-	//private String strSelection = null;
 	private String strParentId = "AStd::Asset";
 	Spinner spinParent;
 	SimpleCursorAdapter adapter;
-	//KMMDroidApp KMMDapp;
 	private boolean firstRun = true;
 	
 	/* (non-Javadoc)
@@ -65,14 +58,6 @@ LoaderManager.LoaderCallbacks<Cursor>
 	public void onCreate(Bundle savedState)
 	{
 		super.onCreate(savedState);
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
 	@Override

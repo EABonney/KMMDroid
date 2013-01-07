@@ -1,8 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,7 +14,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,16 +99,6 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	public void onCreate(Bundle savedInstance)
 	{
         super.onCreate(savedInstance);
-		
-        Log.d(TAG, "CreatAccountInstitutionActivity::onCreate()");
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -286,9 +273,6 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		
 		// Notify the ParentActivity we need it's data if any.
 		sendInstitutionData();
-		
-		// Set the Institutions spinner to the proper location or default of zero.
-		//spinInstitutions.setSelection(setInstitution(institutionSelected, columnUsed));
 		
 		updateUIElements();
 	}

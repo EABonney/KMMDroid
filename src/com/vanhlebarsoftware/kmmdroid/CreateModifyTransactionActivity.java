@@ -500,7 +500,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity
 						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
 						// Need to update the account by pulling out all the Original Splits information.
 						for(int i=0; i < OrigSplits.size(); i++)
-							Account.updateAccount(KMMDapp.db, OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
+							Account.updateAccount(this, OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
 						break;
 					case ACTION_ENTER_SCHEDULE:
 						KMMDapp.db.insertOrThrow("kmmTransactions", null, valuesTrans);
@@ -519,7 +519,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity
 						{
 							Split s = scheduleToEnter.Splits.get(i);
 							s.setPostDate(scheduleToEnter.getDatabaseFormattedString());
-							s.commitSplit(true, KMMDapp.db);
+							s.commitSplit(true, this);
 						}	
 						//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
 						values.clear();
@@ -531,8 +531,8 @@ public class CreateModifyTransactionActivity extends FragmentActivity
 				for(int i=0; i < Splits.size(); i++)
 				{
 					Split s = Splits.get(i);
-					s.commitSplit(false, KMMDapp.db);
-					Account.updateAccount(KMMDapp.db, s.getAccountId(), s.getValueFormatted(), 1);
+					s.commitSplit(false, this);
+					Account.updateAccount(this, s.getAccountId(), s.getValueFormatted(), 1);
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				// Need to clean up the OrigSplits and Splits arrays for future use.

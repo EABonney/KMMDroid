@@ -1,9 +1,11 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.util.Log;
 
 public class Split
@@ -99,7 +101,7 @@ public class Split
 		this.bankId = curSplit.getString(C_BANKID);
 	}
 	
-	public boolean commitSplit(boolean updating, SQLiteDatabase db)
+	public boolean commitSplit(boolean updating, Context context)
 	{
 		Log.d(TAG, "transactionId: " + this.transactionId);
 		// create the ContentValue pairs
@@ -123,13 +125,18 @@ public class Split
 		valuesSplit.put("postDate", this.postDate);
 		valuesSplit.put("bankId", this.bankId);
 		
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
+		u = Uri.parse(u.toString());
+		
 		if( updating )
 		{
-			int result = db.update("kmmSplits", valuesSplit, "transactionId=? AND splitId=?", new String[] { this.transactionId, String.valueOf(this.splitId) });
+			int result = context.getContentResolver().update(u, valuesSplit, "transactionId=? AND splitId=?", 
+															 new String[] { this.transactionId, String.valueOf(this.splitId) });
 		}
 		else
 		{
-			db.insertOrThrow("kmmSplits", null, valuesSplit);
+			context.getContentResolver().insert(u, valuesSplit);
 		}
 		
 		return true;

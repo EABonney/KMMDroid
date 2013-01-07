@@ -386,7 +386,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 				for(int i=0; i < Splits.size(); i++)
 				{
 					Split s = Splits.get(i);
-					s.commitSplit(false, KMMDapp.db);
+					s.commitSplit(false, this);
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				// Need to clean up the OrigSplits and Splits arrays for future use.

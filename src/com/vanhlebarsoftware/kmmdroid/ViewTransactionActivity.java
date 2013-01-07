@@ -194,7 +194,7 @@ public class ViewTransactionActivity extends FragmentActivity
 						// Need to update the accounts for the transaction that was just deleted.
 						for(int i=0; i < Splits.size(); i++)
 						{
-							Account.updateAccount(KMMDapp.db, Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
+							Account.updateAccount(getBaseContext(), Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
 						}
 						// Update the number of transactions for the accounts used.
 						c.close();
