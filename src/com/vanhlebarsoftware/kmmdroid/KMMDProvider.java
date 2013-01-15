@@ -277,8 +277,8 @@ public class KMMDProvider extends ContentProvider
 		// close the database.
 		db.close();
 		
-		// notifiy of the delete.
-		context.getContentResolver().notifyChange(Uri.parse(uri.getEncodedFragment()), null);
+		Uri u = Uri.parse(uri.getPath());
+		getContext().getContentResolver().notifyChange(u, null);
 
 		return rows;
 	}
@@ -361,6 +361,9 @@ public class KMMDProvider extends ContentProvider
 		// close the database.
 		db.close();
 		
+		Uri u = Uri.parse(uri.getPath());
+		getContext().getContentResolver().notifyChange(u, null);
+
 		return null;
 	}
 
@@ -497,7 +500,10 @@ public class KMMDProvider extends ContentProvider
 			case INSTITUTIONS_ID:
 				dbTable = "kmmInstitutions";
 				dbColumns = projection;
-				dbSelection = selection;
+				if( selection != null )	
+					dbSelection = selection;
+				else
+					dbSelection = "id=?";
 				dbOrderBy = sortOrder;
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
@@ -591,6 +597,8 @@ public class KMMDProvider extends ContentProvider
 			}
 		}
 
+		// set the cursor to receive notifications of updates.
+		cur.setNotificationUri(getContext().getContentResolver(), uri);
 		return cur;
 	}
 
@@ -643,6 +651,8 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case INSTITUTIONS_ID:
 				dbTable = "kmmInstitutions";
+				dbSelection = "id=?";
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case KVPS:
 				dbTable = "kmmKeyValuePairs";
@@ -660,6 +670,9 @@ public class KMMDProvider extends ContentProvider
 		
 		// clean up, close the database.
 		db.close();
+		
+		Uri u = Uri.parse(uri.getPath());
+		getContext().getContentResolver().notifyChange(u, null);
 		
 		return result;
 	}

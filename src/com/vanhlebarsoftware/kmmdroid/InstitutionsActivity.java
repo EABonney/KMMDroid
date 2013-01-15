@@ -345,4 +345,9 @@ public class InstitutionsActivity extends FragmentActivity implements
 	{
 		adapterInstitutions.swapCursor(null);
 	}
+	
+	public void refreshLoader()
+	{
+		adapterInstitutions.notifyDataSetChanged();
+	}
 }

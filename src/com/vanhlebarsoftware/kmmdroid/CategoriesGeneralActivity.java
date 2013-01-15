@@ -73,19 +73,6 @@ public class CategoriesGeneralActivity extends Fragment implements
     public void onCreate(Bundle savedInstanceState) 
 	{
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.categories_general);
-        
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // Get the tabHost on the parent.
-        //parentTabHost = ((CreateModifyCategoriesActivity) this.getParent());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
 	/* (non-Javadoc)
@@ -178,22 +165,6 @@ public class CategoriesGeneralActivity extends Fragment implements
 	public void onResume()
 	{
 		super.onResume();
-		
-		//Get all the currencies to be displayed.
-		//cursorCurrency = KMMDapp.db.query("kmmCurrencies", dbColumns, null, null, null, null, strOrderBy);
-		//startManagingCursor(cursorCurrency);		
-		//spinCategoryCurrency.setAdapter(adapterCurrency);
-		
-		// Set the spinner to the correct type.
-//		if(((CreateModifyCategoriesActivity) ParentActivity).getCategoryType() == null)		
-//			spinCategoryType.setSelection(0);
-//		else if(((CreateModifyCategoriesActivity) ParentActivity).getCategoryType().equalsIgnoreCase("Income"))
-//			spinCategoryType.setSelection(0);
-//		else
-//			spinCategoryType.setSelection(1);
-		
-		// Set the currency Spinner
-//		spinCategoryCurrency.setSelection(currencyPos);
 	}
 	
 	public class CategoryGeneralOnItemSelectedListener implements OnItemSelectedListener
@@ -241,40 +212,6 @@ public class CategoriesGeneralActivity extends Fragment implements
 			// do nothing.
 		}		
 	}
-	
-/*	@Override
-	public void onBackPressed()
-	{
-		Log.d(TAG, "User clicked the back button");
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
-	}*/
 	
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
@@ -357,8 +294,6 @@ public class CategoriesGeneralActivity extends Fragment implements
 			this.categoryTypePos = 0;
 			break;
 		}
-		//((CreateModifyCategoriesActivity) ParentActivity).setCategoryType(spinCategoryType.getItemAtPosition(pos).toString());
-		//((CreateModifyCategoriesActivity) ParentActivity).setIsParentInvalid(true);
 	}
 	
 	public void putCurrency(String id)

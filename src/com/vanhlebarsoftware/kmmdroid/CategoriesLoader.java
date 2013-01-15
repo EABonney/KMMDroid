@@ -266,8 +266,6 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 					 isParent(inc.getString(inc.getColumnIndex("id")))));
 			inc.moveToNext();			
 		}
-		//categories.addAll(getAccounts(exp));
-		//categories.addAll(getAccounts(inc));
 		
 		return categories;
     }

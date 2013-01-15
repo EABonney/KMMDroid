@@ -1,10 +1,9 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.SQLException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -21,17 +20,10 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 	private static final String TAG = "CreateModifyInstitutionsActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int INSTUTION_NAME = 1;
-	private static final int INSTUTION_MANAGER = 2;
-	private static final int INSTUTION_ROUTINGCODE = 3;
-	private static final int INSTUTION_ADDRESSSTREET = 4;
-	private static final int INSTUTION_ADDRESSCITY = 5;
-	private static final int INSTUTION_ADDRESSZIPCODE = 6;
-	private static final int INSTUTION_TELEPHONE = 7;
 	private int Action = 0;
-	private String instId = null;
 	private boolean returnFromDelete = false;
 	private boolean isDirty = false;
+	private Institution institution = null;
 	EditText instName;
 	EditText instCity;
 	EditText instStreet;
@@ -168,7 +160,9 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
         Action = extras.getInt("Action");
         
         if( Action == ACTION_EDIT )
-        	instId = extras.getString("instId");
+        	institution = new Institution(this, extras.getString("instId"));
+        else
+        	institution = new Institution(this, null);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
@@ -195,22 +189,15 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 		{
 			if(Action == ACTION_EDIT)
 			{
-				Log.d(TAG, "instId: " + instId);
-				// Get the attributes for the selected institution and populate the views.
-				Cursor cursor = KMMDapp.db.query("kmmInstitutions", new String[] { "*" }, "id=?", 
-						new String[] { instId }, null, null, null);
-				startManagingCursor(cursor);
-				if( cursor.getCount() == 1)
-				{
-					cursor.moveToFirst();
-		
-					instName.setText(cursor.getString(INSTUTION_NAME));
-					instBIC.setText(cursor.getString(INSTUTION_MANAGER));
-					instRoutingNumber.setText(cursor.getString(INSTUTION_ROUTINGCODE));
-					instStreet.setText(cursor.getString(INSTUTION_ADDRESSSTREET));
-					instCity.setText(cursor.getString(INSTUTION_ADDRESSCITY));
-					instPostalCode.setText(cursor.getString(INSTUTION_ADDRESSZIPCODE));
-					instPhone.setText(cursor.getString(INSTUTION_TELEPHONE));
+				if( institution.getId() != null )
+				{		
+					instName.setText(institution.getName());
+					instBIC.setText(institution.getManager());
+					instRoutingNumber.setText(institution.getRoutingCode());
+					instStreet.setText(institution.getStreet());
+					instCity.setText(institution.getCity());
+					instPostalCode.setText(institution.getZipcode());
+					instPhone.setText(institution.getTelephone());
 					// Need to reset the isDirty flag to false.
 					isDirty = false;
 				}
@@ -243,12 +230,19 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 		// Can't delete if we have any accounts that are associated with this institution.
 		if( Action == ACTION_EDIT )
 		{
-			Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "id" }, 
-				"institutionId=?", new String[] { instId }, null, null, null);
-			startManagingCursor(c);
-			rows = c.getCount();
-			c.deactivate();
+			String frag = "#9999";
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+			u = Uri.parse(u.toString());
+			Cursor c = getContentResolver().query(u, new String[] { "id" }, "institutionId=?", new String[] { institution.getId() }, null);
+
+			if( c != null )
+			{
+				c.moveToFirst();
+				rows = c.getCount();
+			}
+			c.close();
 		}
+		
 		if( Action == ACTION_NEW || rows > 0 )
 			menu.getItem(1).setVisible(false);
 		
@@ -268,41 +262,21 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 		switch (item.getItemId())
 		{
 			case R.id.itemsave:
-				// create the ContentValue pairs
-				ContentValues valuesInst = new ContentValues();
-				valuesInst.put("name", instName.getText().toString());
-				valuesInst.put("routingCode", instRoutingNumber.getText().toString());
-				valuesInst.put("addressStreet", instStreet.getText().toString());
-				valuesInst.put("addressCity", instCity.getText().toString());
-				valuesInst.put("addressZipcode", instPostalCode.getText().toString());
-				valuesInst.put("telephone", instPhone.getText().toString());
-				valuesInst.put("manager", instBIC.getText().toString());
-				
-				String id = null;
+				// Get our data changes if any.
+				institution.getDataChanges();
+
 				if (Action == ACTION_NEW)
-					id = createId();
-				else
-					id = instId;
-				valuesInst.put("id", id);
+					institution.createId();
 				
 				switch (Action)
 				{
 					case ACTION_NEW:
-						// Attempt to insert the newly created Payee.
-						try 
-						{
-							KMMDapp.db.insertOrThrow("kmmInstitutions", null, valuesInst);
-							KMMDapp.updateFileInfo("hiInstitutionId", 1);
-							KMMDapp.updateFileInfo("institutions", 1);
-						} 
-						catch (SQLException e) 
-						{
-							Log.d(TAG, "Insert error: " + e.getMessage());
-						}
-						increaseId();
+						// Attempt to insert the newly created Institution.
+						institution.Save();
 						break;
 					case ACTION_EDIT:
-						KMMDapp.db.update("kmmInstitutions", valuesInst, "id=?", new String[] { instId });
+						// Attempt to update the Institution.
+						institution.Update();
 						break;
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
@@ -320,8 +294,14 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
-						KMMDapp.db.delete("kmmInstitutions", "id=?", new String[] { instId });
-						KMMDapp.updateFileInfo("institutions", -1);
+						String frag = "#9999";
+						Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_INSTITUTION_URI, frag);
+						u = Uri.parse(u.toString());
+						getContentResolver().delete(u, "id=?", new String[] { institution.getId() });
+						frag = "#9999";
+						u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+						u = Uri.parse(u.toString());
+						getContentResolver().update(u, null, "institutions", new String[] { "-1" });
 						returnFromDelete = true;
 						KMMDapp.updateFileInfo("lastModified", 0);
 						
@@ -404,49 +384,4 @@ public class CreateModifyInstitutionActivity extends FragmentActivity
 	}
 	// ************************************************************************************************
 	// ******************************* Helper Functions ***********************************************
-	private String createId()
-	{
-		final String[] dbColumns = { "hiInstitutionId"};
-		final String strOrderBy = "hiInstitutionId DESC";
-		// Run a query to get the Institution ids so we can create a new one.
-		Cursor cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		cursor.moveToFirst();
-
-		// Since id is in I000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = cursor.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "I";
-		for(int i= 0; i < (6 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		return newId;
-	}
-	
-	private void increaseId()
-	{
-		final String[] dbColumns = { "hiInstitutionId" };
-		final String strOrderBy = "hiInstitutionId DESC";
-		
-		Cursor cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		int id = cursor.getInt(0);
-		id = id + 1;
-		
-		ContentValues values = new ContentValues();
-		values.put("hiInstitutionId", id);
-		
-		KMMDapp.db.update("kmmFileInfo", values, null, null);		
-	}
 }

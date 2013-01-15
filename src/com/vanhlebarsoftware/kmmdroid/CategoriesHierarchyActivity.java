@@ -34,7 +34,6 @@ public class CategoriesHierarchyActivity extends Fragment implements
 	Spinner spinParent;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
-	//KMMDroidApp KMMDapp;
 	
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
@@ -97,43 +96,13 @@ public class CategoriesHierarchyActivity extends Fragment implements
 	@Override
     public void onCreate(Bundle savedInstanceState) 
 	{
-        super.onCreate(savedInstanceState);
-        
-        // Get our application
-       // KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // Get the tabHost on the parent.
-        //parentTabHost = ((CreateModifyCategoriesActivity) this.getParent());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
-        
+        super.onCreate(savedInstanceState);        
 	}
 	
 	@Override
 	public void onResume()
 	{
 		super.onResume();
-	
-		//strAccountType = ((CreateModifyCategoriesActivity) ParentActivity).getCategoryType();
-
-		//Get all the accounts to be displayed.
-		//cursor = KMMDapp.db.query("kmmAccounts", dbColumns, strSelectionType, 
-		//		new String[] { strAccountType }, null, null, strOrderBy);
-		//startManagingCursor(cursor);
-		
-		// See if our ParentId is Invalid, if so reload the Loader.
-		//if(((CreateModifyCategoriesActivity) ParentActivity).getIsParentInvalid())
-		//	getLoaderManager().getLoader(CATEGORYACCOUNTS_LOADER).forceLoad();
-		
-		// set the default position to either Income or Expense or to the already selected item.
-		//if(strParentAccount == null)
-		//	spinParent.setSelection(setParentItem(strAccountType, 0));
-		//else
-		//	spinParent.setSelection(setParentItem(strParentAccount, 1));
 	}
 	
 
@@ -157,40 +126,6 @@ public class CategoriesHierarchyActivity extends Fragment implements
 			// do nothing.
 		}		
 	}
-	
-/*	@Override
-	public void onBackPressed()
-	{
-		Log.d(TAG, "User clicked the back button");
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
-	}	*/
 	
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
