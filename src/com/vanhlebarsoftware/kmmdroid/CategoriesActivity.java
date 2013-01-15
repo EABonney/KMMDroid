@@ -27,7 +27,7 @@ public class CategoriesActivity extends FragmentActivity implements
 									LoaderManager.LoaderCallbacks<List<Account>>
 {
 	private static final String TAG = CategoriesActivity.class.getSimpleName();
-	private static final int ACCOUNTS_LOADER = 0x03;
+	private static final int CATEGORIES_LOADER = 0x03;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static String strCategoryId = null;
@@ -184,7 +184,6 @@ public class CategoriesActivity extends FragmentActivity implements
         }
 
 		Bundle bundle = new Bundle();
-		bundle.putInt("activity", 3);
         // See if we are coming from a previous list
         Bundle extras = getIntent().getExtras();
         if( extras != null )
@@ -195,12 +194,12 @@ public class CategoriesActivity extends FragmentActivity implements
         }
         
         // Create an empty adapter we will use to display the loaded data.
-		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>(), KMMDapp);
+		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>());
         listCategories.setAdapter(adapter);
 		
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getSupportLoaderManager().initLoader(ACCOUNTS_LOADER, bundle, this);
+        getSupportLoaderManager().initLoader(CATEGORIES_LOADER, bundle, this);
 	}
 	
 	@Override
@@ -330,7 +329,7 @@ public class CategoriesActivity extends FragmentActivity implements
 	public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
 	{
 		setProgressBarIndeterminateVisibility(true);
-    	return new AccountsLoader(this, args);
+    	return new CategoriesLoader(this, args);
 	}
 
 	public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 

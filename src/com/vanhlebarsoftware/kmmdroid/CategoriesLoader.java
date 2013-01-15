@@ -15,23 +15,23 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-public class HomeLoader extends AsyncTaskLoader<List<Account>>
+public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 {
 	private final static String TAG = AccountsLoader.class.getSimpleName();
-	public final static String HOMECHANGED = "HomeAccounts-Changed";
+	public final static int ACTIVITY_ACCOUNTS = 1;
+	public final static int ACTIVITY_CATEGORIES = 3;
+	public final static String ACCOUNTSCHANGED = "Categories-Changed";
 	private final static String[] dbColumns = { "accountName", "balance", "accountTypeString", "accountType", "id", 
 												"accountTypeString", "accountType", "parentId"};
-	private final String strSelectionAccts = "(accountType != ? AND accountType != ?)";
-	private final String strSelectionHome = " AND (balance != '0/1')";
-	private static final String [] selectionArgs = new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), 
-																  String.valueOf(Account.ACCOUNT_INCOME) };
+	private static final String strSelectionExp = "(parentId='AStd::Expense')";
+	private static final String strSelectionInc = "(parentId='AStd::Income')";
 	private static final String strOrderBy = "accountName ASC";
 	List<Account> mAccounts;
 	Context mContext;
 	Bundle mBundle;
-	private HomeAccountsListener mObserver = null;
+	private CategoryListener mObserver = null;
 	
-	public HomeLoader(Context context, Bundle extras) 
+	public CategoriesLoader(Context context, Bundle extras) 
 	{
 		super(context);
 		this.mContext = context;
@@ -41,7 +41,22 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 	@Override
 	public List<Account> loadInBackground() 
 	{	
-		return getHomeAccounts();
+		if(this.mBundle != null)
+		{
+			if(this.mBundle.containsKey("parentAccount"))
+			{
+				String frag = "#9999";
+				String parentId = this.mBundle.getBundle("parentAccount").getString("newGroupId");
+				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, parentId + frag);
+				u = Uri.parse(u.toString());
+				Cursor c = this.mContext.getContentResolver().query(u, dbColumns, "parentId=?", new String[] {parentId}, null);
+				return getAccounts(c);
+			}
+			else
+				return getCategoryAccounts();
+		}
+		else
+			return getCategoryAccounts();
 	}
 	
     /**
@@ -96,7 +111,7 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
         // Start monitoring the data source.
         if( this.mObserver == null )
         {
-        	this.mObserver = new HomeAccountsListener(this);
+        	this.mObserver = new CategoryListener(this);
         }
         //if( this.mObserver == null)
         //{
@@ -155,7 +170,7 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
         // The loader is being reset so we should stop monitor for changes.
         if( this.mObserver != null )
         {
-        	Log.d(TAG, "Unregistering the Home observer.");
+        	Log.d(TAG, "Unregistering the Category observer.");
             LocalBroadcastManager.getInstance(this.mContext).unregisterReceiver(this.mObserver);
             this.mObserver = null;
         }
@@ -171,19 +186,6 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
         // like a Cursor, we would close it here.
     }
     
-    private List<Account> getHomeAccounts()
-    {
-		final Context context = getContext();
-		
-		// Get our accounts for the home activity.
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-		u = Uri.parse(u.toString());
-		Cursor c = context.getContentResolver().query(u, dbColumns, strSelectionAccts + strSelectionHome, selectionArgs, strOrderBy);
-
-		return getAccounts(c);
-    }
-    
     private List<Account> getAccounts(Cursor c)
     {
 		List<Account> accounts = new ArrayList<Account>();
@@ -197,37 +199,77 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 		strDate = Schedule.padFormattedDate(strDate);
 		for(int i=0; i<c.getCount(); i++)
 		{
-			// Check to see if this account is closed.
+			// Get all the splits for this account that are in the future.
+			String[] projection = { "valueFormatted" };
+			String selection = "postDate>? AND splitId=0 AND accountId=? AND txType='N'";
+			String[] selectionArgs = { strDate, c.getString(c.getColumnIndex("id")) };
 			String frag = "#9999";
-			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
+			u = Uri.parse(u.toString());
+			Cursor splits = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+			String strBal = Account.adjustForFutureTransactions(c.getString(c.getColumnIndex("id")), 
+					Account.convertBalance(c.getString(c.getColumnIndex("balance"))), splits);
+			accounts.add(new Account(c.getString(c.getColumnIndex("id")), c.getString(c.getColumnIndex("accountName")), strBal,
+									 c.getString(c.getColumnIndex("accountTypeString")), c.getInt(c.getColumnIndex("accountType")),
+									 isParent(c.getString(c.getColumnIndex("id")))));
+			
+			// Check to see if this account is closed.
+			u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
 			u = Uri.parse(u.toString());
 			Cursor acc = context.getContentResolver().query(u, new String[] { "kvpId" }, "kvpId=? AND kvpKey='mm-closed'",
 															new String[] { c.getString(c.getColumnIndex("id")) }, null);
-			// Only add the account to the view if the account is open.
-			if( acc.getCount() == 0 )
-			{
-				// Get all the splits for this account that are in the future.
-				String[] projection = { "valueFormatted" };
-				String selection = "postDate>? AND splitId=0 AND accountId=? AND txType='N'";
-				String[] selectionArgs = { strDate, c.getString(c.getColumnIndex("id")) };
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());
-				Cursor splits = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
-				String strBal = Account.adjustForFutureTransactions(c.getString(c.getColumnIndex("id")), 
-						Account.convertBalance(c.getString(c.getColumnIndex("balance"))), splits);
-				accounts.add(new Account(c.getString(c.getColumnIndex("id")), c.getString(c.getColumnIndex("accountName")), strBal,
-						c.getString(c.getColumnIndex("accountTypeString")), c.getInt(c.getColumnIndex("accountType")),
-						isParent(c.getString(c.getColumnIndex("id")))));
-						
-				splits.close();
-			}
+			if( acc.getCount() > 0 )
+				accounts.get(i).setIsClosed(true);
+			else
+				accounts.get(i).setIsClosed(false);
+			
 			c.moveToNext();
+			splits.close();
 			acc.close();
 		}
 		
 		c.close();
+
 		return accounts;
+    }
+    
+    private List<Account> getCategoryAccounts()
+    {
+    	List<Account> categories = new ArrayList<Account>();
+		final Context context = getContext();
+
+		// Get our accounts for the home activity.
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		u = Uri.parse(u.toString());
+		Log.d(TAG, "Calling provider");
+		Cursor exp = context.getContentResolver().query(u, dbColumns, strSelectionExp, null, strOrderBy);
+		Log.d(TAG, "Calling provider");
+		Cursor inc = context.getContentResolver().query(u, dbColumns, strSelectionInc, null, strOrderBy);
+
+		exp.moveToFirst();
+		for(int i=0; i<exp.getCount(); i++)
+		{
+			String strBal = Transaction.convertToDollars(Account.convertBalance(exp.getString(exp.getColumnIndex("balance"))), true);
+			categories.add(new Account(exp.getString(exp.getColumnIndex("id")), exp.getString(exp.getColumnIndex("accountName")), strBal,
+					 exp.getString(exp.getColumnIndex("accountTypeString")), exp.getInt(exp.getColumnIndex("accountType")),
+					 isParent(exp.getString(exp.getColumnIndex("id")))));
+			exp.moveToNext();
+		}
+		
+		inc.moveToFirst();
+		for(int i=0; i<inc.getCount(); i++)
+		{
+			String strBal = Transaction.convertToDollars(Account.convertBalance(inc.getString(inc.getColumnIndex("balance"))), true);
+			categories.add(new Account(inc.getString(inc.getColumnIndex("id")), inc.getString(inc.getColumnIndex("accountName")), strBal,
+					 inc.getString(inc.getColumnIndex("accountTypeString")), inc.getInt(inc.getColumnIndex("accountType")),
+					 isParent(inc.getString(inc.getColumnIndex("id")))));
+			inc.moveToNext();			
+		}
+		//categories.addAll(getAccounts(exp));
+		//categories.addAll(getAccounts(inc));
+		
+		return categories;
     }
     
     private boolean isParent(String id)
@@ -252,21 +294,22 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 		}
     }
     
-    private class HomeAccountsListener extends BroadcastReceiver
+    private class CategoryListener extends BroadcastReceiver
     {
-    	final HomeLoader mLoader;
+    	final CategoriesLoader mLoader;
     	
-    	public HomeAccountsListener(HomeLoader loader)
+    	public CategoryListener(CategoriesLoader loader)
     	{
     		mLoader = loader;
-        	Log.d(TAG, "Registering observer for Home changes.");
-        	LocalBroadcastManager.getInstance(mContext).registerReceiver(this, new IntentFilter(HOMECHANGED));
+        	Log.d(TAG, "Registering observer for Category changes.");
+        	LocalBroadcastManager.getInstance(mContext).registerReceiver(this, new IntentFilter(ACCOUNTSCHANGED));
     	}
     	
 		@Override
 		public void onReceive(Context context, Intent intent) 
 		{
-			Log.d(TAG, "Need to update the HomeLoader!");
+			Log.d(TAG, "Need to update the CategoriesLoader!");
+			mLoader.mBundle = intent.getExtras();
 			mLoader.onContentChanged();
 		}
     	

@@ -235,7 +235,7 @@ public class HomeActivity extends FragmentActivity implements
 			
 			Account item = getItem(position);
 			
-			// Load the items into the view now for this schedule.
+			// Load the items into the view.
 			if(item != null)
 			{
 				TextView desc = (TextView) view.findViewById(R.id.hrAccountName);

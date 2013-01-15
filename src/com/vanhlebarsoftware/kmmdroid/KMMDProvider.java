@@ -29,6 +29,7 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_LEDGER_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/ledger");
 	public static final Uri CONTENT_KVP_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/kvp");
 	public static final Uri CONTENT_CURRENCY_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/currency");
+	public static final Uri CONTENT_TRANSTAB_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/transtab");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
@@ -47,6 +48,7 @@ public class KMMDProvider extends ContentProvider
 	public static final String KVPS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.kvps";
 	public static final String CURRENCY_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.currency";
 	public static final String CURRENCIES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.currencies";
+	public static final String TRANSTAB_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.transtab";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -115,6 +117,7 @@ public class KMMDProvider extends ContentProvider
 	private static final int KVPS_ID = 16;
 	private static final int CURRENCY = 17;
 	private static final int CURRENCIES = 18;
+	private static final int TRANSTAB = 19;
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -136,10 +139,10 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "kvp/*", KVPS_ID);
 		sURIMatcher.addURI(authority, "currency", CURRENCIES);
 		sURIMatcher.addURI(authority, "currency/*", CURRENCY);
+		sURIMatcher.addURI(authority, "transtab", TRANSTAB);
 	}
 	public SharedPreferences prefs;
 	private SQLiteDatabase db = null;
-	private int queryCall = 1;
 
 	@Override
 	public boolean onCreate() 
@@ -189,6 +192,8 @@ public class KMMDProvider extends ContentProvider
 			return CURRENCY_MIME_TYPE;
 		case CURRENCIES:
 			return CURRENCIES_MIME_TYPE;
+		case TRANSTAB:
+			return TRANSTAB_MIME_TYPE;
 		default:
 			return null;
 		}
@@ -548,7 +553,15 @@ public class KMMDProvider extends ContentProvider
 				dbSelection = selection;
 				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
-				break;				
+				break;	
+			case TRANSTAB:
+				dbTable = "kmmSplits, kmmAccounts";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				Log.d(TAG, "Retrieving transactions for the TransTab");
+				break;
 			default:
 				Log.d(TAG, "We didn't get a macth!");
 				break;
@@ -577,8 +590,7 @@ public class KMMDProvider extends ContentProvider
 				return null;
 			}
 		}
-			
-		queryCall++;
+
 		return cur;
 	}
 

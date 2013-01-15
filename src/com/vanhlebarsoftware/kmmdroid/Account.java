@@ -45,6 +45,7 @@ public class Account
 	private String IBAN;
 	private String openDate;
 	private String currencyId;
+	private String notes;
 	private int accountType;
 	private int transactionCount;
 	private boolean isParent;
@@ -69,6 +70,7 @@ public class Account
 		this.currencyId = null;
 		this.isPreferred = false;
 		this.transactionCount = 0;
+		this.notes = null;
 	}
 	
 	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP)
@@ -88,6 +90,7 @@ public class Account
 		this.currencyId = null;
 		this.isPreferred = false;
 		this.transactionCount = 0;
+		this.notes = null;
 	}
 	
 	Account(Cursor cur, Context context)
@@ -143,6 +146,12 @@ public class Account
 			this.transactionCount = 0;
 		else
 			this.transactionCount = cur.getInt(cur.getColumnIndex("transactionCount"));	
+		
+		index = cur.getColumnIndex("description");
+		if( index == -1 )
+			this.notes = null;
+		else
+			this.notes = cur.getString(cur.getColumnIndex("description"));
 		
 		// Get our KVPs for this account.
 		String frag = "#9999";
@@ -245,6 +254,11 @@ public class Account
 		return this.transactionCount;
 	}
 	
+	public String getNotes()
+	{
+		return this.notes;
+	}
+	
 	public void setIsParent(boolean flag)
 	{
 		this.isParent = flag;
@@ -278,6 +292,11 @@ public class Account
 	public void setId(String id)
 	{
 		this.id = id;
+	}
+	
+	public void setParentId(String pId)
+	{
+		this.parentId = pId;
 	}
 	
 	static public void updateAccount(Context context, String accountId, String transValue, int nChange)
@@ -468,7 +487,53 @@ public class Account
 			this.parentId = ((CreateAccountParentActivity) accountParent).getParentId();
 	}
 	
-	public void SaveAccount(CreateModifyAccountActivity context)
+	public void getDataChanges(CreateModifyCategoriesActivity context)
+	{
+		// We need to get each tab (fragment) if it is null, then the user didn't make any changes on that tab and ignore.
+		// If the tab (fragment) is not null, then we need to pull the information into our object before we save it.
+		
+		// Get the General data elements.
+		Fragment general = context.getSupportFragmentManager().findFragmentByTag("general");
+		if( general != null )
+		{
+			this.accountName = ((CategoriesGeneralActivity) general).getCategoryName();
+			int type = context.getCategoryType();
+			switch(type)
+			{
+			case Account.ACCOUNT_INCOME:
+				this.accountType = type;
+				this.accountTypeString = context.getString(R.string.Income);
+				break;
+			case Account.ACCOUNT_EXPENSE:
+				this.accountType = type;
+				this.accountTypeString = context.getString(R.string.Expense);
+				break;
+			}
+			
+			this.currencyId = ((CategoriesGeneralActivity) general).getCurrency();
+			this.notes = ((CategoriesGeneralActivity) general).getNotes();
+		}
+		
+		// Get the Hierarchy data elements.
+		Fragment hierarchy = context.getSupportFragmentManager().findFragmentByTag("hierarchy");
+		if( hierarchy != null )
+		{
+			if( context.getIsParentInvalid() )
+				this.parentId = this.getParentId();
+			else
+				this.parentId = ((CategoriesHierarchyActivity) hierarchy).getParentAccount();
+		}
+		
+		// If general is NOT null AND hierarchy IS null, then we need to see if the user changed the account type
+		// but didn't go into the hierarchy tab, if so then update the parentId accordingly.
+		if( general != null && hierarchy == null )
+		{
+			if( context.getIsParentInvalid() )
+				this.parentId = this.getParentId();
+		}
+	}
+	
+	public void SaveAccount(Context context)
 	{
 		// Create the ContentValue pairs and then insert the new account.
 		ContentValues valuesAccount = new ContentValues();	
@@ -477,7 +542,6 @@ public class Account
 		valuesAccount.put("institutionId", getInstitutionId());
 		valuesAccount.put("parentId", getParentId());
 		valuesAccount.put("openingDate", getOpenDate());
-		Log.d(TAG, "accountNumber: " + getAccountNumber());
 		valuesAccount.put("accountNumber", getAccountNumber());
 		valuesAccount.put("accountType", getAccountType());
 		valuesAccount.put("accountTypeString", getAccountTypeString());
@@ -503,7 +567,6 @@ public class Account
 			frag = "#9999";
 			u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
 			u = Uri.parse(u.toString());
-			context.getContentResolver().update(u, null, "transactions", new String[] { "1" });
 			context.getContentResolver().update(u, null, "hiAccountId", new String[] { "1" });
 			context.getContentResolver().update(u, null, "accounts", new String[] { "1" });
 		} 
@@ -511,33 +574,38 @@ public class Account
 		{
 			Log.d(TAG, "error: " + e.getMessage());
 		}
-		//increaseAccountId();
-		// We need to put the additional information in the kmmKeyValuePairs table for this account.
-		String kvpType = "ACCOUNT";
-		String kvpId = getId();
-		ContentValues valuesKVP = new ContentValues();
-		valuesKVP.put("kvpType", kvpType);
-		valuesKVP.put("kvpId", kvpId);
-		valuesKVP.put("kvpKey", "IBAN");
-		valuesKVP.put("kvpData", getIBAN());
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-		u = Uri.parse(u.toString());
-		context.getContentResolver().insert(u, valuesKVP);
-		valuesKVP.clear();
-		if( getIsPreferred() )
+
+		// We need to put the additional information in the kmmKeyValuePairs table for this account
+		// and create the opening balance.
+		// Only for Accounts NOT Categories
+		if( getAccountType() != ACCOUNT_EXPENSE || getAccountType() != ACCOUNT_INCOME )
 		{
+			String kvpType = "ACCOUNT";
+			String kvpId = getId();
+			ContentValues valuesKVP = new ContentValues();
 			valuesKVP.put("kvpType", kvpType);
 			valuesKVP.put("kvpId", kvpId);
-			valuesKVP.put("kvpKey", "PreferredAccount");
-			valuesKVP.put("kvpData", "Yes");
+			valuesKVP.put("kvpKey", "IBAN");
+			valuesKVP.put("kvpData", getIBAN());
+			String frag = "#9999";
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+			u = Uri.parse(u.toString());
 			context.getContentResolver().insert(u, valuesKVP);
+			valuesKVP.clear();
+			if( getIsPreferred() )
+			{
+				valuesKVP.put("kvpType", kvpType);
+				valuesKVP.put("kvpId", kvpId);
+				valuesKVP.put("kvpKey", "PreferredAccount");
+				valuesKVP.put("kvpData", "Yes");
+				context.getContentResolver().insert(u, valuesKVP);
+			}
+			// Create the transaction and splits for any opening balance that was entered by the user.
+			createTransaction(getOpenDate(), getCurrencyId(), getBalance(), getId(), context);
 		}
-		// Create the transaction and splits for any opening balance that was entered by the user.
-		createTransaction(getOpenDate(), getCurrencyId(), getBalance(), getId(), context);
 	}
 	
-	public void UpdateAccount(CreateModifyAccountActivity context)
+	public void UpdateAccount(Context context)
 	{
 		// Create the ContentValue pairs and then insert the new account.
 		ContentValues valuesAccount = new ContentValues();
@@ -546,7 +614,6 @@ public class Account
 		valuesAccount.put("institutionId", getInstitutionId());
 		valuesAccount.put("parentId", getParentId());
 		valuesAccount.put("openingDate", getOpenDate());
-		Log.d(TAG, "accountNumber: " + getAccountNumber());
 		valuesAccount.put("accountNumber", getAccountNumber());
 		valuesAccount.put("accountType", getAccountType());
 		valuesAccount.put("accountTypeString", getAccountTypeString());
@@ -557,48 +624,56 @@ public class Account
 		// First we need to get the old account balance and make any necessary adjustments to this balance based on
 		// the changes the user may have made to our Opening balance amount for this account.
 		// Now we need to adjust any Splits/Transactions we originally had for this account.
-		adjustOpenTrans(getId(), getBalance(), getOpenDate(), getCurrencyId(), context);
+		// Only for Accounts NOT Category
+		if( getAccountType() != ACCOUNT_EXPENSE && getAccountType() != ACCOUNT_INCOME )
+			adjustOpenTrans(getId(), getBalance(), getOpenDate(), getCurrencyId(), context);
+		
 		// Actually update the account now.
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, getId() + frag);
 		u = Uri.parse(u.toString());
 		context.getContentResolver().update(u, valuesAccount, null, null);
+		
 		// We need to put the additional information in the kmmKeyValuePairs table for this account.
-		String kvpType = "ACCOUNT";
-		String kvpId = getId();
-		ContentValues valuesKVP = new ContentValues();
-		valuesKVP.put("kvpType", kvpType);
-		valuesKVP.put("kvpId", kvpId);
-		valuesKVP.put("kvpKey", "IBAN");
-		valuesKVP.put("kvpData", getIBAN());
-		frag = "#9999";
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-		u = Uri.parse(u.toString());
-		context.getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?", 
-													 new String[] { getId(), kvpType, "IBAN" });
-		valuesKVP.clear();
-		// See if the account was previously setup as a preferred account.
-		Cursor c = context.getContentResolver().query(u, new String[] { "kvpData" },
-				"kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'", new String[] { getId() }, null);
-		if( getIsPreferred() )
+		// Only for Accounts NOT Category
+		if( getAccountType() != ACCOUNT_EXPENSE && getAccountType() != ACCOUNT_INCOME )
 		{
+			String kvpType = "ACCOUNT";
+			String kvpId = getId();
+			ContentValues valuesKVP = new ContentValues();
 			valuesKVP.put("kvpType", kvpType);
 			valuesKVP.put("kvpId", kvpId);
-			valuesKVP.put("kvpKey", "PreferredAccount");
-			valuesKVP.put("kvpData", "Yes");
-			if( c.getCount() > 0)
-				context.getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?",
+			valuesKVP.put("kvpKey", "IBAN");
+			valuesKVP.put("kvpData", getIBAN());
+			frag = "#9999";
+			u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+			u = Uri.parse(u.toString());
+			context.getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?", 
+													 new String[] { getId(), kvpType, "IBAN" });
+			valuesKVP.clear();
+			// See if the account was previously setup as a preferred account.
+			Cursor c = context.getContentResolver().query(u, new String[] { "kvpData" },
+					"kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'", new String[] { getId() }, null);
+			if( getIsPreferred() )
+			{
+				valuesKVP.put("kvpType", kvpType);
+				valuesKVP.put("kvpId", kvpId);
+				valuesKVP.put("kvpKey", "PreferredAccount");
+				valuesKVP.put("kvpData", "Yes");
+				if( c.getCount() > 0)
+					context.getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?",
 														 new String[] { getId(), kvpType, "PreferredAccount" } );
+				else
+					context.getContentResolver().insert(u, valuesKVP);
+			}
 			else
-				context.getContentResolver().insert(u, valuesKVP);
-		}
-		else
-		{
-			if(c.getCount() > 0)
-				context.getContentResolver().delete(u, "kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'",
+			{
+				if(c.getCount() > 0)
+					context.getContentResolver().delete(u, "kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'",
 															 new String[] { getId() });
+			}
+			c.close();
 		}
-		c.close();
 	}
 	
 	private void createTransaction(String openDate, String baseCurId, String openBal, String acctId, Context context)

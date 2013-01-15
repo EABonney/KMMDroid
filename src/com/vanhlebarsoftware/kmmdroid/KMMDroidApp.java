@@ -498,6 +498,8 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 				currentFile = item.findMatch(path);
 				if(currentFile != null)
 					break;
+				else
+					currentFile = new KMMDDeviceItem(new File(path));
 			}
 		}
 		else

@@ -24,8 +24,6 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 	private final static String[] dbColumns = { "accountName", "balance", "accountTypeString", "accountType", "id", 
 												"accountTypeString", "accountType", "parentId"};
 	private final String strSelectionAccts = "(accountType != ? AND accountType != ?)";
-	private static final String strSelectionExp = "(parentId='AStd::Expense')";
-	private static final String strSelectionInc = "(parentId='AStd::Income')";
 	private static final String [] selectionArgs = new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), 
 																  String.valueOf(Account.ACCOUNT_INCOME) };
 	private static final String strOrderBy = "accountName ASC";
@@ -44,26 +42,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 	@Override
 	public List<Account> loadInBackground() 
 	{	
-		// See which activity is calling us to retrieve the correct data.
-		switch(this.mBundle.getInt("activity"))
-		{
-			case ACTIVITY_ACCOUNTS:
-				return getAccountsAccounts();
-			case ACTIVITY_CATEGORIES:
-				if(this.mBundle.containsKey("parentAccount"))
-				{
-					String frag = "#9999";
-					String parentId = this.mBundle.getBundle("parentAccount").getString("newGroupId");
-					Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, parentId + frag);
-					u = Uri.parse(u.toString());
-					Cursor c = this.mContext.getContentResolver().query(u, dbColumns, "parentId=?", new String[] {parentId}, null);
-					return getAccounts(c);
-				}
-				else
-					return getCategoryAccounts();
-			default:
-				return null;
-		}
+		return getAccountsAccounts();
 	}
 	
     /**
@@ -177,7 +156,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
         // The loader is being reset so we should stop monitor for changes.
         if( this.mObserver != null )
         {
-        	Log.d(TAG, "Unregistering the observer.");
+        	Log.d(TAG, "Unregistering the Account observer.");
             LocalBroadcastManager.getInstance(this.mContext).unregisterReceiver(this.mObserver);
             this.mObserver = null;
         }
@@ -204,45 +183,6 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 		Cursor c = context.getContentResolver().query(u, dbColumns, strSelectionAccts, selectionArgs, strOrderBy);
 
 		return getAccounts(c);
-    }
-    
-    private List<Account> getCategoryAccounts()
-    {
-    	List<Account> categories = new ArrayList<Account>();
-		final Context context = getContext();
-
-		// Get our accounts for the home activity.
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-		u = Uri.parse(u.toString());
-		Log.d(TAG, "Calling provider");
-		Cursor exp = context.getContentResolver().query(u, dbColumns, strSelectionExp, null, strOrderBy);
-		Log.d(TAG, "Calling provider");
-		Cursor inc = context.getContentResolver().query(u, dbColumns, strSelectionInc, null, strOrderBy);
-
-		exp.moveToFirst();
-		for(int i=0; i<exp.getCount(); i++)
-		{
-			String strBal = Transaction.convertToDollars(Account.convertBalance(exp.getString(exp.getColumnIndex("balance"))), true);
-			categories.add(new Account(exp.getString(exp.getColumnIndex("id")), exp.getString(exp.getColumnIndex("accountName")), strBal,
-					 exp.getString(exp.getColumnIndex("accountTypeString")), exp.getInt(exp.getColumnIndex("accountType")),
-					 isParent(exp.getString(exp.getColumnIndex("id")))));
-			exp.moveToNext();
-		}
-		
-		inc.moveToFirst();
-		for(int i=0; i<inc.getCount(); i++)
-		{
-			String strBal = Transaction.convertToDollars(Account.convertBalance(inc.getString(inc.getColumnIndex("balance"))), true);
-			categories.add(new Account(inc.getString(inc.getColumnIndex("id")), inc.getString(inc.getColumnIndex("accountName")), strBal,
-					 inc.getString(inc.getColumnIndex("accountTypeString")), inc.getInt(inc.getColumnIndex("accountType")),
-					 isParent(inc.getString(inc.getColumnIndex("id")))));
-			inc.moveToNext();			
-		}
-		//categories.addAll(getAccounts(exp));
-		//categories.addAll(getAccounts(inc));
-		
-		return categories;
     }
     
     private List<Account> getAccounts(Cursor c)
