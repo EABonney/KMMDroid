@@ -85,37 +85,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
             tabHost.setCurrentTabByTag(savedInstanceState.getString("tab")); //set the tab as per the saved state
         }
         
-        //Resources res = getResources(); // Resource object to get Drawables
-        /*tabHost = getTabHost();  // The activity TabHost
-        TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-        Intent intent;  // Reusable Intent for each tab
-
-        // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, CategoriesGeneralActivity.class);
-
-        // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("general").setIndicator(getString(R.string.CategoriesTabGeneral))
-                      .setContent(intent);
-        tabHost.addTab(spec);
-
-        // Do the same for the other tabs
-        intent = new Intent().setClass(this, CategoriesHierarchyActivity.class);
-        spec = tabHost.newTabSpec("hierarchy").setIndicator(getString(R.string.CategoriesTabHierarchy))
-                      .setContent(intent);
-        tabHost.addTab(spec);
-
-        if( Action == ACTION_EDIT )
-        {
-        	intent = new Intent().setClass(this, TransactionsTabActivity.class);
-        	intent.putExtra("CategoryName", strCategoryName);
-        	intent.putExtra("CategoryId", strCategoryId);
-        	spec = tabHost.newTabSpec("payeetransactions").setIndicator(getString(R.string.TabTransactions))
-                      .setContent(intent);
-        	tabHost.addTab(spec);
-        }
-        
-        tabHost.setCurrentTab(0);*/
-        
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
 
@@ -152,9 +121,7 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, strCategoryId + frag);
 				u = Uri.parse(u.toString());
 				final String[] dbColumns = { "*" };
-				Cursor c = getBaseContext().getContentResolver().query(u, dbColumns, null, null, null);
-				//cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { strCategoryId  }, null, null, null);
-				//startManagingCursor(cursor);	
+				Cursor c = getBaseContext().getContentResolver().query(u, dbColumns, null, null, null);	
 				
 				// If we returned anything other than just one record we have issues.
 				if ( c.getCount() == 0 )
@@ -192,34 +159,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 				category = new Account(c, this);
 				this.setCategoryType(category.getAccountType());
 				this.setParentId(category.getParentId());
-				
-				// We have the correct category Id, so now popluate the forms fields.
-				//getTabHost().setCurrentTab(0);
-				//Activity categoryGeneral = this.getCurrentActivity();
-				//((CategoriesGeneralActivity) categoryGeneral).putCategoryName(category.getName());
-				//switch(category.getAccountType())
-				//{
-				//	case AC_INCOME:
-				//		((CategoriesGeneralActivity) categoryGeneral).putCategoryType(0);
-				//		break;
-				//	case AC_EXPENSE:
-				//		((CategoriesGeneralActivity) categoryGeneral).putCategoryType(1);
-				//		break;
-				//	default:
-				//		((CategoriesGeneralActivity) categoryGeneral).putCategoryType(0);
-				//		break;
-				//}
-				//int pos = 0;
-				//pos = getCurrencyPos(category.getCurrencyId());
-				//((CategoriesGeneralActivity) categoryGeneral).putCurrency(pos);
-				//((CategoriesGeneralActivity) categoryGeneral).putNotes(category.getNotes());
-				//((CategoriesGeneralActivity) categoryGeneral).putTransactionCount(String.valueOf(category.getTransactionCount()));
-				
-				//getTabHost().setCurrentTab(1);
-				//Activity categoryHierarchy = this.getCurrentActivity();
-				//((CategoriesHierarchyActivity) categoryHierarchy).putParentAccount(category.getParentId());
-				// Make sure the 1st tab is displayed to the user.
-				//getTabHost().setCurrentTab(0);
 				this.isDirty = false;
 				
 				// Clean up our cursors.
@@ -335,15 +274,7 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 			case R.id.itemsave:
 				// Update the category to reflect any changes before saving.
 				category.getDataChanges(this);
-				
-				//String id, parentId, accountType, accountTypeString, accountName;
-				//String description, currencyId;
-				//int transactionCount = 0;
-				
-				// Get the Address elements
-				//getTabHost().setCurrentTab(0);
-				//Activity categoryGeneral = this.getCurrentActivity();
-				//accountName = ((CategoriesGeneralActivity) categoryGeneral).getCategoryName();
+
 				// See if the user has at least filled in the Name field, if not then pop up a dialog and do nothing.
 				if(category.getName().isEmpty())
 				{
@@ -361,27 +292,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 				// Else we will save the newly created category
 				else
 				{
-/*					if(strType.equalsIgnoreCase("Income"))
-					{
-						accountType = String.valueOf(AC_INCOME);
-						accountTypeString = getString(R.string.Income);
-					}
-					else
-					{
-						accountType = String.valueOf(AC_EXPENSE);
-						accountTypeString = getString(R.string.Expense);
-					}
-					
-					currencyId = ((CategoriesGeneralActivity) categoryGeneral).getCategoryCurrency();
-					description = ((CategoriesGeneralActivity) categoryGeneral).getNotes();
-					
-					// Get the parent Id of this account.
-					getTabHost().setCurrentTab(1);
-					Activity categoryHierarchy = this.getCurrentActivity();
-					parentId = ((CategoriesHierarchyActivity) categoryHierarchy).getParentAccount();
-*/					
-					// Create the ContentValue pairs and then insert the new account.
-					//ContentValues valuesCategory = new ContentValues();
 					if(Action == ACTION_NEW)
 					{
 						category.createAccountId(this);
@@ -389,51 +299,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 					}
 					else
 						category.UpdateAccount(this);
-					
-					
-					
-/*					valuesCategory.put("id", id);
-					valuesCategory.put("parentId", parentId);
-					valuesCategory.put("accountType", accountType);
-					valuesCategory.put("accountTypeString", accountTypeString);
-					valuesCategory.put("accountName", accountName);
-					valuesCategory.put("description", description);
-					valuesCategory.put("currencyId", currencyId);
-					
-					switch(Action)
-					{
-						case ACTION_NEW:
-							valuesCategory.put("balance", "0/100");
-							valuesCategory.put("balanceFormatted", "0.00");
-							valuesCategory.put("transactionCount", transactionCount);
-							valuesCategory.put("isStockAccount", "N");
-							valuesCategory.put("lastReconciled", "");
-							valuesCategory.put("lastModified", "");
-							valuesCategory.put("openingDate", "");
-							valuesCategory.put("accountNumber", "");
-							valuesCategory.put("institutionId", "");
-							try 
-							{
-								KMMDapp.db.insertOrThrow(dbTable, null, valuesCategory);
-								KMMDapp.updateFileInfo("hiAccountId", 1);
-								KMMDapp.updateFileInfo("accounts", 1);
-							} 
-							catch (SQLException e)
-							{
-								Log.d(TAG, "error: " + e.getMessage());
-							}
-							increaseAccountId();
-							break;
-						case ACTION_EDIT:
-						try {
-							int effected = 0;
-							effected = KMMDapp.db.update(dbTable, valuesCategory, "id=?", new String[] { id });
-							Log.d(TAG, "rows effected: " + String.valueOf(effected));
-						} catch (Exception e) {
-							Log.d(TAG, "Did NOT update categoryId: " + id);
-						}
-							break;
-					}*/
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				
@@ -480,7 +345,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 	{
 		// Send the General information to the fragment.
 		Fragment general = this.getSupportFragmentManager().findFragmentByTag("general");
-		//Activity categoryGeneral = this.getCurrentActivity();
 		((CategoriesGeneralActivity) general).putCategoryName(category.getName());
 		((CategoriesGeneralActivity) general).putCategoryType(category.getAccountType());
 		((CategoriesGeneralActivity) general).putCurrency(category.getCurrencyId());
@@ -503,88 +367,6 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 	}
 	// ************************************************************************************************
 	// ******************************* Helper Functions ***********************************************
-/*	private int getCurrencyPos(String id)
-	{
-		int i = 0;
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
-		u = Uri.parse(u.toString());
-		Cursor c = getBaseContext().getContentResolver().query(u, new String[] { "name", "ISOcode" }, null, null, null);
-		//Cursor c = KMMDapp.db.query("kmmCurrencies", new String[] { "name", "ISOcode" },
-		//							null, null,	null, null, "name ASC");
-		//startManagingCursor(c);	
-		if(c.getCount() > 0)
-		{
-			c.moveToFirst();
-			while(!id.equals(c.getString(1)))
-			{
-				c.moveToNext();
-				i++;
-			}
-		}
-		else
-		{
-			Log.d(TAG, "getCurrencyPos query returned no accounts!");
-			i = 0;
-		}
-		
-		// Clean up our cursor.
-		c.close();
-		
-		return i;
-	}*/
-	
-/*	private String createAccountId()
-	{
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-		u = Uri.parse(u.toString());
-		final String[] dbColumns = { "hiAccountId"};
-		final String strOrderBy = "hiAccountId DESC";
-		// Run a query to get the Acount ids so we can create a new one.
-		Cursor cursor = getBaseContext().getContentResolver().query(u, dbColumns, null, null, strOrderBy);
-		//cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		//startManagingCursor(cursor);
-		
-		cursor.moveToFirst();
-		// Since id is in A000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = cursor.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "A";
-		for(int i= 0; i < (6 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		// Clean up our cursor.
-		cursor.close();
-		
-		return newId;
-	}*/
-	
-/*	private void increaseAccountId()
-	{
-		final String[] dbColumns = { "hiAccountId"};
-		final String strOrderBy = "hiAccountId DESC";
-		// Run a query to get the Account ids so we can create a new one.
-		cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		cursor.moveToFirst();
-		int lastId = cursor.getInt(0);	
-		lastId = lastId + 1;
-		
-		ContentValues values = new ContentValues();
-		values.put("hiAccountId", lastId);
-		KMMDapp.db.update("kmmFileInfo", values, null, null);
-	}*/
-	
 	public void setCategoryType(int type)
 	{
 		this.intType = type;

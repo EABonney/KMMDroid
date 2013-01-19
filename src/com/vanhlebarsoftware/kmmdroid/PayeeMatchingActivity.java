@@ -1,80 +1,130 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.ContextThemeWrapper;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-public class PayeeMatchingActivity extends FragmentActivity
+public class PayeeMatchingActivity extends Fragment
 {
 	private static final String TAG = "PayeeMatchingActivity";
-	private CreateModifyPayeeActivity parentTabHost;
+	private OnSendMatchingDataListener onSendMatchingData;
+	private Activity ParentTab;
 	RadioGroup matching;
 	RadioButton noMatching;
 	RadioButton matchonName;
 	
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
 	@Override
-    public void onCreate(Bundle savedInstanceState) 
+	public void onAttach(Activity activity) 
 	{
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.payee_matching);
+		super.onAttach(activity);
+		
+		ParentTab = activity;
+		
+		try
+		{
+			onSendMatchingData = (OnSendMatchingDataListener) activity;
+		}
+		catch(ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + " must implemenent OnSendMatchingDataListener.");
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+	 */
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
         
-        // Get the tabHost on the parent.
-        parentTabHost = ((CreateModifyPayeeActivity) this.getParent());
+        View view = inflater.inflate(R.layout.payee_matching, container, false);
         
         // Get our views
-        matching = (RadioGroup) findViewById(R.id.radioGroup1);
-        noMatching = (RadioButton) findViewById(R.id.payeeNoMatching);
-        matchonName = (RadioButton) findViewById(R.id.payeeMatchonName);
+        matching = (RadioGroup) view.findViewById(R.id.radioGroup1);
+        noMatching = (RadioButton) view.findViewById(R.id.payeeNoMatching);
+        matchonName = (RadioButton) view.findViewById(R.id.payeeMatchonName);
         
         // Set an onClickListener for the radioGroup
         matching.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             public void onCheckedChanged(RadioGroup rGroup, int checkedId)
             {
-            	parentTabHost.setIsDirty(true);
+            	((CreateModifyPayeeActivity) ParentTab).setIsDirty(true);
             }
         });
+        
+		return view;
+	}
+
+	@Override
+    public void onCreate(Bundle savedInstanceState) 
+	{
+        super.onCreate(savedInstanceState);
     }
 	
 	@Override
-	public void onBackPressed()
+	public void onResume()
 	{
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
+		super.onResume();
+		
+		sendMatchingData();
+		
+		updateUIElements();
+	}
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnSendMatchingDataListener
+	{
+		public void onSendMatchingData();
+	}	
+	// ************************************************************************************************
+	// ******************************* Helper Functions ***********************************************
+	private void sendMatchingData()
+	{
+		onSendMatchingData.onSendMatchingData();
+	}
+	
+	private void updateUIElements()
+	{
+		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);		
+		int matchtype = prefs.getInt("MatchType", -1);
+		
+		if( matchtype != -1 )
+			this.putMatchingType(matchtype);
 	}
 	
 	public int getMatchingType()
 	{
-		return matching.getCheckedRadioButtonId();
+		switch( matching.getCheckedRadioButtonId() )
+		{
+		case R.id.payeeNoMatching:
+			return 0;
+		case R.id.payeeMatchonName:
+			return 1;
+		default:
+			return 0;
+		}
 	}
 	
 	public void putMatchingType(int button)

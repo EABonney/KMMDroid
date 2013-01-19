@@ -10,8 +10,11 @@ import android.content.SharedPreferences.Editor;
 import android.content.UriMatcher;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
+import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteQuery;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.*;
@@ -518,7 +521,7 @@ public class KMMDProvider extends ContentProvider
 			case PAYEES_ID:
 				dbTable = "kmmPayees";
 				dbColumns = projection;
-				dbSelection = selection;
+				dbSelection = "id=?";
 				dbOrderBy = sortOrder;
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
@@ -648,6 +651,8 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case PAYEES_ID:
 				dbTable = "kmmPayees";
+				dbSelection = "id=?";
+				result = db.update(dbTable, contentvalues, dbSelection, new String[] { this.getId(uri) });
 				break;
 			case INSTITUTIONS_ID:
 				dbTable = "kmmInstitutions";
