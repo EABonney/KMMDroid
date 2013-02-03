@@ -250,7 +250,7 @@ public class ScheduleActionsActivity extends FragmentActivity
 								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
 								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
 								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
-								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
+								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID), this.widgetId, getBaseContext() ));
 			cursor.moveToNext();
 		}
 		

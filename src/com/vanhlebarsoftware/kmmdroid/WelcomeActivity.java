@@ -140,7 +140,8 @@ public class WelcomeActivity extends FragmentActivity
         		// We have our open schedules from the database, now create the user defined period of cash flow.
         		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
     		
-        		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
+        		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), 
+        												Transaction.convertToPennies("0.00"), getBaseContext());
 
         		// Get a list of all schedules that are due today AND are setup for autoEntry.
         		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
@@ -158,14 +159,14 @@ public class WelcomeActivity extends FragmentActivity
         			schedule = getSchedule(scheduleId);
         			Transaction transaction = schedule.convertToTransaction(createTransId());
         			transaction.setEntryDate(calToday);
-        			transaction.enter(this);
+        			transaction.Save();
         			schedule = null;
         			
         			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
         			// schedule. Not sure why...
         			schedule = getSchedule(scheduleId);
         			//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
-        			schedule.advanceDueDate(Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier()));
+        			schedule.advanceDueDate(/*Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier())*/);
         			ContentValues values = new ContentValues();
         			values.put("nextPaymentDue", schedule.getDatabaseFormattedString());
         			values.put("startDate", schedule.getDatabaseFormattedString());
@@ -176,7 +177,7 @@ public class WelcomeActivity extends FragmentActivity
         			{
         				Split s = schedule.Splits.get(i);
         				s.setPostDate(schedule.getDatabaseFormattedString());
-        				s.commitSplit(true, this);
+        				s.commitSplit(true);
         				s = null;
         			}		
         			//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
@@ -358,7 +359,7 @@ public class WelcomeActivity extends FragmentActivity
 		Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
 
 		Log.d(TAG, "Number of transactions returned: " + transaction.getCount());
-		return new Schedule(schedule, splits, transaction);
+		return new Schedule(schedule, splits, transaction, getBaseContext());
 	}
 
 	private String createTransId()

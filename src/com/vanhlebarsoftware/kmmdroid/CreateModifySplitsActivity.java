@@ -5,9 +5,15 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,7 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TableLayout;
@@ -27,9 +32,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CreateModifySplitsActivity extends FragmentActivity implements OnClickListener
+public class CreateModifySplitsActivity extends FragmentActivity implements
+										LoaderManager.LoaderCallbacks<Cursor>,
+										OnClickListener
 {
 	private static final String TAG = "CreateModifySplitsActivity";
+	private static final int SPLITS_LOADER = 0x50;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
@@ -42,8 +50,15 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 	String strLabelTotal =null;
 	String strLabelSumofSplits = null;
 	String strLabelUnassigned = null;
-	String strOrigCategoryId = null;
-	String strOrigMemo = null;
+	//String strOrigCategoryId = null;
+	//String strOrigMemo = null;
+	//String strOrigDate = null;
+	//String strOrigTransId = null;
+	//String strOrigPayeeId = null;
+	//String strOrigAction = null;
+	//String strOrigStatus = null;
+	//String strOrigCkNum = null;
+	Transaction transaction;
 	int nTransType = 0;
 	int intInsertRowAt = 1;
 	int rowClicked = 0;
@@ -59,9 +74,10 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 	TableLayout tableSplits;
 	TableRow rowSplitEntry;
 	Spinner spinCategory;
-	Cursor cursorCategories;
+	//Cursor cursorCategories;
 	SimpleCursorAdapter adapterCategories;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
+	Intent returnIntent = null;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -71,7 +87,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
         setContentView(R.layout.createmod_splits);
         
         // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
+        //KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
         editSplitMemo = (EditText) findViewById(R.id.splitMemo);
@@ -86,10 +102,24 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
         // Get the action the user is doing.
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
-        strTranAmount = extras.getString("TransAmount");
-        strOrigCategoryId = extras.getString("CategoryId");
-        strOrigMemo = extras.getString("Memo");
+        //strTranAmount = extras.getString("TransAmount");
+        //strOrigCategoryId = extras.getString("CategoryId");
+        //strOrigMemo = extras.getString("Memo");
+        //strOrigDate = extras.getString("date");
+        //strOrigPayeeId = extras.getString("payeeId");
+        //strOrigAction = extras.getString("transAction");
+        //strOrigStatus = String.valueOf(extras.getInt("transStatus"));
+        //strOrigCkNum = extras.getString("checkNumber");
         nTransType = extras.getInt("transType");
+        
+        // Create our transaction to hold the splits.
+        transaction = new Transaction(getBaseContext(), null, null);
+        
+        // Fetch our cached Transaction if there is one.
+        transaction.getcachedTransaction();
+        
+        //if( Action == ACTION_EDIT)
+        //	transaction.setTransId(extras.getString("transactionId"));
         
         // Set the OnItemSelectedListeners for the spinners and OnChangeEvents.
         spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
@@ -123,10 +153,10 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
         });
         
         // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
+        //if(!KMMDapp.isDbOpen())
+        //{
+        //	KMMDapp.openDB();
+        //}
         
         // Make the column non-stretchable and shrinkable.
         tableSplits.setColumnShrinkable(0, true);
@@ -139,13 +169,25 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
         
         // Update the totals for the splits, unassigned and transaction amount.
         // check to see if strTranAmount is empty (user didn't enter an amount yet) if so make it 0.00
-        if( strTranAmount.isEmpty() )
+        if( transaction.getAmount() == 0 )
         	strTranAmount = "0.00";
+        else
+        	strTranAmount = Transaction.convertToDollars(transaction.getAmount(), false);
         updateTotals(false);
         
         //Initialize our array list.
         AccountIdList = new ArrayList<String>();
         
+		// Set up the adapters
+		adapterCategories = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, null, FROM, TO, 0);
+		adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinCategory.setAdapter(adapterCategories);
+		
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(SPLITS_LOADER, null, this);
+        
+        returnIntent = this.getIntent();
 	}
 	
 	@Override
@@ -159,44 +201,37 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 	{
 		super.onResume();
 		
-		cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-				"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-					String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-		startManagingCursor(cursorCategories);
+		//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
+		//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
+		//			String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
+		//startManagingCursor(cursorCategories);
 		
-		// Set up the adapters
-		adapterCategories = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCategories, FROM, TO);
-		adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		spinCategory.setAdapter(adapterCategories);
-		
-		if(Action == ACTION_EDIT || Action == ACTION_ENTER_SCHEDULE)
+		// If transaction.splits.size() == 2, we didn't have any splits originally but now the user wants to add some.
+		// So let's add the original category as the first row.
+		if(transaction.splits.size() == 2)
 		{
-			// If KMMDapp.Splits.size() == 0 we didn't have any splits originally but now the user wants to add some.
-			// So let's add the original category as the first row.
-			if(KMMDapp.Splits.size() == 0)
-			{
-				insertNewRow(getCategoryName(strOrigCategoryId), strOrigMemo, strTranAmount);
-				AccountIdList.add(strOrigCategoryId);
-			}
-			else
-			{
-				// Create the rows for the splits that need to be displayed
-				for(int i=0; i < KMMDapp.Splits.size(); i++)
-				{
-					String strCategory = getCategoryName(KMMDapp.Splits.get(i).getAccountId());
-					AccountIdList.add(KMMDapp.Splits.get(i).getAccountId());
-					insertNewRow(strCategory, KMMDapp.Splits.get(i).getMemo(), KMMDapp.Splits.get(i).getValueFormatted());
-				}
-			}
-			
-			// Need to reset the isDirty flag back to false.
-			isDirty = false;
+			insertNewRow(getCategoryName(transaction.splits.get(1).getAccountId()), 
+										 transaction.splits.get(1).getMemo(),
+										 Transaction.convertToDollars(Account.convertBalance(transaction.splits.get(1).getValue()), true));
+			AccountIdList.add(transaction.splits.get(1).getAccountId());
 		}
+		else
+		{
+			// Create the rows for the splits that need to be displayed
+			for(Split split : transaction.splits)
+			{
+				String strCategory = getCategoryName(split.getAccountId());
+				AccountIdList.add(split.getAccountId());
+				insertNewRow(strCategory, split.getMemo(), split.getValueFormatted());
+			}
+		}
+		
+		// Need to reset the isDirty flag back to false.
+		isDirty = false;
 		
         // Set up the footer correctly.
 		updateTotals(false);
         txtTransAmount.setText(strLabelTotal + " " + strTranAmount);
-        Log.d(TAG, "isDirty: " + isDirty);
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -314,6 +349,8 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 				}
 				
 				long amount = updateTotals(false);
+				final long newTotal = updateTotals(true);
+				strTranAmount = Transaction.convertToDollars(newTotal, true);
 				if( amount != 0 )
 				{
 					AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
@@ -323,8 +360,17 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							saveSplits();
-							KMMDapp.flSplitsTotal = updateTotals(true);
-							KMMDapp.setSplitsAryDirty(true);
+							boolean saved = transaction.cacheTransaction();
+							if( !saved )
+							{
+								//need to log the error for now.
+								Log.d(TAG, "no splits where cached!!! Something happened during the cache process");
+							}
+							returnIntent.putExtra("splitsTotal", newTotal);
+							returnIntent.putExtra("NumberOfSplits", transaction.splits.size());
+							setResult(1, returnIntent);
+							//KMMDapp.flSplitsTotal = updateTotals(true);
+							//KMMDapp.setSplitsAryDirty(true);
 							finish();
 						}
 					});
@@ -339,7 +385,17 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 				else
 				{
 					saveSplits();
-					KMMDapp.setSplitsAryDirty(true);
+					// write the splits out to the cache, returns true on success and false on failure
+					boolean saved = transaction.cacheTransaction();
+					if( !saved )
+					{
+						//need to log the error for now.
+						Log.d(TAG, "no splits where cached!!! Something happened during the cache process");
+					}
+					//KMMDapp.setSplitsAryDirty(true);
+					returnIntent.putExtra("splitsTotal", newTotal);
+					returnIntent.putExtra("NumberOfSplits", transaction.splits.size());
+					setResult(1, returnIntent);
 					finish();
 				}
 				break;
@@ -361,6 +417,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 			{
 				public void onClick(DialogInterface dialog, int whichButton)
 				{
+					setResult(-1, null);
 					finish();
 				}
 			});
@@ -376,7 +433,10 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 			alertDel.show();
 		}
 		else
+		{
+			setResult(-1, null);
 			finish();
+		}
 	}
 	public class AccountOnItemSelectedListener implements OnItemSelectedListener
 	{
@@ -389,7 +449,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 					strCategoryName = c.getString(0).toString();
 					strAccountId = c.getString(1).toString();
 					//c.close();
-					if( numOfPasses > KMMDapp.Splits.size() )
+					if( numOfPasses > transaction.splits.size() )
 						isDirty = true;
 					else
 						numOfPasses++;
@@ -440,21 +500,38 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 			Toast.makeText(getApplicationContext(), "Have an issue!", Toast.LENGTH_LONG).show();
 	}
 
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
+	{
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, "#" + transaction.getWidgetId());
+		u = Uri.parse(u.toString());
+		return new CursorLoader(this, u, new String[] { "accountName", "id AS _id" }, "(accountType=? OR accountType=?)",
+				new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) }, "accountName ASC");
+	}
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor categories) 
+	{
+		adapterCategories.swapCursor(categories);
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) 
+	{
+		adapterCategories.swapCursor(null);
+	}
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
 	private int setCategory(String categoryName)
 	{
 		int i = 0;
-		cursorCategories.moveToFirst();
+		Cursor cur = adapterCategories.getCursor();
 		
 		if( categoryName != null )
 		{
-			while(!categoryName.equals(cursorCategories.getString(0)))
+			while(!categoryName.equals(cur.getString(0)))
 			{
-				cursorCategories.moveToNext();
+				cur.moveToNext();
 			
 				//check to see if we have moved past the last item in the cursor, if so return current i.
-				if(cursorCategories.isAfterLast())
+				if(cur.isAfterLast())
 					return i;
 			
 				i++;
@@ -510,8 +587,11 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 	
 	private String getCategoryName(String CategoryId)
 	{
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?", new String[] { CategoryId }, null, null, null);
-		startManagingCursor(c);
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,CategoryId + "#" + transaction.getWidgetId());
+		u = Uri.parse(u.toString());
+		Cursor c = getContentResolver().query(u, null, null, null, null);
+		//KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?", new String[] { CategoryId }, null, null, null);
+		//startManagingCursor(c);
 		c.moveToFirst();
 		String name = c.getString(0);
 		c.close();
@@ -534,8 +614,12 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 				lSumofSplits = lSumofSplits + Transaction.convertToPennies(splitAmount.getText().toString());
 			}
 		}
-		
-		if( nTransType == Transaction.DEPOSIT)
+		// Actions from the Strings.xml file:
+		//		[0] = Deposit
+		//		[1] = Withdraw
+		//		[2] = Transfer
+		String[] actions = getResources().getStringArray(R.array.TransactionTypes);
+		if( transaction.splits.get(0).getAction().equals(actions[0]) )
 			lUnassigned = lTotal + lSumofSplits;
 		else
 			lUnassigned = lTotal - lSumofSplits;
@@ -556,13 +640,32 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 	{
 		DecimalFormat decimal = new DecimalFormat();
 		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
-		//String strCategory = null;
-		String strMemo = null;
-		String strAmount = null;
-		// See if we need clear out the KMMDapp.Splits ArrayList
-		if(Action == ACTION_EDIT)
-			KMMDapp.Splits.clear();
+		
+		// Clear out our incoming splits first.
+		transaction.splits.clear();
 	
+		// In any case we have to create our initial split with the account we are in.
+		String value = null, formatted = null;
+		switch( this.nTransType )
+		{
+			case Transaction.DEPOSIT:
+				value = Account.createBalance(Transaction.convertToPennies(strTranAmount));
+				break;
+			case Transaction.TRANSFER:
+				value = Account.createBalance(Transaction.convertToPennies(strTranAmount));
+				break;
+			case Transaction.WITHDRAW:
+				value = "-" + Account.createBalance(Transaction.convertToPennies(strTranAmount));
+				break;
+			default:
+				break;
+		}
+		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+		this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
+									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+									this.context));
+		
 		for(int i=1; i < tableSplits.getChildCount() - 1; i++)
 		{
 			TableRow row = (TableRow) tableSplits.getChildAt(i);
@@ -579,11 +682,14 @@ public class CreateModifySplitsActivity extends FragmentActivity implements OnCl
 			// Need to take the user's amount and create the reduced fraction.
 			String fraction = Account.createBalance(Transaction.convertToPennies(strAmount));
 			// Create the split in the Splits Array.
-			KMMDapp.Splits.add(new Split("", "N", i+1, "", "", "", "", fraction, strFormattedAmt, fraction, strFormattedAmt,
-											fraction, strFormattedAmt,	strMemo, AccountIdList.get(i-1), "", "", ""));
+			transaction.splits.add(new Split(transaction.getTransId(), "N", i, transaction.origSplits.get(0).getPayeeId(), "",
+											 transaction.origSplits.get(0).getAction(), transaction.origSplits.get(0).getReconcileFlag(), fraction, 
+											 strFormattedAmt, fraction, strFormattedAmt, fraction, strFormattedAmt, strMemo,
+											 AccountIdList.get(i-1), transaction.origSplits.get(0).getCheckNumber(), transaction.origSplits.get(0).getPostDate(),
+											 "", transaction.getWidgetId(), getBaseContext()));
 			
 			// Mark splits as dirty.
-			KMMDapp.setSplitsAryDirty(true);
+			//KMMDapp.setSplitsAryDirty(true);
 		}
 	}
 }

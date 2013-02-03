@@ -209,7 +209,7 @@ public class KMMDService extends Service
 			
 			// We have our open schedules from the database, now create the user defined period of cash flow.
 			ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
-			Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal));
+			Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal), getBaseContext());
 
 			// close our cursor as we no longer need it.
 			c.close();
@@ -898,7 +898,7 @@ public class KMMDService extends Service
 		Log.d(TAG, "Skipped schedule uri: " + u.toString());
 		Cursor c = getContentResolver().query(u, null, null, null, null);
 
-		Schedule sch = new Schedule(c);
+		Schedule sch = new Schedule(c, getBaseContext());
 		sch.skipSchedule();
 		
 		// Update the nextPaymentDue and startDates for the actual schedule

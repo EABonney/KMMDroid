@@ -1,16 +1,26 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
+
+import org.xmlpull.v1.XmlSerializer;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.Xml;
 
 public class Transaction 
 {
@@ -26,56 +36,135 @@ public class Transaction
 	public static final int TRANSFER = 1;
 	public static final int WITHDRAW = 2;
 	
+	private String widgetId;
 	private long nAmount;
 	private long nBalance;
-	private String strPayee;
 	private String strMemo;
 	private String strTransId;
-	private String strStatus;
-	private String strCheckNum;
 	private String strtxType;
 	private String strCurrencyId;
 	private String strBankId;
 	private Calendar Date;
 	private Calendar entryDate;
 	ArrayList<Split> splits;
+	ArrayList<Split> origSplits;
+	Context context;
 	
-	Transaction(String amount, String payee, String date, String memo, String transid, String status, String checknum)
+	Transaction(String amount, String date, String memo, String transid, String wId, Context c)
 	{
+		this.context = c;
+		this.widgetId = null;
 		this.nAmount = convertToPennies(amount);
 		this.nBalance = 0;
-		this.strPayee = payee;
 		this.strMemo = memo;
 		this.strTransId = transid;
-		this.strStatus = status;
-		this.strCheckNum = checknum;
-		this.strtxType = null;
-		this.strCurrencyId = null;
+		this.strtxType = "N";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		Cursor baseCurrency = this.context.getContentResolver().query(u, new String[] { "baseCurrency" }, null, null, null);
+		baseCurrency.moveToFirst();
+		this.strCurrencyId = baseCurrency.getString(baseCurrency.getColumnIndex("baseCurrency"));
+		baseCurrency.close();
 		this.strBankId = null;
 		if( date != null)
 			this.Date = convertDate(date);
 		else
 			this.Date = null;
-		this.entryDate = null;
-		this.splits = new ArrayList<Split>();
+		this.entryDate = Calendar.getInstance();
+		
+		if( transid != null )
+		{
+			// Get the splits for this transaction
+			u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI,this.strTransId + "#" + this.widgetId);
+			u = Uri.parse(u.toString());
+			Cursor tranSplits = this.context.getContentResolver().query(u, null, null, null, null);
+			this.splits = new ArrayList<Split>();
+			for(int i=0; i<tranSplits.getCount(); i++)
+				this.splits.add(new Split(tranSplits, i, wId, c));
+			tranSplits.close();
+		}
+		else
+			this.splits = new ArrayList<Split>();
+		
+		this.origSplits = new ArrayList<Split>();
 	}
 	
-	Transaction(Cursor curTrans)
+	Transaction(Cursor curTrans, String wId, Context c)
 	{
+		this.context = c;
+		this.widgetId = null;
 		curTrans.moveToFirst();
 		this.nAmount = 0;
 		this.nBalance = 0;
-		this.strPayee = null;
 		this.strMemo = curTrans.getString(C_MEMO);
 		this.strTransId = curTrans.getString(C_ID);
-		this.strStatus = null;
-		this.strCheckNum = null;
 		this.Date = convertDate(curTrans.getString(C_POSTDATE));
 		this.entryDate = convertDate(curTrans.getString(C_ENTRYDATE));
 		this.strtxType = curTrans.getString(C_TXTYPE);
 		this.strCurrencyId = curTrans.getString(C_CURRENCYID);
 		this.strBankId = curTrans.getString(C_BANKID);
+		
+		// Get the splits for this transaction
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI,this.strTransId + "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		Cursor tranSplits = this.context.getContentResolver().query(u, null, null, null, null);
 		this.splits = new ArrayList<Split>();
+		for(int i=0; i<tranSplits.getCount(); i++)
+			this.splits.add(new Split(tranSplits, i, wId, c));
+		tranSplits.close();
+		this.origSplits = new ArrayList<Split>();
+	}
+	
+	Transaction(Context c, String id, String wId)
+	{
+		this.context = c;
+		this.widgetId = wId;
+		
+		if( id == null )
+		{
+			this.nAmount = 0;
+			this.nBalance = 0;
+			this.strMemo = null;
+			this.strTransId = null;
+			this.Date = Calendar.getInstance();
+			this.entryDate = Calendar.getInstance();
+			this.strtxType = "N";
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+			u = Uri.parse(u.toString());
+			Cursor baseCurrency = this.context.getContentResolver().query(u, new String[] { "baseCurrency" }, null, null, null);
+			baseCurrency.moveToFirst();
+			this.strCurrencyId = baseCurrency.getString(baseCurrency.getColumnIndex("baseCurrency"));
+			baseCurrency.close();
+			this.strBankId = null;
+			this.splits = new ArrayList<Split>();
+			this.origSplits = new ArrayList<Split>();
+		}
+		else
+		{
+			// Get our actual transaction record
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI,id + "#" + this.widgetId);
+			u = Uri.parse(u.toString());
+			Cursor trans = this.context.getContentResolver().query(u, null, null, null, null);
+			trans.moveToFirst();
+			this.strTransId = trans.getString(trans.getColumnIndex("id"));
+			this.strtxType = trans.getString(trans.getColumnIndex("txType"));
+			this.Date = convertDate(trans.getString(trans.getColumnIndex("postDate")));
+			this.strMemo = trans.getString(trans.getColumnIndex("memo"));
+			this.entryDate = convertDate(trans.getString(trans.getColumnIndex("entryDate")));
+			this.strCurrencyId = trans.getString(trans.getColumnIndex("currencyId"));
+			this.strBankId = trans.getString(trans.getColumnIndex("bankId"));
+			trans.close();
+			
+			// Get the splits for this transaction
+			u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI,id + "#" + this.widgetId);
+			u = Uri.parse(u.toString());
+			Cursor tranSplits = this.context.getContentResolver().query(u, null, null, null, null);
+			this.splits = new ArrayList<Split>();
+			for(int i=0; i<tranSplits.getCount(); i++)
+				this.splits.add(new Split(tranSplits, i, wId, c));
+			tranSplits.close();
+			this.origSplits = new ArrayList<Split>();
+		}
 	}
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
@@ -249,11 +338,6 @@ public class Transaction
 				+ String.valueOf(this.entryDate.get(Calendar.DAY_OF_MONTH)));		
 	}
 	
-	public String getPayee()
-	{
-		return strPayee;
-	}
-	
 	public long getAmount()
 	{
 		return nAmount;
@@ -262,6 +346,11 @@ public class Transaction
 	public long getBalance()
 	{
 		return nBalance;
+	}
+	
+	public void setMemo(String m)
+	{
+		this.strMemo = m;
 	}
 	
 	public String getMemo()
@@ -279,19 +368,19 @@ public class Transaction
 		return strTransId;
 	}
 	
-	public String getStatus()
+	public void setDate(Calendar d)
 	{
-		return strStatus;
+		this.Date = d;
+	}
+	
+	public void setDate(String date)
+	{
+		this.Date = this.convertDate(date);
 	}
 	
 	public Calendar getDate()
 	{
 		return Date;
-	}
-	
-	public String getCheckNum()
-	{
-		return this.strCheckNum;
 	}
 	
 	public void setBalance(long amount)
@@ -334,9 +423,24 @@ public class Transaction
 		this.entryDate = date;
 	}
 	
+	public void setEntryDate(String date)
+	{
+		this.entryDate = this.convertDate(date);
+	}
+	
 	public Calendar getEntryDate()
 	{
 		return this.entryDate;
+	}
+	
+	public void setWidgetId(String wId)
+	{
+		this.widgetId = wId;
+	}
+	
+	public String getWidgetId()
+	{
+		return this.widgetId;
 	}
 	
 	public boolean isFuture()
@@ -358,7 +462,7 @@ public class Transaction
 		return cDate;
 	}
 	
-	public void enter(Context context)
+/*	public void enter(Context context)
 	{
 		// create the ContentValue pairs
 		ContentValues valuesTrans = new ContentValues();
@@ -380,8 +484,364 @@ public class Transaction
 		for(int i=0; i<this.splits.size(); i++)
 		{
 			Log.d(TAG, "Trans Split #" + i + ": " + this.splits.get(i).getPostDate());
-			this.splits.get(i).commitSplit(false, context);
+			this.splits.get(i).commitSplit(false);
 			Account.updateAccount(context, this.splits.get(i).getAccountId(), this.splits.get(i).getValueFormatted(), 1);
 		}
+	}*/
+	
+	public void createId()
+	{
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		final String[] dbColumns = { "hiTransactionId"};
+		final String strOrderBy = "hiTransactionId DESC";
+		// Run a query to get the Transaction ids so we can create a new one.
+		Cursor cursor = this.context.getContentResolver().query(u, dbColumns, null, null, strOrderBy); 
+				//KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
+		//startManagingCursor(cursor);
+		
+		cursor.moveToFirst();
+
+		// Since id is in T000000000000000000 format, we need to pick off the actual number then increase by 1.
+		int lastId = cursor.getInt(0);
+		lastId = lastId +1;
+		String nextId = Integer.toString(lastId);
+		
+		// Need to pad out the number so we get back to our P000000 format
+		String newId = "T";
+		for(int i= 0; i < (18 - nextId.length()); i++)
+		{
+			newId = newId + "0";
+		}
+		
+		// Tack on the actual number created.
+		newId = newId + nextId;
+		
+		// Clean up our cursor
+		cursor.close();
+		
+		this.strTransId = newId;
+	}
+	
+	public void getDataChanges(CreateModifyTransactionActivity cont)
+	{
+		// Get our fragments for payee and category
+		PayeeFragment payeeFrag = (PayeeFragment) cont.getSupportFragmentManager().findFragmentById(R.id.payeeFragment);
+		CategoryFragment catFrag = (CategoryFragment) cont.getSupportFragmentManager().findFragmentById(R.id.categoryFragment);
+		
+		this.Date = cont.getPostDate();
+		this.entryDate = Calendar.getInstance();
+		this.strMemo = cont.editMemo.getText().toString();
+		
+		// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
+		DecimalFormat decimal = new DecimalFormat();
+		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
+		String strAmount = cont.editAmount.getText().toString().replace('.', decChar);
+		
+		// Save the old splits into the origSplits arraylist for use later.
+		this.origSplits = new ArrayList<Split>();
+		for(Split split : this.splits)
+			this.origSplits.add(split);
+		
+		// Create the splits information to be saved.	
+		// Clear out any split we might of had when we first got started.
+		this.splits.clear();
+		
+		// In any case we have to create our initial split with the account we are in.
+		String value = null, formatted = null;
+		switch( cont.getTransactionType() )
+		{
+			case Transaction.DEPOSIT:
+				value = Account.createBalance(Transaction.convertToPennies(strAmount));
+				break;
+			case Transaction.TRANSFER:
+				value = Account.createBalance(Transaction.convertToPennies(strAmount));
+				break;
+			case Transaction.WITHDRAW:
+				value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+				break;
+			default:
+				break;
+		}
+		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+		this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
+									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+									this.context));
+		if( cont.getNumberOfSplits() > 2 )
+		{
+			// Need to fetch the splits from the cache now.
+	    	//KMMDSplitParser parser = new KMMDSplitParser(this.context.getCacheDir().getPath() + "tempSplits", this.context);
+	    	//Transaction tmpTrans = parser.parse();
+	    	
+	    	// Need to see if the user changed the Payee AFTER returning from the splits entry screen. If so, use the newest one.
+	    	//if( !payeeFrag.getPayeeId().equalsIgnoreCase(tmpTrans.splits.get(0).getPayeeId()) )
+	    	//{
+	    	//	for(int i=0; i<tmpTrans.splits.size();i++)
+	    	//		tmpTrans.splits.get(i).setPayeeId(payeeFrag.getPayeeId());
+	    	//}
+	    	
+	    	// Add the splits from the cache to our transaction
+	    	//for( Split split : tmpTrans.splits )
+	    	//	this.splits.add(split);
+		}
+		else
+		{
+			// The user doesn't have any actual splits so create them from the single category selected by the user.
+			switch( cont.getTransactionType() )
+			{
+				case Transaction.DEPOSIT:
+					value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				case Transaction.TRANSFER:
+					// We have to take the current value and change the sign.
+					value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
+					break;
+				case Transaction.WITHDRAW:
+					value = Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				default:
+				break;
+			}
+			formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+			this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", cont.getTranAction(),
+					String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+					catFrag.getCategoryId(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+					this.context));
+		}
+	}
+	
+	public void Save()
+	{
+		// create the ContentValue pairs
+		ContentValues valuesTrans = new ContentValues();
+		valuesTrans.put("id", this.strTransId);
+		valuesTrans.put("txType", "N");
+		valuesTrans.put("postDate", padDate(this.formatDateString()));
+		valuesTrans.put("memo", this.strMemo);
+        valuesTrans.put("entryDate", padDate(this.formatEntryDateString()));
+		valuesTrans.put("currencyId", this.getCurrencyId());
+		valuesTrans.put("bankId", "");
+
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().insert(u, valuesTrans);
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().update(u, null, "hiTransactionId", new String[] { "1" });
+		this.context.getContentResolver().update(u, null, "transactions", new String[] { "1" });
+		this.context.getContentResolver().update(u, null, "splits", new String[] { String.valueOf(this.splits.size()) });
+	
+		// Insert the splits for this transaction
+		for(Split s : this.splits)
+		{
+			s.commitSplit(false);
+			Account.updateAccount(this.context, s.getAccountId(), s.getValueFormatted(), 1);
+		}	
+	}
+	
+	public void Update()
+	{
+		// create the ContentValue pairs
+		ContentValues valuesTrans = new ContentValues();
+		valuesTrans.put("id", this.strTransId);
+		valuesTrans.put("txType", "N");
+		valuesTrans.put("postDate", padDate(this.formatDateString()));
+		valuesTrans.put("memo", this.strMemo);
+        valuesTrans.put("entryDate", padDate(this.formatEntryDateString()));
+		valuesTrans.put("currencyId", this.getCurrencyId());
+		valuesTrans.put("bankId", "");		
+		
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI,this.strTransId + "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().update(u, valuesTrans, null, null);
+		// Delete all the splits for this transaction first, getting the number or rows deleted.
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		int rowsDel = this.context.getContentResolver().delete(u, "transactionId=?", new String[] { this.strTransId });
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().update(u, null, "splits", new String[] { String.valueOf(this.origSplits.size() - rowsDel) });
+
+		// Need to update the account by pulling out all the Original Splits information.
+		for(Split origsplit : this.origSplits)
+			Account.updateAccount(this.context, origsplit.getAccountId(), origsplit.getValueFormatted(), -1);
+
+		// Insert the splits for this transaction
+		for(Split s : this.splits)
+		{
+			s.commitSplit(false);
+			Account.updateAccount(this.context, s.getAccountId(), s.getValueFormatted(), 1);
+		}		
+	}
+	
+	public boolean cacheTransaction()
+	{
+        XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try 
+        {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.docdecl(" KMMDROID-CACHE");
+            serializer.startTag("", "KMMDCache");
+            serializer.startTag("", "Transaction");
+            serializer.attribute("", "id", this.getTransId() == null ? "" : this.getTransId());
+            serializer.attribute("", "txType", this.getTxType());
+            serializer.attribute("", "postDate", padDate(this.formatDateString()));
+            serializer.attribute("", "memo", this.getMemo());
+            serializer.attribute("", "entryDate", padDate(this.formatEntryDateString()));
+            serializer.attribute("", "currencyId", this.getCurrencyId());
+            serializer.attribute("", "bankId", this.getBankId() == null ? "" : this.getBankId());
+            serializer.attribute("", "widgetId", this.getWidgetId());
+            for (Split split : this.splits)
+            {
+            	serializer.startTag("", "Split");
+           		serializer.attribute("", "transactionId", split.getTransactionId() == null ? "" : split.getTransactionId());
+           		serializer.attribute("", "txType", split.getTxType());
+           		serializer.attribute("", "splitId", String.valueOf(split.getSplitId()));
+           		serializer.attribute("", "payeeId", split.getPayeeId() == null ? "" : split.getPayeeId());
+           		serializer.attribute("", "reconcildeDate", split.getReconcileDate() == null ? "" : split.getReconcileDate());
+           		serializer.attribute("", "action", split.getAction() == null ? "" : split.getAction());
+           		serializer.attribute("", "reconcileFlag", split.getReconcileFlag());
+           		serializer.attribute("", "value", split.getValue() == null ? "" : split.getValue());
+           		serializer.attribute("", "valueFormatted", split.getValueFormatted() == null ? "" : split.getValueFormatted());
+           		serializer.attribute("", "shares", split.getShares() == null ? "" : split.getShares());
+           		serializer.attribute("", "sharesFormatted", split.getSharesFormatted() == null ? "" : split.getSharesFormatted());
+           		serializer.attribute("", "price", split.getPrice() == null ? "" : split.getPrice());
+           		serializer.attribute("", "priceFormatted", split.getPriceFormatted() == null ? "" : split.getPriceFormatted());
+           		serializer.attribute("", "memo", split.getMemo() == null ? "" : split.getMemo());
+           		serializer.attribute("", "accountId", split.getAccountId() == null ? "" : split.getAccountId());
+           		serializer.attribute("", "checkNumber", split.getCheckNumber() == null ? "" : split.getCheckNumber());
+           		serializer.attribute("", "postDate", split.getPostDate() == null ? "" : split.getPostDate());
+           		serializer.attribute("", "bankId", split.getBankId() == null ? "" : split.getBankId());
+           		serializer.endTag("", "Split");
+            }
+            serializer.endTag("", "Transaction");
+            serializer.endTag("", "KMMDCache");
+            serializer.endDocument();
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+            return false;
+        }
+        		
+        // Attempt to write the splits to cache.
+        File cache = this.context.getCacheDir();
+
+        try 
+        {
+			FileOutputStream fos = new FileOutputStream(cache.getPath() + File.separator + "tempSplits");
+			fos.write(writer.toString().getBytes());
+			fos.close();
+		} 
+        catch (FileNotFoundException e) 
+        {
+			e.printStackTrace();
+			return false;
+		} 
+        catch (IOException e) 
+        {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public void getcachedTransaction()
+	{
+        // Attempt to write the splits to cache.
+        File cache = this.context.getCacheDir();
+    	KMMDSplitParser parser = new KMMDSplitParser(cache.getPath() + File.separator + "tempSplits", this.context);
+    	Transaction tmpTrans = parser.parse();
+    	
+    	// Calc the Amount of our transaction.
+    	tmpTrans.calcTransactionAmount();
+    	
+    	// copy the loaded transaction into our object.
+    	this.copy(tmpTrans);
+    	
+    	// Clear the cache
+    	File tmpFile = new File(cache.getPath() + "tempSplits");
+    	tmpFile.delete();
+	}
+	
+	public void calcTransactionAmount()
+	{
+		for(int i=1; i<this.splits.size(); i++)
+			this.nAmount =+ Account.convertBalance(this.splits.get(i).getValue());
+	}
+	
+	public void copy(Transaction tmp)
+	{
+		this.nAmount = tmp.nAmount;
+		this.nBalance = tmp.nBalance;
+		this.strMemo = tmp.strMemo;
+		this.strTransId = tmp.strTransId;
+		this.Date = tmp.Date;
+		this.entryDate = tmp.entryDate;
+		this.strtxType = tmp.strtxType;
+		this.strCurrencyId = tmp.strCurrencyId;
+		this.strBankId = tmp.strBankId;
+		this.context = tmp.context;
+		this.widgetId = tmp.widgetId;
+		for(Split split : tmp.splits)
+		{
+			this.splits.add(split);
+			this.origSplits.add(split);
+		}
+	}
+	
+	private String padDate(String str)
+	{
+		// Date passed in is in the form of YYY-MM-DD
+		String[] dates = str.split("-");
+		
+		String strDay = null;
+		String strMonth = null;
+		switch(Integer.valueOf(dates[2]))
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + dates[2];
+				break;
+			default:
+				strDay = dates[2];
+			break;
+		}
+		
+		switch(Integer.valueOf(dates[1]))
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+				strMonth = "0" + String.valueOf(Integer.valueOf(dates[1]));
+				break;
+			default:
+				strMonth = String.valueOf(Integer.valueOf(dates[1]));
+				break;
+		}
+		
+		return new StringBuilder()
+					// Month is 0 based so add 1
+					.append(dates[0]).append("-")
+					.append(strMonth).append("-")
+					.append(strDay).toString();
 	}
 }

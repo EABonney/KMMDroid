@@ -43,6 +43,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 	private int Action = 0;
 	private String schId = null;
 	private String widgetDatabasePath = null;
+	private String widgetId = "9999";
 	private Boolean isDirty = false;
 	
 	ArrayList<Split> Splits;
@@ -65,6 +66,7 @@ public class CreateModifyScheduleActivity extends TabActivity
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
         widgetDatabasePath = extras.getString("widgetDatabasePath");
+        widgetId = extras.getString("widgetId");
         
         // See if we are editing a schedule, if so get the schedule Id we passed in.
         if( Action == ACTION_EDIT )
@@ -361,7 +363,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 					if(i > 0)
 						payeeId = null;
 					Splits.add(new Split(id, "S", i, payeeId, null, null, String.valueOf(nStatus), value, formatted, value, formatted,
-							null, null, memo, accountId, ckNumber, scheduleStartDate, null));
+							null, null, memo, accountId, ckNumber, scheduleStartDate, null, this.widgetId, getBaseContext()));
 				}
 				switch (Action)
 				{
@@ -386,7 +388,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 				for(int i=0; i < Splits.size(); i++)
 				{
 					Split s = Splits.get(i);
-					s.commitSplit(false, this);
+					s.commitSplit(false);
 				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				// Need to clean up the OrigSplits and Splits arrays for future use.
@@ -632,7 +634,7 @@ public class CreateModifyScheduleActivity extends TabActivity
 								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
 								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
 								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
-								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
+								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID), this.widgetId, getBaseContext()) );
 			cursor.moveToNext();
 		}
 		

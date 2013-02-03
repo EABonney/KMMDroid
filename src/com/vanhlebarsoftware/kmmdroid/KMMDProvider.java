@@ -79,16 +79,16 @@ public class KMMDProvider extends ContentProvider
 	/*********************************************************************************************************************
 	 * Parameters used for querying the transactions table
 	 ********************************************************************************************************************/	
-	private static final String transactionsTable = "kmmTransactions";
-	private static final String[] transactionsColumns = { "*" };
-	private static final String transactionsSingleSelection = "id=?";
+	//private static final String transactionsTable = "kmmTransactions";
+	//private static final String[] transactionsColumns = { "*" };
+	//private static final String transactionsSingleSelection = "id=?";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the splits table
 	 ********************************************************************************************************************/	
-	private static final String splitsTable = "kmmSplits";
-	private static final String[] splitsColumns = { "*" };
-	private static final String splitsSingleSelection = "transactionId=?";
-	private static final String splitsOrderBy = "splitId ASC";
+	//private static final String splitsTable = "kmmSplits";
+	//private static final String[] splitsColumns = { "*" };
+	//private static final String splitsSingleSelection = "transactionId=?";
+	//private static final String splitsOrderBy = "splitId ASC";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the fileinfo table
 	 ********************************************************************************************************************/
@@ -465,24 +465,25 @@ public class KMMDProvider extends ContentProvider
 				dbSelectionArgs = selectionArgs;
 				break;
 			case TRANSACTIONS_ID:
-				dbTable = transactionsTable;
-				dbColumns = transactionsColumns;
-				dbSelection = transactionsSingleSelection;
+				dbTable = "kmmTransactions";
+				dbColumns = new String[] { "*" };
+				dbSelection = "id=?";
 				dbOrderBy = null;
 				id = this.getId(uri);
+				dbSelectionArgs = new String[] { id };
 				break;
 			case SPLITS:
-				dbTable = splitsTable;
+				dbTable = "kmmSplits";
 				dbColumns = projection;
 				dbSelection = selection;
 				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
 				break;
 			case SPLITS_ID:
-				dbTable = splitsTable;
-				dbColumns = splitsColumns;
-				dbSelection = splitsSingleSelection;
-				dbOrderBy = splitsOrderBy;
+				dbTable = "kmmSplits";
+				dbColumns = new String[] { "*" };
+				dbSelection = "transactionId=?";
+				dbOrderBy = "splitId ASC";
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
 				break;
@@ -520,9 +521,15 @@ public class KMMDProvider extends ContentProvider
 				break;
 			case PAYEES_ID:
 				dbTable = "kmmPayees";
-				dbColumns = projection;
+				if( projection != null )
+					dbColumns = projection;
+				else
+					dbColumns = new String[] { "*" };
 				dbSelection = "id=?";
-				dbOrderBy = sortOrder;
+				if( sortOrder != null )
+					dbOrderBy = sortOrder;
+				else
+					dbOrderBy = "name ASC";
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
 				break;

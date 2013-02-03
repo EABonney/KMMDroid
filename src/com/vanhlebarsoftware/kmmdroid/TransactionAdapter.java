@@ -90,7 +90,7 @@ public class TransactionAdapter extends ArrayAdapter<Transaction> implements Sec
 				Balance.setTypeface(Typeface.DEFAULT);
 				Balance.setTextColor(Color.BLACK);	
 				DatePaid.setText("");
-				Payee.setText(item.getPayee());
+				Payee.setText(item.splits.get(0).getPayeeName());
 				Amount.setText("");
 				Balance.setText("");
 			}
@@ -120,7 +120,7 @@ public class TransactionAdapter extends ArrayAdapter<Transaction> implements Sec
 				}
 			
 				DatePaid.setText(item.formatDateString());
-				Payee.setText(item.getPayee());
+				Payee.setText(item.splits.get(0).getPayeeName());
 				Amount.setText(Transaction.convertToDollars(item.getAmount(), true));
 				Balance.setText(Transaction.convertToDollars(item.getBalance(), true));
 			}

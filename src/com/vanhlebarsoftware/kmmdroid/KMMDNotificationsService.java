@@ -80,7 +80,8 @@ public class KMMDNotificationsService extends Service
 		// We have our open schedules from the database, now create the user defined period of cash flow.
 		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
 		
-		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"));
+		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), 
+											Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"), getBaseContext());
 		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
 		// See if we even have any schedules either past due or due today.
 		if(Schedules.size() > 0)
@@ -152,7 +153,7 @@ public class KMMDNotificationsService extends Service
     			// schedule. Not sure why...
     			schedule = getSchedule(scheduleId);
 				//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
-    			schedule.advanceDueDate(Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier()));
+    			schedule.advanceDueDate(/*Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier())*/);
 				ContentValues values = new ContentValues();
 				values.put("nextPaymentDue", schedule.getDatabaseFormattedString());
 				values.put("startDate", schedule.getDatabaseFormattedString());
@@ -265,7 +266,7 @@ public class KMMDNotificationsService extends Service
 		u = null;
 		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schId);
 		Cursor transaction = getContentResolver().query(u, null, null, null, null);
-		return new Schedule(schedule, splits, transaction);
+		return new Schedule(schedule, splits, transaction, getBaseContext());
 	}
 
 	private String createTransId()

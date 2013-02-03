@@ -211,7 +211,7 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 					Account.convertBalance(c.getString(c.getColumnIndex("balance"))), splits);
 			accounts.add(new Account(c.getString(c.getColumnIndex("id")), c.getString(c.getColumnIndex("accountName")), strBal,
 									 c.getString(c.getColumnIndex("accountTypeString")), c.getInt(c.getColumnIndex("accountType")),
-									 isParent(c.getString(c.getColumnIndex("id")))));
+									 isParent(c.getString(c.getColumnIndex("id"))), context));
 			
 			// Check to see if this account is closed.
 			u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
@@ -253,7 +253,7 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 			String strBal = Transaction.convertToDollars(Account.convertBalance(exp.getString(exp.getColumnIndex("balance"))), true);
 			categories.add(new Account(exp.getString(exp.getColumnIndex("id")), exp.getString(exp.getColumnIndex("accountName")), strBal,
 					 exp.getString(exp.getColumnIndex("accountTypeString")), exp.getInt(exp.getColumnIndex("accountType")),
-					 isParent(exp.getString(exp.getColumnIndex("id")))));
+					 isParent(exp.getString(exp.getColumnIndex("id"))), context));
 			exp.moveToNext();
 		}
 		
@@ -263,7 +263,7 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 			String strBal = Transaction.convertToDollars(Account.convertBalance(inc.getString(inc.getColumnIndex("balance"))), true);
 			categories.add(new Account(inc.getString(inc.getColumnIndex("id")), inc.getString(inc.getColumnIndex("accountName")), strBal,
 					 inc.getString(inc.getColumnIndex("accountTypeString")), inc.getInt(inc.getColumnIndex("accountType")),
-					 isParent(inc.getString(inc.getColumnIndex("id")))));
+					 isParent(inc.getString(inc.getColumnIndex("id"))), context));
 			inc.moveToNext();			
 		}
 		

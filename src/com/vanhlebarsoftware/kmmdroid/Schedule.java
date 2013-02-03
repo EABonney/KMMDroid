@@ -5,8 +5,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 public class Schedule 
@@ -109,12 +111,14 @@ public class Schedule
 	private long nBalance;		//Hold the balance AFTER this transactions occurs. This is calculated and only for the Cash Required report.
 								//Held in pennies.
 	private String title;
+	private String transDate = null;
 	ArrayList<Split> Splits;	// All the actual details of a particular schedule
 	Transaction Transaction;
+	Context context;
 
 	
 	// Constructor for a Schedule
-	Schedule(String Desc, Calendar dueDate, String strAmt)
+	Schedule(String Desc, Calendar dueDate, String strAmt, Context cont)
 	{
 		this.id = null;
 		this.Description = Desc;
@@ -139,9 +143,10 @@ public class Schedule
 		this.Splits = null;
 		this.Transaction = null;
 		this.title = null;
+		this.context = cont;
 	}
 	
-	Schedule(Cursor c)
+	Schedule(Cursor c, Context cont)
 	{
 		String[] date = {null, null, null};
 		c.moveToFirst();
@@ -182,9 +187,10 @@ public class Schedule
 		this.Splits = null;
 		this.Transaction = null;
 		this.title = null;
+		this.context = cont;
 	}
 	
-	Schedule(Cursor curSchedule, Cursor curSplits)
+	Schedule(Cursor curSchedule, Cursor curSplits, Context c)
 	{
 		// First poplulate the actual schedule details.
 		String[] date = {null, null, null};
@@ -248,13 +254,14 @@ public class Schedule
 		this.Splits = new ArrayList<Split>();
 		//curSplits.moveToFirst();
 		for(int i=0; i < curSplits.getCount(); i++)
-			this.Splits.add(new Split(curSplits, i));
+			this.Splits.add(new Split(curSplits, i, "9999", c));
 		
 		this.Transaction = null;
 		this.title = null;
+		this.context = c;
 	}
 	
-	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction)
+	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction, Context c)
 	{
 		// First poplulate the actual schedule details.
 		String[] date = {null, null, null};
@@ -328,11 +335,12 @@ public class Schedule
 		this.Splits = new ArrayList<Split>();
 		//curSplits.moveToFirst();
 		for(int i=0; i < curSplits.getCount(); i++)
-			this.Splits.add(new Split(curSplits, i));
+			this.Splits.add(new Split(curSplits, i, "9999", c));
 		
 		// Now populate the transaction for this schedule
-		this.Transaction = new Transaction(curTransaction);
+		this.Transaction = new Transaction(curTransaction, "9999", c);
 		this.title = null;
+		this.context = c;
 	}
 	
 	public String getDescription()
@@ -561,7 +569,18 @@ public class Schedule
 				"/" + String.valueOf(this.DueDate.get(Calendar.YEAR));
 	}
 	
-	static public ArrayList<Schedule> BuildCashRequired(Cursor c, String strStartDate, String strEndDate, long nBegBalance)
+	private String formatDate(String date)
+	{
+		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
+		String dates[] = date.split("-");
+		
+		return new StringBuilder()
+		.append(dates[2]).append("-")
+		.append(dates[0]).append("-")
+		.append(dates[1]).toString();
+	}
+	
+	static public ArrayList<Schedule> BuildCashRequired(Cursor c, String strStartDate, String strEndDate, long nBegBalance, Context cont)
 	{
 		Schedule schd = null;
 		ArrayList<Calendar> dueDates = new ArrayList<Calendar>();
@@ -579,7 +598,7 @@ public class Schedule
 			// Let's create the Schedule class and add it to the ArrayList.
 			for(int d=0; d < dueDates.size(); d++)
 			{
-				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED));
+				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED), cont);
 				// Add the id, occurence, occurenceMultiplier, autoEnter and enddate for this schedule
 				schd.setId(c.getString(C_ID));
 				schd.setOccurence(c.getInt(C_OCCURENCE));
@@ -1043,13 +1062,14 @@ public class Schedule
 	
 	public void skipSchedule()
 	{
-		this.advanceDueDate(Schedule.getOccurence(this.occurence, this.occurenceMultiplier));
+		this.advanceDueDate();
+		//this.advanceDueDate(Schedule.getOccurence(this.occurence, this.occurenceMultiplier));
 	}
 	
-	public void advanceDueDate(int occurenceRate)
+	public void advanceDueDate(/*int occurenceRate*/)
 	{
 		
-		switch (occurenceRate)
+		switch (this.getOccurence(this.occurence, this.occurenceMultiplier))
 		{
 			case OCCUR_ONCE:
 				//if(this.DueDate.before(this.EndDate) || this.EndDate == null)
@@ -1120,6 +1140,32 @@ public class Schedule
 			default:
 				break;
 		}		
+		
+		// Now that the schedule is advanced we need to update the various tables with the correct information.
+		// kmmSchedules for the schedule information
+		// kmmTransactions for the "transaction" part of the schedule
+		// kmmSplits for the dates of the next upcoming split that is part of the schedule.
+		ContentValues values = new ContentValues();
+		values.put("nextPaymentDue", this.getDatabaseFormattedString());
+		values.put("startDate", this.getDatabaseFormattedString());
+		values.put("lastPayment", formatDate( this.transDate ));
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI,this.getId() );
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().update(u, values, null, null);
+		//KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { this.getId() });
+		//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
+		for(int i=0; i < this.Splits.size(); i++)
+		{
+			Split s = this.Splits.get(i);
+			s.setPostDate(this.getDatabaseFormattedString());
+			s.commitSplit(true);
+		}	
+		//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
+		values.clear();
+		values.put("postDate", this.getDatabaseFormattedString());
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, this.getId());
+		this.context.getContentResolver().update(u, values, null, null);
+		//KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { this.getId() });
 	}
 	
 	public String getDatabaseFormattedString()
@@ -1236,5 +1282,10 @@ public class Schedule
 		}
 		
 		return trans;
+	}
+	
+	public void setTransDate(String date)
+	{
+		this.transDate = date;
 	}
 }

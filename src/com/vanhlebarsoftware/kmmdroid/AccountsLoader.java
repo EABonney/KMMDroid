@@ -210,7 +210,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 					Account.convertBalance(c.getString(c.getColumnIndex("balance"))), splits);
 			accounts.add(new Account(c.getString(c.getColumnIndex("id")), c.getString(c.getColumnIndex("accountName")), strBal,
 									 c.getString(c.getColumnIndex("accountTypeString")), c.getInt(c.getColumnIndex("accountType")),
-									 isParent(c.getString(c.getColumnIndex("id")))));
+									 isParent(c.getString(c.getColumnIndex("id"))), context));
 			
 			// Check to see if this account is closed.
 			u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);

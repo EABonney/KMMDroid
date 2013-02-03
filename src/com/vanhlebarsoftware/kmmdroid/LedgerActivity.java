@@ -146,6 +146,7 @@ public class LedgerActivity extends FragmentActivity implements
 	    	{
 	    		Intent i = new Intent(getBaseContext(), ViewTransactionActivity.class);
 	    		i.putExtra("transactionId", trans.getTransId());
+	    		i.putExtra("fromWidgetId", "9999");
 	    		startActivity(i);
 	    		previousLocation = position;
 	    	}
@@ -177,6 +178,7 @@ public class LedgerActivity extends FragmentActivity implements
 				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 				i.putExtra("Action", ACTION_NEW);
 				i.putExtra("accountUsed", AccountID);
+				i.putExtra("fromWidgetId", "9999");
 				startActivity(i);
 				break;
 			case R.id.itemPrefs:
@@ -299,6 +301,8 @@ public class LedgerActivity extends FragmentActivity implements
 		
 		listTransactions.setSelection(previousLocation);
 		setProgressBarIndeterminateVisibility(false);
+		
+		Log.d(TAG, "Got all our transactions to display!");
 	}
 
 	public void onLoaderReset(Loader<List<Transaction>> loader) 

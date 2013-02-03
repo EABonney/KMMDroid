@@ -214,11 +214,12 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
 				u = Uri.parse(u.toString());
 				Cursor splits = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+				long bal = Account.convertBalance(c.getString(c.getColumnIndex("balance")));
 				String strBal = Account.adjustForFutureTransactions(c.getString(c.getColumnIndex("id")), 
-						Account.convertBalance(c.getString(c.getColumnIndex("balance"))), splits);
+						bal, splits);
 				accounts.add(new Account(c.getString(c.getColumnIndex("id")), c.getString(c.getColumnIndex("accountName")), strBal,
 						c.getString(c.getColumnIndex("accountTypeString")), c.getInt(c.getColumnIndex("accountType")),
-						isParent(c.getString(c.getColumnIndex("id")))));
+						isParent(c.getString(c.getColumnIndex("id"))), context));
 						
 				splits.close();
 			}

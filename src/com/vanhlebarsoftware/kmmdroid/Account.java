@@ -51,6 +51,7 @@ public class Account
 	private boolean isParent;
 	private boolean isClosed;
 	private boolean isPreferred;
+	private Context context;
 	
 
 	Account()
@@ -71,9 +72,10 @@ public class Account
 		this.isPreferred = false;
 		this.transactionCount = 0;
 		this.notes = null;
+		this.context = null;
 	}
 	
-	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP)
+	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP, Context c)
 	{
 		this.id = id;
 		this.parentId = null;
@@ -91,10 +93,12 @@ public class Account
 		this.isPreferred = false;
 		this.transactionCount = 0;
 		this.notes = null;
+		this.context = c;
 	}
 	
-	Account(Cursor cur, Context context)
+	Account(Cursor cur, Context c)
 	{
+		this.context = c;
 		int index = cur.getColumnIndex("_id");
 		if( index == -1 )
 			this.id = cur.getString(cur.getColumnIndex("id"));
@@ -157,7 +161,7 @@ public class Account
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
 		u = Uri.parse(u.toString());
-		Cursor kvp = context.getContentResolver().query(u, new String[] { "*" }, "kvpType='ACCOUNT' AND kvpId=?", new String[] { this.id }, null);
+		Cursor kvp = this.context.getContentResolver().query(u, new String[] { "*" }, "kvpType='ACCOUNT' AND kvpId=?", new String[] { this.id }, null);
 		
 		this.isClosed = getKVPIsClosed(kvp);
 		this.IBAN = getKVPIBAN(kvp);		
@@ -302,9 +306,9 @@ public class Account
 	static public void updateAccount(Context context, String accountId, String transValue, int nChange)
 	{
 		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,accountId + frag);
 		u = Uri.parse(u.toString());
-		Cursor c = context.getContentResolver().query(u, new String[] { "balance", "transactionCount" }, "id=?", new String[] { accountId }, null);
+		Cursor c = context.getContentResolver().query(u, new String[] { "balance", "transactionCount" }, null, null, null);
 		c.moveToFirst();
 		
 		// Update the current balance for this account.
@@ -405,7 +409,8 @@ public class Account
 		while(splits.moveToNext())
 		{
 			// Since our current balance includes the future transactions we need to do the opposite of the transaction to correct the balance
-			balance = balance - Transaction.convertToPennies(splits.getString(0));
+			if( splits.getString(0) != null )
+				balance = balance - Transaction.convertToPennies(splits.getString(0));
 		}
 		
 		newBalanceFormatted = Transaction.convertToDollars(balance, true);
@@ -729,11 +734,11 @@ public class Account
 		value = Account.createBalance(Transaction.convertToPennies(openBal));
 		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 		splits.add(new Split(id, "N", 0, "", "", "", "0", value, formatted, value, formatted,
-				 "", "", "", acctId, "", openDate, ""));
+				 "", "", "", acctId, "", openDate, "", "9999", this.context));
 		value = Account.createBalance(Transaction.convertToPennies(openBal) * -1);
 		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
 		splits.add(new Split(id, "N", 1, "", "", "", "0", value, formatted, value, formatted,
-				 "", "", "", OpeningBalancesId, "", openDate, ""));		
+				 "", "", "", OpeningBalancesId, "", openDate, "", "9999", this.context));		
 		
 		// Actually enter the transaction and splits into the database, update the fileInfo table and the account with the # of transactions.
 		frag = "#9999";
@@ -746,7 +751,7 @@ public class Account
 		for(int i=0; i < splits.size(); i++)
 		{
 			Split s = splits.get(i);
-			s.commitSplit(false, context);
+			s.commitSplit(false);
 			Account.updateAccount(context, s.getAccountId(), s.getValueFormatted(), 1);
 		}
 		context.getContentResolver().update(u, null, "lastModified", new String[] { "0" });
