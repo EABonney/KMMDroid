@@ -1,21 +1,13 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.AlertDialog;
-//import android.app.DatePickerDialog;
-//import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,8 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Toast;
 //import android.widget.DatePicker;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.*;
@@ -44,26 +34,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
-	private static int C_TRANSACTIONID = 0;
-	private static int C_TXTYPE = 1;
-	private static int C_SPLITID = 2;
-	private static int C_PAYEEID = 3;
-	private static int C_RECONCILEDATE = 4;
-	private static int C_ACTION = 5;
-	private static int C_RECONCILEFLAG = 6;
-	private static int C_VALUE = 7;
-	private static int C_VALUEFORMATTED = 8;
-	private static int C_SHARES = 9;
-	private static int C_SHARESFORMATTED = 10;
-	private static int C_PRICE = 11;
-	private static int C_PRICEFORMATTED = 12;
-	private static int C_MEMO = 13;
-	private static int C_ACCOUNTID = 14;
-	private static int C_CHECKNUMBER = 15;
-	private static int C_POSTDATE = 16;
-	private static int C_BANKID = 17;
-	private static int T_POSTDATE = 2;
-	private static int T_MEMO = 3;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM1 = { "accountName" };
@@ -88,28 +58,17 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 	private String widgetDatabasePath = null;
 	private String fromWidgetId = "9999";
 	private boolean isDirty = false;
-	//ArrayList<Split> Splits;
-	//ArrayList<Split> OrigSplits;
 	CategoryFragment catFrag;
 	PayeeFragment payeeFrag;
 	Spinner spinTransType;
-	//Spinner spinPayee;
-	//Spinner spinCategory;
 	Spinner spinStatus;
 	ImageButton buttonSetDate;
-	//Button buttonChooseCategory;
-	//ImageButton buttonSplits;
 	EditText transDate;
-	//EditText editCategory;
 	EditText editMemo;
 	EditText editAmount;
 	EditText editCkNumber;
 	ArrayAdapter<CharSequence> adapterTransTypes;
 	ArrayAdapter<CharSequence> adapterStatus;
-	//Cursor cursorPayees;
-	//Cursor cursorCategories;
-	//SimpleCursorAdapter adapterPayees;
-	//SimpleCursorAdapter adapterCategories;
 	Transaction transaction;
 	KMMDroidApp KMMDapp;
 	
@@ -131,19 +90,15 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         
         // Find our views
         spinTransType = (Spinner) findViewById(R.id.transactionType);
-        //spinPayee = (Spinner) findViewById(R.id.payee);
-        //spinCategory = (Spinner) findViewById(R.id.category);
         spinStatus = (Spinner) findViewById(R.id.status);
         transDate = (EditText) findViewById(R.id.date);
-        //editCategory = (EditText) findViewById(R.id.editCategory);
         editMemo = (EditText) findViewById(R.id.memo);
         editAmount = (EditText) findViewById(R.id.amount);
         editCkNumber = (EditText) findViewById(R.id.checkNumber);
         buttonSetDate = (ImageButton) findViewById(R.id.buttonSetDate);
-        //buttonChooseCategory = (Button) findViewById(R.id.buttonChooseCategory);
-        //buttonSplits = (ImageButton) findViewById(R.id.buttonSplit);
         catFrag = (CategoryFragment) getSupportFragmentManager().findFragmentById(R.id.categoryFragment);
         payeeFrag = (PayeeFragment) getSupportFragmentManager().findFragmentById(R.id.payeeFragment);
+        
         // Make sure that the KMMDapp.Splits is empty.
         KMMDapp.splitsDestroy();
         
@@ -160,32 +115,16 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         {
         	Log.d(TAG, "From homeWidget: " + String.valueOf(fromHomeWidget));
         	transaction = new Transaction(getBaseContext(), null, this.fromWidgetId);
-        	// if we are coming from the home screen widget make sure to open the database used with the actual widget.
-        	//if( fromHomeWidget )
-        	//{
-        	//	KMMDapp.setFullPath(KMMDapp.prefs.getString(widgetDatabasePath, ""));
-        	//	KMMDapp.openDB();
-        	//}
         	accountUsed = extras.getString("accountUsed");
         }
         else if( Action == ACTION_EDIT )
         	transaction = new Transaction(getBaseContext(), extras.getString("transId"), this.fromWidgetId); 
-        //transId = extras.getString("transId");
+
         else if( Action == ACTION_ENTER_SCHEDULE )
         {
         	// Need to get the specified schedule and all it's splits and other information.
         	scheduleToEnter = getSchedule(extras.getString("scheduleId"));
-        	
-        	//if( fromHomeWidget )
-        	//{
-        		// Need to ensure we are working with the correct database file.
-        	//	KMMDapp.setFullPath(widgetDatabasePath);
-        	//	KMMDapp.openDB();
-        	//}
         }
-        
-        // Make it so the user is not able to edit the Category selected without using the Spinner.
-        //editCategory.setKeyListener(null);
         
         // Set up the other keyListener's for the various editText items.
         editCkNumber.addTextChangedListener(new TextWatcher()
@@ -240,38 +179,12 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 			{
 				DialogFragment dateFrag = new KMMDDatePickerFragment(transDate);
 				dateFrag.show(getSupportFragmentManager(), "datePicker");
-				//showDialog(SET_DATE_ID);
 				isDirty = true;
 			}
 		});
         
-        /*buttonChooseCategory.setOnClickListener(new View.OnClickListener()
-        {			
-			public void onClick(View arg0)
-			{
-				spinCategory.refreshDrawableState();
-				spinCategory.performClick();
-			}
-		});
-        
-        buttonSplits.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				Intent i = new Intent(getBaseContext(), CreateModifySplitsActivity.class);
-				i.putExtra("Action", Action);
-				i.putExtra("TransAmount", editAmount.getText().toString());
-				i.putExtra("Memo", editMemo.getText().toString());
-				i.putExtra("CategoryId", strTransCategoryId);
-				i.putExtra("transType", intTransType);
-				startActivity(i);
-			}
-		});*/
-        
         // Set the OnItemSelectedListeners for the spinners.
         spinTransType.setOnItemSelectedListener(new AccountOnItemSelectedListener());
-        //spinPayee.setOnItemSelectedListener(new AccountOnItemSelectedListener());
-        //spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         spinStatus.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         
         // get the current date
@@ -282,16 +195,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         
         // display the current date
         updateDisplay();
-        
-        // Initialize our Splits ArrayList.
-        //Splits = new ArrayList<Split>();
-        //OrigSplits = new ArrayList<Split>();
-        
-        // Set the default adapter for Categories.
-		//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-		//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-		//			String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-		//startManagingCursor(cursorCategories);
 	}
 	
 	@Override
@@ -304,18 +207,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 	protected void onResume()
 	{
 		super.onResume();
-		
-		//cursorPayees = KMMDapp.db.query("kmmpayees", new String[] { "name", "id AS _id" }, 
-		//		null, null, null, null, "name ASC");
-		//startManagingCursor(cursorPayees);
-		
-		// Set up the adapters
-		//adapterPayees = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorPayees, FROM, TO);
-		//adapterPayees.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		//spinPayee.setAdapter(adapterPayees);
-		//adapterCategories = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCategories, FROM1, TO);
-		//adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		//spinCategory.setAdapter(adapterCategories);
+
 		adapterTransTypes = ArrayAdapter.createFromResource(this, R.array.TransactionTypes, android.R.layout.simple_spinner_item);
 		adapterTransTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinTransType.setAdapter(adapterTransTypes);
@@ -341,8 +233,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 			if( this.numOfSplits == 0)
 			{
 				catFrag.setCategoryId(null);
-				//editCategory.setText("");
-				//buttonChooseCategory.setEnabled(true);
 				numOfSplits = 0;
 				anySplits = false;
 			}
@@ -413,148 +303,9 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 					scheduleToEnter.advanceDueDate(/*Schedule.getOccurence(scheduleToEnter.getOccurence(), scheduleToEnter.getOccurenceMultiplier())*/);					
 					break;
 				}
-				
-				// ensure that the Splits Array is clean before starting.
-/*				Splits.clear();
-				
-				// create the ContentValue pairs
-				ContentValues valuesTrans = new ContentValues();
-				valuesTrans.put("txType", "N");
-				valuesTrans.put("postDate", formatDate(transDate.getText().toString()));
-				valuesTrans.put("memo", editMemo.getText().toString());
-		        // get the current date
-		        final Calendar c = Calendar.getInstance();
-		        valuesTrans.put("entryDate", new StringBuilder()
-					// Month is 0 based so add 1
-					.append(c.get(Calendar.YEAR)).append("-")
-					.append(c.get(Calendar.MONTH) + 1).append("-")
-					.append(c.get(Calendar.DAY_OF_MONTH)).toString());
-				Cursor C = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
-				C.moveToFirst();
-				valuesTrans.put("currencyId", C.getString(0));
-				valuesTrans.put("bankId", "");
-				String id = null;
 
-				valuesTrans.put("id", id);
-				
-				// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
-				DecimalFormat decimal = new DecimalFormat();
-				char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
-				String strAmount = editAmount.getText().toString().replace('.', decChar);
-				
-				// Create the splits information to be saved.			
-				for( int i=0; i < numOfSplits; i++)
-				{
-					String value = null, formatted = null, memo = null;
-					if(i == 0)
-					{
-						switch( intTransType )
-						{
-							case Transaction.DEPOSIT:
-								value = Account.createBalance(Transaction.convertToPennies(strAmount));
-								break;
-							case Transaction.TRANSFER:
-								value = Account.createBalance(Transaction.convertToPennies(strAmount));
-								break;
-							case Transaction.WITHDRAW:
-								value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-								break;
-							default:
-								break;
-						}
-						formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-						memo = editMemo.getText().toString();
-					}
-					else
-					{
-						// If we have splits grab the relevant information from the KMMDapp.Splits object.
-						if( anySplits )
-						{
-							value = KMMDapp.Splits.get(i-1).getValue();
-							formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
-							memo = KMMDapp.Splits.get(i-1).getMemo();
-							accountUsed = KMMDapp.Splits.get(i-1).getAccountId();
-						}
-						else
-						{
-							switch( intTransType )
-							{
-								case Transaction.DEPOSIT:
-									value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-									break;
-								case Transaction.TRANSFER:
-									// We have to take the current value and change the sign.
-									value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
-									break;
-								case Transaction.WITHDRAW:
-									value = Account.createBalance(Transaction.convertToPennies(strAmount));
-									break;
-								default:
-								break;
-							}
-							formatted = Transaction.convertToDollars(Account.convertBalance(value), false);								
-							memo = editMemo.getText().toString();
-							accountUsed = strTransCategoryId;
-						}
-					}
-					// Create the actual split for the transaction to be saved.
-					//Splits.add(new Split(id, "N", i, strTransPayeeId, "", "", "0", value, formatted, value, formatted,
-					//					 "", "", memo, accountUsed, editCkNumber.getText().toString(),
-					//					 formatDate(transDate.getText().toString()), ""));
-				}
-				switch (Action)
-				{
-					case ACTION_NEW:
-						KMMDapp.db.insertOrThrow("kmmTransactions", null, valuesTrans);
-						KMMDapp.updateFileInfo("hiTransactionId", 1);
-						KMMDapp.updateFileInfo("transactions", 1);
-						KMMDapp.updateFileInfo("splits", Splits.size());
-						break;
-					case ACTION_EDIT:
-						KMMDapp.db.update("kmmTransactions", valuesTrans, "id=?", new String[] { transId });
-						// Delete all the splits for this transaction first, getting the number or rows deleted.
-						int rowsDel = KMMDapp.db.delete("kmmSplits", "transactionId=?", new String[] { transId });
-						KMMDapp.updateFileInfo("splits", Splits.size() - rowsDel);
-						// Need to update the account by pulling out all the Original Splits information.
-						for(int i=0; i < OrigSplits.size(); i++)
-							Account.updateAccount(this, OrigSplits.get(i).getAccountId(), OrigSplits.get(i).getValueFormatted(), -1);
-						break;
-					case ACTION_ENTER_SCHEDULE:
-						KMMDapp.db.insertOrThrow("kmmTransactions", null, valuesTrans);
-						KMMDapp.updateFileInfo("hiTransactionId", 1);
-						KMMDapp.updateFileInfo("transactions", 1);
-						KMMDapp.updateFileInfo("splits", Splits.size());
-						//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
-						scheduleToEnter.advanceDueDate(Schedule.getOccurence(scheduleToEnter.getOccurence(), scheduleToEnter.getOccurenceMultiplier()));
-						ContentValues values = new ContentValues();
-						values.put("nextPaymentDue", scheduleToEnter.getDatabaseFormattedString());
-						values.put("startDate", scheduleToEnter.getDatabaseFormattedString());
-						values.put("lastPayment", formatDate(transDate.getText().toString()));
-						KMMDapp.db.update("kmmSchedules", values, "id=?", new String[] { scheduleToEnter.getId() });
-						//Need to update the schedules splits in the kmmsplits table as this is where the upcoming bills in desktop comes from.
-						for(int i=0; i < scheduleToEnter.Splits.size(); i++)
-						{
-							Split s = scheduleToEnter.Splits.get(i);
-							s.setPostDate(scheduleToEnter.getDatabaseFormattedString());
-							s.commitSplit(true, this);
-						}	
-						//Need to update the schedule in kmmTransactions postDate to match the splits and the actual schedule for the next payment due date.
-						values.clear();
-						values.put("postDate", scheduleToEnter.getDatabaseFormattedString());
-						KMMDapp.db.update("kmmTransactions", values, "id=?", new String[] { scheduleToEnter.getId() });						
-						break;
-				}		
-				// Insert the splits for this transaction
-				for(int i=0; i < Splits.size(); i++)
-				{
-					Split s = Splits.get(i);
-					s.commitSplit(false, this);
-					Account.updateAccount(this, s.getAccountId(), s.getValueFormatted(), 1);
-				}*/
 				KMMDapp.updateFileInfo("lastModified", 0);
-				// Need to clean up the OrigSplits and Splits arrays for future use.
-				//Splits.clear();
-				//OrigSplits.clear();
+
 				// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
 				if(KMMDapp.getAutoUpdate())
 				{
@@ -565,10 +316,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 				
 				// Mark the file as dirty
 				KMMDapp.markFileIsDirty(true, "9999");
-				
-				// If we are coming from the home widget, we need to close the db.
-				//if( fromHomeWidget )
-				//	KMMDapp.closeDB();
 				
 				// Clear the SplitsDirty flag.
 				KMMDapp.setSplitsAryDirty(false);
@@ -693,30 +440,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 		}
 	}
 	
-	// the callback received with the user "sets" the opening date in the dialog
-	/*private DatePickerDialog.OnDateSetListener mDateSetListener = 
-			new DatePickerDialog.OnDateSetListener() 
-			{				
-				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
-				{
-					intYear = year;
-					intMonth = monthOfYear;
-					intDay = dayOfMonth;
-					updateDisplay();
-				}
-			};
-			
-	@Override
-	protected Dialog onCreateDialog(int id)
-	{
-		switch(id)
-		{
-			case SET_DATE_ID:
-				return new DatePickerDialog(this, mDateSetListener, intYear, intMonth, intDay);
-		}
-		return null;
-	}*/
-	
     @Override
     protected void onActivityResult(int pRequestCode, int resultCode, Intent data)
     {    	
@@ -764,50 +487,19 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 						{
 							intTransType = 0;
 							catFrag.setLoaderType(CategoryFragment.WITHDRAW_CATEGORY_LOADER);
-							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-							//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-							//			String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//adapterCategories.changeCursor(cursorCategories);
-							//adapterCategories.notifyDataSetChanged();
 						}
 						if( str.matches("Transfer") )
 						{
 							intTransType = 1;
 							catFrag.setLoaderType(CategoryFragment.TRANSFER_CATEGORY_LOADER);
-							// Populate the categories spinner with the balance sheet accounts instead of income statement.
-							//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-							//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_ASSET),
-							//			String.valueOf(Account.ACCOUNT_LIABILITY) }, null, null, "accountName ASC");
-							//adapterCategories.changeCursor(cursorCategories);
-							//adapterCategories.notifyDataSetChanged();
 						}
 						if( str.matches("Withdrawal") )
 						{
 							intTransType = 2;
 							catFrag.setLoaderType(CategoryFragment.WITHDRAW_CATEGORY_LOADER);
-							// Populate the categories spinner with the income statement accounts instead of balance sheet.
-							//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-							//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-							//			String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-							//adapterCategories.changeCursor(cursorCategories);
-							//adapterCategories.notifyDataSetChanged();
 						}
 						isDirty = true;
 						break;
-/*					case R.id.payee:
-						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-						strTransPayeeId = c.getString(1).toString();
-						Log.d(TAG, "Inside payee: " + strTransPayeeId);
-						isDirty = true;
-						break;
-					case R.id.category:
-						c = (Cursor) parent.getAdapter().getItem(pos);
-						Log.d(TAG, "Inside category: " + c.getString(0).toString());
-						//editCategory.setText(c.getString(0).toString());
-						strTransCategoryId = c.getString(1).toString();
-						isDirty = true;
-						break;*/
 					case R.id.status:
 						Log.d(TAG, "Inside status: " + String.valueOf(parent.getId()));
 						str = parent.getAdapter().getItem(pos).toString();
@@ -834,35 +526,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 	}
 	
 	// **************************************************************************************************
-	// ************************************ Helper methods **********************************************
-/*	private String createId()
-	{
-		final String[] dbColumns = { "hiTransactionId"};
-		final String strOrderBy = "hiTransactionId DESC";
-		// Run a query to get the Transaction ids so we can create a new one.
-		Cursor cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		cursor.moveToFirst();
-
-		// Since id is in T000000000000000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = cursor.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "T";
-		for(int i= 0; i < (18 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		return newId;
-	}*/
-	
+	// ************************************ Helper methods **********************************************	
 	public String getTranAction()
 	{
 		return spinTransType.getItemAtPosition(intTransType).toString();
@@ -951,101 +615,23 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 					.append(strDay).append("-")
 					.append(intYear));
 	}
-	
-/*	private String formatDate(String date)
-	{
-		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
-		String dates[] = date.split("-");
-		
-		return new StringBuilder()
-		.append(dates[2]).append("-")
-		.append(dates[0]).append("-")
-		.append(dates[1]).toString();
-	}
-*/		
-/*	private ArrayList<Split> getSplits(String transId)
-	{
-		ArrayList<Split> splits = new ArrayList<Split>();
-		
-		Cursor cursor = KMMDapp.db.query("kmmSplits", new String[] { "*" }, "transactionId=?", new String[] { transId }, null, null, "splitId ASC");
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		// put all the splits information into the ArrayList and then return that as a single object
-		while( !cursor.isAfterLast() )
-		{
-			splits.add(new Split(cursor.getString(C_TRANSACTIONID), cursor.getString(C_TXTYPE),
-								 cursor.getInt(C_SPLITID), cursor.getString(C_PAYEEID),
-								 cursor.getString(C_RECONCILEDATE), cursor.getString(C_ACTION),
-								 cursor.getString(C_RECONCILEFLAG), cursor.getString(C_VALUE),
-								 cursor.getString(C_VALUEFORMATTED), cursor.getString(C_SHARES),
-								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
-								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
-								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
-								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID), this.fromWidgetId, getBaseContext()) );
-			cursor.moveToNext();
-		}
-		
-		cursor.close();
-		return splits;
-	}
-*/	
+
 	private void convertDate(Calendar date)
 	{	
 		intYear = date.get(Calendar.YEAR);
 		intMonth = date.get(Calendar.MONTH);
 		intDay = date.get(Calendar.DAY_OF_MONTH);	
 	}
-	
-/*	private int setPayee(String payeeId)
-	{
-		int i = 0;
-		cursorPayees.moveToFirst();
-		
-		if( payeeId != null )
-		{
-			while(!payeeId.equals(cursorPayees.getString(1)))
-			{
-				cursorPayees.moveToNext();
-			
-				//check to see if we have moved past the last item in the cursor, if so return current i.
-				if(cursorPayees.isAfterLast())
-					return i;
-			
-				i++;
-			}
-		}
-		return i;
-	}*/
 
-/*	private void setupSplitInfo()
-	{
-		anySplits = true;
-		if( KMMDapp.flSplitsTotal != 0  )
-		{
-			long tmp = 0;
-			if( KMMDapp.flSplitsTotal < 0 )
-				tmp = KMMDapp.flSplitsTotal * -1;
-			else
-				tmp = KMMDapp.flSplitsTotal;
-			editAmount.setText(Transaction.convertToDollars((tmp), true));
-		}
-		
-		// Clear the Splits ArrayList out.
-		//Splits.clear();
-	}
-*/	
 	private Schedule getSchedule(String schId)
 	{
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schId + "#" + this.fromWidgetId);
 		u = Uri.parse(u.toString());
 		Cursor schedule = getBaseContext().getContentResolver().query(u, null, null, null, null);
-		//KMMDapp.db.query("kmmschedules",new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
 		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, "#" + this.fromWidgetId);
 		u = Uri.parse(u.toString());
 		Cursor splits = getBaseContext().getContentResolver().query(u, new String[] { "*" }, "transactionId=?", 
 																	new String[] { schId }, "splitId ASC");
-		//KMMDapp.db.query("kmmsplits", new String[] { "*" }, "transactionId=?", new String[] { schId }, null, null, "splitId");
 
 		return new Schedule(schedule, splits, getBaseContext());
 	}
@@ -1055,41 +641,22 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 		// If we are coming back from splits entry screen follow this path.
 		if( this.ReturningFromSplits )
 		{
-			//setupSplitInfo();
-			//editCategory.setText(R.string.splitTransaction);
-			//buttonChooseCategory.setEnabled(false);
-			//spinPayee.setSelection(setPayee(strTransPayeeId));
 			iNumberofPasses = 0;
 		}
 		else
-		{
-			// if we are not coming back from splits entry screen follow this path.
-			//Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { transId }, null, null, null);
-			//startManagingCursor(transaction);
-			//transaction.moveToFirst();
-			//Splits = getSplits(transaction.getTransId());
-		
+		{	
 			// load the transaction details into the form.
 			editMemo.setText(transaction.getMemo());
 			convertDate(transaction.getDate());
 			editCkNumber.setText(transaction.splits.get(0).getCheckNumber());
-			//strTransPayeeId = Splits.get(0).getPayeeId();
-			//spinPayee.setSelection(setPayee(strTransPayeeId));
 			payeeFrag.setPayeeId(transaction.splits.get(0).getPayeeId());
 		
 			// See if we have only used one category or if we have multiple.
 			if( transaction.splits.size() == 2 )
 			{
-				//Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?",
-				//						new String[] { Splits.get(1).getAccountId() }, null, null, null);
-				//startManagingCursor(c);
-				//c.moveToFirst();
-				//editCategory.setText(c.getString(0));
 				catFrag.setCategoryId(transaction.splits.get(1).getAccountId());
 				iNumberofPasses = 0;
 				intTransStatus = Integer.valueOf(transaction.splits.get(0).getReconcileFlag());
-
-				//c.close();
 				numOfSplits = 2;
 				anySplits = false;
 				
@@ -1097,16 +664,9 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 				strTransCategoryId = transaction.splits.get(1).getAccountId();
 			}
 			else
-			{
-				// need to put the splits into the KMMDapp.Splits object so user may edit the split details.
-				//KMMDapp.splitsInit();
-				//for(int i = 1; i < Splits.size(); i++)
-				//	KMMDapp.Splits.add(Splits.get(i));
-			
+			{		
 				iNumberofPasses = 0;
 				catFrag.setCategoryId(getString(R.string.splitTransaction));
-				//editCategory.setText(R.string.splitTransaction);
-				//buttonChooseCategory.setEnabled(false);
 				
 				// Make it so the user can't edit the amount.
 				editAmount.setFocusable(false);
@@ -1128,11 +688,6 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 			// Need to populate the Account used for this transaction.
 			accountUsed = transaction.splits.get(0).getAccountId();
 		
-			// Make a copy of the original transactions split for later use if we modify anything.
-			//for(int i=0; i < Splits.size(); i++)
-			//	OrigSplits.add(Splits.get(i));
-			
-			//transaction.close();
 			updateDisplay();
 		}
 	}
@@ -1219,6 +774,11 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 			
 			updateDisplay();
 		}		
+	}
+	
+	public boolean getHasSplits()
+	{
+		return this.ReturningFromSplits;
 	}
 	
 	private void sendTransChangedMsg()

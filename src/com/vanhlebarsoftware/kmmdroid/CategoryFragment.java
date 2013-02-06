@@ -116,7 +116,6 @@ public class CategoryFragment extends Fragment implements
     				editCategory.setText(c.getString(c.getColumnIndex("accountName")).toString());
     				strTransCategoryId = c.getString(c.getColumnIndex("_id")).toString();
     				isDirty = true;   
-    				//c.close();
     			}
     			else
     				firstRun = false;

@@ -9,16 +9,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.xmlpull.v1.XmlSerializer;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Xml;
 
@@ -191,16 +188,6 @@ public class Transaction
 		    	case '(':
 		    		negative = true;
 		    		break;
-		        /*case e :
-		        	if ( decpl == -1 )
-		            {
-		               decpl = 0;
-		            }
-		            else
-		            {
-		               throw new NumberFormatException( "more than one decimal point" );
-		            }
-		            break;*/
 		        case '0' :
 		        case '1' :
 		        case '2' :
@@ -462,33 +449,6 @@ public class Transaction
 		return cDate;
 	}
 	
-/*	public void enter(Context context)
-	{
-		// create the ContentValue pairs
-		ContentValues valuesTrans = new ContentValues();
-		valuesTrans.put("id", this.strTransId);
-		valuesTrans.put("txType", this.strtxType);
-		valuesTrans.put("postDate", formatDateString());
-		valuesTrans.put("memo", this.strMemo);
-		valuesTrans.put("entryDate", formatEntryDateString());
-		valuesTrans.put("currencyId", this.strCurrencyId);
-		valuesTrans.put("bankId", this.strBankId);
-		
-		// Enter this transaction into the kmmTransactions table.
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, frag);
-		u = Uri.parse(u.toString());
-		context.getContentResolver().insert(u, valuesTrans);
-		
-		// Enter the splits into the kmmSplits table.
-		for(int i=0; i<this.splits.size(); i++)
-		{
-			Log.d(TAG, "Trans Split #" + i + ": " + this.splits.get(i).getPostDate());
-			this.splits.get(i).commitSplit(false);
-			Account.updateAccount(context, this.splits.get(i).getAccountId(), this.splits.get(i).getValueFormatted(), 1);
-		}
-	}*/
-	
 	public void createId()
 	{
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
@@ -496,10 +456,7 @@ public class Transaction
 		final String[] dbColumns = { "hiTransactionId"};
 		final String strOrderBy = "hiTransactionId DESC";
 		// Run a query to get the Transaction ids so we can create a new one.
-		Cursor cursor = this.context.getContentResolver().query(u, dbColumns, null, null, strOrderBy); 
-				//KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		//startManagingCursor(cursor);
-		
+		Cursor cursor = this.context.getContentResolver().query(u, dbColumns, null, null, strOrderBy); 		
 		cursor.moveToFirst();
 
 		// Since id is in T000000000000000000 format, we need to pick off the actual number then increase by 1.
@@ -538,76 +495,66 @@ public class Transaction
 		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
 		String strAmount = cont.editAmount.getText().toString().replace('.', decChar);
 		
-		// Save the old splits into the origSplits arraylist for use later.
-		this.origSplits = new ArrayList<Split>();
-		for(Split split : this.splits)
-			this.origSplits.add(split);
+		if( !cont.getHasSplits() )
+		{
+			// Save the old splits into the origSplits arraylist for use later.
+			this.origSplits = new ArrayList<Split>();
+			for(Split split : this.splits)
+				this.origSplits.add(split);
 		
-		// Create the splits information to be saved.	
-		// Clear out any split we might of had when we first got started.
-		this.splits.clear();
+			// Create the splits information to be saved.	
+			// Clear out any split we might of had when we first got started.
+			this.splits.clear();
 		
-		// In any case we have to create our initial split with the account we are in.
-		String value = null, formatted = null;
-		switch( cont.getTransactionType() )
-		{
-			case Transaction.DEPOSIT:
-				value = Account.createBalance(Transaction.convertToPennies(strAmount));
-				break;
-			case Transaction.TRANSFER:
-				value = Account.createBalance(Transaction.convertToPennies(strAmount));
-				break;
-			case Transaction.WITHDRAW:
-				value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-				break;
-			default:
-				break;
-		}
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-		this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
-									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
-									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
-									this.context));
-		if( cont.getNumberOfSplits() > 2 )
-		{
-			// Need to fetch the splits from the cache now.
-	    	//KMMDSplitParser parser = new KMMDSplitParser(this.context.getCacheDir().getPath() + "tempSplits", this.context);
-	    	//Transaction tmpTrans = parser.parse();
-	    	
-	    	// Need to see if the user changed the Payee AFTER returning from the splits entry screen. If so, use the newest one.
-	    	//if( !payeeFrag.getPayeeId().equalsIgnoreCase(tmpTrans.splits.get(0).getPayeeId()) )
-	    	//{
-	    	//	for(int i=0; i<tmpTrans.splits.size();i++)
-	    	//		tmpTrans.splits.get(i).setPayeeId(payeeFrag.getPayeeId());
-	    	//}
-	    	
-	    	// Add the splits from the cache to our transaction
-	    	//for( Split split : tmpTrans.splits )
-	    	//	this.splits.add(split);
-		}
-		else
-		{
-			// The user doesn't have any actual splits so create them from the single category selected by the user.
+			// In any case we have to create our initial split with the account we are in.
+			String value = null, formatted = null;
 			switch( cont.getTransactionType() )
 			{
 				case Transaction.DEPOSIT:
-					value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
-					break;
-				case Transaction.TRANSFER:
-					// We have to take the current value and change the sign.
-					value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
-					break;
-				case Transaction.WITHDRAW:
 					value = Account.createBalance(Transaction.convertToPennies(strAmount));
 					break;
+				case Transaction.TRANSFER:
+					value = Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				case Transaction.WITHDRAW:
+					value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
 				default:
-				break;
+					break;
 			}
 			formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-			this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", cont.getTranAction(),
+			this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
+									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+									this.context));
+			if( cont.getNumberOfSplits() > 2 )
+			{
+				// Do nothing for now.
+			}
+			else
+			{
+				// The user doesn't have any actual splits so create them from the single category selected by the user.
+				switch( cont.getTransactionType() )
+				{
+					case Transaction.DEPOSIT:
+						value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+						break;
+					case Transaction.TRANSFER:
+						// We have to take the current value and change the sign.
+						value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
+						break;
+					case Transaction.WITHDRAW:
+						value = Account.createBalance(Transaction.convertToPennies(strAmount));
+						break;
+					default:
+						break;
+				}
+				formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+				this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", cont.getTranAction(),
 					String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
 					catFrag.getCategoryId(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
 					this.context));
+			}
 		}
 	}
 	
@@ -635,6 +582,9 @@ public class Transaction
 		// Insert the splits for this transaction
 		for(Split s : this.splits)
 		{
+			// Make sure we have the transactionId in our split and the correct context.
+			s.setTransactionId(this.strTransId);
+			s.setContext(this.context);
 			s.commitSplit(false);
 			Account.updateAccount(this.context, s.getAccountId(), s.getValueFormatted(), 1);
 		}	
@@ -670,6 +620,8 @@ public class Transaction
 		// Insert the splits for this transaction
 		for(Split s : this.splits)
 		{
+			// Make sure we have the correct context.
+			s.setContext(this.context);
 			s.commitSplit(false);
 			Account.updateAccount(this.context, s.getAccountId(), s.getValueFormatted(), 1);
 		}		
@@ -752,13 +704,15 @@ public class Transaction
 	
 	public void getcachedTransaction()
 	{
-        // Attempt to write the splits to cache.
         File cache = this.context.getCacheDir();
     	KMMDSplitParser parser = new KMMDSplitParser(cache.getPath() + File.separator + "tempSplits", this.context);
     	Transaction tmpTrans = parser.parse();
     	
     	// Calc the Amount of our transaction.
     	tmpTrans.calcTransactionAmount();
+    	
+    	// Make sure our splits array is clear before copying the imported transaction to our current transaction.
+    	this.splits.clear();
     	
     	// copy the loaded transaction into our object.
     	this.copy(tmpTrans);

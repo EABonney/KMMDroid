@@ -39,8 +39,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	private static final String TAG = "CreateModifySplitsActivity";
 	private static final int SPLITS_LOADER = 0x50;
 	private static final int ACTION_NEW = 1;
-	private static final int ACTION_EDIT = 2;
-	private static final int ACTION_ENTER_SCHEDULE = 3;
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM = { "accountName" };
 	private int Action = ACTION_NEW;
@@ -50,14 +48,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	String strLabelTotal =null;
 	String strLabelSumofSplits = null;
 	String strLabelUnassigned = null;
-	//String strOrigCategoryId = null;
-	//String strOrigMemo = null;
-	//String strOrigDate = null;
-	//String strOrigTransId = null;
-	//String strOrigPayeeId = null;
-	//String strOrigAction = null;
-	//String strOrigStatus = null;
-	//String strOrigCkNum = null;
 	Transaction transaction;
 	int nTransType = 0;
 	int intInsertRowAt = 1;
@@ -74,9 +64,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	TableLayout tableSplits;
 	TableRow rowSplitEntry;
 	Spinner spinCategory;
-	//Cursor cursorCategories;
 	SimpleCursorAdapter adapterCategories;
-	//KMMDroidApp KMMDapp;
 	Intent returnIntent = null;
 	
 	/* Called when the activity is first created. */
@@ -85,9 +73,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	{
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.createmod_splits);
-        
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getApplication());
         
         // Find our views
         editSplitMemo = (EditText) findViewById(R.id.splitMemo);
@@ -102,14 +87,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
         // Get the action the user is doing.
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
-        //strTranAmount = extras.getString("TransAmount");
-        //strOrigCategoryId = extras.getString("CategoryId");
-        //strOrigMemo = extras.getString("Memo");
-        //strOrigDate = extras.getString("date");
-        //strOrigPayeeId = extras.getString("payeeId");
-        //strOrigAction = extras.getString("transAction");
-        //strOrigStatus = String.valueOf(extras.getInt("transStatus"));
-        //strOrigCkNum = extras.getString("checkNumber");
         nTransType = extras.getInt("transType");
         
         // Create our transaction to hold the splits.
@@ -117,9 +94,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
         
         // Fetch our cached Transaction if there is one.
         transaction.getcachedTransaction();
-        
-        //if( Action == ACTION_EDIT)
-        //	transaction.setTransId(extras.getString("transactionId"));
         
         // Set the OnItemSelectedListeners for the spinners and OnChangeEvents.
         spinCategory.setOnItemSelectedListener(new AccountOnItemSelectedListener());
@@ -151,12 +125,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 
         	public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}        	
         });
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
         
         // Make the column non-stretchable and shrinkable.
         tableSplits.setColumnShrinkable(0, true);
@@ -201,11 +169,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	{
 		super.onResume();
 		
-		//cursorCategories = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id AS _id" },
-		//		"(accountType=? OR accountType=?)", new String[] { String.valueOf(Account.ACCOUNT_EXPENSE),
-		//			String.valueOf(Account.ACCOUNT_INCOME) }, null, null, "accountName ASC");
-		//startManagingCursor(cursorCategories);
-		
 		// If transaction.splits.size() == 2, we didn't have any splits originally but now the user wants to add some.
 		// So let's add the original category as the first row.
 		if(transaction.splits.size() == 2)
@@ -218,8 +181,9 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 		else
 		{
 			// Create the rows for the splits that need to be displayed
-			for(Split split : transaction.splits)
+			for(int i=1; i < transaction.splits.size(); i++)
 			{
+				Split split = transaction.splits.get(i);
 				String strCategory = getCategoryName(split.getAccountId());
 				AccountIdList.add(split.getAccountId());
 				insertNewRow(strCategory, split.getMemo(), split.getValueFormatted());
@@ -248,21 +212,21 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	{
 		// See if we need to display the Clear All menu item.
 		if(intInsertRowAt == 1)
-			menu.getItem(4).setVisible(false);
+			menu.findItem(R.id.itemClearAll).setVisible(false);
 		else
-			menu.getItem(4).setVisible(true);
+			menu.findItem(R.id.itemClearAll).setVisible(true);
 		
 		// See if we need to display the Delete option.
 		if(rowClicked != 0)
-			menu.getItem(3).setVisible(true);
+			menu.findItem(R.id.itemDelete).setVisible(true);
 		else
-			menu.getItem(3).setVisible(false);
+			menu.findItem(R.id.itemDelete).setVisible(false);
 		
 		// See if we need to display the Save menu item.
 		if(isDirty)
-			menu.getItem(0).setVisible(true);
+			menu.findItem(R.id.itemsave).setVisible(true);
 		else
-			menu.getItem(0).setVisible(false);
+			menu.findItem(R.id.itemsave).setVisible(false);
 		
 		return true;
 	}
@@ -369,8 +333,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 							returnIntent.putExtra("splitsTotal", newTotal);
 							returnIntent.putExtra("NumberOfSplits", transaction.splits.size());
 							setResult(1, returnIntent);
-							//KMMDapp.flSplitsTotal = updateTotals(true);
-							//KMMDapp.setSplitsAryDirty(true);
 							finish();
 						}
 					});
@@ -392,7 +354,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 						//need to log the error for now.
 						Log.d(TAG, "no splits where cached!!! Something happened during the cache process");
 					}
-					//KMMDapp.setSplitsAryDirty(true);
 					returnIntent.putExtra("splitsTotal", newTotal);
 					returnIntent.putExtra("NumberOfSplits", transaction.splits.size());
 					setResult(1, returnIntent);
@@ -448,7 +409,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 					Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 					strCategoryName = c.getString(0).toString();
 					strAccountId = c.getString(1).toString();
-					//c.close();
 					if( numOfPasses > transaction.splits.size() )
 						isDirty = true;
 					else
@@ -590,8 +550,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,CategoryId + "#" + transaction.getWidgetId());
 		u = Uri.parse(u.toString());
 		Cursor c = getContentResolver().query(u, null, null, null, null);
-		//KMMDapp.db.query("kmmAccounts", new String[] { "accountName" }, "id=?", new String[] { CategoryId }, null, null, null);
-		//startManagingCursor(c);
 		c.moveToFirst();
 		String name = c.getString(0);
 		c.close();
@@ -640,6 +598,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 	{
 		DecimalFormat decimal = new DecimalFormat();
 		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
+		String[] actions = getResources().getStringArray(R.array.TransactionTypes);
 		
 		// Clear out our incoming splits first.
 		transaction.splits.clear();
@@ -661,10 +620,11 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 				break;
 		}
 		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-		this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
-									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
-									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
-									this.context));
+		transaction.splits.add(new Split(transaction.getTransId(), "N", 0, transaction.origSplits.get(0).getPayeeId(), "", actions[this.nTransType],
+									transaction.origSplits.get(0).getReconcileFlag(), value, formatted, value, formatted, "", "", transaction.getMemo(),
+									transaction.origSplits.get(0).getAccountId(), transaction.origSplits.get(0).getCheckNumber(),
+									transaction.origSplits.get(0).getPostDate(), transaction.origSplits.get(0).getBankId(), transaction.getWidgetId(),
+									transaction.context));
 		
 		for(int i=1; i < tableSplits.getChildCount() - 1; i++)
 		{
@@ -672,10 +632,10 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 			EditText e = (EditText) row.getChildAt(0);
 			//strCategory = e.getText().toString();
 			e = (EditText) row.getChildAt(1);
-			strMemo = e.getText().toString();
+			String strMemo = e.getText().toString();
 			e = (EditText) row.getChildAt(2);
 			// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
-			strAmount = e.getText().toString().replace('.', decChar);
+			String strAmount = e.getText().toString().replace('.', decChar);
 
 			// We need to strip out an formatting the user put in except the "decimal" indicator.
 			String strFormattedAmt = Transaction.convertToDollars(Transaction.convertToPennies(strAmount), false);
@@ -687,9 +647,6 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 											 strFormattedAmt, fraction, strFormattedAmt, fraction, strFormattedAmt, strMemo,
 											 AccountIdList.get(i-1), transaction.origSplits.get(0).getCheckNumber(), transaction.origSplits.get(0).getPostDate(),
 											 "", transaction.getWidgetId(), getBaseContext()));
-			
-			// Mark splits as dirty.
-			//KMMDapp.setSplitsAryDirty(true);
 		}
 	}
 }

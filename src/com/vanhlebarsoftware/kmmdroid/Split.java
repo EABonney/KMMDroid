@@ -371,6 +371,11 @@ public class Split
 		return this.action;
 	}
 	
+	public void setContext(Context c)
+	{
+		this.context = c;
+	}
+	
 	public String getPayeeName()
 	{
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_PAYEE_URI,this.payeeId + "#" + this.fromWidgetId);
