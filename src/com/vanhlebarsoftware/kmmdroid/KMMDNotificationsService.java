@@ -81,7 +81,7 @@ public class KMMDNotificationsService extends Service
 		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
 		
 		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), 
-											Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"), getBaseContext());
+											Schedule.padFormattedDate(strToday), Transaction.convertToPennies("0.00"), getBaseContext(), "9999");
 		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
 		// See if we even have any schedules either past due or due today.
 		if(Schedules.size() > 0)
@@ -266,7 +266,7 @@ public class KMMDNotificationsService extends Service
 		u = null;
 		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, schId);
 		Cursor transaction = getContentResolver().query(u, null, null, null, null);
-		return new Schedule(schedule, splits, transaction, getBaseContext());
+		return new Schedule(schedule, splits, transaction, getBaseContext(), "9999");
 	}
 
 	private String createTransId()

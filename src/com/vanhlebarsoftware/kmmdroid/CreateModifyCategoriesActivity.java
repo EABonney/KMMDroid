@@ -1,17 +1,14 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,16 +34,8 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 	private static final String TAG = "CreateModifyCategoriesActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int C_PARENTID = 2;
-	private static final int C_ACCOUNTTYPE = 7;
-	private static final int C_ACCOUNTNAME = 10;
-	private static final int C_DESCRIPTION = 11;
-	private static final int C_CURRENCYID = 12;
-	private static final int C_TRANSACTIONCOUNT = 15;
 	private static final String dbTable = "kmmAccounts";
 	private int Action = 0;
-	private static final int AC_EXPENSE = 13;
-	private static final int AC_INCOME = 12;
 	private int intType = 0;
 	private String strParentId = null;
 	private static String strCategoryId = null;

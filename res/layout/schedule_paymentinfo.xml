@@ -93,93 +93,37 @@
     	android:layout_toRightOf="@id/titleScheduleType"
     	android:id="@+id/scheduleType"
     />
-    <TextView
-    	android:layout_width="wrap_content"
+    <fragment
+        android:name="com.vanhlebarsoftware.kmmdroid.AccountFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/scheduleType"
+        android:width="100sp"
+        android:gravity="center_vertical"
+        android:id="@+id/accountFragment"
+    />
+    <fragment 
+        android:name="com.vanhlebarsoftware.kmmdroid.PayeeFragment" 
+        android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/scheduleType"
+    	android:layout_below="@id/accountFragment"
     	android:width="100sp"
     	android:gravity="center_vertical"
-    	android:text="@string/titleScheduleAccount"
-    	android:id="@+id/titleScheduleAccount"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
+    	android:id="@+id/payeeFragment"
     />
-    <Spinner 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="fill_parent"
-    	android:layout_below="@id/scheduleType"
-    	android:layout_toRightOf="@id/titleScheduleAccount"
-    	android:id="@+id/scheduleAccount"
-    />
-    <TextView
-    	android:layout_width="wrap_content"
+	<fragment
+        android:name="com.vanhlebarsoftware.kmmdroid.CategoryFragment" 
+        android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/scheduleAccount"
+    	android:layout_below="@id/payeeFragment"
     	android:width="100sp"
     	android:gravity="center_vertical"
-    	android:text="@string/titlePayeeToFrom"
-    	android:id="@+id/titlePayeeToFrom"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    />
-    <Spinner 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="fill_parent"
-    	android:layout_below="@id/scheduleAccount"
-    	android:layout_toRightOf="@id/titlePayeeToFrom"
-    	android:id="@+id/payee"
-    />
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_below="@id/payee"
-    	android:width="100sp"
-    	android:gravity="center_vertical"
-    	android:text="@string/titleCategory"
-    	android:id="@+id/titleCategory"
-    	android:textSize="15sp"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    />
-	<EditText 
-		android:layout_width="165sp"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/payee"
-		android:layout_toRightOf="@+id/titleCategory"
-		android:id="@+id/editCategory"
-	/>
-    <Spinner 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="165sp"
-    	android:layout_below="@id/editCategory"
-    	android:layout_toRightOf="@id/titleCategory"
-    	android:id="@+id/category"
-    	android:visibility="invisible"
-    />
-    <Button
-    	android:layout_height="wrap_content"
-    	android:layout_width="165sp"
-    	android:layout_below="@id/editCategory"
-    	android:layout_toRightOf="@id/titleCategory"
-    	android:text="@string/buttonChooseCategory"
-    	android:id="@+id/buttonChooseCategory"
-    />
-	<ImageButton
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/payee"
-		android:layout_toRightOf="@id/editCategory"
-		android:src="@drawable/split"
-    	style="?android:attr/buttonStyleSmall"
-		android:text="@string/buttonSplit"	
-		android:id="@+id/buttonSplit"
+    	android:id="@+id/categoryFragment"	    
 	/>
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/buttonChooseCategory"
+    	android:layout_below="@id/categoryFragment"
     	android:width="100sp"
     	android:gravity="center_vertical"
     	android:text="@string/titleNumber"
@@ -191,7 +135,7 @@
 	<EditText 
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/category"
+		android:layout_below="@+id/categoryFragment"
 		android:layout_toRightOf="@+id/titleNumber"
 		android:id="@+id/checkNumber"
 	/>

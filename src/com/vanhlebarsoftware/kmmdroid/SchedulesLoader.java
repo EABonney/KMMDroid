@@ -187,7 +187,7 @@ public class SchedulesLoader extends AsyncTaskLoader<List<Schedule>>
 		Log.d(TAG, "Schedules returned from query: " + cursor.getCount());
 		// We have our open schedules from the database, now create the user defined period of cash flow.
 		schedules = Schedule.BuildCashRequired(cursor, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), 
-												Transaction.convertToPennies("0.00"), getContext());
+												Transaction.convertToPennies("0.00"), getContext(), "9999");
 		Log.d(TAG, "Schedules that are overDue or dueToday: " + schedules.size());
 		// Seperate out the schedules for use in the adapters.
 		for(int i=0; i < schedules.size(); i++)
@@ -210,7 +210,7 @@ public class SchedulesLoader extends AsyncTaskLoader<List<Schedule>>
 			//cur = KMMDapp.db.query(schedulesTable, schedulesColumns, selection, new String[] { autoEnteredScheduleIds.get(i) }, null, null, null);
 			cur.moveToFirst();
 			Calendar today = new GregorianCalendar();
-			autoEnteredSchedules.add(new Schedule(cur.getString(1), today, cur.getString(9), getContext()));
+			autoEnteredSchedules.add(new Schedule(cur.getString(1), today, cur.getString(9), getContext(), "9999"));
 			cur.close();
 		}
 		

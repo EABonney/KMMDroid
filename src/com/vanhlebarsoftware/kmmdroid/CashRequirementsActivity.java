@@ -91,7 +91,7 @@ public class CashRequirementsActivity extends FragmentActivity
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { strAccountId }, null, null, strOrderBy, null);
 		startManagingCursor(cursor);
 		
-		Schedules = Schedule.BuildCashRequired(cursor, strStartDate, strEndDate, nBegBalance, getBaseContext());
+		Schedules = Schedule.BuildCashRequired(cursor, strStartDate, strEndDate, nBegBalance, getBaseContext(), "9999");
 		
 		if(Schedules.size() > 0)
 		{

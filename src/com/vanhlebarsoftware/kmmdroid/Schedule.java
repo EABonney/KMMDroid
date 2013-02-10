@@ -5,10 +5,12 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 public class Schedule 
@@ -90,6 +92,7 @@ public class Schedule
 	public static final int COL_WEEKENDOPTIONSTRING = 16;
 	
 	/***** Elements of a specific Schedule *****/
+	private String widgetId;
 	private String id;
 	private String Description;
 	private int Type;
@@ -118,7 +121,76 @@ public class Schedule
 
 	
 	// Constructor for a Schedule
-	Schedule(String Desc, Calendar dueDate, String strAmt, Context cont)
+	Schedule(Context cont, String schId, String widget)
+	{
+		this.title = null;
+		this.context = cont;
+		this.widgetId = widget;
+		
+		if( schId != null )
+		{
+			// Get the schedule elements
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schId + "#" + widget);
+			u = Uri.parse(u.toString());
+			Cursor cur = cont.getContentResolver().query(u, null, null, null, null);
+			
+			// Get the transaction elements of this schedule
+			Transaction = new Transaction(cont, schId, widget);
+			
+			if( cur != null )
+			{
+				cur.moveToFirst();
+				this.id = schId;
+				this.Description = cur.getString(cur.getColumnIndex("name"));
+				this.Type = cur.getInt(cur.getColumnIndex("type"));
+				this.TypeString = cur.getString(cur.getColumnIndex("typeString"));
+				this.occurence = cur.getInt(cur.getColumnIndex("occurence"));
+				this.occurenceMultiplier = cur.getInt(cur.getColumnIndex("occurenceMultiplier"));
+				this.occurenceString = cur.getString(cur.getColumnIndex("occurenceString"));
+				this.paymentType = cur.getInt(cur.getColumnIndex("paymentType"));
+				this.paymentTypeString = cur.getString(cur.getColumnIndex("paymentTypeString"));
+				this.StartDate = convertDate(cur.getString(cur.getColumnIndex("startDate")));
+				this.EndDate = convertDate(cur.getString(cur.getColumnIndex("endDate")));
+				this.Fixed = cur.getString(cur.getColumnIndex("fixed"));
+				this.AutoEnter = cur.getString(cur.getColumnIndex("autoEnter"));
+				this.LastPaymentDate = convertDate(cur.getString(cur.getColumnIndex("lastPayment")));
+				this.DueDate = convertDate(cur.getString(cur.getColumnIndex("nextPaymentDue")));
+				this.WeekendOption = cur.getInt(cur.getColumnIndex("weekendOption"));
+				this.WeekendOptionString = cur.getString(cur.getColumnIndex("weeekendOptionString"));
+				this.nAmount = Transaction.getAmount();
+				this.nBalance = 0;
+			}
+			else
+			{
+				// We need to throw some kind of error here!
+			}			
+		}
+		else
+		{
+			this.id = null;
+			this.Description = null;
+			this.Type = 0;
+			this.TypeString = null;
+			this.occurence = 0;
+			this.occurenceMultiplier = 0;
+			this.occurenceString = null;
+			this.paymentType = 0;
+			this.paymentTypeString = null;
+			this.StartDate = Calendar.getInstance();
+			this.EndDate = Calendar.getInstance();
+			this.Fixed = null;
+			this.AutoEnter = null;
+			this.LastPaymentDate = Calendar.getInstance();
+			this.DueDate = Calendar.getInstance();
+			this.WeekendOption = 0;
+			this.WeekendOptionString = null;
+			this.nAmount = 0;
+			this.nBalance = 0;			
+		}
+
+	}
+	
+	Schedule(String Desc, Calendar dueDate, String strAmt, Context cont, String widget)
 	{
 		this.id = null;
 		this.Description = Desc;
@@ -144,9 +216,10 @@ public class Schedule
 		this.Transaction = null;
 		this.title = null;
 		this.context = cont;
+		this.widgetId = widget;
 	}
 	
-	Schedule(Cursor c, Context cont)
+	Schedule(Cursor c, Context cont, String widget)
 	{
 		String[] date = {null, null, null};
 		c.moveToFirst();
@@ -188,9 +261,10 @@ public class Schedule
 		this.Transaction = null;
 		this.title = null;
 		this.context = cont;
+		this.widgetId = widget;
 	}
 	
-	Schedule(Cursor curSchedule, Cursor curSplits, Context c)
+	Schedule(Cursor curSchedule, Cursor curSplits, Context c, String widget)
 	{
 		// First poplulate the actual schedule details.
 		String[] date = {null, null, null};
@@ -259,9 +333,10 @@ public class Schedule
 		this.Transaction = null;
 		this.title = null;
 		this.context = c;
+		this.widgetId = widget;
 	}
 	
-	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction, Context c)
+	Schedule(Cursor curSchedule, Cursor curSplits, Cursor curTransaction, Context c, String widget)
 	{
 		// First poplulate the actual schedule details.
 		String[] date = {null, null, null};
@@ -341,6 +416,36 @@ public class Schedule
 		this.Transaction = new Transaction(curTransaction, "9999", c);
 		this.title = null;
 		this.context = c;
+		this.widgetId = widget;
+	}
+	
+	public void createScheduleId()
+	{
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		final String[] dbColumns = { "hiScheduleId"};
+
+		// Run a query to get the hi schedule id so we can create a new one.
+		Cursor cursor = context.getContentResolver().query(u, dbColumns, null, null, null);
+		cursor.moveToFirst();
+
+		// Since id is in SCH000000 format, we need to pick off the actual number then increase by 1.
+		int lastId = cursor.getInt(0);
+		lastId = lastId +1;
+		String nextId = Integer.toString(lastId);
+		
+		// Need to pad out the number so we get back to our SCH000000 format
+		String newId = "SCH";
+		for(int i= 0; i < (6 - nextId.length()); i++)
+		{
+			newId = newId + "0";
+		}
+		
+		// Tack on the actual number created.
+		newId = newId + nextId;
+		
+		this.id = newId;
+		this.Transaction.setTransId(newId);
 	}
 	
 	public String getDescription()
@@ -580,7 +685,7 @@ public class Schedule
 		.append(dates[1]).toString();
 	}
 	
-	static public ArrayList<Schedule> BuildCashRequired(Cursor c, String strStartDate, String strEndDate, long nBegBalance, Context cont)
+	static public ArrayList<Schedule> BuildCashRequired(Cursor c, String strStartDate, String strEndDate, long nBegBalance, Context cont, String widget)
 	{
 		Schedule schd = null;
 		ArrayList<Calendar> dueDates = new ArrayList<Calendar>();
@@ -598,7 +703,7 @@ public class Schedule
 			// Let's create the Schedule class and add it to the ArrayList.
 			for(int d=0; d < dueDates.size(); d++)
 			{
-				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED), cont);
+				schd = new Schedule(c.getString(C_DESCRIPTION), dueDates.get(d), c.getString(C_VALUEFORMATTED), cont, widget);
 				// Add the id, occurence, occurenceMultiplier, autoEnter and enddate for this schedule
 				schd.setId(c.getString(C_ID));
 				schd.setOccurence(c.getInt(C_OCCURENCE));
@@ -1287,5 +1392,357 @@ public class Schedule
 	public void setTransDate(String date)
 	{
 		this.transDate = date;
+	}
+	
+	private Calendar convertDate(String date)
+	{
+		// Date assumed to be in YYYY-MM-DD format
+		String dates[] = date.split("-");
+		Calendar cal = Calendar.getInstance();
+		cal.set(Integer.valueOf(dates[0]), Integer.valueOf(dates[1]), Integer.valueOf(dates[2]));
+		
+		return cal;
+	}
+	
+	private String convertDate(Calendar date)
+	{
+		if( date == null )
+			return null;
+		else
+			return padDate( String.valueOf(date.get(Calendar.YEAR)) + String.valueOf(date.get(Calendar.MONTH) + 1) + 
+						String.valueOf(date.get(Calendar.DAY_OF_MONTH)) );
+	}
+	
+	private String padDate(String str)
+	{
+		// Date passed in is in the form of YYY-MM-DD
+		String[] dates = str.split("-");
+		
+		String strDay = null;
+		String strMonth = null;
+		switch(Integer.valueOf(dates[2]))
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + dates[2];
+				break;
+			default:
+				strDay = dates[2];
+			break;
+		}
+		
+		switch(Integer.valueOf(dates[1]))
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+				strMonth = "0" + String.valueOf(Integer.valueOf(dates[1]));
+				break;
+			default:
+				strMonth = String.valueOf(Integer.valueOf(dates[1]));
+				break;
+		}
+		
+		return new StringBuilder()
+					// Month is 0 based so add 1
+					.append(dates[0]).append("-")
+					.append(strMonth).append("-")
+					.append(strDay).toString();
+	}
+	
+	private String getTypeDescription(int type)
+	{
+		switch(type)
+		{
+			case Schedule.TYPE_ANY:
+				return "Any";
+			case Schedule.TYPE_BILL:
+				return "Bill";
+			case Schedule.TYPE_DEPOSIT:
+				return "Deposit";
+			case Schedule.TYPE_TRANSFER:
+				return "Transfer";
+			case Schedule.TYPE_LOANPAYMENT:
+				return "Loan payment";
+		}
+		
+		return null;
+	}
+	
+	private String getPaymentTypeToString(int type)
+	{
+		switch(type)
+		{
+			case Schedule.PAYMENT_TYPE_ANY:
+				return "Any (Error)";
+			case Schedule.PAYMENT_TYPE_BANKTRANSFER:
+				return "Bank transfer";
+			case Schedule.PAYMENT_TYPE_DIRECTDEBIT:
+				return "Direct debit";
+			case Schedule.PAYMENT_TYPE_DIRECTDEPOSIT:
+				return "Direct deposit";
+			case Schedule.PAYMENT_TYPE_MANUALDEPOSIT:
+				return "Manual deposit";
+			case Schedule.PAYMENT_TYPE_OTHER:
+				return "Other";
+			case Schedule.PAYMENT_TYPE_STANDINGORDER:
+				return "Standing order";
+			case Schedule.PAYMENT_TYPE_WRITECHECK:
+				return "Write check";
+			default:
+				return "Any (Error)";
+		}
+	}
+	
+	private String getWeekendOptionString(int option)
+	{
+		switch(option)
+		{
+		case Schedule.MOVE_AFTER:
+			return "Change the date to the next processing day";
+		case Schedule.MOVE_BEFORE:
+			return "Change the date to the previous pocessing day";
+		case Schedule.MOVE_NONE:
+		default:
+			return "Do Nothing";
+		}
+	}
+	
+	private Calendar getEndDate(int numOfTrans, Calendar calDate, int Frequency)
+	{	
+		switch (Frequency)
+		{
+			case Schedule.OCCUR_ONCE:
+				break;
+			case Schedule.OCCUR_DAILY:
+				calDate.add(Calendar.DAY_OF_MONTH, (1 * Frequency));
+				break;
+			case Schedule.OCCUR_WEEKLY:
+				calDate.add(Calendar.DAY_OF_MONTH, (7 * Frequency));
+				break;
+			case Schedule.OCCUR_FORTNIGHTLY:
+			case Schedule.OCCUR_EVERYOTHERWEEK:
+				calDate.add(Calendar.DAY_OF_MONTH, (14 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYTHREEWEEKS:
+					calDate.add(Calendar.DAY_OF_MONTH, (21 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYTHIRTYDAYS:
+				calDate.add(Calendar.DAY_OF_MONTH, (30 * Frequency));
+				break;
+			case Schedule.OCCUR_MONTHLY:
+				calDate.add(Calendar.MONTH, (1 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYFOURWEEKS:
+				calDate.add(Calendar.DAY_OF_MONTH, (28 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYEIGHTWEEKS:
+				calDate.add(Calendar.DAY_OF_MONTH, (56 * Frequency));				
+				break;
+			case Schedule.OCCUR_EVERYOTHERMONTH:
+				calDate.add(Calendar.MONTH, (2 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYTHREEMONTHS:
+			case Schedule.OCCUR_QUARTERLY:
+				calDate.add(Calendar.MONTH, (3 * Frequency));
+				break;
+			case Schedule.OCCUR_TWICEYEARLY:
+				calDate.add(Calendar.MONTH, (6 * Frequency));
+				break;
+			case Schedule.OCCUR_EVERYOTHERYEAR:
+				calDate.add(Calendar.YEAR, (2 * Frequency));				
+				break;
+			case Schedule.OCCUR_EVERYFOURMONTHS:
+				calDate.add(Calendar.MONTH, (4 * Frequency));
+				break;
+			case Schedule.OCCUR_YEARLY:
+				calDate.add(Calendar.YEAR, (1 * Frequency));
+				break;
+			default:
+				break;
+		}
+		
+		return calDate;
+	}
+	
+	public void getDataChanges(CreateModifyScheduleActivity cont)
+	{
+		// Get our tab fragments
+		SchedulePaymentInfoActivity paymentInfo = (SchedulePaymentInfoActivity) cont.getSupportFragmentManager().findFragmentByTag("paymentinfo");
+		ScheduleOptionsActivity options = (ScheduleOptionsActivity) cont.getSupportFragmentManager().findFragmentByTag("options");
+		
+		// Get the paymentInfo elements for the schedule.
+		this.Description = paymentInfo.getScheduleName();
+		this.Type = paymentInfo.getScheduleType();
+		this.TypeString = this.getTypeDescription(this.Type);
+		this.occurenceMultiplier = paymentInfo.getScheduleFrequency();
+		this.occurenceString = paymentInfo.getScheduleFrequencyDescription();
+		this.occurence = Schedule.getOccurrenceFromMultiplier(this.occurenceString);
+		this.paymentType = paymentInfo.getSchedulePaymentMethod();
+		this.paymentTypeString = this.getPaymentTypeToString(this.paymentType);
+		this.StartDate = convertDate(paymentInfo.getStartDate());
+		
+		// Get the options elements for the schedule.
+		this.Fixed = options.getScheduleEstimate();
+		this.AutoEnter = options.getScheduleAutoEnter();
+		this.WeekendOption = options.getScheduleWeekendOption();
+		this.WeekendOptionString = this.getWeekendOptionString(this.WeekendOption);
+	
+		if( options.getWillScheduleEnd() && options.getRemainingTransactions() > 0 )
+			this.EndDate = getEndDate(options.getRemainingTransactions(), this.StartDate, this.occurenceMultiplier);
+		else if( options.getWillScheduleEnd() )
+			this.EndDate = convertDate(options.getEndDate());
+		else
+			this.EndDate = null;
+
+		// Get the transaction details for the schedule.
+		this.Transaction.setDate(this.StartDate);
+		this.Transaction.setMemo(paymentInfo.getScheduleMemo());
+		this.Transaction.getDataChanges(cont);		
+	}
+	
+	public void Save()
+	{
+		// Build the ContentValues for the schedule.
+		ContentValues scheduleValues = new ContentValues();
+		scheduleValues.put("id", this.id);
+		scheduleValues.put("name", this.Description);
+		scheduleValues.put("type", this.Type);
+		scheduleValues.put("typeString", this.TypeString);
+		scheduleValues.put("occurence", this.occurence);
+		scheduleValues.put("occurenceMultiplier", this.occurenceMultiplier);
+		scheduleValues.put("occurenceString", this.occurenceString);
+		scheduleValues.put("paymentType", this.paymentType);
+		scheduleValues.put("paymentTypeString", this.paymentTypeString);
+		scheduleValues.put("startDate", convertDate(this.StartDate));
+		scheduleValues.put("endDate", convertDate(this.EndDate));
+		scheduleValues.put("fixed", this.Fixed);
+		scheduleValues.put("autoEnter", this.AutoEnter);
+		scheduleValues.put("lastPayment", convertDate(this.LastPaymentDate));
+		scheduleValues.put("nextPaymentDue", convertDate(this.StartDate));
+		scheduleValues.put("weekendOption", this.WeekendOption);
+		scheduleValues.put("weekendOptionString", this.WeekendOptionString);
+		
+		// Save the actual schedule
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().insert(u, scheduleValues);
+		
+		// Save the transaction and splits for this schedule
+		this.Transaction.Save();
+		
+		// Build the ContentValues for the transaction
+/*		ContentValues transactionValues = new ContentValues();
+		transactionValues.put("id", id);
+		transactionValues.put("txType", "S");
+		transactionValues.put("postDate", scheduleStartDate);
+		transactionValues.put("memo", memo);
+		transactionValues.put("entryDate", entryDate);
+		Cursor C = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
+		C.moveToFirst();
+		transactionValues.put("currencyId", C.getString(0));
+		transactionValues.put("bankId", bankId);
+		
+		int numOfSplits = 2;
+		boolean anySplits = false;
+		if( !KMMDapp.Splits.isEmpty() )
+		{
+			anySplits = true;
+			numOfSplits = KMMDapp.Splits.size();
+		}
+		
+		// Build the the splits
+		for( int i=0; i < numOfSplits; i++)
+		{
+			String value = null, formatted = null;
+			if(i == 0)
+			{
+				if( nSchType == Schedule.TYPE_BILL )
+				{
+					value = "-" + Account.createBalance(Transaction.convertToPennies(amount));
+					formatted = "-" + amount;
+				}
+				else
+				{
+					value = Account.createBalance(Transaction.convertToPennies(amount));
+					formatted = amount;							
+				}
+			}
+			else
+			{
+				// If we have splits grab the relevant information from the KMMDapp.Splits object.
+				if( anySplits )
+				{
+					value = KMMDapp.Splits.get(i-1).getValue();
+					formatted = KMMDapp.Splits.get(i-1).getValueFormatted();
+					memo = KMMDapp.Splits.get(i-1).getMemo();
+					accountId = KMMDapp.Splits.get(i-1).getAccountId();
+				}
+				else
+				{
+					if( nSchType == Schedule.TYPE_BILL )
+					{
+						value = Account.createBalance(Transaction.convertToPennies(amount));
+						formatted = amount;								
+					}
+					else
+					{
+						value = "-" + Account.createBalance(Transaction.convertToPennies(amount));
+						formatted = "-" + amount;								
+					}
+					accountId = categoryId;
+				}
+			}
+			// Create the actual split for the transaction to be saved.
+			if(i > 0)
+				payeeId = null;
+			Splits.add(new Split(id, "S", i, payeeId, null, null, String.valueOf(nStatus), value, formatted, value, formatted,
+					null, null, memo, accountId, ckNumber, scheduleStartDate, null, this.widgetId, getBaseContext()));
+*/
+	}
+	
+	public void Update()
+	{
+		// Build the ContentValues for the schedule.
+		ContentValues scheduleValues = new ContentValues();
+		scheduleValues.put("id", this.id);
+		scheduleValues.put("name", this.Description);
+		scheduleValues.put("type", this.Type);
+		scheduleValues.put("typeString", this.TypeString);
+		scheduleValues.put("occurence", this.occurence);
+		scheduleValues.put("occurenceMultiplier", this.occurenceMultiplier);
+		scheduleValues.put("occurenceString", this.occurenceString);
+		scheduleValues.put("paymentType", this.paymentType);
+		scheduleValues.put("paymentTypeString", this.paymentTypeString);
+		scheduleValues.put("startDate", convertDate(this.StartDate));
+		scheduleValues.put("endDate", convertDate(this.EndDate));
+		scheduleValues.put("fixed", this.Fixed);
+		scheduleValues.put("autoEnter", this.AutoEnter);
+		scheduleValues.put("lastPayment", convertDate(this.LastPaymentDate));
+		scheduleValues.put("nextPaymentDue", convertDate(this.StartDate));
+		scheduleValues.put("weekendOption", this.WeekendOption);
+		scheduleValues.put("weekendOptionString", this.WeekendOptionString);
+		
+		// Save the actual schedule
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI,this.id + "#" + this.widgetId);
+		u = Uri.parse(u.toString());
+		this.context.getContentResolver().update(u, scheduleValues, null, null);
+		
+		// Save the transaction and splits for this schedule
+		this.Transaction.Update();		
 	}
 }

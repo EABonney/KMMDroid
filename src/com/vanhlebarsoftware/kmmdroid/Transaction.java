@@ -558,6 +558,81 @@ public class Transaction
 		}
 	}
 	
+	public void getDataChanges(CreateModifyScheduleActivity cont)
+	{
+		// Get our fragments for payee and category
+		PayeeFragment payeeFrag = (PayeeFragment) cont.getSupportFragmentManager().findFragmentById(R.id.payeeFragment);
+		CategoryFragment catFrag = (CategoryFragment) cont.getSupportFragmentManager().findFragmentById(R.id.categoryFragment);
+		SchedulePaymentInfoActivity pmtInfo = (SchedulePaymentInfoActivity) cont.getSupportFragmentManager().findFragmentByTag("paymentinfo");
+
+		// Set our entryDate to null since it is a schedule.
+		this.entryDate = null;
+		
+		String strAmount = pmtInfo.getScheduleAmount();
+		
+		if( !cont.getHasSplits() )
+		{
+			// Save the old splits into the origSplits arraylist for use later.
+			this.origSplits = new ArrayList<Split>();
+			for(Split split : this.splits)
+				this.origSplits.add(split);
+		
+			// Create the splits information to be saved.	
+			// Clear out any split we might of had when we first got started.
+			this.splits.clear();
+		
+			// In any case we have to create our initial split with the account we are in.
+			String value = null, formatted = null;
+			switch( pmtInfo.getScheduleType() )
+			{
+				case Transaction.DEPOSIT:
+					value = Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				case Transaction.TRANSFER:
+					value = Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				case Transaction.WITHDRAW:
+					value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+					break;
+				default:
+					break;
+			}
+			formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+			this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", pmtInfo.getScheduleTypeString(),
+									String.valueOf(pmtInfo.getScheduleStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+									pmtInfo.getAccountTypeId(), pmtInfo.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+									this.context));
+			if( cont.getNumberOfSplits() > 2 )
+			{
+				// Do nothing for now.
+			}
+			else
+			{
+				// The user doesn't have any actual splits so create them from the single category selected by the user.
+				switch( pmtInfo.getScheduleType() )
+				{
+					case Transaction.DEPOSIT:
+						value = "-" + Account.createBalance(Transaction.convertToPennies(strAmount));
+						break;
+					case Transaction.TRANSFER:
+						// We have to take the current value and change the sign.
+						value = Account.createBalance(Transaction.convertToPennies(strAmount) * -1);
+						break;
+					case Transaction.WITHDRAW:
+						value = Account.createBalance(Transaction.convertToPennies(strAmount));
+						break;
+					default:
+						break;
+				}
+				formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+				this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", pmtInfo.getScheduleTypeString(),
+					String.valueOf(pmtInfo.getScheduleStatus()), value, formatted, value, formatted, "", "", this.strMemo,
+					catFrag.getCategoryId(), pmtInfo.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
+					this.context));
+			}
+		}		
+	}
+	
 	public void Save()
 	{
 		// create the ContentValue pairs
