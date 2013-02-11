@@ -487,14 +487,14 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 		schedulePayment.setScheduleFrequencyDescription(schedule.getInt(4));
 		schedulePayment.setSchedulePaymentMethod(schedule.getInt(7));
 		schedulePayment.setScheduleType(schedule.getInt(2));
-		schedulePayment.setAccountTypeId(Splits.get(0).getAccountId());
-		schedulePayment.setPayeeId(Splits.get(0).getPayeeId());
-		schedulePayment.setSplits(Splits);
-		schedulePayment.setCheckNumber(Splits.get(0).getCheckNumber());
-		schedulePayment.setStartDate(schedule.getString(14));
-		schedulePayment.setScheduleAmount(Splits.get(0).getValueFormatted());
-		schedulePayment.setScheduleStatus(Integer.valueOf(Splits.get(0).getReconcileFlag()));
-		schedulePayment.setScheduleMemo(trans.getString(3));		
+		schedulePayment.setAccountTypeId(schedule.Transaction.splits.get(0).getAccountId());
+		schedulePayment.setPayeeId(schedule.Transaction.splits.get(0).getPayeeId());
+		//schedulePayment.setSplits(Splits);
+		schedulePayment.setCheckNumber(schedule.Transaction.splits.get(0).getCheckNumber());
+		schedulePayment.setStartDate(schedule.convertDate(schedule.getStartDate()));
+		schedulePayment.setScheduleAmount(schedule.Transaction.splits.get(0).getValueFormatted());
+		schedulePayment.setScheduleStatus(Integer.valueOf(schedule.Transaction.splits.get(0).getReconcileFlag()));
+		schedulePayment.setScheduleMemo(schedule.Transaction.getMemo());		
 	}
 	
 	public void onSendOptions() 
@@ -502,7 +502,7 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 		// Send the payment information to the fragment.
 		ScheduleOptionsActivity scheduleOptions = (ScheduleOptionsActivity) this.getSupportFragmentManager().findFragmentByTag("options");
 		
-		scheduleOptions.setScheduleWeekendOption(schedule.getInt(15));
+		scheduleOptions.setScheduleWeekendOption();
 		scheduleOptions.setScheduleIsEstimate(schedule.getString(11));
 		scheduleOptions.setScheduleAutoEnter(schedule.getString(12));
 		scheduleOptions.setEndDate(schedule.getString(10));		

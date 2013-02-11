@@ -509,6 +509,16 @@ public class Schedule
 		this.title = t;
 	}
 	
+	public void setStartDate(Calendar date)
+	{
+		this.StartDate = date;
+	}
+	
+	public Calendar getStartDate()
+	{
+		return this.StartDate;
+	}
+	
 	public void setEndDate(String end)
 	{	
 		if(end != null)
@@ -1394,7 +1404,7 @@ public class Schedule
 		this.transDate = date;
 	}
 	
-	private Calendar convertDate(String date)
+	public Calendar convertDate(String date)
 	{
 		// Date assumed to be in YYYY-MM-DD format
 		String dates[] = date.split("-");
@@ -1404,7 +1414,7 @@ public class Schedule
 		return cal;
 	}
 	
-	private String convertDate(Calendar date)
+	public String convertDate(Calendar date)
 	{
 		if( date == null )
 			return null;
