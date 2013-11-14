@@ -484,9 +484,9 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 		schedulePayment.setAction(Action);
 		schedulePayment.setScheduleName(schedule.getDescription());
 		schedulePayment.setScheduleFrequency(schedule.getOccurenceMultiplier());
-		schedulePayment.setScheduleFrequencyDescription(schedule.getInt(4));
-		schedulePayment.setSchedulePaymentMethod(schedule.getInt(7));
-		schedulePayment.setScheduleType(schedule.getInt(2));
+		schedulePayment.setScheduleFrequencyDescription(schedule.getOccurence());
+		schedulePayment.setSchedulePaymentMethod(schedule.getPaymentType());
+		schedulePayment.setScheduleType(schedule.getType());
 		schedulePayment.setAccountTypeId(schedule.Transaction.splits.get(0).getAccountId());
 		schedulePayment.setPayeeId(schedule.Transaction.splits.get(0).getPayeeId());
 		//schedulePayment.setSplits(Splits);

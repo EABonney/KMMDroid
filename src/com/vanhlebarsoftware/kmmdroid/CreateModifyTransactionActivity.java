@@ -633,7 +633,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 		Cursor splits = getBaseContext().getContentResolver().query(u, new String[] { "*" }, "transactionId=?", 
 																	new String[] { schId }, "splitId ASC");
 
-		return new Schedule(schedule, splits, getBaseContext());
+		return new Schedule(schedule, splits, getBaseContext(), this.fromWidgetId);
 	}
 	
 	private void editTransaction()

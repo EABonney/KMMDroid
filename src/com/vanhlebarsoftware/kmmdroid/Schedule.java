@@ -547,6 +547,15 @@ public class Schedule
 			return false;
 	}
 	
+	public int getPaymentType()
+	{
+		return this.paymentType;
+	}
+	
+	public int getType()
+	{
+		return this.Type;
+	}
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html

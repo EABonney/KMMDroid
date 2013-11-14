@@ -62,7 +62,10 @@ public class WelcomeActivity extends FragmentActivity
         	}
         }
         else
+        {
+        	fromWidgetId = "9999";
         	Log.d(TAG, "No extras passed to WelcomeActivity!");
+        }
         
         // If the user has lostPath, somehow they lost their saved database, just pop and alert, show them the lost path and then skip
         // everything else until they open up a new database.
@@ -141,7 +144,7 @@ public class WelcomeActivity extends FragmentActivity
         		ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
     		
         		Schedules = Schedule.BuildCashRequired(c, Schedule.padFormattedDate(strYesterday), Schedule.padFormattedDate(strToday), 
-        												Transaction.convertToPennies("0.00"), getBaseContext());
+        												Transaction.convertToPennies("0.00"), getBaseContext(), fromWidgetId);
 
         		// Get a list of all schedules that are due today AND are setup for autoEntry.
         		ArrayList<String> autoEnterSchedules = new ArrayList<String>();
@@ -156,7 +159,7 @@ public class WelcomeActivity extends FragmentActivity
         		for(String scheduleId : autoEnterSchedules)
         		{
         			// Get the schedule from the supplied id
-        			schedule = getSchedule(scheduleId);
+        			schedule = getSchedule(scheduleId, fromWidgetId);
         			Transaction transaction = schedule.convertToTransaction(createTransId());
         			transaction.setEntryDate(calToday);
         			transaction.Save();
@@ -164,7 +167,7 @@ public class WelcomeActivity extends FragmentActivity
         			
         			// Need to repull in the information for the schedule as the transactionId is changed above and stays on the transaction not the
         			// schedule. Not sure why...
-        			schedule = getSchedule(scheduleId);
+        			schedule = getSchedule(scheduleId, fromWidgetId);
         			//Need to advance the schedule to the next date and update the lastPayment and startDate dates to the recorded date of the transaction.
         			schedule.advanceDueDate(/*Schedule.getOccurence(schedule.getOccurence(), schedule.getOccurenceMultiplier())*/);
         			ContentValues values = new ContentValues();
@@ -351,7 +354,7 @@ public class WelcomeActivity extends FragmentActivity
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
     
-	private Schedule getSchedule(String schId)
+	private Schedule getSchedule(String schId, String fromWidgetId)
 	{
 		Log.d(TAG, "schId: " + schId);
 		Cursor schedule = KMMDapp.db.query("kmmschedules",new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
@@ -359,7 +362,7 @@ public class WelcomeActivity extends FragmentActivity
 		Cursor transaction = KMMDapp.db.query("kmmTransactions", new String[] { "*" }, "id=?", new String[] { schId }, null, null, null);
 
 		Log.d(TAG, "Number of transactions returned: " + transaction.getCount());
-		return new Schedule(schedule, splits, transaction, getBaseContext());
+		return new Schedule(schedule, splits, transaction, getBaseContext(), fromWidgetId);
 	}
 
 	private String createTransId()
