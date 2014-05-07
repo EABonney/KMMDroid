@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Payee 
+public class Payee implements Parcelable
 {
 	private static final String TAG = Payee.class.getSimpleName();
 	private String id;
@@ -287,5 +289,31 @@ public class Payee
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_PAYEE_URI,getId() + frag);
 		u = Uri.parse(u.toString());
 		this.context.getContentResolver().update(u,valuesPayee, null, null);
+	}
+
+	/***********************************************************************************************
+	 * Required methods to make Payee parcelable to pass between activities
+	 **********************************************************************************************/
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{	
+		dest.writeString(id);
+		dest.writeString(name);
+		dest.writeString(reference);
+		dest.writeString(email);
+		dest.writeString(addressStreet);
+		dest.writeString(addressCity);
+		dest.writeString(addressState);
+		dest.writeString(addressZipcode);
+		dest.writeString(telephone);
+		dest.writeString(notes);
+		dest.writeString(defaultAccountId);
+		dest.writeInt(matchData);
+		dest.writeString(matchIgnoreCase);
+		dest.writeString(matchKeys);
 	}
 }

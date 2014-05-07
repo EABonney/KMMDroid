@@ -10,10 +10,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-public class Schedule 
+public class Schedule implements Parcelable
 {
 	private static final String TAG = Schedule.class.getSimpleName();
 	
@@ -1763,5 +1765,46 @@ public class Schedule
 		
 		// Save the transaction and splits for this schedule
 		this.Transaction.Update();		
+	}
+	
+	/***********************************************************************************************
+	 * Required methods to make Schedule parcelable to pass between activities
+	 * 
+	 * Any time we are using this parcel to get Splits we MUST use the setContext() method to set the
+	 * context of the actual Schedule as we can not pass this as part of the Parcel. Failing to do this
+	 * will cause context to be null and crash!
+	 **********************************************************************************************/
+
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{		
+		dest.writeString(widgetId);
+		dest.writeString(id);
+		dest.writeString(Description);
+		dest.writeInt(Type);
+		dest.writeString(TypeString);
+		dest.writeInt(occurence);
+		dest.writeInt(occurenceMultiplier);
+		dest.writeString(occurenceString);
+		dest.writeInt(paymentType);
+		dest.writeString(paymentTypeString);
+		dest.writeSerializable(StartDate);
+		dest.writeSerializable(EndDate);
+		dest.writeString(Fixed);
+		dest.writeString(AutoEnter);
+		dest.writeSerializable(LastPaymentDate);
+		dest.writeSerializable(DueDate);
+		dest.writeInt(WeekendOption);
+		dest.writeString(WeekendOptionString);
+		dest.writeLong(nAmount);
+		dest.writeLong(nBalance);
+		dest.writeString(title);
+		dest.writeString(transDate);
+		dest.writeTypedList(Splits);
+		dest.writeParcelable(Transaction, flags);
 	}
 }

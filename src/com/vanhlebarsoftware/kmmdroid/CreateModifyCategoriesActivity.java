@@ -44,7 +44,7 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 	private boolean returnFromDelete = false;
 	private boolean isDirty = false;
 	KMMDroidApp KMMDapp;
-	SimpleCursorAdapter adapter;
+	//SimpleCursorAdapter adapter;
 	TabHost tabHost;
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, CreateModifyCategoriesActivity.TabInfo>();
 	private TabInfo mLastTab = null;
@@ -262,6 +262,10 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 		{
 			case R.id.itemsave:
 				// Update the category to reflect any changes before saving.
+				Fragment fragGeneral = getSupportFragmentManager().findFragmentByTag("general");
+				Fragment fragHierarchy = getSupportFragmentManager().findFragmentByTag("hierarchy");
+				Fragment fragTransactions = getSupportFragmentManager().findFragmentByTag("transactions");
+				
 				category.getDataChanges(this);
 
 				// See if the user has at least filled in the Name field, if not then pop up a dialog and do nothing.

@@ -412,4 +412,17 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		else
 			accountIBAN.setText(this.strIBAN);
 	}
+	
+	public Bundle getInstitutionBunde()
+	{
+		Bundle bundleInst = new Bundle();
+		
+		bundleInst.putString("institutionSelected", institutionSelected);
+		bundleInst.putString("institutionId", institutionId);
+		bundleInst.putString("strAccountNumber", strAccountNumber);
+		bundleInst.putString("strIBAN", strIBAN);
+		bundleInst.putBoolean("UseInst", bUseInst);
+		
+		return bundleInst;
+	}
 }

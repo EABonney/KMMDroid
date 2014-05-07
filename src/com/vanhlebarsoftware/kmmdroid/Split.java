@@ -4,9 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Split
+public class Split implements Parcelable
 {
 	private static final String TAG = Split.class.getSimpleName();
 	/****** Contants for Split columns supplied via a Cursor *****/
@@ -397,5 +399,41 @@ public class Split
 							  this.bankId, null, null);
 		
 		return tmp;
+	}
+
+	/***********************************************************************************************
+	 * Required methods to make Splits parcelable to pass between activities
+	 * 
+	 * Any time we are using this parcel to get Splits we MUST use the setContext() method to set the
+	 * context of the actual Split as we can not pass this as part of the Parcel. Failing to do this
+	 * will cause context to be null and crash!
+	 **********************************************************************************************/
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{
+		// TODO Auto-generated method stub
+		dest.writeString(fromWidgetId);
+		dest.writeString(transactionId);
+		dest.writeString(txType);
+		dest.writeInt(splitId);
+		dest.writeString(payeeId);
+		dest.writeString(reconcileDate);
+		dest.writeString(action);
+		dest.writeString(reconcileFlag);
+		dest.writeString(value);
+		dest.writeString(valueFormatted);
+		dest.writeString(shares);
+		dest.writeString(sharesFormatted);
+		dest.writeString(price);
+		dest.writeString(priceFormatted);
+		dest.writeString(memo);
+		dest.writeString(accountId);
+		dest.writeString(checkNumber);
+		dest.writeString(postDate);
+		dest.writeString(bankId);
 	}
 }

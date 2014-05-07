@@ -3,6 +3,7 @@ package com.vanhlebarsoftware.kmmdroid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import com.vanhlebarsoftware.kmmdroid.CategoriesGeneralActivity.OnSendGeneralDataListener;
 
@@ -10,13 +11,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Context;
+//import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.content.CursorLoader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
@@ -40,6 +47,9 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 											PayeeFragment.OnSendWidgetIdListener
 {
 	private static final String TAG = SchedulePaymentInfoActivity.class.getSimpleName();
+	private static final int SCHPAYMENTACCOUNTS_LOADER = 0x21;
+	private static final int SCHPAYMENTPAEES_LOADER = 0x22;
+	private static final int SCHPAYMENTCATEGORIES_LOADER = 0x23;
 	private static final int ACTION_NEW = 1;
 	private OnSendPaymentInfoListener onSendPaymentInfo;
 	static final String[] FROM = { "name" };
@@ -92,22 +102,25 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 	Spinner spinFreqDesc;
 	Spinner spinPaymentMethod;
 	Spinner spinSchType;
-//	Spinner spinSchAccount;
-//	Spinner spinPayee;
-//	Spinner spinCategory;
+	Spinner spinSchAccount;
+	Spinner spinPayee;
+	Spinner spinCategory;
 	Spinner spinStatus;
-//	Cursor cursorPayees;
-//	Cursor cursorCategories;
-//	Cursor cursorAccounts;
+	Cursor cursorPayees;
+	Cursor cursorCategories;
+	Cursor cursorAccounts;
 	ArrayAdapter<CharSequence> adapterSchTypes;
 	ArrayAdapter<CharSequence> adapterStatus;
 	ArrayAdapter<CharSequence> adapterSchFreqNum;
 	ArrayAdapter<CharSequence> adapterSchFreqDesc;
 	ArrayAdapter<CharSequence> adapterSchPaymentMethod;
-//	SimpleCursorAdapter adapterPayees;
-//	SimpleCursorAdapter adapterCategories;
-//	SimpleCursorAdapter adapterSchAccounts;
+	SimpleCursorAdapter adapterPayees;
+	SimpleCursorAdapter adapterCategories;
+	SimpleCursorAdapter adapterSchAccounts;
 //	KMMDroidApp KMMDapp;
+	AccountsLoaderCallbacks accountsLoaderCallback;
+	PayeesLoaderCallbacks payeesLoaderCallback;
+	CategoriesLoaderCallbacks categoriesLoaderCallback;
 	
 	
 	/* (non-Javadoc)
@@ -222,7 +235,7 @@ public class SchedulePaymentInfoActivity extends Fragment implements
         spinSchType = (Spinner) view.findViewById(R.id.scheduleType);
         spinStatus = (Spinner) view.findViewById(R.id.status);
         spinPaymentMethod = (Spinner) view.findViewById(R.id.schedulePaymentMethod);
-        accountFrag = (AccountFragment) getFragmentManager().findFragmentById(R.id.accountFragment);
+        accountFrag = (AccountFragment) getFragmentManager().findFragmentById(R.id.accountFragment);        
         catFrag = (CategoryFragment) getFragmentManager().findFragmentById(R.id.categoryFragment);
         payeeFrag = (PayeeFragment) getFragmentManager().findFragmentById(R.id.payeeFragment);
         
@@ -358,15 +371,18 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 //		startManagingCursor(cursorAccounts);
 		
 		// Set up the adapters
-//		adapterPayees = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorPayees, FROM, TO);
-//		adapterPayees.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-//		spinPayee.setAdapter(adapterPayees);
-//		adapterCategories = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCategories, FROM1, TO);
-//		adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-//		spinCategory.setAdapter(adapterCategories);
-//		adapterSchAccounts = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorAccounts, FROM1, TO);
-//		adapterSchAccounts.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-//		spinSchAccount.setAdapter(adapterSchAccounts);
+		adapterPayees = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, cursorPayees, FROM, TO);
+		adapterPayees.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinPayee.setAdapter(adapterPayees);
+		
+		adapterCategories = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, cursorCategories, FROM1, TO);
+		adapterCategories.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinCategory.setAdapter(adapterCategories);
+		
+		adapterSchAccounts = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, cursorAccounts, FROM1, TO);
+		adapterSchAccounts.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinSchAccount.setAdapter(adapterSchAccounts);
+		
 		adapterSchTypes = ArrayAdapter.createFromResource(getActivity().getBaseContext(), R.array.TransactionTypes, android.R.layout.simple_spinner_item);
 		adapterSchTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinSchType.setAdapter(adapterSchTypes);
@@ -398,6 +414,17 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 			spinCategory.setSelection(setCategoryUsed(strSchCategoryId));		
 		}
 */
+        // Prepare the loader for the accounts spinner.  Either re-connect with an existing one or start a new one.
+		accountsLoaderCallback = new AccountsLoaderCallbacks();
+        getLoaderManager().initLoader(SCHPAYMENTACCOUNTS_LOADER, null, accountsLoaderCallback);
+        
+        // Prepare the loader for the payees spinner. Either re-connect with an existing one or start a new one.
+        payeesLoaderCallback = new PayeesLoaderCallbacks();
+        getLoaderManager().initLoader(SCHPAYMENTPAEES_LOADER, null, payeesLoaderCallback);
+        
+        // Prepare the loader for the categories spinner. Either re-connect with an existing one or start a new one.
+        categoriesLoaderCallback = new CategoriesLoaderCallbacks();
+        getLoaderManager().initLoader(SCHPAYMENTCATEGORIES_LOADER, null, categoriesLoaderCallback);
 	}
 	
 /*	@Override
@@ -1090,4 +1117,91 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 		return i;		
 	}
 	*/
+	
+	// Private implementation of the Loader Callbacks required for this activity.
+	// AccountsLoaderCallbacks - handles the loading of the accounts into the Spinner
+	// PayeesLoaderCallbacks - handles the loading of the payees into the Spinner
+	// CategoriesLoaderCallbacks - handles the loading of the categories into the Spinner
+	
+    private class AccountsLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor>
+    {  
+
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) 
+		{
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,"#" + "9999");
+			u = Uri.parse(u.toString());
+			String[] dbColumns = new String[] { "accountName", "id AS _id" };
+			String dbSelection = "(accountType=? OR accountType=? OR accountType=? OR accountType=?) AND (balance != '0/1')";
+			String[] dbSelectionArgs = { String.valueOf(Account.ACCOUNT_CHECKING), String.valueOf(Account.ACCOUNT_SAVINGS), 
+					String.valueOf(Account.ACCOUNT_LIABILITY), String.valueOf(Account.ACCOUNT_CREDITCARD) };
+
+			return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, dbSelection, dbSelectionArgs, "acountName ASC");
+		} 
+		
+        public void onLoadFinished(Loader<Cursor> loader, Cursor accounts) 
+        {
+            // Set the new data in the adapter.
+        	adapterSchAccounts.swapCursor(accounts);
+        	//setProgressBarIndeterminateVisibility(false);
+        }
+        
+        public void onLoaderReset(Loader<Cursor> loader) 
+        {
+            // clear the data in the adapter.
+        	adapterSchAccounts.swapCursor(null);
+        }   	
+    }
+    
+    private class PayeesLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor>
+    {
+
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) 
+		{
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_PAYEE_URI,"#" + "999");
+			u = Uri.parse(u.toString());
+			String[] dbColumns = new String[] { "name", "id AS _id" };
+
+			return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, null, null, "acountName ASC");
+		}
+
+		public void onLoadFinished(Loader<Cursor> loader, Cursor payees) 
+		{
+            // Set the new data in the adapter.
+			adapterPayees.swapCursor(payees);
+		}
+
+		public void onLoaderReset(Loader<Cursor> loader) 
+		{
+            // clear the data in the adapter.
+			adapterPayees.swapCursor(null);
+		}    	
+    }
+
+    private class CategoriesLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor>
+    {
+
+		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) 
+		{
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,"#" + "9999");
+			u = Uri.parse(u.toString());
+			String[] dbColumns = new String[] { "accountName", "id AS _id" };
+			String dbSelection = "(accountType=? OR accountType=?)";
+			String[] dbSelectionArgs = new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), String.valueOf(Account.ACCOUNT_INCOME) };
+			
+			return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, dbSelection, dbSelectionArgs,	"accountName ASC");
+
+		}
+
+		public void onLoadFinished(Loader<Cursor> loader, Cursor categories) 
+		{
+            // Set the new data in the adapter.
+			adapterCategories.swapCursor(categories);
+		}
+
+		public void onLoaderReset(Loader<Cursor> loader) 
+		{
+            // clear the data in the adapter.
+			adapterCategories.swapCursor(null);
+		}    	
+    }
 }

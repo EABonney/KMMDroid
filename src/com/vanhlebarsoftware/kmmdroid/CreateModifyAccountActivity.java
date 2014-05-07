@@ -358,7 +358,16 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 		{
 			case R.id.itemsave:			
 				// Update the account object to reflect any changes before saving.
-				account.getDataChanges(this);
+				Fragment fragAcct = getSupportFragmentManager().findFragmentByTag("account");
+				Fragment fragInst = getSupportFragmentManager().findFragmentByTag("institution");
+				Fragment fragParent = getSupportFragmentManager().findFragmentByTag("parent");
+				
+				Bundle bdlAcct = ((CreateAccountAccountActivity) fragAcct).getAccountBundle();
+				Bundle bdlInst = ((CreateAccountInstitutionActivity) fragInst).getInstitutionBunde();
+				Bundle bdlParent = ((CreateAccountParentActivity) fragParent).getParentBundle();
+				
+				fillAccountData(bdlAcct, bdlInst, bdlParent);
+				//account.getDataChanges(this);
 
 				if(account.getName().isEmpty())
 				{
@@ -645,6 +654,26 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 		accounts.putExtra("activity", AccountsLoader.ACTIVITY_ACCOUNTS);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(accounts);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(home);
+	}
+	
+	private void fillAccountData(Bundle bdlAccount, Bundle bdlInstitution, Bundle bdlParent)
+	{
+		// Populate the account information from the supplied bundle
+		account.setIsPreferred(bdlAccount.getBoolean("preferred"));
+		account.setAccountName(bdlAccount.getString("name"));
+		account.setOpenDate(bdlAccount.getString("openDate"));
+		account.setOpenBalance(bdlAccount.getString("openBalance"));
+		account.setCurrency(bdlAccount.getString("currencySelected"));
+		account.setAccountType(bdlAccount.getInt("intTypeSelected"));
+		account.setAccountType(bdlAccount.getString("strTypeSelected"));
+		
+		// Populate the Institution information from the supplied bundle
+		account.setInstitutionId(bdlInstitution.getString("institutionId"));
+		account.setIBAN(bdlInstitution.getString("strIBAN"));
+		account.setAccountNumber(bdlInstitution.getString("strAccountNumber"));
+		
+		// Populate the Parent information from the supplied bundle
+		account.setParentId(bdlParent.getString("parentId"));
 	}
 	// *****************************************************************************************************************************
 	// ********************************************** Helper Classes ***************************************************************

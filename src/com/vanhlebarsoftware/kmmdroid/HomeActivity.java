@@ -25,8 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class HomeActivity extends FragmentActivity implements
-						  LoaderManager.LoaderCallbacks<List<Account>>
+public class HomeActivity extends FragmentActivity /*implements
+						  LoaderManager.LoaderCallbacks<List<Account>>*/
 {
 
 	private static final String TAG = HomeActivity.class.getSimpleName();
@@ -42,6 +42,7 @@ public class HomeActivity extends FragmentActivity implements
 	LinearLayout navBar;
 	ListView listAccounts;
 	AccountsAdapter adapterAccounts;
+	HomeLoaderCallbacks homeloaderCallback;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -136,7 +137,8 @@ public class HomeActivity extends FragmentActivity implements
 		
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getSupportLoaderManager().initLoader(HOMEACCOUNTS_LOADER, null, this);
+		homeloaderCallback = new HomeLoaderCallbacks(this);
+        getSupportLoaderManager().initLoader(HOMEACCOUNTS_LOADER, null, homeloaderCallback);
 	}
 	
 	@Override
@@ -340,7 +342,7 @@ public class HomeActivity extends FragmentActivity implements
 	}
 	
 	// LoaderManager.LoaderCallbacks<List<Accounts> methods:
-    public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+/*    public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
     {
     	setProgressBarIndeterminateVisibility(true);
     	return new HomeLoader(this, args);
@@ -357,5 +359,35 @@ public class HomeActivity extends FragmentActivity implements
     {
         // clear the data in the adapter.
     	adapterAccounts.setData(null);
+    }
+*/
+    private class HomeLoaderCallbacks implements LoaderManager.LoaderCallbacks<List<Account>>
+    {  
+    	Context context;
+    	
+    	public HomeLoaderCallbacks(HomeActivity homeActivity) 
+    	{
+    		context = homeActivity;
+		}
+
+		// LoaderManager.LoaderCallbacks<List<Accounts> methods:
+        public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+        {
+        	setProgressBarIndeterminateVisibility(true);
+        	return new HomeLoader(context, args);
+        }
+        
+        public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
+        {
+            // Set the new data in the adapter.
+        	adapterAccounts.setData(accounts);
+        	setProgressBarIndeterminateVisibility(false);
+        }
+        
+        public void onLoaderReset(Loader<List<Account>> loader) 
+        {
+            // clear the data in the adapter.
+        	adapterAccounts.setData(null);
+        }    	
     }
 }

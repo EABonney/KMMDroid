@@ -532,4 +532,19 @@ LoaderManager.LoaderCallbacks<Cursor>
 		else
 			this.checkPreferred.setChecked(this.bPreferred);
 	}
+	
+	public Bundle getAccountBundle()
+	{
+		Bundle bundleAcct = new Bundle();
+		
+		bundleAcct.putBoolean("preferred", bPreferred);
+		bundleAcct.putString("name", strAccountName);
+		bundleAcct.putString("openDate", strOpenDate);
+		bundleAcct.putString("openBalance", strOpenBalance);
+		bundleAcct.putString("currencySelected", currencySelected);
+		bundleAcct.putString("strTypeSelected", strTypeSelected);
+		bundleAcct.putInt("intTypeSelected", TypeSelected);
+		
+		return bundleAcct;
+	}
 }

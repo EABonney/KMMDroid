@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 	private static final String strOrderBy = "accountName ASC";
 	List<Account> mAccounts;
 	Context mContext;
+	Fragment mFrag;
 	Bundle mBundle;
 	private AccountsListener mObserver = null;
 	

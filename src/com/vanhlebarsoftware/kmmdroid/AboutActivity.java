@@ -3,18 +3,26 @@ package com.vanhlebarsoftware.kmmdroid;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
+import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SimpleCursorAdapter;
+import android.content.*;
+//import android.support.v4.app.FragmentActivity;
+//import android.support.v4.app.LoaderManager;
+//import android.support.v4.content.Loader;
+//import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.TextView;
-import android.support.v4.content.*;
+//import android.support.v4.content.*;
 import android.net.*;
 import android.widget.*;
 import android.view.Window;
 
-public class AboutActivity extends FragmentActivity implements
+public class AboutActivity extends Fragment implements
 								LoaderManager.LoaderCallbacks<Cursor>
 {
 	private static final String TAG = AboutActivity.class.getSimpleName();
@@ -31,38 +39,52 @@ public class AboutActivity extends FragmentActivity implements
 	ListView lvAbout;
 	Cursor cursor;
 	SimpleCursorAdapter adapter;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+        View view = inflater.inflate(R.layout.about, container, false);
+
+        // Get our views
+        txtAboutVers = (TextView) view.findViewById(R.id.aboutVerNumber);
+        lvAbout = (ListView) view.findViewById(R.id.aboutList);
+
+        // Create an empty adapter we will use to display the loaded data.
+        adapter = new SimpleCursorAdapter(this.getActivity().getBaseContext(), R.layout.about_row, null, FROM, TO, 0);
+        lvAbout.setAdapter(adapter);
+
+        return view;
+    }
 
 	/* Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.about);
-        
-        // Get our views
-        txtAboutVers = (TextView) findViewById(R.id.aboutVerNumber);
-        lvAbout = (ListView) findViewById(R.id.aboutList);
+		//requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        //setContentView(R.layout.about);
 		
         // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
+        //KMMDapp = ((KMMDroidApp) getApplication());
         
         // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
-		
-        // Create an empty adapter we will use to display the loaded data.
-        adapter = new SimpleCursorAdapter(this,R.layout.about_row, null, FROM, TO, 0);
-		lvAbout.setAdapter(adapter);
+        //if(!KMMDapp.isDbOpen())
+        //{
+        //	KMMDapp.openDB();
+        //}
+	}
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
 
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getSupportLoaderManager().initLoader(ABOUT_LOADER, null, this);
-	}
-	
+        getLoaderManager().initLoader(ABOUT_LOADER, null, this);
+    }
+
 	@Override
 	public void onDestroy()
 	{
@@ -70,7 +92,7 @@ public class AboutActivity extends FragmentActivity implements
 	}
 	
 	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
 		
@@ -78,7 +100,8 @@ public class AboutActivity extends FragmentActivity implements
 		String versionName = null;
 		try
 		{
-			versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+			versionName = this.getActivity().getPackageManager().getPackageInfo(this.getActivity().getPackageName(), 0)
+                    .versionName;
 		}
 		catch (NameNotFoundException e)
 		{
@@ -92,9 +115,9 @@ public class AboutActivity extends FragmentActivity implements
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
 		u = Uri.parse(u.toString());
-		setProgressBarIndeterminateVisibility(true);
+		this.getActivity().setProgressBarIndeterminateVisibility(true);
 	
-		return new CursorLoader(AboutActivity.this, u,
+		return new CursorLoader(this.getActivity(), u,
 								new String[] { "version", "created", "lastModified", "institutions",
 											   "accounts", "payees", "transactions", "splits",
 											   "securities", "prices", "currencies", "schedules",
@@ -104,7 +127,7 @@ public class AboutActivity extends FragmentActivity implements
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) 
 	{
 		adapter.swapCursor(cursor);
-		setProgressBarIndeterminateVisibility(false);
+		this.getActivity().setProgressBarIndeterminateVisibility(false);
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) 

@@ -208,4 +208,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 		
 		spinParent.setSelection(setParent(this.strParentId));
 	}
+	
+	public Bundle getParentBundle()
+	{
+		Bundle bndlParent = new Bundle();
+		
+		bndlParent.putString("parentId", strParentId);
+		
+		return bndlParent;
+	}
 }

@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Institution 
+public class Institution implements Parcelable
 {
 	private static final String TAG = Institution.class.getSimpleName();
 	private String id;
@@ -221,5 +223,34 @@ public class Institution
 		}
 		else
 			Log.d(TAG, "We didn't have a context so we could not update!!!!");
+	}
+
+	/***********************************************************************************************
+	 * Required methods to make Institution parcelable to pass between activities
+	 * 
+	 * Any time we are using this parcel to get Institution we MUST use the setContext() method to set the
+	 * context of the actual Institution as we can not pass this as part of the Parcel. Failing to do this
+	 * will cause context to be null and crash!
+	 **********************************************************************************************/
+	public void setContext(Context c)
+	{
+		this.context = c;
+	}
+	
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{	
+		dest.writeString(id);
+		dest.writeString(name);
+		dest.writeString(manager);
+		dest.writeString(routingCode);
+		dest.writeString(addressStreet);
+		dest.writeString(addressCity);
+		dest.writeString(addressZipcode);
+		dest.writeString(telephone);
 	}
 }

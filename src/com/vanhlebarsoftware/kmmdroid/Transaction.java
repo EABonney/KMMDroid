@@ -16,10 +16,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.Xml;
 
-public class Transaction 
+public class Transaction implements Parcelable
 {
 	private static final String TAG = Transaction.class.getSimpleName();
 	private static final int C_ID = 0;
@@ -872,5 +874,38 @@ public class Transaction
 					.append(dates[0]).append("-")
 					.append(strMonth).append("-")
 					.append(strDay).toString();
+	}
+
+	/***********************************************************************************************
+	 * Required methods to make Transaction parcelable to pass between activities
+	 * 
+	 * Any time we are using this parcel to get a Transaction we MUST use the setContext() method to set the
+	 * context of the actual Transaction as we can not pass this as part of the Parcel. Failing to do this
+	 * will cause context to be null and crash!
+	 **********************************************************************************************/
+	public void setContext(Context c)
+	{
+		this.context = c;
+	}
+	
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{
+		dest.writeString(widgetId);
+		dest.writeLong(nAmount);
+		dest.writeLong(nBalance);
+		dest.writeString(strMemo);
+		dest.writeString(strTransId);
+		dest.writeString(strtxType);
+		dest.writeString(strCurrencyId);
+		dest.writeString(strBankId);
+		dest.writeSerializable(Date);
+		dest.writeSerializable(entryDate);
+		dest.writeTypedList(splits);
+		dest.writeTypedList(origSplits);
 	}
 }

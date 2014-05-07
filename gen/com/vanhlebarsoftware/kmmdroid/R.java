@@ -990,7 +990,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:overlayHeight
+          @attr name com.vanhlebarsoftware.kmmdroid:overlayHeight
         */
         public static final int CustomFastScrollView_overlayHeight = 1;
         /**
@@ -1006,7 +1006,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:overlayScrollThumbWidth
+          @attr name com.vanhlebarsoftware.kmmdroid:overlayScrollThumbWidth
         */
         public static final int CustomFastScrollView_overlayScrollThumbWidth = 3;
         /**
@@ -1022,7 +1022,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:overlayTextSize
+          @attr name com.vanhlebarsoftware.kmmdroid:overlayTextSize
         */
         public static final int CustomFastScrollView_overlayTextSize = 2;
         /**
@@ -1038,7 +1038,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:overlayWidth
+          @attr name com.vanhlebarsoftware.kmmdroid:overlayWidth
         */
         public static final int CustomFastScrollView_overlayWidth = 0;
     };

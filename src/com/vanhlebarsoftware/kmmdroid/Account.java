@@ -12,10 +12,12 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.app.Fragment;
 import android.util.Log;
 
-public class Account 
+public class Account implements Parcelable
 {
 	private static final String TAG = Account.class.getSimpleName();
 	public static final int ACCOUNT_CHECKING = 1;
@@ -263,6 +265,11 @@ public class Account
 		return this.notes;
 	}
 	
+	public void setAccountName(String strName)
+	{
+		this.accountName = strName;
+	}
+	
 	public void setIsParent(boolean flag)
 	{
 		this.isParent = flag;
@@ -301,6 +308,31 @@ public class Account
 	public void setParentId(String pId)
 	{
 		this.parentId = pId;
+	}
+	
+	public void setCurrency(String strCurrency)
+	{
+		this.currencyId = strCurrency;
+	}
+	
+	public void setAccountType(String strType)
+	{
+		this.accountTypeString = strType;
+	}
+	
+	public void setAccountType(int nType)
+	{
+		this.accountType = nType;
+	}
+	
+	public void setInstitutionId(String instId)
+	{
+		this.institutionId = instId;
+	}
+	
+	public void setAccountNumber(String strAcctNumber)
+	{
+		this.accountNumber = strAcctNumber;
 	}
 	
 	static public void updateAccount(Context context, String accountId, String transValue, int nChange)
@@ -454,13 +486,13 @@ public class Account
 		return false;		
 	}
 	
-	public void getDataChanges(CreateModifyAccountActivity context)
+/*	public void getDataChanges(CreateModifyAccountActivity context)
 	{
 		// We need to get each tab (fragment) if it is null, then the user didn't make any changes on that tab and ignore.
 		// If the tab (fragment) is not null, then we need to pull the information into our object before we save it.
 		
 		// Get the Institution elements
-		Fragment accountInst = context.getSupportFragmentManager().findFragmentByTag("institution");
+		Fragment accountInst = context.getFragmentManager().findFragmentByTag("institution");
 		if( accountInst != null )
 		{
 			boolean useInst = ((CreateAccountInstitutionActivity) accountInst).getUseInstitution();
@@ -537,7 +569,7 @@ public class Account
 				this.parentId = this.getParentId();
 		}
 	}
-	
+*/	
 	public void SaveAccount(Context context)
 	{
 		// Create the ContentValue pairs and then insert the new account.
@@ -987,5 +1019,42 @@ public class Account
 		c.close();
 		
 		this.id = newId;
+	}
+
+	/***********************************************************************************************
+	 * Required methods to make Account parcelable to pass between activities
+	 * 
+	 * Any time we are using this parcel to get Account we MUST use the setContext() method to set the
+	 * context of the actual Account as we can not pass this as part of the Parcel. Failing to do this
+	 * will cause context to be null and crash!
+	 **********************************************************************************************/
+	public void setContext(Context c)
+	{
+		this.context = c;
+	}
+	
+	public int describeContents() 
+	{
+		return 0;
+	}
+
+	public void writeToParcel(Parcel dest, int flags) 
+	{
+		dest.writeString(id);
+		dest.writeString(parentId);
+		dest.writeString(accountName);
+		dest.writeString(balance);
+		dest.writeString(accountTypeString);
+		dest.writeString(institutionId);
+		dest.writeString(accountNumber);
+		dest.writeString(IBAN);
+		dest.writeString(openDate);
+		dest.writeString(currencyId);
+		dest.writeString(notes);
+		dest.writeInt(accountType);
+		dest.writeInt(transactionCount);
+		dest.writeValue(isParent);
+		dest.writeValue(isClosed);
+		dest.writeValue(isPreferred);
 	}
 }
