@@ -21,11 +21,13 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 	public final static String HOMECHANGED = "HomeAccounts-Changed";
 	private final static String[] dbColumns = { "accountName", "balance", "accountTypeString", "accountType", "id", 
 												"accountTypeString", "accountType", "parentId"};
-	private final String strSelectionAccts = "(accountType != ? AND accountType != ?)";
+	private final String strSelectionAccts = "(accountType != ? AND accountType != ? AND accountType != ? AND accountType != ?)";
 	private final String strSelectionHome = " AND (balance != '0/1')";
 	private static final String [] selectionArgs = new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), 
-																  String.valueOf(Account.ACCOUNT_INCOME) };
-	private static final String strOrderBy = "accountName ASC";
+																  String.valueOf(Account.ACCOUNT_INCOME),
+																  String.valueOf(Account.ACCOUNT_STOCK),
+																  String.valueOf(Account.ACCOUNT_EQUITY)};
+	private static final String strOrderBy = "accountTypeString, accountName ASC";
 	List<Account> mAccounts;
 	Context mContext;
 	Bundle mBundle;

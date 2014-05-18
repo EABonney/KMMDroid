@@ -527,4 +527,6 @@
  	<string name="titleShowClosed">Show closed accounts</string>
  	<string name="titleClose">Close</string>
  	<string name="titleOpen">Open</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 </resources>

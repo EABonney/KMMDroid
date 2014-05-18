@@ -2,25 +2,19 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item android:title="@string/titleNew" android:id="@+id/itemNew" android:icon="@android:drawable/ic_menu_add"></item>
-    <item android:title="@string/titlePrefs" android:icon="@android:drawable/ic_menu_preferences" android:id="@+id/itemPrefs"></item>
-    <item android:title="@string/titleHome" android:id="@+id/itemHome" android:icon="@drawable/home_view"></item>
-    <item android:title="@string/titleAccounts" android:id="@+id/itemAccounts" android:icon="@drawable/accounts_view"></item>
-    <item android:title="@string/titlePayees" android:id="@+id/itemPayees" android:icon="@drawable/payees_view"></item>
     <item 
-    	android:id="@+id/itemInstitutions" 
-    	android:title="@string/titleInstitutions" android:icon="@drawable/institutions_view">
+        android:title="@string/titleNew" 
+        android:id="@+id/itemNew" 
+        android:icon="@android:drawable/ic_menu_add">
     </item>
     <item 
-    	android:id="@+id/itemSchedules"
-    	android:title="@string/titleSchedules">
-    </item>
-    <item 
-    	android:id="@+id/itemReports"
-    	android:title="@string/titleReports">
+        android:title="@string/titlePrefs" 
+        android:icon="@android:drawable/ic_menu_preferences" 
+        android:id="@+id/itemPrefs">
     </item>
     <item 
     	android:id="@+id/itemAbout" 
-    	android:title="@string/titleAbout" android:icon="@android:drawable/ic_menu_help">
+    	android:title="@string/titleAbout" 
+    	android:icon="@android:drawable/ic_menu_help">
     </item>
 </menu>

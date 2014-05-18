@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -19,15 +22,25 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CategoriesActivity extends FragmentActivity implements
 									LoaderManager.LoaderCallbacks<List<Account>>
 {
 	private static final String TAG = CategoriesActivity.class.getSimpleName();
 	private static final int CATEGORIES_LOADER = 0x03;
+	private String[] mDrawerListItems = {null, null, null, null, null, null};
+	private CharSequence mDrawerTitle;
+	private CharSequence mTitle;
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	private ActionBarDrawerToggle mDrawerToggle;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static String strCategoryId = null;
@@ -44,7 +57,7 @@ public class CategoriesActivity extends FragmentActivity implements
 	ImageButton btnReports;
 	LinearLayout navBar;
 	ExpandableListView listCategories;
-	TextView tvGroupHeader;
+	//TextView tvGroupHeader;
 	KMMDExpandableListAdapter adapter;
 	
 	/* Called when the activity is first created. */
@@ -58,6 +71,17 @@ public class CategoriesActivity extends FragmentActivity implements
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Set the titles of the Drawer and the ActionBar
+        mTitle = mDrawerTitle = getTitle();
+        
+        // Populate our Drawer items.
+        mDrawerListItems[0] = getString(R.string.titleHome);
+        mDrawerListItems[1] = getString(R.string.titleAccounts);
+        mDrawerListItems[2] = getString(R.string.titleInstitutions);
+        mDrawerListItems[3] = getString(R.string.titlePayees);
+        mDrawerListItems[4] = getString(R.string.titleSchedules);
+        mDrawerListItems[5] = getString(R.string.titleReports);
+        
         // Find our views
         listCategories = (ExpandableListView) findViewById(R.id.listCategoriesView);
         btnHome = (ImageButton) findViewById(R.id.buttonHome);
@@ -67,62 +91,42 @@ public class CategoriesActivity extends FragmentActivity implements
         btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
         btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
         btnReports = (ImageButton) findViewById(R.id.buttonReports);
-        tvGroupHeader = (TextView) findViewById(R.id.GroupHeading);
-        navBar = (LinearLayout) findViewById(R.id.navBar);
-		
+        //tvGroupHeader = (TextView) findViewById(R.id.GroupHeading);
+        //navBar = (LinearLayout) findViewById(R.id.navBar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        		R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close)
+        {
+        	// Called when a drawer has settled in a completely closed state.
+        	public void onDrawerClosed(View view)
+        	{
+        		super.onDrawerClosed(view);
+        		getActionBar().setTitle(mTitle);
+        		invalidateOptionsMenu();	// creates call to onPrepareOptionsMenu()
+        	}
+        	
+        	// Called when a drawer has settled in a completely open state.
+        	public void onDrawerOpened(View drawerView)
+        	{
+        		super.onDrawerOpened(drawerView);
+        		getActionBar().setTitle(mDrawerTitle);
+        		invalidateOptionsMenu();	// creates call to onPrepareOptionsMenu()
+        	}
+        };
+        
+        // Set out onClickListener events.
+        // Set the Drawer listeners
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        
+        // Set the ActionBar items
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
 		registerForContextMenu(listCategories);
 		
         // Set out onClickListener events.
-        btnHome.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), HomeActivity.class));
-			}
-		});
-        
-        btnAccounts.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-			}
-		});
-        
-        btnCategories.setVisibility(View.GONE);
-        
-        btnInstitutions.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
-			}
-		});
-        
-        btnPayees.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
-			}
-		});
-        
-        btnSchedules.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
-			}
-		});
-        
-        btnReports.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), ReportsActivity.class));
-			}
-		});
-
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
         listCategories.setOnChildClickListener(new OnChildClickListener()
@@ -196,7 +200,10 @@ public class CategoriesActivity extends FragmentActivity implements
         // Create an empty adapter we will use to display the loaded data.
 		adapter = new KMMDExpandableListAdapter(this, new ArrayList<String>(), new ArrayList<ArrayList<Account>>());
         listCategories.setAdapter(adapter);
-		
+
+		// Create the adapter for the navigation DrawerList
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerListItems));
+
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         getSupportLoaderManager().initLoader(CATEGORIES_LOADER, bundle, this);
@@ -243,12 +250,21 @@ public class CategoriesActivity extends FragmentActivity implements
 	protected void onResume()
 	{
 		super.onResume();
-		
-		// See if the user has requested the navigation bar.
-		if(!KMMDapp.prefs.getBoolean("navBar", false))
-			navBar.setVisibility(View.GONE);
-		else
-			navBar.setVisibility(View.VISIBLE);
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -262,27 +278,7 @@ public class CategoriesActivity extends FragmentActivity implements
 	
 	@Override
 	public boolean onPrepareOptionsMenu (Menu menu)
-	{	
-		// See if the user wants us to navigation menu items.
-		if( !KMMDapp.prefs.getBoolean("navMenu", true))
-		{
-			menu.findItem(R.id.itemAccounts).setVisible(false);
-			menu.findItem(R.id.itemHome).setVisible(false);
-			menu.findItem(R.id.itemPayees).setVisible(false);
-			menu.findItem(R.id.itemInstitutions).setVisible(false);
-			menu.findItem(R.id.itemSchedules).setVisible(false);
-			menu.findItem(R.id.itemReports).setVisible(false);
-		}
-		else
-		{
-			menu.findItem(R.id.itemAccounts).setVisible(true);
-			menu.findItem(R.id.itemHome).setVisible(true);
-			menu.findItem(R.id.itemPayees).setVisible(true);
-			menu.findItem(R.id.itemInstitutions).setVisible(true);
-			menu.findItem(R.id.itemSchedules).setVisible(true);
-			menu.findItem(R.id.itemReports).setVisible(true);
-		}
-		
+	{			
 		return true;
 	}
 	
@@ -290,20 +286,12 @@ public class CategoriesActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		// Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled the app icon touch event.
+		if(mDrawerToggle.onOptionsItemSelected(item))
+			return true;
+		
 		switch (item.getItemId())
 		{
-			case R.id.itemAccounts:
-				startActivity(new Intent(this, AccountsActivity.class));
-				break;
-			case R.id.itemInstitutions:
-				startActivity(new Intent(this, InstitutionsActivity.class));
-				break;
-			case R.id.itemPayees:
-				startActivity(new Intent(this, PayeeActivity.class));
-				break;
-			case R.id.itemHome:
-				startActivity(new Intent(this, HomeActivity.class));
-				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
@@ -311,12 +299,6 @@ public class CategoriesActivity extends FragmentActivity implements
 				Intent i = new Intent(this, CreateModifyCategoriesActivity.class);
 				i.putExtra("Action", ACTION_NEW);
 				startActivity(i);
-				break;
-			case R.id.itemSchedules:
-				startActivity(new Intent(this, SchedulesActivity.class));
-				break;
-			case R.id.itemReports:
-				startActivity(new Intent(this, ReportsActivity.class));
 				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
@@ -347,4 +329,44 @@ public class CategoriesActivity extends FragmentActivity implements
         // clear the data in the adapter.
     	adapter.setData(null);	
 	}
+	
+    private class DrawerItemClickListener implements ListView.OnItemClickListener
+    {
+    	public void onItemClick(AdapterView parent, View view, int position, long id)
+    	{
+    		selectItem(position);
+    	}
+    }
+    
+    private void selectItem(int position)
+    {
+    	// Make sure to close the Navigation Drawer.
+		mDrawerLayout.closeDrawer(mDrawerList);
+		
+    	// need to start new activities in here.
+    	switch(position)
+    	{
+    	case 0:
+    		startActivity(new Intent(this, HomeActivity.class));   		
+    		break;
+    	case 1:
+			startActivity(new Intent(this, AccountsActivity.class));
+    		break;    		
+    	case 2:
+			startActivity(new Intent(this, InstitutionsActivity.class));
+    		break;
+    	case 3:
+			startActivity(new Intent(this, PayeeActivity.class));
+    		break;
+    	case 4:
+			startActivity(new Intent(this, SchedulesActivity.class));
+    		break;
+    	case 5:
+			startActivity(new Intent(this, ReportsActivity.class));
+    		break;
+    	default:
+    		Toast.makeText(this, "We have a major fucking error!!!!", Toast.LENGTH_LONG).show();
+    		break;		
+    	}
+    }
 }

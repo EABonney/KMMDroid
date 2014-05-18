@@ -219,6 +219,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
         // or start a new one.
         getLoaderManager().initLoader(CAINSTITUTIONS_LOADER, null, this);
         
+        Log.d(TAG, "Inside onCreateView()");
         return view;
     }		
 
@@ -337,6 +338,11 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		return !checked;
 	}
 	
+	public String getInstitution()
+	{
+		return institutionSelected;
+	}
+	
 	public String getInstitutionId()
 	{
 		return institutionId;
@@ -417,11 +423,11 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	{
 		Bundle bundleInst = new Bundle();
 		
-		bundleInst.putString("institutionSelected", institutionSelected);
-		bundleInst.putString("institutionId", institutionId);
-		bundleInst.putString("strAccountNumber", strAccountNumber);
-		bundleInst.putString("strIBAN", strIBAN);
-		bundleInst.putBoolean("UseInst", bUseInst);
+		bundleInst.putString("institutionSelected", this.getInstitution());
+		bundleInst.putString("institutionId", this.getInstitutionId());
+		bundleInst.putString("strAccountNumber", this.getAccountNumber());
+		bundleInst.putString("strIBAN", this.getIBAN());
+		bundleInst.putBoolean("UseInst", this.getUseInstitution());
 		
 		return bundleInst;
 	}

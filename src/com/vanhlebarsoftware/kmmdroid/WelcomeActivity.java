@@ -212,7 +212,7 @@ public class WelcomeActivity extends FragmentActivity
         	if( !Closing )
         	{
         		// See if we are starting from a home widget, if so use that database.
-        		if(fromWidgetId != null)
+        		if(fromWidgetId != null && fromWidgetId != "9999")
         		{
         			//See if the database is already open, if so, close it.
         			if(KMMDapp.isDbOpen())

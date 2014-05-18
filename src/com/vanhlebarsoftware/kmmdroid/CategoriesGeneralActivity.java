@@ -380,4 +380,16 @@ public class CategoriesGeneralActivity extends Fragment implements
 		
 		this.numberOfPasses = 2;
 	}
+	
+	public Bundle getGeneralBundle()
+	{
+		Bundle bdl = new Bundle();
+		
+		bdl.putString("categoryName", strCategoryName);
+		bdl.putInt("categoryType", categoryType);
+		bdl.putString("categoryCurrency", strCurrency);
+		bdl.putString("categoryNotes", strNotes);
+		
+		return bdl;
+	}
 }

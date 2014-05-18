@@ -558,6 +558,16 @@ public class Schedule implements Parcelable
 	{
 		return this.Type;
 	}
+	
+	public int getWeekendOption()
+	{
+		return this.WeekendOption;
+	}
+	
+	public String getIsEstimate()
+	{
+		return this.Fixed;
+	}
 	/********************************************************************************************
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html

@@ -56,7 +56,7 @@ public class Account implements Parcelable
 	private Context context;
 	
 
-	Account()
+	Account(Context c)
 	{		
 		this.id = null;
 		this.parentId = null;
@@ -74,7 +74,7 @@ public class Account implements Parcelable
 		this.isPreferred = false;
 		this.transactionCount = 0;
 		this.notes = null;
-		this.context = null;
+		this.context = c;
 	}
 	
 	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP, Context c)
@@ -333,6 +333,11 @@ public class Account implements Parcelable
 	public void setAccountNumber(String strAcctNumber)
 	{
 		this.accountNumber = strAcctNumber;
+	}
+	
+	public void setNotes(String strNote)
+	{
+		this.notes = strNote;
 	}
 	
 	static public void updateAccount(Context context, String accountId, String transValue, int nChange)

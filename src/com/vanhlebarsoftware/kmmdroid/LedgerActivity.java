@@ -40,7 +40,7 @@ public class LedgerActivity extends FragmentActivity implements
 	TransactionAdapter adapter;
 	KMMDroidApp KMMDapp;
 	ListView listTransactions;
-	TextView textTitleLedger;
+	//TextView textTitleLedger;
 	KMMDCustomFastScrollView fastScrollView;
 	
 	// Items for the transactions query
@@ -63,7 +63,7 @@ public class LedgerActivity extends FragmentActivity implements
         
         // Find our views
         listTransactions = (ListView) findViewById(R.id.listTransactions);
-        textTitleLedger = (TextView) findViewById(R.id.titleLedger);
+        //textTitleLedger = (TextView) findViewById(R.id.titleLedger);
         fastScrollView = (KMMDCustomFastScrollView) findViewById(R.id.fast_scroll_view);
  
     	// Now hook into listTransactions ListView and set its onItemClickListener member
@@ -118,7 +118,7 @@ public class LedgerActivity extends FragmentActivity implements
 		strLastYear = getDatabaseFormattedString(lastyear);
 		
 		// Display the Account we are looking at in the TextView TitleLedger
-		textTitleLedger.setText(AccountName);
+		//textTitleLedger.setText(AccountName);
 		
         if( previousLocation == 0 )
         	previousLocation = adapter.getCount();

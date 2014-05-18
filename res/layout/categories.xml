@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.DrawerLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/drawer_layout"
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:background="#62B1F6">
-
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_gravity="left"
-    	android:background="@drawable/titlelabel_background"
-    	android:text="@string/titleCategories"
-    	android:textSize="25sp"
-    	android:gravity="center_vertical"
-    	android:textColor="@android:color/white"
-    	android:paddingLeft="10sp"
-    	android:id="@+id/GroupHeading"
-    />
    	
    	<!-- Layout for Account Listing Area -->
    	<ExpandableListView
@@ -32,7 +20,13 @@
     	android:layout_marginRight="10sp"
    		android:layout_marginBottom="10sp">    
    	</ExpandableListView>
-   	
-   	<include
-   	    layout="@layout/navigationbar"/>
-</LinearLayout>
+   	<ListView
+   	    android:id="@+id/left_drawer"
+   	    android:layout_width="240dp"
+   	    android:layout_height="match_parent"
+   	    android:layout_gravity="start"
+   	    android:choiceMode="singleChoice"
+   	    android:divider="@android:color/transparent"
+   	    android:dividerHeight="0dp"
+   	    android:background="#62B1F6" />
+</android.support.v4.widget.DrawerLayout>

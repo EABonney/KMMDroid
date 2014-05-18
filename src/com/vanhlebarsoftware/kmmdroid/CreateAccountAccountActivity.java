@@ -162,6 +162,7 @@ LoaderManager.LoaderCallbacks<Cursor>
         // or start a new one.
         getLoaderManager().initLoader(CAACCOUNT_LOADER, null, this);
         
+        Log.d(TAG, "Inside onCreateView()");
         return view;
     }
 	
@@ -193,6 +194,8 @@ LoaderManager.LoaderCallbacks<Cursor>
 		{
 			throw new ClassCastException(activity.toString() + "must implement OnSendAccountDataListener");
 		}
+		
+		Log.d(TAG, "onAttach()");
 	}
 
 	@Override
@@ -494,7 +497,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 		onSendAccountData.onSendAccountData();
 	}
 	
-	private void updateUIElements()
+	public void updateUIElements()
 	{
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		
@@ -537,13 +540,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	{
 		Bundle bundleAcct = new Bundle();
 		
-		bundleAcct.putBoolean("preferred", bPreferred);
-		bundleAcct.putString("name", strAccountName);
-		bundleAcct.putString("openDate", strOpenDate);
-		bundleAcct.putString("openBalance", strOpenBalance);
-		bundleAcct.putString("currencySelected", currencySelected);
-		bundleAcct.putString("strTypeSelected", strTypeSelected);
-		bundleAcct.putInt("intTypeSelected", TypeSelected);
+		bundleAcct.putBoolean("preferred", this.getPreferredAccount());
+		bundleAcct.putString("name", this.getAccountName());
+		bundleAcct.putString("openDate", this.getOpeningDate());
+		bundleAcct.putString("openBalance", this.getOpeningBalance());
+		bundleAcct.putString("currencySelected", this.getCurrency());
+		bundleAcct.putString("strTypeSelected", this.getAccountTypeString());
+		bundleAcct.putInt("intTypeSelected", this.getAccountType());
 		
 		return bundleAcct;
 	}

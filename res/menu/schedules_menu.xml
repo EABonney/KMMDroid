@@ -7,40 +7,6 @@
         android:id="@+id/itemNew" 
         android:icon="@drawable/schedule">
     </item>
-	<item 
-		android:title="@string/titleHome"
-		android:id="@+id/itemHome"
-		android:icon="@drawable/home_view">
-	</item>
-    <item 
-    	android:id="@+id/itemPrefs"
-    	android:icon="@android:drawable/ic_menu_preferences"
-    	android:title="@string/titlePrefs">
-    </item>
-    <item 
-    	android:id="@+id/itemAccounts" 
-    	android:icon="@drawable/accounts_view"
-    	android:title="@string/titleAccounts">
-    </item>
-    <item 
-    	android:id="@+id/itemCategories" 
-    	android:icon="@drawable/categories_view"
-    	android:title="@string/titleCategories">
-    </item>
-    <item 
-    	android:id="@+id/itemPayees" 
-    	android:icon="@drawable/payees_view"
-    	android:title="@string/titlePayees">
-    	</item>
-    <item 
-    	android:id="@+id/itemInstitutions" 
-    	android:title="@string/titleInstitutions"
-    	android:icon="@drawable/institutions_view">
-    </item>
-    <item 
-    	android:id="@+id/itemReports"
-    	android:title="@string/titleReports">
-    </item>
     <item 
     	android:id="@+id/itemAbout" 
     	android:title="@string/titleAbout"

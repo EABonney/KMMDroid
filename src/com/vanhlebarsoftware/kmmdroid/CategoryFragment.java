@@ -231,6 +231,14 @@ public class CategoryFragment extends Fragment implements
 		updateUIElements();
 	}
 	
+	public void setCategoryName(String strName)
+	{
+		this.editCategory.setText(strName);
+		
+		// refresh the UI
+		updateUIElements();
+	}
+	
 	public String getCategoryId()
 	{
 		return this.strTransCategoryId;

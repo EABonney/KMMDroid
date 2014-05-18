@@ -91,7 +91,7 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 	PayeeFragment payeeFrag;
 //	Button btnCategory;
 	EditText editSchName;
-	EditText editCategory;
+	//EditText editCategory;
 	EditText editCheckNum;
 	EditText editDate;
 	EditText editAmount;
@@ -224,7 +224,7 @@ public class SchedulePaymentInfoActivity extends Fragment implements
         
         // Find our views.
         editSchName = (EditText) view.findViewById(R.id.editScheduleName);
-        editCategory = (EditText) view.findViewById(R.id.editCategory);
+        //editCategory = (EditText) view.findViewById(R.id.editCategory);
         editCheckNum = (EditText) view.findViewById(R.id.checkNumber);
         editDate = (EditText) view.findViewById(R.id.date);
         editAmount = (EditText) view.findViewById(R.id.amount);
@@ -240,7 +240,7 @@ public class SchedulePaymentInfoActivity extends Fragment implements
         payeeFrag = (PayeeFragment) getFragmentManager().findFragmentById(R.id.payeeFragment);
         
         // Make it so the user is not able to edit the Category selected without using the Spinner.
-        editCategory.setKeyListener(null);
+        //editCategory.setKeyListener(null);
         
         // Set our OnClickListener events
         btnSetDate.setOnClickListener(new View.OnClickListener() 
@@ -555,7 +555,8 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 					case R.id.category:
 						c = (Cursor) parent.getAdapter().getItem(pos);
 						strCategoryName = c.getString(0).toString();
-						editCategory.setText(strCategoryName);
+						//editCategory.setText(strCategoryName);
+						catFrag.setCategoryName(strCategoryName);
 						strSchCategoryId = c.getString(1).toString();
 						((CreateModifyScheduleActivity) ParentActivity).setIsDirty(true);
 						break;

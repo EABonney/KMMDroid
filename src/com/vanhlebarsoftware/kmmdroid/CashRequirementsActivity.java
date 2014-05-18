@@ -124,21 +124,6 @@ public class CashRequirementsActivity extends FragmentActivity
 	{
 		switch (item.getItemId())
 		{
-			case R.id.itemHome:
-				startActivity(new Intent(this, HomeActivity.class));
-				break;
-			case R.id.itemAccounts:
-				startActivity(new Intent(this, AccountsActivity.class));
-				break;
-			case R.id.itemInstitutions:
-				startActivity(new Intent(this, InstitutionsActivity.class));
-				break;
-			case R.id.itemPayees:
-				startActivity(new Intent(this, PayeeActivity.class));
-				break;
-			case R.id.itemCategories:
-				startActivity(new Intent(this, CategoriesActivity.class));
-				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;

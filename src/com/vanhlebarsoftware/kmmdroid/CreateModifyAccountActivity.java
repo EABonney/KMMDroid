@@ -202,7 +202,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 				c.close();    
 			}
 			else
-				account = new Account();
+				account = new Account(this.getBaseContext());
 		}
 	}
 	
@@ -356,7 +356,11 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	{
 		switch (item.getItemId())
 		{
-			case R.id.itemsave:			
+			case R.id.itemsave:		
+				// Just ensure that we cycle through each tab to create them. Getting a null pointer exception without this.
+				this.onTabChanged("account");
+				this.onTabChanged("parent");
+
 				// Update the account object to reflect any changes before saving.
 				Fragment fragAcct = getSupportFragmentManager().findFragmentByTag("account");
 				Fragment fragInst = getSupportFragmentManager().findFragmentByTag("institution");

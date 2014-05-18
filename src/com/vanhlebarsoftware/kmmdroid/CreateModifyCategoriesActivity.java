@@ -154,7 +154,7 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 				c.close();
 			}
 			else
-				category = new Account();
+				category = new Account(this.getBaseContext());
 		}
 	}
 	
@@ -264,9 +264,12 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 				// Update the category to reflect any changes before saving.
 				Fragment fragGeneral = getSupportFragmentManager().findFragmentByTag("general");
 				Fragment fragHierarchy = getSupportFragmentManager().findFragmentByTag("hierarchy");
-				Fragment fragTransactions = getSupportFragmentManager().findFragmentByTag("transactions");
 				
-				category.getDataChanges(this);
+				Bundle bdlGeneral = ((CategoriesGeneralActivity) fragGeneral).getGeneralBundle();
+				Bundle bdlHierarchy = ((CategoriesHierarchyActivity) fragHierarchy).getHierarchyBundle();
+				
+				fillCategoryData(bdlGeneral, bdlHierarchy);
+				//category.getDataChanges(this);
 
 				// See if the user has at least filled in the Name field, if not then pop up a dialog and do nothing.
 				if(category.getName().isEmpty())
@@ -515,6 +518,18 @@ public class CreateModifyCategoriesActivity extends FragmentActivity  implements
 		// if the tab hasn't been instantiated yet, just skip the reload.
 		if( hierarchy != null )
 			((CategoriesHierarchyActivity) hierarchy).reloadLoader();
+	}
+	
+	private void fillCategoryData(Bundle bdGeneral, Bundle bdHierarchy)
+	{
+		// Fill in the General attributes from the passed General Bundle
+		category.setAccountName(bdGeneral.getString("categoryName"));
+		category.setAccountType(bdGeneral.getInt("categoryType"));
+		category.setCurrency(bdGeneral.getString("categoryCurrency"));
+		category.setNotes(bdGeneral.getString("categoryNotes"));
+		
+		// Fill in the Hierarchry attribute from the passed Hierarchy Bundle
+		category.setParentId(bdHierarchy.getString("parentId"));
 	}
 	// *****************************************************************************************************************************
 	// ********************************************** Helper Classes ***************************************************************

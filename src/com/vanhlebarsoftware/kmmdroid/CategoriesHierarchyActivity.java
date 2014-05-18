@@ -253,4 +253,13 @@ public class CategoriesHierarchyActivity extends Fragment implements
 			spinParent.setSelection(setParentItem(strParentAccount, 1));
 		}
 	}
+	
+	public Bundle getHierarchyBundle()
+	{
+		Bundle bld = new Bundle();
+		
+		bld.putString("parentId", strParentAccount);
+		
+		return bld;
+	}
 }

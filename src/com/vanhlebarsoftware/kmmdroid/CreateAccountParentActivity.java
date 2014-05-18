@@ -91,6 +91,7 @@ LoaderManager.LoaderCallbacks<Cursor>
         // or start a new one.
         getLoaderManager().initLoader(PARENT_LOADER, null, this);
         
+        Log.d(TAG, "Inside onCreateView()");
         return view;
 	}
 	
@@ -213,7 +214,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 	{
 		Bundle bndlParent = new Bundle();
 		
-		bndlParent.putString("parentId", strParentId);
+		bndlParent.putString("parentId", this.getParentId());
 		
 		return bndlParent;
 	}

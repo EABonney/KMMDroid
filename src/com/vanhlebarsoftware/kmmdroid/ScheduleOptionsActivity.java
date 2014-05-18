@@ -355,11 +355,11 @@ public class ScheduleOptionsActivity extends Fragment implements
 		return this.ckboxAutoEnter.isChecked() == true ? "Y" : "N";
 	}
 	
-	public void setScheduleAutoEnter(String str)
+	public void setScheduleAutoEnter(boolean str)
 	{
-		if( str.equals("Y") )
+		if( str )
 			this.ckboxAutoEnter.setChecked(true);
-		else if( str.equals("N") )
+		else
 			this.ckboxAutoEnter.setChecked(false);
 	}
 	

@@ -502,10 +502,10 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 		// Send the payment information to the fragment.
 		ScheduleOptionsActivity scheduleOptions = (ScheduleOptionsActivity) this.getSupportFragmentManager().findFragmentByTag("options");
 		
-		scheduleOptions.setScheduleWeekendOption();
-		scheduleOptions.setScheduleIsEstimate(schedule.getString(11));
-		scheduleOptions.setScheduleAutoEnter(schedule.getString(12));
-		scheduleOptions.setEndDate(schedule.getString(10));		
+		scheduleOptions.setScheduleWeekendOption(schedule.getWeekendOption());
+		scheduleOptions.setScheduleIsEstimate(schedule.getIsEstimate());
+		scheduleOptions.setScheduleAutoEnter(schedule.getAutoEnter());
+		scheduleOptions.setEndDate(schedule.getEndDate().toString());		
 	}
 	// ************************************************************************************************
 	// ******************************* Helper Functions ***********************************************
@@ -811,13 +811,17 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 		// If we are coming back from splits entry screen follow this path.
 		if( this.ReturningFromSplits )
 		{
+			SchedulePaymentInfoActivity schedulePayment = (SchedulePaymentInfoActivity) this.getSupportFragmentManager().findFragmentByTag("paymentinfo");
+
+			String name = getResources().getString(R.string.splitTransaction);
+			schedulePayment.catFrag.setCategoryName(name);
 			//setupSplitInfo();
-			editCategory.setText(R.string.splitTransaction);
+			//editCategory.setText(R.string.splitTransaction);
 			//btnCategory.setEnabled(false);
 			//spinPayee.setSelection(setPayee(strSchPayeeId));
-			iNumberofPasses = 0;
+			//iNumberofPasses = 0;
 		}
-		else
+/*		else
 		{	
 			// load the schedule details into the form.
 			// set the spinner for the frequency and freq description of the schedule.
@@ -891,6 +895,7 @@ public class CreateModifyScheduleActivity extends FragmentActivity  implements
 			
 			updateDisplay();
 		}
+*/
 	}
 	
 	private void enterSchedule()
