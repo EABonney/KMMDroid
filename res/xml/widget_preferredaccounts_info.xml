@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/preferred_accounts_widget"
+	android:minWidth="110dp"
+	android:minHeight="40dp"
+	android:label="Preferred Accounts"
+	android:updatePeriodMillis="8640000"
+	android:resizeMode="vertical|horizontal" >
+</appwidget-provider>

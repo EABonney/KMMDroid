@@ -33,6 +33,7 @@ public class KMMDProvider extends ContentProvider
 	public static final Uri CONTENT_KVP_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/kvp");
 	public static final Uri CONTENT_CURRENCY_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/currency");
 	public static final Uri CONTENT_TRANSTAB_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/transtab");
+	public static final Uri CONTENT_PREFERREDACCOUNTS_URI = Uri.parse("content://com.vanhlebarsoftware.kmmdroid.kmmdprovider/preferredaccounts");
 	public static final String ACCOUNT_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.account";
 	public static final String ACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.com.kmmdroid.accounts";
 	public static final String SCHEDULE_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.schedule";
@@ -52,6 +53,7 @@ public class KMMDProvider extends ContentProvider
 	public static final String CURRENCY_MIME_TYPE = "vnd.android.cursor.item/vnd.vanhlebarsoftware.kmmdroid.currency";
 	public static final String CURRENCIES_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.currencies";
 	public static final String TRANSTAB_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.transtab";
+	public static final String PREFERREDACCOUNTS_MIME_TYPE = "vnd.android.cursor.dir/vnd.vanhlebarsoftware.kmmdroid.preferredaccounts";
 	/*********************************************************************************************************************
 	 * Parameters used for querying the Accounts table 
 	 *********************************************************************************************************************/
@@ -121,6 +123,8 @@ public class KMMDProvider extends ContentProvider
 	private static final int CURRENCY = 17;
 	private static final int CURRENCIES = 18;
 	private static final int TRANSTAB = 19;
+	private static final int PREFERREDACCOUNTS = 20;
+	
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static
 	{
@@ -143,6 +147,7 @@ public class KMMDProvider extends ContentProvider
 		sURIMatcher.addURI(authority, "currency", CURRENCIES);
 		sURIMatcher.addURI(authority, "currency/*", CURRENCY);
 		sURIMatcher.addURI(authority, "transtab", TRANSTAB);
+		sURIMatcher.addURI(authority, "preferredaccounts", PREFERREDACCOUNTS);
 	}
 	public SharedPreferences prefs;
 	private SQLiteDatabase db = null;
@@ -197,6 +202,8 @@ public class KMMDProvider extends ContentProvider
 			return CURRENCIES_MIME_TYPE;
 		case TRANSTAB:
 			return TRANSTAB_MIME_TYPE;
+		case PREFERREDACCOUNTS:
+			return PREFERREDACCOUNTS_MIME_TYPE;
 		default:
 			return null;
 		}
@@ -577,6 +584,14 @@ public class KMMDProvider extends ContentProvider
 				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
 				Log.d(TAG, "Retrieving transactions for the TransTab");
+				break;
+			case PREFERREDACCOUNTS:
+				dbTable = "kmmAccounts, kmmKeyValuePairs";
+				dbColumns = projection;
+				dbSelection = selection;
+				dbOrderBy = sortOrder;
+				dbSelectionArgs = selectionArgs;
+				Log.d(TAG, "Getting preferred accounts for the widget!");
 				break;
 			default:
 				Log.d(TAG, "We didn't get a macth!");

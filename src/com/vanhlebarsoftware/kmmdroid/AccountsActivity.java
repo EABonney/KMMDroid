@@ -2,12 +2,14 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.List;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +45,7 @@ public class AccountsActivity extends FragmentActivity implements
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
+	private ActionBar mActionBar;
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	// Define our Account Type Constants
@@ -75,6 +78,10 @@ public class AccountsActivity extends FragmentActivity implements
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
+        
+        // Set the attributes of the ActionBar
+        mActionBar = getActionBar();
+        mActionBar.setBackgroundDrawable((new ColorDrawable(Color.parseColor("#62B1F6"))));
         
         // Set the titles of the Drawer and the ActionBar
         mTitle = mDrawerTitle = getTitle();
@@ -345,11 +352,16 @@ public class AccountsActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		// Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled the app icon touch event.
-		if(mDrawerToggle.onOptionsItemSelected(item))
-			return true;
+		//if(mDrawerToggle.onOptionsItemSelected(item))
+		//	return true;
 		
 		switch (item.getItemId())
 		{
+			case android.R.id.home:
+				Intent intent = new Intent(this, HomeActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;

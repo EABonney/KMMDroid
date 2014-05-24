@@ -77,6 +77,7 @@ LoaderManager.LoaderCallbacks<Cursor>
             // won't be displayed.  Note this is not needed -- we could
             // just run the code below, where we would create and return
             // the view hierarchy; it would just never be used.
+        	Log.d(TAG, "Container was null!!!");
             return null;
         }
         
@@ -278,6 +279,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
+		Log.d(TAG, "Initializing the loader.......");
 		String dbColumns[] = { "ISOCode AS _id", "name" };
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
@@ -494,11 +496,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public void sendAccountData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendAccountData.onSendAccountData();
 	}
 	
 	public void updateUIElements()
 	{
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		
 		String accountName = prefs.getString("AccountName", null);

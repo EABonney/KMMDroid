@@ -2,7 +2,8 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item 
         android:title="@string/itemSave" 
-        android:icon="@android:drawable/ic_menu_save" 
+        android:icon="@android:drawable/ic_menu_save"
+        android:showAsAction="ifRoom" 
         android:id="@+id/itemsave">
     </item>
     <item
@@ -18,6 +19,7 @@
     <item 
         android:title="@string/delete" 
         android:icon="@android:drawable/ic_menu_delete" 
+        android:showAsAction="ifRoom"
         android:id="@+id/itemDelete">
     </item>
     <item 

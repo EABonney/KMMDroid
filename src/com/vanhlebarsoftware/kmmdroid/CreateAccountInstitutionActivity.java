@@ -388,12 +388,13 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	
 	public void sendInstitutionData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendInstitutionData.onSendInstitutionData();
 	}
 	
 	private void updateUIElements()
 	{
-		Log.d(TAG, "Updateing UI");
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		String strAN = prefs.getString("AccountNumber", null);
 		String strIB = prefs.getString("IBAN", null);

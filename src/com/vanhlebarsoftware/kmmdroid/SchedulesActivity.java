@@ -216,11 +216,16 @@ public class SchedulesActivity extends FragmentActivity implements
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		// Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled the app icon touch event.
-		if(mDrawerToggle.onOptionsItemSelected(item))
-			return true;
+		//if(mDrawerToggle.onOptionsItemSelected(item))
+		//	return true;
 		
 		switch (item.getItemId())
 		{
+			case android.R.id.home:
+				Intent intent = new Intent(this, HomeActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				break;
 			case R.id.itemNew:
 				Intent i = new Intent(this, CreateModifyScheduleActivity.class);
 				i.putExtra("Action", ACTION_NEW);

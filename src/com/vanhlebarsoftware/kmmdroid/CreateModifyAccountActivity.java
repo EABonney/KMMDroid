@@ -52,7 +52,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	private boolean firstRun = true;
 	KMMDroidApp KMMDapp;
 	TextView payeeName;
-	TextView title;
+	//TextView title;
 	TabHost tabHost;
 	
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, CreateModifyAccountActivity.TabInfo>();
@@ -82,8 +82,8 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
         {
         	accountId = extras.getString("AccountId");
         	//find our view and update it for the correct title.
-        	title = (TextView) findViewById(R.id.titleCreateModAccount);
-        	title.setText(R.string.titleEditModAccount);
+        	//title = (TextView) findViewById(R.id.titleCreateModAccount);
+        	//title.setText(R.string.titleEditModAccount);
         }
         
         // Get our application
@@ -278,6 +278,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
                 }
             }
 
+            Log.d(TAG, "Changing tabs now...to tab: " + tag);
             mLastTab = newTab;
             ft.commit();
             this.getSupportFragmentManager().executePendingTransactions();
@@ -356,11 +357,40 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	{
 		switch (item.getItemId())
 		{
-			case R.id.itemsave:		
-				// Just ensure that we cycle through each tab to create them. Getting a null pointer exception without this.
-				this.onTabChanged("account");
-				this.onTabChanged("parent");
+			case R.id.itemCancel:
+				if( getIsDirty() )
+				{
+					AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this,
+																			R.style.AlertDialogNoTitle));
+					alertDel.setTitle(R.string.BackActionWarning);
+					alertDel.setMessage(getString(R.string.titleBackActionWarning));
 
+					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int whichButton)
+						{
+							finish();
+						}
+					});
+					
+					alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int whichButton) 
+						{
+							// Canceled.
+							Log.d(TAG, "User cancelled back action.");
+						}
+					});				
+					alertDel.show();
+				}
+				else
+				{
+					finish();
+				}
+				break;
+			case R.id.itemsave:	
+				this.onTabChanged("account");
+				
 				// Update the account object to reflect any changes before saving.
 				Fragment fragAcct = getSupportFragmentManager().findFragmentByTag("account");
 				Fragment fragInst = getSupportFragmentManager().findFragmentByTag("institution");

@@ -196,11 +196,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public void sendParentData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendParentData.onSendParentData();
 	}
 	
 	private void updateUIElements()
 	{
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		String id = prefs.getString("ParentId", "");
 		

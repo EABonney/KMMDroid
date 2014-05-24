@@ -308,6 +308,15 @@
 					   android:resource="@xml/basic_widget_info" />
 		</receiver>
 		
+		<receiver android:name=".WidgetPreferredAccounts"
+		    	  android:label="@string/titlePreferredAccounts">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		        	   android:resource="@xml/widget_preferredaccounts_info" />
+		</receiver>
+		
 		<receiver android:name=".KMMDAlarmReceiver"
 		    	  android:label="@string/titleKMMDAlarmReceiver">
 		    <intent-filter>
@@ -326,6 +335,10 @@
 		<service android:name=".KMMDNotificationsService">
 		</service>
 		<service android:name="com.vanhlebarsoftware.kmmdroid.KMMDDropboxService">
+		</service>
+		<service
+		    android:name=".WidgetPreferredAccountsRVService"
+		    android:permission="android.permission.BIND_REMOTEVIEWS" >
 		</service>
     </application>
 </manifest>
