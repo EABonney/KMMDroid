@@ -67,6 +67,9 @@ public class WidgetPreferredAccountsRVSerivce extends RemoteViewsService
 			
 			// Create the Remote Views object and use it to populate the layout for each account.
 			RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.home_row);
+			rv.setTextViewText(R.id.hrAccountName, c.getString(c.getColumnIndex("accountName")));
+			String value = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(c.getColumnIndex("balance"))), true);
+			rv.setTextViewText(R.id.hrAccountBalance, value);
 			
 			// Create the fill-in Intent that adds the URI for the current item to the template Intent.
 			Intent fillInIntent = new Intent();
