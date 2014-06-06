@@ -387,6 +387,7 @@ public class KMMDProvider extends ContentProvider
 		if( db == null || !db.isOpen() )
 		{
 			// We need to open the database.
+			Log.d(TAG, "Need to open the database for widgetId: " + widgetId);
 			db = openDatabase(widgetId);
 		}
 		
@@ -594,7 +595,7 @@ public class KMMDProvider extends ContentProvider
 				Log.d(TAG, "Getting preferred accounts for the widget!");
 				break;
 			default:
-				Log.d(TAG, "We didn't get a macth!");
+				Log.d(TAG, "We didn't get a match for this query!");
 				break;
 		}
 		

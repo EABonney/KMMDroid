@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialLayout="@layout/preferred_accounts_widget"
+    xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:initialLayout="@layout/widget_schedules"
 	android:minWidth="220dp"
 	android:minHeight="40dp"
-	android:label="@string/widgetPreferredAccounts"
+	android:label="@string/widgetSchedules"
 	android:updatePeriodMillis="8640000"
 	android:resizeMode="vertical|horizontal"
 	android:configure="com.vanhlebarsoftware.kmmdroid.HomeScreenConfiguration" >
+
 </appwidget-provider>

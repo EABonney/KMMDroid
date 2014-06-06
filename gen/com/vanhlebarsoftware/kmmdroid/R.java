@@ -117,6 +117,7 @@ containing a value of this type.
     }
     public static final class id {
         public static final int Account=0x7f090077;
+        public static final int BalanceAmount=0x7f090155;
         public static final int BalanceAmount1=0x7f090037;
         public static final int BalanceAmount10=0x7f090064;
         public static final int BalanceAmount11=0x7f090069;
@@ -131,7 +132,7 @@ containing a value of this type.
         public static final int BalanceAmount9=0x7f09005f;
         public static final int LinearLayout01=0x7f0900e4;
         public static final int SumofSplits=0x7f0900c1;
-        public static final int Sync=0x7f09015d;
+        public static final int Sync=0x7f09015f;
         public static final int TableAddSplits=0x7f0900c4;
         public static final int TransAmount=0x7f0900c3;
         public static final int Unassigned=0x7f0900c2;
@@ -226,7 +227,7 @@ containing a value of this type.
         public static final int checkboxNoInstitution=0x7f0900a5;
         public static final int checkboxPayeeDefaultExpense=0x7f0900e0;
         public static final int checkboxPayeeDefaultIncome=0x7f0900e2;
-        public static final int close=0x7f09015c;
+        public static final int close=0x7f09015e;
         public static final int crAccountBalance=0x7f09008d;
         public static final int crAccountName=0x7f09008c;
         public static final int crAmount=0x7f090074;
@@ -281,20 +282,20 @@ containing a value of this type.
         public static final int institutionStreet=0x7f0900b4;
         public static final int irInstitutionName=0x7f0900f2;
         public static final int irRow=0x7f0900f1;
-        public static final int itemAbout=0x7f090157;
-        public static final int itemCancel=0x7f09015b;
-        public static final int itemClearAll=0x7f090164;
-        public static final int itemClose=0x7f090162;
-        public static final int itemDelete=0x7f09015a;
-        public static final int itemEdit=0x7f090159;
-        public static final int itemHideShowClosed=0x7f090158;
-        public static final int itemInsertRow=0x7f090163;
-        public static final int itemNew=0x7f090155;
-        public static final int itemOpen=0x7f090165;
-        public static final int itemOpenAcct=0x7f090161;
-        public static final int itemPrefs=0x7f090156;
-        public static final int itemRecent=0x7f090166;
-        public static final int itemsave=0x7f090160;
+        public static final int itemAbout=0x7f090159;
+        public static final int itemCancel=0x7f09015d;
+        public static final int itemClearAll=0x7f090166;
+        public static final int itemClose=0x7f090164;
+        public static final int itemDelete=0x7f09015c;
+        public static final int itemEdit=0x7f09015b;
+        public static final int itemHideShowClosed=0x7f09015a;
+        public static final int itemInsertRow=0x7f090165;
+        public static final int itemNew=0x7f090157;
+        public static final int itemOpen=0x7f090167;
+        public static final int itemOpenAcct=0x7f090163;
+        public static final int itemPrefs=0x7f090158;
+        public static final int itemRecent=0x7f090168;
+        public static final int itemsave=0x7f090162;
         public static final int kmmd_addTransaction=0x7f09002f;
         public static final int kmmd_icon=0x7f09002d;
         public static final int kmmd_refresh=0x7f09002e;
@@ -390,6 +391,7 @@ containing a value of this type.
         public static final int schedulePaymentMethod=0x7f09013e;
         public static final int scheduleType=0x7f090140;
         public static final int scheduleWeekendOption=0x7f09012c;
+        public static final int schedulesListView=0x7f090156;
         public static final int splitAmount=0x7f0900c8;
         public static final int splitCategory=0x7f0900c6;
         public static final int splitEntryRow=0x7f0900c5;
@@ -404,8 +406,8 @@ containing a value of this type.
         public static final int srPayee=0x7f090145;
         public static final int srRow=0x7f090143;
         public static final int status=0x7f0900d4;
-        public static final int syncAll=0x7f09015f;
-        public static final int syncDropbox=0x7f09015e;
+        public static final int syncAll=0x7f090161;
+        public static final int syncDropbox=0x7f090160;
         public static final int titleAccount=0x7f090076;
         public static final int titleAccountCurrency=0x7f09009c;
         public static final int titleAccountIBAN=0x7f0900ab;
@@ -541,6 +543,8 @@ containing a value of this type.
         public static final int time_preference=0x7f03003d;
         public static final int view_transaction=0x7f03003e;
         public static final int welcome=0x7f03003f;
+        public static final int widget_schedule_row=0x7f030040;
+        public static final int widget_schedules=0x7f030041;
     }
     public static final class menu {
         public static final int accounts_menu=0x7f080000;
@@ -664,7 +668,8 @@ containing a value of this type.
         public static final int doNothing=0x7f0500e7;
         public static final int drawer_close=0x7f050184;
         public static final int drawer_open=0x7f050183;
-        public static final int empty_widget_text=0x7f050186;
+        public static final int empty_widget_nopreferredaccounts=0x7f050186;
+        public static final int empty_widget_noschedules=0x7f050187;
         public static final int error=0x7f05003a;
         public static final int freq2Months=0x7f050168;
         public static final int freq2Weeks=0x7f05015f;
@@ -948,6 +953,8 @@ containing a value of this type.
         public static final int vtlabel_Number=0x7f050017;
         public static final int vtlabel_Splits=0x7f05001a;
         public static final int vtlabel_Status=0x7f050016;
+        public static final int widgetPreferredAccounts=0x7f050188;
+        public static final int widgetSchedules=0x7f050189;
     }
     public static final class style {
         public static final int AlertDialogNoTitle=0x7f070001;
@@ -958,6 +965,7 @@ containing a value of this type.
         public static final int basic_widget_info=0x7f040000;
         public static final int prefs=0x7f040001;
         public static final int widget_preferredaccounts_info=0x7f040002;
+        public static final int widget_schedules_info=0x7f040003;
     }
     public static final class styleable {
         /** Attributes that can be used with a CustomFastScrollView.

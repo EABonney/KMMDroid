@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:layout_margin="5dp"
     android:background="#50FFFFFF"
-    android:orientation="vertical" >
-
+    android:padding="5dp" >
+    
   <!-- Main Account to display -->
   <LinearLayout
   	    	android:orientation="horizontal"
@@ -31,6 +32,15 @@
 	    android:src="@drawable/homewidget_refresh" >
 	</ImageView>
 	<ImageView 
+	    android:id="@+id/kmmd_addTransaction"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionAddTransaction"
+	    android:src="@drawable/transaction_add" >
+	</ImageView>
+	<ImageView 
 	    android:id="@+id/kmmd_widgetSettings"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
@@ -39,10 +49,24 @@
 	    android:contentDescription="@string/descriptionRefresh"
 	    android:src="@drawable/homewidget_wrench" >	    
 	</ImageView>
+	<TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/hrAccountName"
+		android:textColor="@android:color/black" />		
+  	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/hrAccountBalance"
+		android:textColor="@android:color/black" />
   </LinearLayout>
   <!-- End Main Account to display -->
 	<ListView
-	    android:id="@+id/preferredListView"
+	    android:id="@+id/schedulesListView"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent" >
 	</ListView>
@@ -52,5 +76,5 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
 	    android:gravity="center"
-	    android:text="@string/empty_widget_nopreferredaccounts" />
+	    android:text="@string/empty_widget_noschedules" />
 </LinearLayout>

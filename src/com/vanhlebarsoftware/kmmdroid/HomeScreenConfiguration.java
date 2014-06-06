@@ -21,6 +21,9 @@ import android.widget.Spinner;
 public class HomeScreenConfiguration extends FragmentActivity 
 {
 	private static final String TAG = HomeScreenConfiguration.class.getSimpleName();
+	private static final int INVALID_WIDGET = 0;
+	private static final int WIDGET_PREFERREDACCOUNTS = 2000;
+	private static final int WIDGET_SCHEDULES = 2001;
 	private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
@@ -32,6 +35,8 @@ public class HomeScreenConfiguration extends FragmentActivity
 	private String accountUsed = null;
 	private String updateFreq = null;
 	private String displayWeeks = null;
+	private String widgetName = null;
+	private int widgetType = 0;
 	TextView txtDatabasePath;
 	Spinner spinDefaultAccount;
 	Spinner spinDefaultFreq;
@@ -48,11 +53,32 @@ public class HomeScreenConfiguration extends FragmentActivity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		Log.d(TAG, "Entering HomeScreenConfiguration::onCreate()");
         setContentView(R.layout.homescreenconfiguration);
-        
+		Log.d(TAG, "Entering HomeScreenConfiguration::onCreate()");
+		
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
+        
+        // Get the specific appWidget the user is setting up.
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if( extras != null )
+        {
+        	appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        	widgetId = extras.getString("widgetId");
+        	widgetType = KMMDapp.prefs.getInt("widgetType" + widgetId, 0);
+        	Log.d(TAG, "widgetId: " + widgetId);
+        	Log.d(TAG, "appWidgtetId: " + appWidgetId);
+        }
+        
+        if(widgetType == 0)
+        {
+        	Log.d(TAG, "We are setting up the widget NOT editing it!");
+    		widgetName = AppWidgetManager.getInstance(getBaseContext())
+    				.getAppWidgetInfo(appWidgetId).provider.getShortClassName();
+    		widgetName = widgetName.substring(1, widgetName.length());
+    		widgetType = getWidgetType(widgetName);
+        }
                 
         // Get our views
         txtDatabasePath = (TextView) findViewById(R.id.homeConfigDatabaseTitle);
@@ -61,6 +87,23 @@ public class HomeScreenConfiguration extends FragmentActivity
         spinNumOfWeeks = (Spinner) findViewById(R.id.homeConfigNumWeeksDisplaySpinner);
         btnSelectFile = (Button) findViewById(R.id.homeConfigDatabaseBtn);
         btnSave = (Button) findViewById(R.id.homeConfigSave);
+        
+        // Turn off items not needed in the PreferredAccounts widget
+        switch(widgetType)
+        {
+        	case WIDGET_PREFERREDACCOUNTS:
+        		findViewById(R.id.homeConfigDefaultAccountTitle).setVisibility(View.GONE);
+        		spinDefaultAccount.setVisibility(View.GONE);
+        		findViewById(R.id.homeConfigDefaultUpdateFreqTitle).setVisibility(View.GONE);
+        		spinDefaultFreq.setVisibility(View.GONE);
+        		findViewById(R.id.homeConfigNumWeeksDisplayTitle).setVisibility(View.GONE);
+        		spinNumOfWeeks.setVisibility(View.GONE); 
+        		break;
+        	case WIDGET_SCHEDULES:
+        	case INVALID_WIDGET:
+        	default:
+        		break;
+        }
         
         // Set our onClickListener events.
         btnSelectFile.setOnClickListener(new View.OnClickListener()
@@ -77,11 +120,13 @@ public class HomeScreenConfiguration extends FragmentActivity
 			public void onClick(View arg0)
 			{
 				Log.d(TAG, "Saving updated values....");
+				Log.d(TAG, "Widget type: " + widgetName);
 				Log.d(TAG, "WidgetId: " + String.valueOf(appWidgetId));
 				Log.d(TAG, "Databasepath: " + txtDatabasePath.getText().toString());
 				Log.d(TAG, "accountUsed: " + strAccountId);
 				Log.d(TAG, "updateFrequency: " + String.valueOf(intDefaultFreq));
 				Log.d(TAG, "displayWeeks: " + String.valueOf(intNumOfWeeks));
+				Log.d(TAG, "widgetType: " + String.valueOf(widgetType));
 				String strappWidgetId = String.valueOf(appWidgetId);
 		    	// Save the config settings for this WidgetId.
 				SharedPreferences.Editor editor = KMMDapp.prefs.edit();
@@ -89,6 +134,7 @@ public class HomeScreenConfiguration extends FragmentActivity
 				editor.putString("accountUsed" + strappWidgetId, strAccountId);
 				editor.putString("updateFrequency" + strappWidgetId, String.valueOf(intDefaultFreq));
 				editor.putString("displayWeeks" + strappWidgetId, String.valueOf(intNumOfWeeks));
+				editor.putInt("widgetType" + strappWidgetId, widgetType);
 				editor.putBoolean("homeWidgetSetup", true);
 				editor.apply();
 		    	
@@ -98,8 +144,21 @@ public class HomeScreenConfiguration extends FragmentActivity
 		    	setResult(RESULT_OK, result);
 		    	
 		    	// Make sure we refresh the new widget.
-				Intent intent = new Intent(KMMDService.DATA_CHANGED);
-				intent.putExtra("appWidgetIds", appWidgetId);
+		    	Intent intent = null;
+		    	switch(widgetType)
+		    	{
+		    		case WIDGET_SCHEDULES:
+		    			intent = new Intent(getBaseContext(), WidgetSchedules.class);
+		    			intent.putExtra("refreshWidgetId", appWidgetId);;
+		    			break;
+		    		case WIDGET_PREFERREDACCOUNTS:
+		    			intent = new Intent(getBaseContext(), WidgetPreferredAccounts.class);
+		    			intent.putExtra("refreshWidgetId", appWidgetId);
+		    			break;
+		    	}
+
+    			String action = "com.vanhlebarsoftware.kmmdroid.Refresh"; // + "#" + String.valueOf(appWidgetId);
+    			intent.setAction(action);
 				sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				
 		    	finish();
@@ -111,14 +170,7 @@ public class HomeScreenConfiguration extends FragmentActivity
         spinDefaultFreq.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         spinNumOfWeeks.setOnItemSelectedListener(new AccountOnItemSelectedListener());
         
-        // Get the specific appWidget the user is setting up.
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        if( extras != null )
-        {
-        	appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-        	widgetId = extras.getString("widgetId");
-        }
+
         
         // Set the result to canceled in case the user exits the activity without accepting the config changes.
         setResult(RESULT_CANCELED, null);
@@ -351,5 +403,15 @@ public class HomeScreenConfiguration extends FragmentActivity
 			}
 		}
 		return i;
+	}
+	
+	private int getWidgetType(String name)
+	{
+		if(name.equalsIgnoreCase(WidgetPreferredAccounts.class.getSimpleName()))
+			return WIDGET_PREFERREDACCOUNTS;
+		else if(name.equalsIgnoreCase(WidgetSchedules.class.getSimpleName()))
+			return WIDGET_SCHEDULES;
+		else
+			return 0;
 	}
 }

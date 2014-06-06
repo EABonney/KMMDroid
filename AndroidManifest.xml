@@ -296,25 +296,28 @@
 				  android:exported="false">
 		</provider>
 		
-		<receiver android:name=".BasicHomeWidget"
-				  android:label="@string/titleBasicHomeWidget">
-			<intent-filter>
-				  <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-			</intent-filter>		  
-			<intent-filter>
-				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
-			</intent-filter>
-			<meta-data android:name="android.appwidget.provider"
-					   android:resource="@xml/basic_widget_info" />
-		</receiver>
-		
 		<receiver android:name=".WidgetPreferredAccounts"
-		    	  android:label="@string/titlePreferredAccounts">
+		    	  android:label="@string/widgetPreferredAccounts">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 		    </intent-filter>
+			<intent-filter>
+				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+			</intent-filter>
 		    <meta-data android:name="android.appwidget.provider"
 		        	   android:resource="@xml/widget_preferredaccounts_info" />
+		</receiver>
+		
+		<receiver android:name=".WidgetSchedules"
+		    	  android:label="@string/widgetSchedules">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+			<intent-filter>
+				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+			</intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		        	   android:resource="@xml/widget_schedules_info" />
 		</receiver>
 		
 		<receiver android:name=".KMMDAlarmReceiver"
@@ -338,6 +341,10 @@
 		</service>
 		<service
 		    android:name=".WidgetPreferredAccountsRVService"
+		    android:permission="android.permission.BIND_REMOTEVIEWS" >
+		</service>
+		<service
+		    android:name=".WidgetSchedulesRVService"
 		    android:permission="android.permission.BIND_REMOTEVIEWS" >
 		</service>
     </application>

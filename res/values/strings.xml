@@ -530,5 +530,8 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="titlePreferredAccounts">Preferred Accounts</string>
-    <string name="empty_widget_text">No Preferred Accounts</string>
+    <string name="empty_widget_nopreferredaccounts">No Preferred Accounts</string>
+    <string name="empty_widget_noschedules">No schedules found</string>
+    <string name="widgetPreferredAccounts">KMMD - Preferred Accounts</string>
+    <string name="widgetSchedules">KMMD - Schedules</string>
 </resources>
