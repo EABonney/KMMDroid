@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +34,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 	}
 	
 	/************************* Begin inner class WidgetSchedulessRVFactory *****************/
-	class WidgetSchedulesRVFactory implements RemoteViewsFactory 
+	class WidgetSchedulesRVFactory implements RemoteViewsService.RemoteViewsFactory 
 	{
 		private Context context;
 		private Intent intent;
@@ -47,12 +48,12 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 		
 		public WidgetSchedulesRVFactory(Context context, Intent intent)
 		{
-			Log.d(TAG, "Starting WidgetSchedulesRVFactory....");
 			this.context = context;
 			this.intent = intent;
 			widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 			kmmdApp = (KMMDroidApp) getApplication();
 			SchedulesDue = new ArrayList<Schedule>();
+			Log.d(TAG, "Starting WidgetSchedulesRVFactory for widgetId: " + widgetId);
 		}
 
 		public void onCreate() 
@@ -61,6 +62,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			final long token = Binder.clearCallingIdentity();
 			try
 			{
+				Log.d(TAG, "inside onCreate() about to getAccountInfo()");
 				getAccountInfo();
 				SchedulesDue = executeQuery();
 			}
@@ -76,9 +78,11 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			// TODO Auto-generated method stub
 			// Make sure our ArrayList is empty
 			SchedulesDue.clear();
+			int wId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 			final long token = Binder.clearCallingIdentity();
 			try
 			{
+				Log.d(TAG, "inside onDataSetChanged() about to getAccountInfo() using widgetId: " + wId);
 				getAccountInfo();
 				SchedulesDue = executeQuery();
 			}
@@ -127,10 +131,15 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			rv.setTextViewText(R.id.scheduleAmount, Transaction.convertToDollars(schedule.getAmount(), true));
 			rv.setTextViewText(R.id.BalanceAmount, Transaction.convertToDollars(schedule.getBalance(), true));
 			
-			// Create the fill-in Intent that adds the URI for the current item to the template Intent.
+			// Create the fill-in Intent that adds the new transaction info for the current item to the template Intent.
 			Intent fillInIntent = new Intent();
-			Uri uri = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountUsed);
-			fillInIntent.setData(uri);
+			String prefString = "widgetDatabasePath" + String.valueOf(widgetId);
+			String path = kmmdApp.prefs.getString(prefString, "");
+			fillInIntent.putExtra("widgetDatabasePath", path);
+			fillInIntent.putExtra("scheduleId", schedule.getId());
+			fillInIntent.putExtra("scheduleDescription", schedule.getDescription());
+			//fillInIntent.putExtra("widgetId", String.valueOf(widgetId));
+			Log.d(TAG, "widgetId for this schedule: " + widgetId);
 			
 			rv.setOnClickFillInIntent(R.id.scheduleDate, fillInIntent);
 			rv.setOnClickFillInIntent(R.id.scheduleName, fillInIntent);

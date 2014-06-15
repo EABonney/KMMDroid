@@ -7,12 +7,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 public class WidgetSchedules extends AppWidgetProvider
 {
 	private static final String TAG = WidgetSchedules.class.getSimpleName();
+	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
+	private static final int ACTION_ENTER_SCHEDULE = 3;
 
 	/* (non-Javadoc)
 	 * @see android.appwidget.AppWidgetProvider#onUpdate(android.content.Context, android.appwidget.AppWidgetManager, int[])
@@ -23,14 +26,18 @@ public class WidgetSchedules extends AppWidgetProvider
 	{		
 		// Iterate over the array of active widgets.
 		final int N = appWidgetIds.length;
+		Log.d(TAG, "Number of widgets to update: " + String.valueOf(N));
 		
 		for(int i=0; i<N; i++)
 		{
 			int appWidgetId = appWidgetIds[i];
+			Log.d(TAG, "Updating widgetId: " + String.valueOf(i));
 			
 			// Set up the intent to start the RemoteViews Service which will supply the views
 			// shown in the ListView
 			Intent intent = new Intent(context, WidgetSchedulesRVService.class);
+			Uri data = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"), String.valueOf(appWidgetId));
+			intent.setData(data);
 			
 			// Add the app widget ID to the intent extras.
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -45,8 +52,11 @@ public class WidgetSchedules extends AppWidgetProvider
 			views.setEmptyView(R.id.schedulesListView, R.id.empty_widget_text);
 			
 			// Create a Pending Intent template to provide interactivity to each item displayed
-			Intent templateIntent = new Intent(context, LedgerActivity.class);
-			templateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+			Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
+			Intent templateIntent = new Intent(context, ScheduleActionsActivity.class);
+			templateIntent.putExtra("widgetId", appWidgetId);
+			templateIntent.putExtra("Action", ACTION_ENTER_SCHEDULE);
+			templateIntent.setData(uri);
 			PendingIntent templatePendingIntent = PendingIntent.getActivity(context, 0, templateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 			views.setPendingIntentTemplate(R.id.schedulesListView, templatePendingIntent);
 			
@@ -78,7 +88,10 @@ public class WidgetSchedules extends AppWidgetProvider
 			
 			// Notify the App Widget Manager to update the widget using the modified remote view.
 			appWidgetManager.updateAppWidget(appWidgetId, views);
+			
+			Log.d(TAG, "Leaving onUpdate for loop i=" + i);
 		}
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
 	/* (non-Javadoc)
@@ -87,12 +100,14 @@ public class WidgetSchedules extends AppWidgetProvider
 	@Override
 	public void onReceive(Context context, Intent intent) 
 	{
-		// TODO Auto-generated method stub
 		super.onReceive(context, intent);
 		
 		if(intent.getAction().equalsIgnoreCase("com.vanhlebarsoftware.kmmdroid.Refresh"))
-			updateWidget(context);
-		Log.d(TAG, "Inside onReceive()");
+		{
+			int widgetId = intent.getExtras().getInt("refreshWidgetId");
+			Log.d(TAG, "onReceive for widgetId: " + widgetId);
+			updateWidget(context, widgetId);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -101,7 +116,6 @@ public class WidgetSchedules extends AppWidgetProvider
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) 
 	{
-		// TODO Auto-generated method stub
 		super.onDeleted(context, appWidgetIds);
 		Log.d(TAG, "onDeleted() has been triggered.");
 		Log.d(TAG, "Number of widgets to delete: " + appWidgetIds.length);
@@ -122,15 +136,14 @@ public class WidgetSchedules extends AppWidgetProvider
 	@Override
 	public void onDisabled(Context context) 
 	{
-		// TODO Auto-generated method stub
 		super.onDisabled(context);
 		Log.d(TAG, "onDisabled() has been triggered.");
 	}
 
-	private void updateWidget(Context context)
+	private void updateWidget(Context context, int widgetID)
 	{
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetSchedules.class));
-		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.schedulesListView);
+		Log.d(TAG, "attempting to notify widgetId: " + widgetID);
+		appWidgetManager.notifyAppWidgetViewDataChanged(widgetID, R.id.schedulesListView);
 	}
 }

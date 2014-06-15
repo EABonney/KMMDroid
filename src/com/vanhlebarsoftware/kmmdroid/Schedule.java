@@ -272,55 +272,55 @@ public class Schedule implements Parcelable
 		String[] date = {null, null, null};
 		curSchedule.moveToFirst();
 		
-		this.id = curSchedule.getString(COL_ID);
-		this.Description = curSchedule.getString(COL_DESCRIPTION);
-		this.Type = curSchedule.getInt(COL_TYPE);
-		this.TypeString = curSchedule.getString(COL_TYPESTRING);
-		this.occurence = curSchedule.getInt(COL_OCCURENCE);
-		this.occurenceMultiplier = curSchedule.getInt(COL_OCCURENCEMULTIPLIER);
-		this.occurenceString = curSchedule.getString(COL_OCCURENCESTRING);
-		this.paymentType = curSchedule.getInt(COL_PAYMENTTYPE);
-		this.paymentTypeString = curSchedule.getString(COL_PAYMENTTYPESTRING);
-		if(curSchedule.getString(COL_STARTDATE) != null)
+		this.id = curSchedule.getString(curSchedule.getColumnIndexOrThrow("_id"));
+		this.Description = curSchedule.getString(curSchedule.getColumnIndexOrThrow("Description"));
+		this.Type = curSchedule.getInt(curSchedule.getColumnIndexOrThrow("type"));
+		this.TypeString = curSchedule.getString(curSchedule.getColumnIndexOrThrow("typeString"));
+		this.occurence = curSchedule.getInt(curSchedule.getColumnIndexOrThrow("occurence"));
+		this.occurenceMultiplier = curSchedule.getInt(curSchedule.getColumnIndexOrThrow("occurenceMultiplier"));
+		this.occurenceString = curSchedule.getString(curSchedule.getColumnIndexOrThrow("occurenceString"));
+		this.paymentType = curSchedule.getInt(curSchedule.getColumnIndexOrThrow("paymentType"));
+		this.paymentTypeString = curSchedule.getString(curSchedule.getColumnIndexOrThrow("paymentTypeString"));
+		if(curSchedule.getString(curSchedule.getColumnIndexOrThrow("startDate")) != null)
 		{
 			this.StartDate = Calendar.getInstance();
-			date = curSchedule.getString(COL_STARTDATE).split("-");
+			date = curSchedule.getString(curSchedule.getColumnIndexOrThrow("startDate")).split("-");
 			this.StartDate.set(Integer.valueOf(date[0]),  Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 			date[0] = date[1] = date[2] = null;
 		}
 		else
 			this.StartDate = null;
-		if(curSchedule.getString(COL_ENDDATE) != null)
+		if(curSchedule.getString(curSchedule.getColumnIndexOrThrow("endDate")) != null)
 		{
 			this.EndDate = Calendar.getInstance();
-			date = curSchedule.getString(COL_ENDDATE).split("-");
+			date = curSchedule.getString(curSchedule.getColumnIndexOrThrow("endDate")).split("-");
 			this.EndDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 			date[0] = date[1] = date[2] = null;
 		}
 		else
 			this.EndDate = null;
-		this.Fixed = curSchedule.getString(COL_FIXED);
-		this.AutoEnter = curSchedule.getString(COL_AUTOENTER);
-		if(curSchedule.getString(COL_LASTPAYMENT) != null)
+		this.Fixed = curSchedule.getString(curSchedule.getColumnIndexOrThrow("fixed"));
+		this.AutoEnter = curSchedule.getString(curSchedule.getColumnIndexOrThrow("autoEnter"));
+		if(curSchedule.getString(curSchedule.getColumnIndexOrThrow("lastPayment")) != null)
 		{
 			this.LastPaymentDate = Calendar.getInstance();
-			date = curSchedule.getString(COL_LASTPAYMENT).split("-");
+			date = curSchedule.getString(curSchedule.getColumnIndexOrThrow("lastPayment")).split("-");
 			this.LastPaymentDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 			date[0] = date[1] = date[2] = null;		
 		}
 		else
 			this.LastPaymentDate = null;
-		if(curSchedule.getString(COL_NEXTPAYMENTDUE) != null)
+		if(curSchedule.getString(curSchedule.getColumnIndexOrThrow("nextPaymentDue")) != null)
 		{
 			this.DueDate = Calendar.getInstance();
-			date = curSchedule.getString(COL_NEXTPAYMENTDUE).split("-");			
+			date = curSchedule.getString(curSchedule.getColumnIndexOrThrow("nextPaymentDue")).split("-");			
 			this.DueDate.set(Integer.valueOf(date[0]), Integer.valueOf(date[1]) - 1, Integer.valueOf(date[2]));
 			date[0] = date[1] = date[2] = null;
 		}
 		else
 			this.DueDate = null;
-		this.WeekendOption = curSchedule.getInt(COL_WEEKENDOPTION);
-		this.WeekendOptionString = curSchedule.getString(COL_WEEKENDOPTIONSTRING);
+		this.WeekendOption = curSchedule.getInt(curSchedule.getColumnIndexOrThrow("weekendOption"));
+		this.WeekendOptionString = curSchedule.getString(curSchedule.getColumnIndexOrThrow("weekendOptionString"));
 		
 		// We should only be using this particular Constructor for a "single" schedule instance, so nAmount and nBalance don't matter.
 		this.nAmount = 0;

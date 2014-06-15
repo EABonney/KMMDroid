@@ -10,6 +10,7 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
@@ -67,6 +68,7 @@ public class ScheduleActionsActivity extends FragmentActivity
         Action = extras.getInt("Action");
         widgetDatabasePath = extras.getString("widgetDatabasePath");
         widgetId = extras.getString("widgetId");
+        Log.d(TAG, "widgetId: " + widgetId);
 
         // If the widgetDatabasePath is empty then we came from inside the app and don't need to worry
         // about the database path, since it is already open.
@@ -107,6 +109,7 @@ public class ScheduleActionsActivity extends FragmentActivity
 				i.putExtra("Action", Action);
 				i.putExtra("widgetDatabasePath", widgetDatabasePath);
 				i.putExtra("fromScheduleActions", true);
+				i.putExtra("fromWidgetId", widgetId);
 				startActivity(i);
 				finish();
 			}

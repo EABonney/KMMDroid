@@ -625,6 +625,8 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 
 	private Schedule getSchedule(String schId)
 	{
+		Log.d(TAG, "Using widgetId: " + this.fromWidgetId);
+		Log.d(TAG, "Getting schedule number: " + schId);
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SCHEDULE_URI, schId + "#" + this.fromWidgetId);
 		u = Uri.parse(u.toString());
 		Cursor schedule = getBaseContext().getContentResolver().query(u, null, null, null, null);

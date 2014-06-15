@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class HomeScreenConfiguration extends FragmentActivity
 	private static final int WIDGET_PREFERREDACCOUNTS = 2000;
 	private static final int WIDGET_SCHEDULES = 2001;
 	private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+	private final String URI_SCHEME = "KMMD";
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
 	static final String[] FROM1 = { "accountName" };
@@ -135,7 +137,6 @@ public class HomeScreenConfiguration extends FragmentActivity
 				editor.putString("updateFrequency" + strappWidgetId, String.valueOf(intDefaultFreq));
 				editor.putString("displayWeeks" + strappWidgetId, String.valueOf(intNumOfWeeks));
 				editor.putInt("widgetType" + strappWidgetId, widgetType);
-				editor.putBoolean("homeWidgetSetup", true);
 				editor.apply();
 		    	
 		    	// Notify the Widget Manager that the config has completed.
@@ -149,16 +150,20 @@ public class HomeScreenConfiguration extends FragmentActivity
 		    	{
 		    		case WIDGET_SCHEDULES:
 		    			intent = new Intent(getBaseContext(), WidgetSchedules.class);
-		    			intent.putExtra("refreshWidgetId", appWidgetId);;
+		    			intent.putExtra("refreshWidgetId", appWidgetId);
+		    			Log.d(TAG, "refreshing Schedules Widget, widgetId: " + appWidgetId);
 		    			break;
 		    		case WIDGET_PREFERREDACCOUNTS:
 		    			intent = new Intent(getBaseContext(), WidgetPreferredAccounts.class);
 		    			intent.putExtra("refreshWidgetId", appWidgetId);
+		    			Log.d(TAG, "refreshing Preferred Accounts Widget, widgetId: " + appWidgetId);
 		    			break;
 		    	}
 
     			String action = "com.vanhlebarsoftware.kmmdroid.Refresh"; // + "#" + String.valueOf(appWidgetId);
     			intent.setAction(action);
+    			Uri data = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"), String.valueOf(appWidgetId));
+    			intent.setData(data);
 				sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 				
 		    	finish();

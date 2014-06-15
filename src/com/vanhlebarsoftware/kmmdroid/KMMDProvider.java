@@ -69,7 +69,8 @@ public class KMMDProvider extends ContentProvider
 	 ********************************************************************************************************************/
 	private static final String schedulesTable = "kmmSchedules, kmmSplits";
 	private static final String[] schedulesColumns = { "kmmSchedules.id AS _id", "kmmSchedules.name AS Description", "occurence", "occurenceString", "occurenceMultiplier",
-												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter" };
+												"nextPaymentDue", "startDate", "endDate", "lastPayment", "valueFormatted", "autoEnter", "type", "typeString", "paymentType",
+												"paymentTypeString", "fixed", "autoEnter", "weekendOption", "weekendOptionString" };
 	private static final String schedulesSelection = "kmmSchedules.id = kmmSplits.transactionId AND nextPaymentDue > 0" + 
 												" AND ((occurence = 1 AND lastPayment IS NULL) OR occurence != 1)" +
 												" AND kmmSplits.splitId = 0"; // AND kmmSplits.accountId=";
@@ -470,7 +471,7 @@ public class KMMDProvider extends ContentProvider
 				id = this.getId(uri);
 				dbSelectionArgs = new String[] { id };
 				dbOrderBy = schedulesOrderBy;	
-				dbSelectionArgs = selectionArgs;
+				//dbSelectionArgs = selectionArgs;
 				break;
 			case TRANSACTIONS_ID:
 				dbTable = "kmmTransactions";
@@ -717,8 +718,10 @@ public class KMMDProvider extends ContentProvider
 		case ACCOUNTS_ID:
 			return lastPathSegment;
 		case SCHEDULES:
+			Log.d(TAG, "Getting all schedules");
 			return null;
 		case SCHEDULES_ID:
+			Log.d(TAG, "Schedule ID: " + lastPathSegment);
 			return lastPathSegment;
 		case SPLITS:
 			return null;
