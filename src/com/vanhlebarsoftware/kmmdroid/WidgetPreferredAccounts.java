@@ -20,7 +20,6 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) 
 	{
-		Log.d(TAG, "Inside onUpdate()");
 		// Iterate over the array of active widgets.
 		final int N = appWidgetIds.length;
 		
@@ -92,7 +91,6 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	
 		if(intent.getAction().equalsIgnoreCase("com.vanhlebarsoftware.kmmdroid.Refresh"))
 			updateWidget(context);
-		Log.d(TAG, "Inside onReceive()");
 	}
 	
 	/* (non-Javadoc)

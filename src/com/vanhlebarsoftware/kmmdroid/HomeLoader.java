@@ -21,12 +21,13 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 	public final static String HOMECHANGED = "HomeAccounts-Changed";
 	private final static String[] dbColumns = { "accountName", "balance", "accountTypeString", "accountType", "id", 
 												"accountTypeString", "accountType", "parentId"};
-	private final String strSelectionAccts = "(accountType != ? AND accountType != ? AND accountType != ? AND accountType != ?)";
-	private final String strSelectionHome = " AND (balance != '0/1')";
+	private final String strSelectionAccts = "(accountType != ? AND accountType != ? AND accountType != ? AND accountType != ? AND parentId!=?)";
+	//private final String strSelectionHome = " AND (balance != '0/1')";
 	private static final String [] selectionArgs = new String[] { String.valueOf(Account.ACCOUNT_EXPENSE), 
 																  String.valueOf(Account.ACCOUNT_INCOME),
 																  String.valueOf(Account.ACCOUNT_STOCK),
-																  String.valueOf(Account.ACCOUNT_EQUITY)};
+																  String.valueOf(Account.ACCOUNT_EQUITY),
+																  "{null}"};
 	private static final String strOrderBy = "accountTypeString, accountName ASC";
 	List<Account> mAccounts;
 	Context mContext;
@@ -181,7 +182,7 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
 		u = Uri.parse(u.toString());
-		Cursor c = context.getContentResolver().query(u, dbColumns, strSelectionAccts + strSelectionHome, selectionArgs, strOrderBy);
+		Cursor c = context.getContentResolver().query(u, dbColumns, strSelectionAccts /*+ strSelectionHome*/, selectionArgs, strOrderBy);
 
 		return getAccounts(c);
     }
@@ -200,20 +201,23 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 		for(int i=0; i<c.getCount(); i++)
 		{
 			// Check to see if this account is closed.
-			String frag = "#9999";
-			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-			u = Uri.parse(u.toString());
-			Cursor acc = context.getContentResolver().query(u, new String[] { "kvpId" }, "kvpId=? AND kvpKey='mm-closed'",
-															new String[] { c.getString(c.getColumnIndex("id")) }, null);
+			//String frag = "#9999";
+			//Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+			//u = Uri.parse(u.toString());
+			//Cursor acc = context.getContentResolver().query(u, new String[] { "kvpId" }, "kvpId=? AND kvpKey='mm-closed'",
+			//												new String[] { c.getString(c.getColumnIndex("id")) }, null);
 			// Only add the account to the view if the account is open.
-			if( acc.getCount() == 0 )
+			Account account = new Account(c.getString(c.getColumnIndexOrThrow("id")),
+										  c.getString(c.getColumnIndexOrThrow("accountName")),
+										  null, null, 0, false, context);
+			if( !isClosed(account) )
 			{
 				// Get all the splits for this account that are in the future.
 				String[] projection = { "valueFormatted" };
 				String selection = "postDate>? AND splitId=0 AND accountId=? AND txType='N'";
 				String[] selectionArgs = { strDate, c.getString(c.getColumnIndex("id")) };
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
+				String frag = "#9999";
+				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
 				u = Uri.parse(u.toString());
 				Cursor splits = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
 				long bal = Account.convertBalance(c.getString(c.getColumnIndex("balance")));
@@ -226,13 +230,119 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 				splits.close();
 			}
 			c.moveToNext();
-			acc.close();
+			//acc.close();
+		}
+		c.close();
+		
+		// Find any investment accounts and create their "current" balances.
+		// Loop through the preferred Accounts checking each one and setting the balance if it is an investment
+		for( int i=0; i < accounts.size(); i++ )
+		{
+			if( isInvestment(accounts.get(i)) )
+			{
+				Long bal = getInvestmentBalance(accounts.get(i));
+				accounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true));
+			}
 		}
 		
-		c.close();
 		return accounts;
     }
     
+	private boolean isClosed(Account account)
+	{
+		// Run the query against the Content provider to see if this account is closed, if not add it to the ArrayList
+		final Context context = getContext();
+		String[] projection = { "kvpId" };
+		String selection = "kvpId=? AND kvpKey='mm-closed'";
+		String[] selectionArgs = { account.getId() };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor acct = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+		
+		if( acct.getCount() > 0 )
+		{
+			acct.close();
+			return true;
+		}
+		else
+		{
+			acct.close();
+			return false;
+		}
+	}
+	
+	private boolean isInvestment(Account account)
+	{
+		final Context context = getContext();
+		String[] projection = { "accountType" };
+		String selection = "id=?";
+		String[] selectionArgs = { account.getId() };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor acct = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+		acct.moveToFirst();
+		
+		if(Integer.valueOf(acct.getString(acct.getColumnIndexOrThrow("accountType"))) == Account.ACCOUNT_INVESTMENT)
+		{
+			acct.close();
+			return true;
+		}
+		else
+		{
+			acct.close();
+			return false;
+		}
+	}
+	
+	private Long getInvestmentBalance(Account account)
+	{
+		// We have an investment account, pull all child accounts for this parent.
+		final Context context = getContext();
+		double total = 0.00;
+		String[] prj = { "accountName", "currencyId", "balance", "balanceFormatted" };
+		String selection = "parentId=?";
+		String[] selectionAgs = { account.getId() };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor children = context.getContentResolver().query(u, prj, selection, selectionAgs, null);
+		if( children != null )
+		{
+			children.moveToFirst();
+			for(int i=0; i<children.getCount(); i++)
+			{
+				// Now we need to pull the latest price for this currency and multiply it by the balance, which is the number
+				// of shares we own.
+				String[] proj = { "priceDate", "price", "priceFormatted" };
+				selection = "fromId=?";
+				String[] selArgs = { children.getString(children.getColumnIndexOrThrow("currencyId")) };
+				String orderBy = "priceDate DESC";
+				u = Uri.withAppendedPath(KMMDProvider.CONTENT_PRICES, frag);
+				u = Uri.parse(u.toString());
+				Cursor pr = context.getContentResolver().query(u, proj, selection, selArgs, orderBy);
+				
+				// Now we have our prices, pick off the first one and use it as our multiplier.
+				pr.moveToFirst();
+				double price = Account.convertBalance(pr.getString(pr.getColumnIndexOrThrow("price"))).doubleValue() / 100;
+				double bal = Account.convertBalance(children.getString(children.getColumnIndexOrThrow("balance"))).doubleValue();
+				total = total + (price * bal);
+				
+				pr.close();
+				
+				// Make sure we don't go past the last cursor item.
+				if( !children.isLast() )
+					children.moveToNext();
+				else
+					i = children.getCount() + 1;
+			}
+		}
+		
+		children.close();
+		return Long.valueOf((long) total);
+	}
+	
     private boolean isParent(String id)
     {
 		final Context context = getContext();

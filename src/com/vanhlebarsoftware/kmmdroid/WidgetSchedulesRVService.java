@@ -27,9 +27,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) 
 	{
-		// TODO Auto-generated method stub
-		Log.d(TAG, "Inside onGetViewFactory");
-		
+		// TODO Auto-generated method stub		
 		return new WidgetSchedulesRVFactory(getApplicationContext(), intent);
 	}
 	
@@ -53,7 +51,6 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 			kmmdApp = (KMMDroidApp) getApplication();
 			SchedulesDue = new ArrayList<Schedule>();
-			Log.d(TAG, "Starting WidgetSchedulesRVFactory for widgetId: " + widgetId);
 		}
 
 		public void onCreate() 
@@ -62,7 +59,6 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			final long token = Binder.clearCallingIdentity();
 			try
 			{
-				Log.d(TAG, "inside onCreate() about to getAccountInfo()");
 				getAccountInfo();
 				SchedulesDue = executeQuery();
 			}
@@ -70,7 +66,6 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			{
 				Binder.restoreCallingIdentity(token);
 			}
-			Log.d(TAG, "Schedules found: " + SchedulesDue.size());
 		}
 
 		public void onDataSetChanged() 
@@ -82,7 +77,6 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			final long token = Binder.clearCallingIdentity();
 			try
 			{
-				Log.d(TAG, "inside onDataSetChanged() about to getAccountInfo() using widgetId: " + wId);
 				getAccountInfo();
 				SchedulesDue = executeQuery();
 			}
@@ -90,7 +84,6 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			{
 				Binder.restoreCallingIdentity(token);
 			}
-			Log.d(TAG, "Schedules found in refresh: " + SchedulesDue.size());
 		}
 
 		public void onDestroy() 
@@ -138,9 +131,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			fillInIntent.putExtra("widgetDatabasePath", path);
 			fillInIntent.putExtra("scheduleId", schedule.getId());
 			fillInIntent.putExtra("scheduleDescription", schedule.getDescription());
-			//fillInIntent.putExtra("widgetId", String.valueOf(widgetId));
-			Log.d(TAG, "widgetId for this schedule: " + widgetId);
-			
+			//fillInIntent.putExtra("widgetId", String.valueOf(widgetId));			
 			rv.setOnClickFillInIntent(R.id.scheduleDate, fillInIntent);
 			rv.setOnClickFillInIntent(R.id.scheduleName, fillInIntent);
 			rv.setOnClickFillInIntent(R.id.scheduleAmount, fillInIntent);
@@ -254,9 +245,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 		}
 		
 		private void getAccountInfo()
-		{
-			Log.d(TAG, "Getting accountInfo for widgetId: " + widgetId);
-			
+		{			
 			// Create the Remote Views object and use it to populate the layout for each account.
 			RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_schedules);
 			

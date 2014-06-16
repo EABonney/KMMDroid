@@ -21,9 +21,7 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) 
 	{
-		// TODO Auto-generated method stub
-		Log.d(TAG, "Inside onGetViewFactory");
-		
+		// TODO Auto-generated method stub		
 		return new WidgetPreferredAccountsRVFactory(getApplicationContext(), intent);
 	}
 
@@ -42,9 +40,6 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			this.intent = intent;
 			widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 			mAccounts = new ArrayList<Account>();
-			
-			Log.d(TAG, "Inside the contructor of the RVService class.");
-			Log.d(TAG, "widgetId: " + String.valueOf(widgetId));
 		}
 
 		public void onCreate() 
@@ -61,7 +56,6 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			{
 				Binder.restoreCallingIdentity(token);
 			}
-			Log.d(TAG, "Cursor size: " + String.valueOf(c.getCount()));
 		}
 
 		public void onDataSetChanged() 
@@ -78,7 +72,6 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			{
 				Binder.restoreCallingIdentity(token);
 			}
-			Log.d(TAG, "Cursor size: " + String.valueOf(c.getCount()));
 		}
 
 		public void onDestroy() 
@@ -90,7 +83,6 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 		{
 			if(c != null)
 			{
-				Log.d(TAG, "Cursor size: " + String.valueOf(mAccounts.size()));
 				return mAccounts.size();
 			}
 			else
@@ -165,7 +157,6 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			String selection = "kvpKey='PreferredAccount' AND kvpData='Yes' AND kvpId=id";
 			String frag = "#" + String.valueOf(widgetId);
 			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_PREFERREDACCOUNTS_URI, frag);
-			Log.d(TAG, "Using Uri: " + u.toString());
 			u = Uri.parse(u.toString());
 			
 			return context.getContentResolver().query(u, projection, selection, null, null);
@@ -179,43 +170,125 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			accounts.moveToFirst();
 			for(int i=0; i<accounts.getCount(); i++)
 			{
-				// Run the query against the Content provider to see if this account is closed, if not add it to the ArrayList
-				String[] projection = { "kvpId" };
-				String selection = "kvpId=? AND kvpKey='mm-closed'";
-				String[] selectionArgs = { accounts.getString(accounts.getColumnIndexOrThrow("id")) };
-				String frag = "#" + String.valueOf(widgetId);
-				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-				Log.d(TAG, "Using Uri: " + u.toString());
-				u = Uri.parse(u.toString());
-				Cursor acct = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+				Account account = new Account(accounts.getString(accounts.getColumnIndexOrThrow("id")),
+						accounts.getString(accounts.getColumnIndexOrThrow("accountName")),
+						accounts.getString(accounts.getColumnIndexOrThrow("balanceFormatted")),
+						null, 0, false, context);
 				
-				if( acct.getCount() > 0 )
+				if( !isClosed(account) )
 				{
-					Log.d(TAG, "AccountId: " + accounts.getString(accounts.getColumnIndexOrThrow("id")));
-					Log.d(TAG, "Account: " + accounts.getString(accounts.getColumnIndexOrThrow("accountName")) + " is closed!");
-
+					preferredAccounts.add(account);
 				}
-				else
-				{
-					Log.d(TAG, "Adding open account to our ArrayList.");
-					Log.d(TAG, "AccountId: " + accounts.getString(accounts.getColumnIndexOrThrow("id")));
-					Log.d(TAG, "Account: " + accounts.getString(accounts.getColumnIndexOrThrow("accountName")));
-					Account a = new Account(accounts.getString(accounts.getColumnIndexOrThrow("id")),
-											accounts.getString(accounts.getColumnIndexOrThrow("accountName")),
-											accounts.getString(accounts.getColumnIndexOrThrow("balanceFormatted")),
-											null, 0, false, context);
-					preferredAccounts.add(a);
-				}
-				
-				// close our cursor
-				acct.close();
 				
 				// make sure we don't move past the end of the cursor
 				if( !accounts.isLast() )
 					accounts.moveToNext();
 			}
 			
+			// Find any investment accounts and create their "current" balances.
+			// Loop through the preferred Accounts checking each one and setting the balance if it is an investment
+			for( int i=0; i < preferredAccounts.size(); i++ )
+			{
+				if( isInvestment(preferredAccounts.get(i)) )
+				{
+					Long bal = getInvestmentBalance(preferredAccounts.get(i));
+					preferredAccounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true));
+				}
+			}
+			
 			return preferredAccounts;
+		}
+		
+		private boolean isClosed(Account account)
+		{
+			// Run the query against the Content provider to see if this account is closed, if not add it to the ArrayList
+			String[] projection = { "kvpId" };
+			String selection = "kvpId=? AND kvpKey='mm-closed'";
+			String[] selectionArgs = { account.getId() };
+			String frag = "#" + String.valueOf(widgetId);
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
+			u = Uri.parse(u.toString());
+			Cursor acct = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+			
+			if( acct.getCount() > 0 )
+			{
+				acct.close();
+				return true;
+			}
+			else
+			{
+				acct.close();
+				return false;
+			}
+		}
+		
+		private boolean isInvestment(Account account)
+		{
+			String[] projection = { "accountType" };
+			String selection = "id=?";
+			String[] selectionArgs = { account.getId() };
+			String frag = "#" + String.valueOf(widgetId);
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+			u = Uri.parse(u.toString());
+			Cursor acct = context.getContentResolver().query(u, projection, selection, selectionArgs, null);
+			acct.moveToFirst();
+			
+			if(Integer.valueOf(acct.getString(acct.getColumnIndexOrThrow("accountType"))) == Account.ACCOUNT_INVESTMENT)
+			{
+				acct.close();
+				return true;
+			}
+			else
+			{
+				acct.close();
+				return false;
+			}
+		}
+		
+		private Long getInvestmentBalance(Account account)
+		{
+			// We have an investment account, pull all child accounts for this parent.
+			double total = 0.00;
+			String[] prj = { "accountName", "currencyId", "balance", "balanceFormatted" };
+			String selection = "parentId=?";
+			String[] selectionAgs = { account.getId() };
+			String frag = "#" + String.valueOf(widgetId);
+			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+			u = Uri.parse(u.toString());
+			Cursor children = context.getContentResolver().query(u, prj, selection, selectionAgs, null);
+			if( children != null )
+			{
+				children.moveToFirst();
+				for(int i=0; i<children.getCount(); i++)
+				{
+					// Now we need to pull the latest price for this currency and multiply it by the balance, which is the number
+					// of shares we own.
+					String[] proj = { "priceDate", "price", "priceFormatted" };
+					selection = "fromId=?";
+					String[] selArgs = { children.getString(children.getColumnIndexOrThrow("currencyId")) };
+					String orderBy = "priceDate DESC";
+					u = Uri.withAppendedPath(KMMDProvider.CONTENT_PRICES, frag);
+					u = Uri.parse(u.toString());
+					Cursor pr = context.getContentResolver().query(u, proj, selection, selArgs, orderBy);
+					
+					// Now we have our prices, pick off the first one and use it as our multiplier.
+					pr.moveToFirst();
+					double price = Account.convertBalance(pr.getString(pr.getColumnIndexOrThrow("price"))).doubleValue() / 100;
+					double bal = Account.convertBalance(children.getString(children.getColumnIndexOrThrow("balance"))).doubleValue();
+					total = total + (price * bal);
+					
+					pr.close();
+					
+					// Make sure we don't go past the last cursor item.
+					if( !children.isLast() )
+						children.moveToNext();
+					else
+						i = children.getCount() + 1;
+				}
+			}
+			
+			children.close();
+			return Long.valueOf((long) total);
 		}
 	}
 	/************************** End of inner class WidgetPreferredAccountsRVFactory ****************/
