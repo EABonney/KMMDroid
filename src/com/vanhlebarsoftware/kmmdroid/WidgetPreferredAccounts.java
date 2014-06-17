@@ -6,12 +6,18 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class WidgetPreferredAccounts extends AppWidgetProvider
 {
 	private static final String TAG = WidgetPreferredAccounts.class.getSimpleName();
+	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
+	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
+	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
 	
 	/* (non-Javadoc)
 	 * @see android.appwidget.AppWidgetProvider#onUpdate(android.content.Context, android.appwidget.AppWidgetManager, int[])
@@ -60,11 +66,11 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 			
 			// Refresh icon
 			intent = new Intent(context, WidgetPreferredAccounts.class);
-			intent.putExtra("refreshWidgetId", appWidgetId);
-			action = "com.vanhlebarsoftware.kmmdroid.Refresh" + "#" + String.valueOf(appWidgetId);
-			intent.setAction(action);
-			//pendingIntent = PendingIntent.getService(context, 0, intent, 0);
-			pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+			intent.putExtra(DATA_CHANGED, appWidgetId);
+			Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
+			intent.setAction(DATA_CHANGED);
+			intent.setData(uri);
+			pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			views.setOnClickPendingIntent(R.id.kmmd_refresh, pendingIntent);
 			
 			// Preferences icon
@@ -89,8 +95,12 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 		// TODO Auto-generated method stub
 		super.onReceive(context, intent);
 	
-		if(intent.getAction().equalsIgnoreCase("com.vanhlebarsoftware.kmmdroid.Refresh"))
-			updateWidget(context);
+		if(intent.getAction().equalsIgnoreCase(DATA_CHANGED))
+		{
+			int id = intent.getIntExtra(DATA_CHANGED, 0);
+			Toast.makeText(context, "refreshing...", Toast.LENGTH_LONG).show();
+			updateWidget(context, id);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -101,7 +111,14 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	{
 		// TODO Auto-generated method stub
 		super.onDeleted(context, appWidgetIds);
-		Log.d(TAG, "onDeleted() has been triggered.");
+		
+		SharedPreferences.Editor editor = context.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_PRIVATE).edit();
+		editor.remove("widgetDatabasePath" + String.valueOf(appWidgetIds[0]));
+		editor.remove("accountUsed" + String.valueOf(appWidgetIds[0]));
+		editor.remove("updateFrequency" + String.valueOf(appWidgetIds[0]));
+		editor.remove("displayWeeks" + String.valueOf(appWidgetIds[0]));
+		editor.remove("widgetType" + String.valueOf(appWidgetIds[0]));
+		editor.apply();
 	}
 
 	/* (non-Javadoc)
@@ -112,14 +129,12 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	{
 		// TODO Auto-generated method stub
 		super.onDisabled(context);
-		Log.d(TAG, "onDisabled() has been triggered.");
 	}
 
-	private void updateWidget(Context context)
+	private void updateWidget(Context context, int ID)
 	{
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetPreferredAccounts.class));
-		appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.preferredListView);
+		appWidgetManager.notifyAppWidgetViewDataChanged(ID, R.id.preferredListView);
 	}
 	
 }

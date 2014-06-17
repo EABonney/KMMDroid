@@ -128,7 +128,7 @@ public class CashRequirementsActivity extends FragmentActivity
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemAbout:
-				startActivity(new Intent(this, AboutActivity.class));
+				startActivity(new Intent(this, AboutFragment.class));
 				break;
 		}
 		

@@ -10,10 +10,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 public class WidgetSchedules extends AppWidgetProvider
 {
 	private static final String TAG = WidgetSchedules.class.getSimpleName();
+	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
 	private static final int ACTION_ENTER_SCHEDULE = 3;
 
@@ -26,12 +28,10 @@ public class WidgetSchedules extends AppWidgetProvider
 	{		
 		// Iterate over the array of active widgets.
 		final int N = appWidgetIds.length;
-		Log.d(TAG, "Number of widgets to update: " + String.valueOf(N));
 		
 		for(int i=0; i<N; i++)
 		{
 			int appWidgetId = appWidgetIds[i];
-			Log.d(TAG, "Updating widgetId: " + String.valueOf(i));
 			
 			// Set up the intent to start the RemoteViews Service which will supply the views
 			// shown in the ListView
@@ -71,11 +71,11 @@ public class WidgetSchedules extends AppWidgetProvider
 			
 			// Refresh icon
 			intent = new Intent(context, WidgetSchedules.class);
-			intent.putExtra("refreshWidgetId", appWidgetId);
-			action = "com.vanhlebarsoftware.kmmdroid.Refresh"; // + "#" + String.valueOf(appWidgetId);
-			intent.setAction(action);
-			//pendingIntent = PendingIntent.getService(context, 0, intent, 0);
-			pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+			intent.putExtra(DATA_CHANGED, appWidgetId);
+			uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
+			intent.setAction(DATA_CHANGED);
+			intent.setData(uri);
+			pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 			views.setOnClickPendingIntent(R.id.kmmd_refresh, pendingIntent);
 			
 			// Preferences icon
@@ -88,10 +88,8 @@ public class WidgetSchedules extends AppWidgetProvider
 			
 			// Notify the App Widget Manager to update the widget using the modified remote view.
 			appWidgetManager.updateAppWidget(appWidgetId, views);
-			
-			Log.d(TAG, "Leaving onUpdate for loop i=" + i);
 		}
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
+		//super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
 	/* (non-Javadoc)
@@ -102,11 +100,11 @@ public class WidgetSchedules extends AppWidgetProvider
 	{
 		super.onReceive(context, intent);
 		
-		if(intent.getAction().equalsIgnoreCase("com.vanhlebarsoftware.kmmdroid.Refresh"))
+		if(intent.getAction().equalsIgnoreCase(DATA_CHANGED))
 		{
-			int widgetId = intent.getExtras().getInt("refreshWidgetId");
-			Log.d(TAG, "onReceive for widgetId: " + widgetId);
-			updateWidget(context, widgetId);
+			int id = intent.getIntExtra(DATA_CHANGED, 0);
+			Toast.makeText(context, "refreshing...", Toast.LENGTH_LONG).show();
+			updateWidget(context, id);
 		}
 	}
 	
@@ -117,9 +115,6 @@ public class WidgetSchedules extends AppWidgetProvider
 	public void onDeleted(Context context, int[] appWidgetIds) 
 	{
 		super.onDeleted(context, appWidgetIds);
-		Log.d(TAG, "onDeleted() has been triggered.");
-		Log.d(TAG, "Number of widgets to delete: " + appWidgetIds.length);
-		Log.d(TAG, "widgetId to be deleted: " + appWidgetIds[0]);
 		
 		SharedPreferences.Editor editor = context.getSharedPreferences("com.vanhlebarsoftware.kmmdroid_preferences", Context.MODE_PRIVATE).edit();
 		editor.remove("widgetDatabasePath" + String.valueOf(appWidgetIds[0]));
@@ -137,13 +132,11 @@ public class WidgetSchedules extends AppWidgetProvider
 	public void onDisabled(Context context) 
 	{
 		super.onDisabled(context);
-		Log.d(TAG, "onDisabled() has been triggered.");
 	}
 
 	private void updateWidget(Context context, int widgetID)
 	{
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-		Log.d(TAG, "attempting to notify widgetId: " + widgetID);
 		appWidgetManager.notifyAppWidgetViewDataChanged(widgetID, R.id.schedulesListView);
 	}
 }

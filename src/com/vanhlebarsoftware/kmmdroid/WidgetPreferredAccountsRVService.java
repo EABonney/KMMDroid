@@ -17,6 +17,7 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 {
 	private static final String TAG = WidgetPreferredAccountsRVService.class.getSimpleName();
 	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
+	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) 

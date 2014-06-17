@@ -1,41 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:background="#62B1F6">
-  
-  	<ImageView 
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:background="@drawable/kmymoney"
-  		android:id="@+id/about_kmmicon">
-  	</ImageView>
-  	<TextView
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:layout_toRightOf="@+id/about_kmmicon"
-  		android:text="@string/app_name"
-  		android:textColor="@android:color/black"
-  		android:textStyle="bold"
-  		android:gravity="center_horizontal"
-  		android:id="@+id/aboutAppName">
-  	</TextView>
-   	<TextView
-  		android:layout_width="wrap_content"
-  		android:layout_height="wrap_content"
-  		android:layout_toRightOf="@+id/about_kmmicon"
-  		android:layout_below="@+id/aboutAppName"
-  		android:text="@string/itemVersion"
-  		android:textColor="@android:color/black"
-  		android:gravity="center_horizontal"
-  		android:id="@+id/aboutVerNumber">
-  	</TextView>  
-	<ListView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/about_kmmicon"
-		android:id="@+id/aboutList">
-	</ListView>  
-</RelativeLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+	<fragment
+        android:name="com.vanhlebarsoftware.kmmdroid.AboutFragment" 
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:gravity="center_vertical"
+    	android:id="@+id/aboutFragment"	    
+	/>
+</LinearLayout>

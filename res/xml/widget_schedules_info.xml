@@ -7,6 +7,7 @@
 	android:label="@string/widgetSchedules"
 	android:updatePeriodMillis="8640000"
 	android:resizeMode="vertical|horizontal"
-	android:configure="com.vanhlebarsoftware.kmmdroid.HomeScreenConfiguration" >
+	android:configure="com.vanhlebarsoftware.kmmdroid.HomeScreenConfiguration" 
+	android:widgetCategory="keyguard|home_screen" >
 
 </appwidget-provider>
