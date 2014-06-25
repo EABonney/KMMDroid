@@ -107,11 +107,13 @@ public class WidgetSchedules extends AppWidgetProvider
 			String widgetId = intent.getStringExtra(DATA_CHANGED);
 			if(!widgetId.equalsIgnoreCase("0"))
 			{
+				Log.d(TAG, "Refreshing widgetId: " + widgetId);
 				int id = Integer.valueOf(widgetId);
 				updateWidget(context, id);
 			}
 			else
 			{
+				Log.d(TAG, "Refreshing all schedules widgets.");
 				updateWidgets(context);
 			}
 		}
@@ -152,7 +154,7 @@ public class WidgetSchedules extends AppWidgetProvider
 	
 	private void updateWidgets(Context context)
 	{
-		ComponentName thisWidget = new ComponentName(context, WidgetSchedulesRVService.class);
+		ComponentName thisWidget = new ComponentName(context, WidgetSchedules.class);
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 		int[] widgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
 		appWidgetManager.notifyAppWidgetViewDataChanged(widgetIDs, R.id.schedulesListView);		
