@@ -66,7 +66,7 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 			
 			// Refresh icon
 			intent = new Intent(context, WidgetPreferredAccounts.class);
-			intent.putExtra(DATA_CHANGED, appWidgetId);
+			intent.putExtra(DATA_CHANGED, String.valueOf(appWidgetId));
 			Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
 			intent.setAction(DATA_CHANGED);
 			intent.setData(uri);
@@ -97,9 +97,17 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	
 		if(intent.getAction().equalsIgnoreCase(DATA_CHANGED))
 		{
-			int id = intent.getIntExtra(DATA_CHANGED, 0);
-			Toast.makeText(context, "refreshing...", Toast.LENGTH_LONG).show();
-			updateWidget(context, id);
+			// We know we want to refresh the widget/widgets, now determine if a single widget or ALL need to be refreshed.
+			String widgetId = intent.getStringExtra(DATA_CHANGED);
+			if(!widgetId.equalsIgnoreCase("0"))
+			{
+				int id = Integer.valueOf(widgetId);
+				updateWidget(context, id);
+			}
+			else
+			{
+				updateWidgets(context);
+			}
 		}
 	}
 	
@@ -135,6 +143,15 @@ public class WidgetPreferredAccounts extends AppWidgetProvider
 	{
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 		appWidgetManager.notifyAppWidgetViewDataChanged(ID, R.id.preferredListView);
+		Toast.makeText(context, "Refreshing...", Toast.LENGTH_LONG).show();
+	}
+	
+	private void updateWidgets(Context context)
+	{
+		ComponentName thisWidget = new ComponentName(context, WidgetPreferredAccountsRVService.class);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] widgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
+		appWidgetManager.notifyAppWidgetViewDataChanged(widgetIDs, R.id.preferredListView);	
 	}
 	
 }

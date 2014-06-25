@@ -140,6 +140,8 @@ public class PayeeFragment extends Fragment implements
 	public void setPayeeId(String pId)
 	{
 		this.payeeId = pId;
+		
+		updateUIElements();
 	}
 	
 	public String getPayeeId()

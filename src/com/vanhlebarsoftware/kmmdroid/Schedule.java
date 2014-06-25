@@ -332,7 +332,7 @@ public class Schedule implements Parcelable
 		for(int i=0; i < curSplits.getCount(); i++)
 			this.Splits.add(new Split(curSplits, i, "9999", c));
 		
-		this.Transaction = null;
+		this.Transaction = new Transaction(c, null, widget);
 		this.title = null;
 		this.context = c;
 		this.widgetId = widget;
@@ -1440,8 +1440,8 @@ public class Schedule implements Parcelable
 		if( date == null )
 			return null;
 		else
-			return padDate( String.valueOf(date.get(Calendar.YEAR)) + String.valueOf(date.get(Calendar.MONTH) + 1) + 
-						String.valueOf(date.get(Calendar.DAY_OF_MONTH)) );
+			return padDate( String.valueOf(date.get(Calendar.YEAR)) + "-" + String.valueOf(date.get(Calendar.MONTH) + 1) + 
+						"-" + String.valueOf(date.get(Calendar.DAY_OF_MONTH)) );
 	}
 	
 	private String padDate(String str)

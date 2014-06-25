@@ -150,12 +150,12 @@ public class HomeScreenConfiguration extends FragmentActivity
 		    	{
 		    		case WIDGET_SCHEDULES:
 		    			intent = new Intent(getBaseContext(), WidgetSchedules.class);
-		    			intent.putExtra("refreshWidgetId", appWidgetId);
+		    			intent.putExtra("refreshWidgetId", String.valueOf(appWidgetId));
 		    			Log.d(TAG, "refreshing Schedules Widget, widgetId: " + appWidgetId);
 		    			break;
 		    		case WIDGET_PREFERREDACCOUNTS:
 		    			intent = new Intent(getBaseContext(), WidgetPreferredAccounts.class);
-		    			intent.putExtra("refreshWidgetId", appWidgetId);
+		    			intent.putExtra("refreshWidgetId", String.valueOf(appWidgetId));
 		    			Log.d(TAG, "refreshing Preferred Accounts Widget, widgetId: " + appWidgetId);
 		    			break;
 		    	}

@@ -31,6 +31,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 												PayeeFragment.OnSendWidgetIdListener
 {
 	private static final String TAG = CreateModifyTransactionActivity.class.getSimpleName();
+	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
@@ -80,7 +81,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         setContentView(R.layout.createmod_transaction);
         
         // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
+        KMMDapp = ((KMMDroidApp) getApplication()); 
         
         // See if the database is already open, if not open it Read/Write.
         if(!KMMDapp.isDbOpen())
@@ -111,6 +112,12 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         widgetDatabasePath = extras.getString("widgetDatabasePath");
         fromWidgetId = extras.getString("fromWidgetId");
         
+        // Make sure that our KMMDApp is pointing to the correct preference area, main app or from a specified widgetId.
+        if(fromWidgetId != null)
+        {
+        	KMMDapp.updatePrefs(fromWidgetId);
+        }
+        
         if( Action == ACTION_NEW )
         {
         	Log.d(TAG, "From homeWidget: " + String.valueOf(fromHomeWidget));
@@ -123,6 +130,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         else if( Action == ACTION_ENTER_SCHEDULE )
         {
         	// Need to get the specified schedule and all it's splits and other information.
+        	transaction = new Transaction(getBaseContext(), null, this.fromWidgetId);
         	scheduleToEnter = getSchedule(extras.getString("scheduleId"));
         }
         
@@ -300,6 +308,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 					transaction.Save();
 					//Need to advance the schedule to the next date and update the lastPayment and
 					//startDate dates to the recorded date of the transaction.
+					scheduleToEnter.setTransDate(scheduleToEnter.convertDate(transaction.getDate()));
 					scheduleToEnter.advanceDueDate(/*Schedule.getOccurence(scheduleToEnter.getOccurence(), scheduleToEnter.getOccurenceMultiplier())*/);					
 					break;
 				}
@@ -309,13 +318,17 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 				// If the user has the preference item of updateFrequency = Auto fire off a Broadcast
 				if(KMMDapp.getAutoUpdate())
 				{
-					Log.d(TAG, "Send off intent to update the widgets.");
-					Intent intent = new Intent(KMMDService.DATA_CHANGED);
-					sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
+					// We have an issue here, we don't really want to update ALL widgets as that is ineffecient, BUT
+					// we might have more than just the current widget effected by an update that needs to be refreshed.
+					// We either need to update ALL widgets OR figure out a routine to update only the effected widgets.
+					KMMDFunctions.updateSchedulesWidgets(getBaseContext());
+					KMMDFunctions.updatePreferredAccountsWidgets(getBaseContext());
 				}
+				else
+					Log.d(TAG, "No need to fire update broadcast for this event!");
 				
 				// Mark the file as dirty
-				KMMDapp.markFileIsDirty(true, "9999");
+				KMMDapp.markFileIsDirty(true, fromWidgetId);
 				
 				// Clear the SplitsDirty flag.
 				KMMDapp.setSplitsAryDirty(false);
@@ -710,10 +723,16 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 			// load the transaction details into the form.
 			editMemo.setText(scheduleToEnter.Splits.get(0).getMemo());
 //**************************** THIS NEEDS TO BE FIXED!!!!!!!!! ****************************************************
+			Log.d(TAG, "Schedule due date: " + scheduleToEnter.getDatabaseFormattedString());
 			transDate.setText(scheduleToEnter.getDatabaseFormattedString());
+			String[] dueDate = scheduleToEnter.getDatabaseFormattedString().split("-");
+			intDay = Integer.valueOf(dueDate[2]);
+			intMonth = Integer.valueOf(dueDate[1]) - 1;
+			intYear = Integer.valueOf(dueDate[0]);
 //*****************************************************************************************************************
 			editCkNumber.setText(scheduleToEnter.Splits.get(0).getCheckNumber());
 			strTransPayeeId = scheduleToEnter.Splits.get(0).getPayeeId();
+			payeeFrag.setPayeeId(strTransPayeeId);
 			//spinPayee.setSelection(setPayee(strTransPayeeId));
 		
 			// See if we have only used one category or if we have multiple.

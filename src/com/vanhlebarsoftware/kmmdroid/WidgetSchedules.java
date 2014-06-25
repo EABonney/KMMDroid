@@ -16,6 +16,7 @@ public class WidgetSchedules extends AppWidgetProvider
 {
 	private static final String TAG = WidgetSchedules.class.getSimpleName();
 	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
+	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
 	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
 	private static final int ACTION_ENTER_SCHEDULE = 3;
 
@@ -54,7 +55,7 @@ public class WidgetSchedules extends AppWidgetProvider
 			// Create a Pending Intent template to provide interactivity to each item displayed
 			Uri uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
 			Intent templateIntent = new Intent(context, ScheduleActionsActivity.class);
-			templateIntent.putExtra("widgetId", appWidgetId);
+			templateIntent.putExtra("widgetId", String.valueOf(appWidgetId));
 			templateIntent.putExtra("Action", ACTION_ENTER_SCHEDULE);
 			templateIntent.setData(uri);
 			PendingIntent templatePendingIntent = PendingIntent.getActivity(context, 0, templateIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -71,7 +72,7 @@ public class WidgetSchedules extends AppWidgetProvider
 			
 			// Refresh icon
 			intent = new Intent(context, WidgetSchedules.class);
-			intent.putExtra(DATA_CHANGED, appWidgetId);
+			intent.putExtra(DATA_CHANGED, String.valueOf(appWidgetId));
 			uri = Uri.withAppendedPath(Uri.parse(URI_SCHEME + "://widget/id/"),String.valueOf(appWidgetId));
 			intent.setAction(DATA_CHANGED);
 			intent.setData(uri);
@@ -102,9 +103,17 @@ public class WidgetSchedules extends AppWidgetProvider
 		
 		if(intent.getAction().equalsIgnoreCase(DATA_CHANGED))
 		{
-			int id = intent.getIntExtra(DATA_CHANGED, 0);
-			Toast.makeText(context, "refreshing...", Toast.LENGTH_LONG).show();
-			updateWidget(context, id);
+			// We know we want to refresh the widget/widgets, now determine if a single widget or ALL need to be refreshed.
+			String widgetId = intent.getStringExtra(DATA_CHANGED);
+			if(!widgetId.equalsIgnoreCase("0"))
+			{
+				int id = Integer.valueOf(widgetId);
+				updateWidget(context, id);
+			}
+			else
+			{
+				updateWidgets(context);
+			}
 		}
 	}
 	
@@ -138,5 +147,14 @@ public class WidgetSchedules extends AppWidgetProvider
 	{
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 		appWidgetManager.notifyAppWidgetViewDataChanged(widgetID, R.id.schedulesListView);
+		Toast.makeText(context, "Refreshing...", Toast.LENGTH_LONG).show();
+	}
+	
+	private void updateWidgets(Context context)
+	{
+		ComponentName thisWidget = new ComponentName(context, WidgetSchedulesRVService.class);
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] widgetIDs = appWidgetManager.getAppWidgetIds(thisWidget);
+		appWidgetManager.notifyAppWidgetViewDataChanged(widgetIDs, R.id.schedulesListView);		
 	}
 }
