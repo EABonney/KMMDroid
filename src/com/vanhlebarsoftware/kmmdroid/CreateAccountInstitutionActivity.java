@@ -159,6 +159,9 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 							spinInstitutions.setVisibility(View.GONE);
 							textInstitutions.setVisibility(View.GONE);
 							buttonNewInstitution.setVisibility(View.GONE);
+							// Remove the institution information from this account
+							institutionId = null;
+							institutionSelected = null;
 						}
 						else
 						{
@@ -166,10 +169,18 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 							textInstitutions.setVisibility(View.VISIBLE);
 							buttonNewInstitution.setVisibility(View.VISIBLE);
 							spinInstitutions.setSelection(0);
+							Cursor c = (Cursor) spinInstitutions.getSelectedItem();
+							if(c != null )
+							{
+								c.moveToFirst();
+								institutionId = c.getString(0);
+								institutionSelected = c.getString(1);
+								Log.d(TAG, "institudtionId: " + institutionId);
+							}
 						}
 						break;
 				}
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
         });
         
@@ -181,7 +192,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -196,7 +207,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -245,6 +256,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 			
 				institutionId = c.getString(0);
 				institutionSelected = c.getString(1);
+				Log.d(TAG, "institudtionId: " + institutionId);
 				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 			else

@@ -50,6 +50,9 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	private boolean returnFromDelete = false;
 	private boolean isDirty = false;
 	private boolean firstRun = true;
+	private boolean bAccountDirty = false;
+	private boolean bInstitutionDirty = false;
+	private boolean bParentDirty = false;
 	KMMDroidApp KMMDapp;
 	TextView payeeName;
 	//TextView title;
@@ -77,14 +80,18 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
         
-        // If we are editing then we need to retrieve the payeeId
+        // If we are editing we need to pull the account in now then, or create a new empty account.
         if (Action == ACTION_EDIT)
         {
         	accountId = extras.getString("AccountId");
+        	account = Account.getAccount(this, accountId);
+        	account.logAccount();
         	//find our view and update it for the correct title.
         	//title = (TextView) findViewById(R.id.titleCreateModAccount);
         	//title.setText(R.string.titleEditModAccount);
         }
+        else
+        	account = new Account(this);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
@@ -118,17 +125,11 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 			// See if we are editing and if so pull the data into the forms.
 			if ( Action == ACTION_EDIT )
 			{
-				final String[] dbColumns = { "*" };
-				String frag = "#9999";
-				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountId + frag);
-				u = Uri.parse(u.toString());
-				Cursor c = getBaseContext().getContentResolver().query(u, dbColumns, null, null, null);
-				
-				c.moveToFirst();
 				// Check to see if we are editing one of the currently supported account types. If not tell the user and then return to the
 				// account lists.
-				if( c.getInt(c.getColumnIndex("accountType")) == A_CREDITCARD || c.getInt(c.getColumnIndex("accountType")) == A_LOAN ||
-						c.getInt(c.getColumnIndex("accountType")) == A_INVESTMENT )
+				if(account.getAccountType() == Account.ACCOUNT_CREDITCARD || 
+						account.getAccountType() == Account.ACCOUNT_LOAN ||
+						account.getAccountType() == Account.ACCOUNT_INVESTMENT )
 				{
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -142,64 +143,11 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 					});
 					alert.show();					
 				}
-				
-				// If we returned anything other than just one record we have issues.
-				if ( c.getCount() == 0 )
-				{
-					AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-					alert.setTitle(getString(R.string.error));
-					alert.setMessage(getString(R.string.categoryNotFound));
-
-					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							finish();
-						}
-					});
-					alert.show();
-				}
-				
-				if ( c.getCount() > 1)
-				{
-					AlertDialog.Builder alert = new AlertDialog.Builder(this);
-					
-					alert.setTitle(getString(R.string.error));
-					alert.setMessage(getString(R.string.categoryNotFound));
-
-					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							finish();
-						}
-					});
-					alert.show();
-				}
-				
-				// Get the account the user wants to edit.
-				account = new Account(c, this);
 
 				if( account.getInstitutionId() != null)
 					useInst = true;
 				else
 					useInst = false;
-
-				// We actually need to pull the correct balance information for this account, if query returns null, then opening bal was zero.
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());
-				Cursor bal = getContentResolver().query(u, new String[] { "valueFormatted", "postDate" }, "accountId=? AND splitId='0' AND "
-														+ "(payeeId IS NULL OR payeeId='')", new String[] { accountId }, null);
-				if( bal.getCount() > 0 )
-				{
-					bal.moveToFirst();
-					account.setOpenDate(bal.getString(bal.getColumnIndex("postDate")));
-					account.setOpenBalance(bal.getString(bal.getColumnIndex("valueFormatted")));
-				}
-				else
-					account.setOpenBalance(null);
-				
-				// Close our cursors.
-				bal.close();
-				c.close();    
 			}
 			else
 				account = new Account(this.getBaseContext());
@@ -278,6 +226,14 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
                 }
             }
 
+            // Mark the tab we are moving to as dirty.
+            if(tag.equalsIgnoreCase("institution"))
+            	this.bInstitutionDirty = true;
+            if(tag.equalsIgnoreCase("account"))
+            	this.bAccountDirty = true;
+            if(tag.equalsIgnoreCase("parent"))
+            	this.bParentDirty = true;
+            
             Log.d(TAG, "Changing tabs now...to tab: " + tag);
             mLastTab = newTab;
             ft.commit();
@@ -389,16 +345,23 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 				}
 				break;
 			case R.id.itemsave:	
-				this.onTabChanged("account");
-				
+				//this.onTabChanged("account");
+				Log.d(TAG, "accountTypeString: " + account.getAccountTypeString());
 				// Update the account object to reflect any changes before saving.
 				Fragment fragAcct = getSupportFragmentManager().findFragmentByTag("account");
 				Fragment fragInst = getSupportFragmentManager().findFragmentByTag("institution");
 				Fragment fragParent = getSupportFragmentManager().findFragmentByTag("parent");
 				
-				Bundle bdlAcct = ((CreateAccountAccountActivity) fragAcct).getAccountBundle();
-				Bundle bdlInst = ((CreateAccountInstitutionActivity) fragInst).getInstitutionBunde();
-				Bundle bdlParent = ((CreateAccountParentActivity) fragParent).getParentBundle();
+				Bundle bdlAcct = null;
+				Bundle bdlInst = null;
+				Bundle bdlParent = null;
+				
+				if(bAccountDirty)
+					bdlAcct = ((CreateAccountAccountActivity) fragAcct).getAccountBundle();
+				if(bInstitutionDirty)
+					bdlInst = ((CreateAccountInstitutionActivity) fragInst).getInstitutionBunde();
+				if(bParentDirty)
+					bdlParent = ((CreateAccountParentActivity) fragParent).getParentBundle();
 				
 				fillAccountData(bdlAcct, bdlInst, bdlParent);
 				//account.getDataChanges(this);
@@ -424,9 +387,11 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 					switch(Action)
 					{
 						case ACTION_NEW:
+							account.logAccount();
 							account.SaveAccount(this);
 							break;
 						case ACTION_EDIT:
+							account.logAccount();
 							account.UpdateAccount(this);
 							break;
 					}
@@ -554,8 +519,9 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	public void onSendParentData() 
 	{
 		// Send the Parent data back to the fragment.
-		Fragment Parent = this.getSupportFragmentManager().findFragmentByTag("parent");		
-		((CreateAccountParentActivity) Parent).putParentId(account.getParentId());
+		Fragment Parent = this.getSupportFragmentManager().findFragmentByTag("parent");	
+		if(account.getParentId() != null)
+			((CreateAccountParentActivity) Parent).putParentId(account.getParentId());
 	}
 
 	public void onSendAccountData() 
@@ -576,6 +542,21 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	public void setIsDirty(boolean flag)
 	{
 		this.isDirty = flag;
+	}
+	
+	public void setIsInstitutionDirty(boolean flag)
+	{
+		this.bInstitutionDirty = flag;
+	}
+	
+	public void setIsAccountDirty(boolean flag)
+	{
+		this.bAccountDirty = flag;
+	}
+	
+	public void setIsParentDirty(boolean flag)
+	{
+		this.bParentDirty = flag;
 	}
 	
 	public boolean getIsDirty()
@@ -665,6 +646,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 		{
 			edit.putString("AccountName", ((CreateAccountAccountActivity) tab).accountName.getText().toString());
 			edit.putInt("AccountType", ((CreateAccountAccountActivity) tab).getAccountType());
+			edit.putString("AccountTypeString", ((CreateAccountAccountActivity) tab).getAccountTypeString());
 			edit.putString("CurrencyId", ((CreateAccountAccountActivity) tab).getCurrency());
 			edit.putString("OpenDate", ((CreateAccountAccountActivity) tab).openDate.getText().toString());
 			edit.putString("OpenBalance", ((CreateAccountAccountActivity) tab).openBalance.getText().toString());
@@ -693,21 +675,28 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	private void fillAccountData(Bundle bdlAccount, Bundle bdlInstitution, Bundle bdlParent)
 	{
 		// Populate the account information from the supplied bundle
-		account.setIsPreferred(bdlAccount.getBoolean("preferred"));
-		account.setAccountName(bdlAccount.getString("name"));
-		account.setOpenDate(bdlAccount.getString("openDate"));
-		account.setOpenBalance(bdlAccount.getString("openBalance"));
-		account.setCurrency(bdlAccount.getString("currencySelected"));
-		account.setAccountType(bdlAccount.getInt("intTypeSelected"));
-		account.setAccountType(bdlAccount.getString("strTypeSelected"));
+		if(bdlAccount != null)
+		{
+			account.setIsPreferred(bdlAccount.getBoolean("preferred"));
+			account.setAccountName(bdlAccount.getString("name"));
+			account.setOpenDate(bdlAccount.getString("openDate"));
+			account.setOpenBalance(bdlAccount.getString("openBalance"));
+			account.setCurrency(bdlAccount.getString("currencySelected"));
+			account.setAccountType(bdlAccount.getInt("intTypeSelected"));
+			account.setAccountType(bdlAccount.getString("accountTypeString"));
+		}
 		
 		// Populate the Institution information from the supplied bundle
-		account.setInstitutionId(bdlInstitution.getString("institutionId"));
-		account.setIBAN(bdlInstitution.getString("strIBAN"));
-		account.setAccountNumber(bdlInstitution.getString("strAccountNumber"));
+		if(bdlInstitution != null)
+		{
+			account.setInstitutionId(bdlInstitution.getString("institutionId"));
+			account.setIBAN(bdlInstitution.getString("strIBAN"));
+			account.setAccountNumber(bdlInstitution.getString("strAccountNumber"));
+		}
 		
 		// Populate the Parent information from the supplied bundle
-		account.setParentId(bdlParent.getString("parentId"));
+		if(bdlParent != null)
+			account.setParentId(bdlParent.getString("parentId"));
 	}
 	// *****************************************************************************************************************************
 	// ********************************************** Helper Classes ***************************************************************

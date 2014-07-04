@@ -115,7 +115,8 @@ LoaderManager.LoaderCallbacks<Cursor>
 			{
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);			
 				strParentId = c.getString(0);
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				Log.d(TAG, "parentId: " + strParentId);
+				((CreateModifyAccountActivity) ParentActivity).setIsParentDirty(true);
 			}
 			else
 				firstRun = false;
@@ -143,6 +144,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 		
 		// Set the initial value of strParentId
 		Cursor c = (Cursor) adapter.getItem(0);
+		c.moveToFirst();
 		strParentId = c.getString(c.getColumnIndex("_id"));
 		
 		// Notify the ParentActivity to send us the Parent data.

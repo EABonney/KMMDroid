@@ -304,9 +304,6 @@ public class WelcomeActivity extends FragmentActivity
 				break;
 			case R.id.itemRecent:
 				break;
-			case R.id.itemPrefs:
-				startActivity(new Intent(this, PrefsActivity.class));
-				break;
 			case R.id.syncDropbox:
 				i = new Intent(this, KMMDDropboxService.class);
 				i.putExtra("cloudService", KMMDDropboxService.CLOUD_DROPBOX);

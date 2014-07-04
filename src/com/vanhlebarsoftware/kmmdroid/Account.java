@@ -658,6 +658,7 @@ public class Account implements Parcelable
 		valuesAccount.put("openingDate", getOpenDate());
 		valuesAccount.put("accountNumber", getAccountNumber());
 		valuesAccount.put("accountType", getAccountType());
+		Log.d(TAG, "accountTypeString: " + getAccountTypeString());
 		valuesAccount.put("accountTypeString", getAccountTypeString());
 		valuesAccount.put("accountName", getName());
 		valuesAccount.put("description", "");
@@ -1026,6 +1027,42 @@ public class Account implements Parcelable
 		this.id = newId;
 	}
 
+	// Get an Account from a given AccountId
+	public static Account getAccount(Context context, String id)
+	{
+		Account account;
+		
+		final String[] dbColumns = { "*" };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, id + frag);
+		u = Uri.parse(u.toString());
+		Cursor c = context.getContentResolver().query(u, dbColumns, null, null, null);
+		
+		c.moveToFirst();
+		// Get the account the user wants to edit.
+		account = new Account(c, context);
+
+		// We actually need to pull the correct balance information for this account, if query returns null, then opening bal was zero.
+		frag = "#9999";
+		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor bal = context.getContentResolver().query(u, new String[] { "valueFormatted", "postDate" }, "accountId=? AND splitId='0' AND "
+												+ "(payeeId IS NULL OR payeeId='')", new String[] { id }, null);
+		if( bal.getCount() > 0 )
+		{
+			bal.moveToFirst();
+			account.setOpenDate(bal.getString(bal.getColumnIndex("postDate")));
+			account.setOpenBalance(bal.getString(bal.getColumnIndex("valueFormatted")));
+		}
+		else
+			account.setOpenBalance("0.00");
+		
+		// close our cursors
+		c.close();
+		bal.close();
+		
+		return account;
+	}
 	/***********************************************************************************************
 	 * Required methods to make Account parcelable to pass between activities
 	 * 
@@ -1061,5 +1098,24 @@ public class Account implements Parcelable
 		dest.writeValue(isParent);
 		dest.writeValue(isClosed);
 		dest.writeValue(isPreferred);
+	}
+	
+	public void logAccount()
+	{
+		Log.d(TAG, "id: " + id);
+		Log.d(TAG, "parentId: " + parentId);
+		Log.d(TAG, "accountName: " + accountName);
+		Log.d(TAG, "balance: " + balance);
+		Log.d(TAG, "accountTypeString: " + accountTypeString);
+		Log.d(TAG, "institutionId: " + institutionId);
+		Log.d(TAG, "accountNumber: " + accountNumber);
+		Log.d(TAG, "IBAN: " + IBAN);
+		Log.d(TAG, "openDate: " + openDate);
+		Log.d(TAG, "currencyId: " + currencyId);
+		Log.d(TAG, "notes: " + notes);
+		Log.d(TAG, "transactionCount: " + String.valueOf(transactionCount));
+		Log.d(TAG, "isParent: " + String.valueOf(isParent));
+		Log.d(TAG, "isClosed: " + String.valueOf(isClosed));
+		Log.d(TAG, "isPreferred: " + String.valueOf(isPreferred));
 	}
 }
