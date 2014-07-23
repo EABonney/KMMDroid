@@ -154,13 +154,14 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 		private Cursor executeQuery()
 		{
 			// Run the query against the Content provider to pull ALL "preferred" accounts
-			String[] projection = { "id", "accountName", "balanceFormatted", "kvpId", "kvpData" };
+			String[] projection = { "id", "accountName", "accountType", "balanceFormatted", "kvpId", "kvpData" };
 			String selection = "kvpKey='PreferredAccount' AND kvpData='Yes' AND kvpId=id";
 			String frag = "#" + String.valueOf(widgetId);
 			Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_PREFERREDACCOUNTS_URI, frag);
 			u = Uri.parse(u.toString());
+			String orderBy = "accountType, accountName ASC";
 			
-			return context.getContentResolver().query(u, projection, selection, null, null);
+			return context.getContentResolver().query(u, projection, selection, null, orderBy);
 
 		}
 		

@@ -89,7 +89,7 @@ public class LedgerActivity extends FragmentActivity implements
         lastyear = (Calendar) today.clone();
         strLastYear = getDatabaseFormattedString(lastyear);
         
-		String selection[] = { AccountID, strToday, strLastYear };
+		String selection[] = { AccountID, strToday, strLastYear, AccountID, strToday, strLastYear };
 		selectionArgs = selection;
 		Bundle bundle = new Bundle();
 		bundle.putStringArray("selectionArgs", selectionArgs);

@@ -240,27 +240,44 @@ public class KMMDProvider extends ContentProvider
 		
 		// See which content uri is requested.
 		int match = sURIMatcher.match(uri);
+		String selArgs[] = { null };
 		switch(match)
 		{
 			case ACCOUNTS:
 				dbTable = "kmmAccounts";
 				break;
 			case ACCOUNTS_ID:
+				dbTable = "kmmAccounts";
+				dbSelection = "accountId=?";
+				selArgs[0] = getId(uri);
+				dbSelectionArgs = selArgs;
 				break;
 			case SCHEDULES:
 				dbTable = "kmmSchedules";
 				break;
 			case SCHEDULES_ID:
+				dbTable = "kmmSchedules";
+				dbSelection = "scheduleId=?";
+				selArgs[0] = getId(uri);
+				dbSelectionArgs = selArgs;			
 				break;
 			case SPLITS:
 				dbTable = "kmmSplits";
 				break;
 			case SPLITS_ID:
+				dbTable = "kmmSplits";
+				dbSelection = "splitsId=?";
+				selArgs[0] = getId(uri);
+				dbSelectionArgs = selArgs;
 				break;
 			case TRANSACTIONS:
 				dbTable = "kmmTransactions";
 				break;
 			case TRANSACTIONS_ID:
+				dbTable = "kmmTransactions";
+				dbSelection = "transactionId=?";
+				selArgs[0] = getId(uri);
+				dbSelectionArgs = selArgs;
 				break;
 			case FILEINFO:
 				dbTable = "kmmFileInfo";
@@ -554,6 +571,13 @@ public class KMMDProvider extends ContentProvider
 				dbSelection = selection;
 				dbOrderBy = sortOrder;
 				dbSelectionArgs = selectionArgs;
+				Log.d(TAG, "dbTable:" + dbTable);
+				for(int j=0; j<dbColumns.length; j++)
+					Log.d(TAG, "dbColumns[" + j + ":] " + dbColumns[j]);
+				Log.d(TAG, "dbSelection: " + dbSelection);
+				for(int i=0; i<dbSelectionArgs.length; i++)
+					Log.d(TAG, "dbSelectionArgs[" + i + "]: " + dbSelectionArgs[i]);
+				Log.d(TAG, "dbOrderBy: " + dbOrderBy);
 				break;
 			case KVPS:
 				dbTable = "kmmKeyValuePairs";

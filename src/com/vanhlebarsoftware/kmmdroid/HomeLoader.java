@@ -232,6 +232,8 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 			c.moveToNext();
 			//acc.close();
 		}
+		
+		// Close our cursor.
 		c.close();
 		
 		// Find any investment accounts and create their "current" balances.

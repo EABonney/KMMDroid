@@ -228,6 +228,7 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 			acc.close();
 		}
 		
+		// Close our cursor.
 		c.close();
 
 		return accounts;
@@ -266,6 +267,10 @@ public class CategoriesLoader extends AsyncTaskLoader<List<Account>>
 					 isParent(inc.getString(inc.getColumnIndex("id"))), context));
 			inc.moveToNext();			
 		}
+		
+		// Close our cursors
+		exp.close();
+		inc.close();
 		
 		return categories;
     }

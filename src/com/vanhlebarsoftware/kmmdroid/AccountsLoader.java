@@ -229,6 +229,7 @@ public class AccountsLoader extends AsyncTaskLoader<List<Account>>
 			acc.close();
 		}
 		
+		// Close our cursor.
 		c.close();
 
 		return accounts;

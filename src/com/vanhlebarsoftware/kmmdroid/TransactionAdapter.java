@@ -90,7 +90,7 @@ public class TransactionAdapter extends ArrayAdapter<Transaction> implements Sec
 				Balance.setTypeface(Typeface.DEFAULT);
 				Balance.setTextColor(Color.BLACK);	
 				DatePaid.setText("");
-				Payee.setText(item.splits.get(0).getPayeeName());
+				Payee.setText(getContext().getString(R.string.loadMoreRow));
 				Amount.setText("");
 				Balance.setText("");
 			}

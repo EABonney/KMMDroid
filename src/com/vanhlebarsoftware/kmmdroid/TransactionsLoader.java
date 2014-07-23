@@ -37,6 +37,9 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 			// We need to get the balance of this account.
 			selectionArgs = this.mBundle.getStringArray("selectionArgs");
 			showAll = this.mBundle.getBoolean("showAll", false);
+			Log.d(TAG, "showAll: " + showAll);
+			for(int i=0; i<selectionArgs.length;i++)
+				Log.d(TAG, "selectionArgs[" + i + "]: " + selectionArgs[i]);
 		}
 	}
 
@@ -201,6 +204,7 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 		c.moveToFirst();
 		// Make sure Transactions are empty.
 		transactions.clear();
+		Log.d(TAG, "Transactions returned: " + c.getCount());
 		
 		for(int i=0; i < c.getCount(); i++)
 		{
@@ -233,6 +237,9 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 			Transaction loadMore = new Transaction("0.00", null, null, "999999", "9999", context);
 			transactions.add(0, loadMore);
 		}
+		
+		// Close our cursor.
+		c.close();
 		
 		return transactions;
     }
