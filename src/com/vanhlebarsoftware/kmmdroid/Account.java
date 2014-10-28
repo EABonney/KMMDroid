@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import android.content.ContentValues;
@@ -53,6 +54,7 @@ public class Account implements Parcelable
 	private boolean isParent;
 	private boolean isClosed;
 	private boolean isPreferred;
+	private List<Price> prices;
 	private Context context;
 	
 
@@ -75,6 +77,7 @@ public class Account implements Parcelable
 		this.transactionCount = 0;
 		this.notes = null;
 		this.context = c;
+		this.prices = new ArrayList<Price>();
 	}
 	
 	Account(String id, String name, String bal, String acctTypeStr, int acctType, boolean isP, Context c)
@@ -96,6 +99,7 @@ public class Account implements Parcelable
 		this.transactionCount = 0;
 		this.notes = null;
 		this.context = c;
+		this.prices = new ArrayList<Price>();
 	}
 	
 	Account(Cursor cur, Context c)
@@ -170,7 +174,9 @@ public class Account implements Parcelable
 		this.isPreferred = getKVPIsPreferred(kvp);
 		kvp.close();
 		
-		this.isParent = false;		
+		this.isParent = false;	
+		
+		this.prices = new ArrayList<Price>();
 	}
 
 	public String getName()
@@ -265,6 +271,59 @@ public class Account implements Parcelable
 		return this.notes;
 	}
 	
+	public ArrayList<Account> getChildren()
+	{
+		ArrayList<Account> children = new ArrayList<Account>();
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, id + frag);
+		u = Uri.parse(u.toString());
+		Cursor c = context.getContentResolver().query(u, new String[] {"id"}, "parentId=?", new String[] { id }, null);
+		
+		if(c.getCount() > 0)
+		{
+			for(int i=0; i < c.getCount(); i++)
+			{
+				c.moveToPosition(i);
+				children.add(new Account(c, this.context));
+			}
+		}
+		else
+			return null;
+		
+		return children;
+	}
+	
+	public String getStockValue()
+	{
+		Long prValue = Account.convertBalance(this.prices.get(0).getPrice());
+		Long prNumShares = Transaction.convertToPennies(this.getBalance());
+		return Transaction.convertToDollars((prValue * prNumShares), true, true);
+	}
+	
+	public String getStockCost()
+	{
+		// Get all the splits for this account.
+		String[] projection = { "value" };
+		String selection = "accountId=?";
+		String[] selArgs = { this.id };
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor splits = this.context.getContentResolver().query(u, projection, selection, selArgs, null);
+		
+		Long cost = Long.valueOf(0);
+		for(int i=0; i<splits.getCount(); i++)
+		{
+			splits.moveToPosition(i);
+			Log.d(TAG, "cost: " + cost);
+			cost = cost + Account.convertBalance(splits.getString(splits.getColumnIndexOrThrow("value")));
+		}
+		
+		splits.close();
+		Log.d(TAG, "cost before convertToDollars: " + cost);
+		return Transaction.convertToDollars(cost, true, true);
+	}
+	
 	public void setAccountName(String strName)
 	{
 		this.accountName = strName;
@@ -340,6 +399,14 @@ public class Account implements Parcelable
 		this.notes = strNote;
 	}
 	
+	public void setPrices(Cursor p)
+	{
+		for(int i=0; i<p.getCount(); i++)
+		{
+			this.prices.add(new Price(p, i, null, this.context));
+		}
+	}
+	
 	static public void updateAccount(Context context, String accountId, String transValue, int nChange)
 	{
 		String frag = "#9999";
@@ -360,7 +427,7 @@ public class Account implements Parcelable
 		int Count = c.getInt(1) + nChange;
 		
 		ContentValues values = new ContentValues();
-		values.put("balanceFormatted", Transaction.convertToDollars(newBalance, false));
+		values.put("balanceFormatted", Transaction.convertToDollars(newBalance, false, false));
 		values.put("balance", createBalance(newBalance));
 		values.put("transactionCount", Count);
 		
@@ -434,7 +501,7 @@ public class Account implements Parcelable
 			balance = balance - Transaction.convertToPennies(c.getString(0));
 		}
 		
-		newBalanceFormatted = Transaction.convertToDollars(balance, true);
+		newBalanceFormatted = Transaction.convertToDollars(balance, true, false);
 		
 		return newBalanceFormatted;
 	}
@@ -450,7 +517,7 @@ public class Account implements Parcelable
 				balance = balance - Transaction.convertToPennies(splits.getString(0));
 		}
 		
-		newBalanceFormatted = Transaction.convertToDollars(balance, true);
+		newBalanceFormatted = Transaction.convertToDollars(balance, true, false);
 		
 		return newBalanceFormatted;
 	}
@@ -770,11 +837,11 @@ public class Account implements Parcelable
 		ArrayList<Split> splits = new ArrayList<Split>();
 		String value = null, formatted = null;
 		value = Account.createBalance(Transaction.convertToPennies(openBal));
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+		formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 		splits.add(new Split(id, "N", 0, "", "", "", "0", value, formatted, value, formatted,
 				 "", "", "", acctId, "", openDate, "", "9999", this.context));
 		value = Account.createBalance(Transaction.convertToPennies(openBal) * -1);
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+		formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 		splits.add(new Split(id, "N", 1, "", "", "", "0", value, formatted, value, formatted,
 				 "", "", "", OpeningBalancesId, "", openDate, "", "9999", this.context));		
 		
@@ -885,7 +952,7 @@ public class Account implements Parcelable
 						new String[] { splits.getString(splits.getColumnIndex("transactionId")), acctId });
 				cv.clear();
 				// Now adjust the other side of the transaction, just using the negative.
-				String revBal = Transaction.convertToDollars(longOpenBal * -1, false);
+				String revBal = Transaction.convertToDollars(longOpenBal * -1, false, false);
 				cv.put("value", createBalance(revBal));
 				cv.put("valueFormatted", revBal);
 				cv.put("shares", createBalance(revBal));
@@ -964,10 +1031,10 @@ public class Account implements Parcelable
 			bal.moveToFirst();
 			longOldOpenBal = Transaction.convertToPennies(bal.getString(bal.getColumnIndex("valueFormatted")));
 			longDifference = longNewOpenBal - longOldOpenBal;
-			newBal = Transaction.convertToDollars(longOldAcctBal + longDifference, false);
+			newBal = Transaction.convertToDollars(longOldAcctBal + longDifference, false, false);
 		}
 		else
-			newBal = Transaction.convertToDollars(longOldAcctBal + longNewOpenBal, false);
+			newBal = Transaction.convertToDollars(longOldAcctBal + longNewOpenBal, false, false);
 		
 		// Clean up our cursors.
 		acct.close();

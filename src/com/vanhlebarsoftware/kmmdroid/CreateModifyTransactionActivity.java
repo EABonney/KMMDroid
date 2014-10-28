@@ -471,7 +471,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
     			// bank on.
     			if( splitsTotal < 0 )
     				splitsTotal = splitsTotal * -1;
-    			editAmount.setText(Transaction.convertToDollars((splitsTotal), true));
+    			editAmount.setText(Transaction.convertToDollars((splitsTotal), true, false));
     			editAmount.setFocusable(false);
 			
     			// We need to set up the display of split transaction and make it so the user can't use the category select button.
@@ -689,7 +689,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 				anySplits = true;
 			}
 		
-			float amount = Float.valueOf(Transaction.convertToDollars(Account.convertBalance(transaction.splits.get(0).getValue()), false));
+			float amount = Float.valueOf(Transaction.convertToDollars(Account.convertBalance(transaction.splits.get(0).getValue()), false, false));
 			if( amount < 0 )
 			{
 				intTransType = Transaction.WITHDRAW;

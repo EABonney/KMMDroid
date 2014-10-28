@@ -41,6 +41,7 @@
     <string name="titlePayeeTelephone">Telephone: </string>
     <string name="titlePayeeEmail">Email: </string>
     <string name="titlePayeeNotes">Notes: </string>
+    <string name="titleInvestmentActivity">Investments</string>
     <string name="payeeMatching">Transaction Matching</string>
     <string name="payeeNoMatching">No matching</string>
     <string name="payeeMatchonName">Match on Payee name</string>

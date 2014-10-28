@@ -243,7 +243,7 @@ public class HomeLoader extends AsyncTaskLoader<List<Account>>
 			if( isInvestment(accounts.get(i)) )
 			{
 				Long bal = getInvestmentBalance(accounts.get(i));
-				accounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true));
+				accounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true, false));
 			}
 		}
 		

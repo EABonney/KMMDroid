@@ -285,7 +285,7 @@ public class SchedulesActivity extends FragmentActivity implements
 			txtDesc.setText(this.mCursor.getString(1));
 			txtOccurence.setText(this.mCursor.getString(2));
 			txtNextPaymentDue.setText(this.mCursor.getString(3));
-			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.mCursor.getString(6)), true));
+			txtAmount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.mCursor.getString(6)), true, false));
 			txtPayee.setText(this.mCursor.getString(7));
 
 			return view;

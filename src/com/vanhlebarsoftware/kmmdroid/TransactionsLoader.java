@@ -208,7 +208,7 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 		
 		for(int i=0; i < c.getCount(); i++)
 		{
-			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(c.getString(c.getColumnIndex("value"))), true),
+			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(c.getString(c.getColumnIndex("value"))), true, false),
 									c.getString(c.getColumnIndex("postDate")),
 									c.getString(c.getColumnIndex("memo")), c.getString(c.getColumnIndex("_id")), "9999", context);
 			transactions.add(trans);

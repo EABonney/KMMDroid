@@ -121,8 +121,8 @@ public class TransactionAdapter extends ArrayAdapter<Transaction> implements Sec
 			
 				DatePaid.setText(item.formatDateString());
 				Payee.setText(item.splits.get(0).getPayeeName());
-				Amount.setText(Transaction.convertToDollars(item.getAmount(), true));
-				Balance.setText(Transaction.convertToDollars(item.getBalance(), true));
+				Amount.setText(Transaction.convertToDollars(item.getAmount(), true, false));
+				Balance.setText(Transaction.convertToDollars(item.getBalance(), true, false));
 			}
 		}
 		else

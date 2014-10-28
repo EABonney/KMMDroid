@@ -106,7 +106,7 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 			//rv.setTextViewText(R.id.hrAccountName, c.getString(c.getColumnIndex("accountName")));
 			rv.setTextViewText(R.id.hrAccountName, acct.getName());
 			//String value = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(c.getColumnIndex("balanceFormatted"))), true);
-			String value = Transaction.convertToDollars(Transaction.convertToPennies(acct.getBalance()), true);
+			String value = Transaction.convertToDollars(Transaction.convertToPennies(acct.getBalance()), true, false);
 			//rv.setTextViewText(R.id.hrAccountBalance, value);
 			rv.setTextViewText(R.id.hrAccountBalance, value);
 			
@@ -194,7 +194,7 @@ public class WidgetPreferredAccountsRVService extends RemoteViewsService
 				if( isInvestment(preferredAccounts.get(i)) )
 				{
 					Long bal = getInvestmentBalance(preferredAccounts.get(i));
-					preferredAccounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true));
+					preferredAccounts.get(i).setOpenBalance(Transaction.convertToDollars(bal, true, false));
 				}
 			}
 			

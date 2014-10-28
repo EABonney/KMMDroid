@@ -263,9 +263,15 @@ public class Transaction implements Parcelable
 	* Adapted from code found at currency : Java Glossary
 	* website: http://mindprod.com/jgloss/currency.html
 	********************************************************************************************/
-	static public String convertToDollars(long pennies, boolean formatted)
+	static public String convertToDollars(long pennies, boolean formatted, boolean isStock)
 	{
 		DecimalFormat decimal = new DecimalFormat();
+		long denominator;
+		
+		if(isStock)
+			denominator = 100;
+		else
+			denominator = 100;
 		
 		boolean negative;
 		if ( pennies < 0 )
@@ -282,9 +288,13 @@ public class Transaction implements Parcelable
 		// than the symbol between dollars and cents.
 		String strNumber = null;
 		if(formatted)
-			strNumber = String.format("%,d", (pennies / 100));
+			strNumber = String.format("%,d", (pennies / denominator));
 		else
-			strNumber = String.format("%d", (pennies / 100));
+			strNumber = String.format("%d", (pennies / denominator));
+			
+		if(isStock)
+			Log.d(TAG, "strNumber before switch: " + strNumber);
+		
 		int len = s.length();
 		switch ( len )
 		{
@@ -304,6 +314,13 @@ public class Transaction implements Parcelable
 		else if( negative && !formatted)
 			strNumber = "-" + strNumber;
 
+		if(isStock)
+		{
+			Log.d(TAG, "s: " + s);
+			Log.d(TAG, "pennies: " + pennies);
+			Log.d(TAG, "denominator: " + denominator);
+			Log.d(TAG, "strNumber: " + strNumber);
+		}
 		return strNumber;
 	}
 	
@@ -524,7 +541,7 @@ public class Transaction implements Parcelable
 				default:
 					break;
 			}
-			formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+			formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 			this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", cont.getTranAction(),
 									String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
 									cont.getAccountUsed(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
@@ -551,7 +568,7 @@ public class Transaction implements Parcelable
 					default:
 						break;
 				}
-				formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+				formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 				this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", cont.getTranAction(),
 					String.valueOf(cont.getTransactionStatus()), value, formatted, value, formatted, "", "", this.strMemo,
 					catFrag.getCategoryId(), cont.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
@@ -599,7 +616,7 @@ public class Transaction implements Parcelable
 				default:
 					break;
 			}
-			formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+			formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 			this.splits.add(new Split(this.strTransId, "N", 0, payeeFrag.getPayeeId(), "", pmtInfo.getScheduleTypeString(),
 									String.valueOf(pmtInfo.getScheduleStatus()), value, formatted, value, formatted, "", "", this.strMemo,
 									pmtInfo.getAccountTypeId(), pmtInfo.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,
@@ -626,7 +643,7 @@ public class Transaction implements Parcelable
 					default:
 						break;
 				}
-				formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+				formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 				this.splits.add(new Split(this.strTransId, "N", 1, payeeFrag.getPayeeId(), "", pmtInfo.getScheduleTypeString(),
 					String.valueOf(pmtInfo.getScheduleStatus()), value, formatted, value, formatted, "", "", this.strMemo,
 					catFrag.getCategoryId(), pmtInfo.getCheckNumber(), padDate(formatDateString()), this.strBankId, this.widgetId,

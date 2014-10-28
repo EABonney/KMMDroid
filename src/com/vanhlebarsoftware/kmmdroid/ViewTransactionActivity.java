@@ -234,7 +234,7 @@ public class ViewTransactionActivity extends FragmentActivity
 				return false;
 			
 			// Format the Amount properly.
-			String str = Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true);
+			String str = Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true, false);
 			((TextView) view).setText(str);
 			
 			return true;

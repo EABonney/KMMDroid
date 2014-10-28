@@ -276,7 +276,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 			date.setText(this.mCursor.getString(this.mCursor.getColumnIndex("postDate")));
 			account.setText(this.mCursor.getString(this.mCursor.getColumnIndex("accountName")));
 			details.setText(this.mCursor.getString(this.mCursor.getColumnIndex("memo")));
-			amount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.mCursor.getString(this.mCursor.getColumnIndex("valueFormatted"))), true));
+			amount.setText(Transaction.convertToDollars(Transaction.convertToPennies(this.mCursor.getString(this.mCursor.getColumnIndex("valueFormatted"))), true, false));
 			
 			return view;
 		}

@@ -918,7 +918,7 @@ public class SchedulePaymentInfoActivity extends Fragment implements
 	{
 		DecimalFormat decimal = new DecimalFormat();
 		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
-		return Transaction.convertToDollars(Transaction.convertToPennies(this.editAmount.getText().toString().replace('.', decChar)), false);
+		return Transaction.convertToDollars(Transaction.convertToPennies(this.editAmount.getText().toString().replace('.', decChar)), false, false);
 	}
 	
 	public void setScheduleAmount(String amount)

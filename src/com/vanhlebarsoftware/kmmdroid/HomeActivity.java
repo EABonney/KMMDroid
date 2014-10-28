@@ -194,11 +194,23 @@ public class HomeActivity extends FragmentActivity /*implements
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	Account acct = adapterAccounts.getItem(position); //accounts.get(position);
-	    	Intent i = new Intent(getBaseContext(), LedgerActivity.class);
-	    	i.putExtra("AccountId", acct.getId());
-	    	i.putExtra("AccountName", acct.getName());
-	    	i.putExtra("Balance", acct.getBalance());
-	    	startActivity(i);
+	    	
+	    	// See if we have an invesetment account or a non-investment account.
+	    	if(acct.getAccountType() != Account.ACCOUNT_INVESTMENT )
+	    	{
+	    		Intent i = new Intent(getBaseContext(), LedgerActivity.class);
+	    		i.putExtra("AccountId", acct.getId());
+	    		i.putExtra("AccountName", acct.getName());
+	    		i.putExtra("Balance", acct.getBalance());
+	    		startActivity(i);
+	    	}
+	    	else
+	    	{
+	    		Intent i = new Intent(getBaseContext(), InvestmentActivity.class);
+	    		i.putExtra("AccountId", acct.getId());
+	    		i.putExtra("AccountName", acct.getName());
+	    		startActivity(i);
+	    	}
 	    }
 	};
 	

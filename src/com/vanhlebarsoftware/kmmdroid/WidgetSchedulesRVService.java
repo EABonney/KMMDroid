@@ -121,8 +121,8 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 			// Get our values from the cursor here
 			rv.setTextViewText(R.id.scheduleDate, FormatDate(schedule.getDueDate()));
 			rv.setTextViewText(R.id.scheduleName, schedule.getDescription());
-			rv.setTextViewText(R.id.scheduleAmount, Transaction.convertToDollars(schedule.getAmount(), true));
-			rv.setTextViewText(R.id.BalanceAmount, Transaction.convertToDollars(schedule.getBalance(), true));
+			rv.setTextViewText(R.id.scheduleAmount, Transaction.convertToDollars(schedule.getAmount(), true, false));
+			rv.setTextViewText(R.id.BalanceAmount, Transaction.convertToDollars(schedule.getBalance(), true, false));
 			
 			// Create the fill-in Intent that adds the new transaction info for the current item to the template Intent.
 			Intent fillInIntent = new Intent();
@@ -181,7 +181,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 
 			Cursor cur = getContentResolver().query(u, null, null, null, null);
 			cur.moveToFirst();
-			strBal = Transaction.convertToDollars(Transaction.convertToPennies(cur.getString(cur.getColumnIndexOrThrow("balanceFormatted"))), true);
+			strBal = Transaction.convertToDollars(Transaction.convertToPennies(cur.getString(cur.getColumnIndexOrThrow("balanceFormatted"))), true, false);
 			strAccountName = cur.getString(cur.getColumnIndexOrThrow("accountName"));
 			cur.close();
 			
@@ -259,7 +259,7 @@ public class WidgetSchedulesRVService extends RemoteViewsService
 
 			Cursor cur = getContentResolver().query(u, null, null, null, null);
 			cur.moveToFirst();
-			strBal = Transaction.convertToDollars(Transaction.convertToPennies(cur.getString(cur.getColumnIndexOrThrow("balanceFormatted"))), true);
+			strBal = Transaction.convertToDollars(Transaction.convertToPennies(cur.getString(cur.getColumnIndexOrThrow("balanceFormatted"))), true, false);
 			strAccountName = cur.getString(cur.getColumnIndexOrThrow("accountName"));
 			cur.close();
 						

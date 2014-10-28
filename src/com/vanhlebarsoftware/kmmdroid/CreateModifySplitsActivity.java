@@ -140,7 +140,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
         if( transaction.getAmount() == 0 )
         	strTranAmount = "0.00";
         else
-        	strTranAmount = Transaction.convertToDollars(transaction.getAmount(), false);
+        	strTranAmount = Transaction.convertToDollars(transaction.getAmount(), false, false);
         updateTotals(false);
         
         //Initialize our array list.
@@ -175,7 +175,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 		{
 			insertNewRow(getCategoryName(transaction.splits.get(1).getAccountId()), 
 										 transaction.splits.get(1).getMemo(),
-										 Transaction.convertToDollars(Account.convertBalance(transaction.splits.get(1).getValue()), true));
+										 Transaction.convertToDollars(Account.convertBalance(transaction.splits.get(1).getValue()), true, false));
 			AccountIdList.add(transaction.splits.get(1).getAccountId());
 		}
 		else
@@ -314,7 +314,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 				
 				long amount = updateTotals(false);
 				final long newTotal = updateTotals(true);
-				strTranAmount = Transaction.convertToDollars(newTotal, true);
+				strTranAmount = Transaction.convertToDollars(newTotal, true, false);
 				if( amount != 0 )
 				{
 					AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
@@ -583,8 +583,8 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 			lUnassigned = lTotal - lSumofSplits;
 		
 		// Finally append the new values to the TextViews.
-		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits, true));
-		txtUnassigned.setText(strLabelUnassigned + " " + Transaction.convertToDollars(lUnassigned, true));
+		txtSumSplits.setText(strLabelSumofSplits + " " + Transaction.convertToDollars(lSumofSplits, true, false));
+		txtUnassigned.setText(strLabelUnassigned + " " + Transaction.convertToDollars(lUnassigned, true, false));
 
 		
 		// If we are finished with our editing and we are out of balance we need to return the new sum of the transaction.
@@ -619,7 +619,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 			default:
 				break;
 		}
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
+		formatted = Transaction.convertToDollars(Account.convertBalance(value), false, false);
 		transaction.splits.add(new Split(transaction.getTransId(), "N", 0, transaction.origSplits.get(0).getPayeeId(), "", actions[this.nTransType],
 									transaction.origSplits.get(0).getReconcileFlag(), value, formatted, value, formatted, "", "", transaction.getMemo(),
 									transaction.origSplits.get(0).getAccountId(), transaction.origSplits.get(0).getCheckNumber(),
@@ -638,7 +638,7 @@ public class CreateModifySplitsActivity extends FragmentActivity implements
 			String strAmount = e.getText().toString().replace('.', decChar);
 
 			// We need to strip out an formatting the user put in except the "decimal" indicator.
-			String strFormattedAmt = Transaction.convertToDollars(Transaction.convertToPennies(strAmount), false);
+			String strFormattedAmt = Transaction.convertToDollars(Transaction.convertToPennies(strAmount), false, false);
 			// Need to take the user's amount and create the reduced fraction.
 			String fraction = Account.createBalance(Transaction.convertToPennies(strAmount));
 			// Create the split in the Splits Array.

@@ -111,7 +111,7 @@ public class KMMDExpandableListAdapterSchedules extends BaseExpandableListAdapte
     	TextView tvAmount = (TextView) convertView.findViewById(R.id.scheduleAmount);
     	tvDate.setText(schedule.formatDateString());
         tvName.setText(schedule.getDescription());
-        tvAmount.setText(String.format(Transaction.convertToDollars(schedule.getAmount(), true)));
+        tvAmount.setText(String.format(Transaction.convertToDollars(schedule.getAmount(), true, false)));
         return convertView;
     }
 

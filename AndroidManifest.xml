@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.7.1.11" >
+      android:versionName="0.7.1.12" >
     <uses-sdk 
         android:minSdkVersion="14"
         android:targetSdkVersion="16" />
@@ -236,6 +236,12 @@
 		<activity android:name=".SchedulesNotificationsActivity"
 		    	  android:label="@string/titleSchedulesNotifications"
         		  android:uiOptions="splitActionBarWhenNarrow"
+		    	  android:screenOrientation="portrait">
+		</activity>
+		
+		<activity android:name=".InvestmentActivity"
+		    	  android:label="@string/titleInvestmentActivity"
+		    	  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
