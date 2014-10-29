@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,24 +27,25 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class HomeActivity extends FragmentActivity implements
-						  LoaderManager.LoaderCallbacks<List<Account>>
+public class HomeActivity extends FragmentActivity /*implements
+						  LoaderManager.LoaderCallbacks<List<Account>>*/
 {
 
 	private static final String TAG = HomeActivity.class.getSimpleName();
 	private static final int HOMEACCOUNTS_LOADER = 0x01;
+	private String[] mDrawerListItems = {null, null, null, null, null, null};
+	private CharSequence mDrawerTitle;
+	private CharSequence mTitle;
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	private ActionBarDrawerToggle mDrawerToggle;
 	KMMDroidApp KMMDapp;
-	ImageButton btnHome;
-	ImageButton btnAccounts;
-	ImageButton btnCategories;
-	ImageButton btnInstitutions;
-	ImageButton btnPayees;
-	ImageButton btnSchedules;
-	ImageButton btnReports;
-	LinearLayout navBar;
+	//LinearLayout navBar;
 	ListView listAccounts;
 	AccountsAdapter adapterAccounts;
+	HomeLoaderCallbacks homeloaderCallback;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -54,68 +58,52 @@ public class HomeActivity extends FragmentActivity implements
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
         
+        // Set the titles of the Drawer and the ActionBar
+        mTitle = mDrawerTitle = getTitle();
+        
+        // Populate our Drawer items.
+        mDrawerListItems[0] = getString(R.string.titleAccounts);
+        mDrawerListItems[1] = getString(R.string.titleCategories);
+        mDrawerListItems[2] = getString(R.string.titleInstitutions);
+        mDrawerListItems[3] = getString(R.string.titlePayees);
+        mDrawerListItems[4] = getString(R.string.titleSchedules);
+        mDrawerListItems[5] = getString(R.string.titleReports);
+        
         // Find our views
         listAccounts = (ListView) findViewById(R.id.listHomeView);
-        btnHome = (ImageButton) findViewById(R.id.buttonHome);
-        btnAccounts = (ImageButton) findViewById(R.id.buttonAccounts);
-        btnCategories = (ImageButton) findViewById(R.id.buttonCategories);
-        btnInstitutions = (ImageButton) findViewById(R.id.buttonInstitutions);
-        btnPayees = (ImageButton) findViewById(R.id.buttonPayees);
-        btnSchedules = (ImageButton) findViewById(R.id.buttonSchedules);
-        btnReports = (ImageButton) findViewById(R.id.buttonReports);
-        navBar = (LinearLayout) findViewById(R.id.navBar);
+        //navBar = (LinearLayout) findViewById(R.id.navBar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        		R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close)
+        {
+        	// Called when a drawer has settled in a completely closed state.
+        	public void onDrawerClosed(View view)
+        	{
+        		super.onDrawerClosed(view);
+        		getActionBar().setTitle(mTitle);
+        		invalidateOptionsMenu();	// creates call to onPrepareOptionsMenu()
+        	}
+        	
+        	// Called when a drawer has settled in a completely open state.
+        	public void onDrawerOpened(View drawerView)
+        	{
+        		super.onDrawerOpened(drawerView);
+        		getActionBar().setTitle(mDrawerTitle);
+        		invalidateOptionsMenu();	// creates call to onPrepareOptionsMenu()
+        	}
+        };
         
         // Set out onClickListener events.
-        btnHome.setVisibility(View.GONE);
+        // Set the Drawer listeners
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
         
-        btnAccounts.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), AccountsActivity.class));
-			}
-		});
+        // Set the ActionBar items
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
         
-        btnCategories.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), CategoriesActivity.class));
-			}
-		});
-        
-        btnInstitutions.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), InstitutionsActivity.class));
-			}
-		});
-        
-        btnPayees.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), PayeeActivity.class));
-			}
-		});
-        
-        btnSchedules.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), SchedulesActivity.class));
-			}
-		});
-        
-        btnReports.setOnClickListener(new View.OnClickListener()
-        {
-			public void onClick(View arg0)
-			{
-				startActivity(new Intent(getBaseContext(), ReportsActivity.class));
-			}
-		});
-
     	// Now hook into listAccounts ListView and set its onItemClickListener member
     	// to our class handler object.
         listAccounts.setOnItemClickListener(mMessageClickedHandler);
@@ -128,15 +116,19 @@ public class HomeActivity extends FragmentActivity implements
         }
 		
 		// Let's display the currently opened file in the label
-		setTitle(KMMDapp.getFullPath());
+		//setTitle(KMMDapp.getFullPath());
 		
         // Create an empty adapter we will use to display the loaded data.
         adapterAccounts = new AccountsAdapter(this);
 		listAccounts.setAdapter(adapterAccounts);
 		
+		// Create the adapter for the navigation DrawerList
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerListItems));
+		
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
-        getSupportLoaderManager().initLoader(HOMEACCOUNTS_LOADER, null, this);
+		homeloaderCallback = new HomeLoaderCallbacks(this);
+        getSupportLoaderManager().initLoader(HOMEACCOUNTS_LOADER, null, homeloaderCallback);
 	}
 	
 	@Override
@@ -180,12 +172,21 @@ public class HomeActivity extends FragmentActivity implements
 			if(!KMMDapp.isDbOpen())
 				KMMDapp.openDB();
 		}
-		
-		// See if the user has requested the navigation bar.
-		if(!KMMDapp.prefs.getBoolean("navBar", false))
-			navBar.setVisibility(View.GONE);
-		else
-			navBar.setVisibility(View.VISIBLE);
+	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 	
 	// Message Handler for our listAccounts List View clicks
@@ -193,11 +194,23 @@ public class HomeActivity extends FragmentActivity implements
 	    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
 	    {
 	    	Account acct = adapterAccounts.getItem(position); //accounts.get(position);
-	    	Intent i = new Intent(getBaseContext(), LedgerActivity.class);
-	    	i.putExtra("AccountId", acct.getId());
-	    	i.putExtra("AccountName", acct.getName());
-	    	i.putExtra("Balance", acct.getBalance());
-	    	startActivity(i);
+	    	
+	    	// See if we have an invesetment account or a non-investment account.
+	    	if(acct.getAccountType() != Account.ACCOUNT_INVESTMENT )
+	    	{
+	    		Intent i = new Intent(getBaseContext(), LedgerActivity.class);
+	    		i.putExtra("AccountId", acct.getId());
+	    		i.putExtra("AccountName", acct.getName());
+	    		i.putExtra("Balance", acct.getBalance());
+	    		startActivity(i);
+	    	}
+	    	else
+	    	{
+	    		Intent i = new Intent(getBaseContext(), InvestmentActivity.class);
+	    		i.putExtra("AccountId", acct.getId());
+	    		i.putExtra("AccountName", acct.getName());
+	    		startActivity(i);
+	    	}
 	    }
 	};
 	
@@ -235,7 +248,7 @@ public class HomeActivity extends FragmentActivity implements
 			
 			Account item = getItem(position);
 			
-			// Load the items into the view now for this schedule.
+			// Load the items into the view.
 			if(item != null)
 			{
 				TextView desc = (TextView) view.findViewById(R.id.hrAccountName);
@@ -269,26 +282,6 @@ public class HomeActivity extends FragmentActivity implements
 		else
 			menu.findItem(R.id.Sync).setVisible(true);
 		
-		// See if the user wants us to navigation menu items.
-		if( !KMMDapp.prefs.getBoolean("navMenu", true))
-		{
-			menu.findItem(R.id.itemAccounts).setVisible(false);
-			menu.findItem(R.id.itemCategories).setVisible(false);
-			menu.findItem(R.id.itemPayees).setVisible(false);
-			menu.findItem(R.id.itemInstitutions).setVisible(false);
-			menu.findItem(R.id.itemSchedules).setVisible(false);
-			menu.findItem(R.id.itemReports).setVisible(false);
-		}
-		else
-		{
-			menu.findItem(R.id.itemAccounts).setVisible(true);
-			menu.findItem(R.id.itemCategories).setVisible(true);
-			menu.findItem(R.id.itemPayees).setVisible(true);
-			menu.findItem(R.id.itemInstitutions).setVisible(true);
-			menu.findItem(R.id.itemSchedules).setVisible(true);
-			menu.findItem(R.id.itemReports).setVisible(true);
-		}
-		
 		return true;
 	}
 	
@@ -296,20 +289,12 @@ public class HomeActivity extends FragmentActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
+		// Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled the app icon touch event.
+		if(mDrawerToggle.onOptionsItemSelected(item))
+			return true;
+		
 		switch (item.getItemId())
 		{
-			case R.id.itemAccounts:
-				startActivity(new Intent(this, AccountsActivity.class));
-				break;
-			case R.id.itemPayees:
-				startActivity(new Intent(this, PayeeActivity.class));
-				break;
-			case R.id.itemCategories:
-				startActivity(new Intent(this, CategoriesActivity.class));
-				break;
-			case R.id.itemInstitutions:
-				startActivity(new Intent(this, InstitutionsActivity.class));
-				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
@@ -319,12 +304,6 @@ public class HomeActivity extends FragmentActivity implements
 				i.putExtra("Closing", true);
 		    	startActivity(i);
 				finish();
-				break;
-			case R.id.itemSchedules:
-				startActivity(new Intent(this, SchedulesActivity.class));
-				break;
-			case R.id.itemReports:
-				startActivity(new Intent(this, ReportsActivity.class));
 				break;
 			case R.id.itemAbout:
 				startActivity(new Intent(this, AboutActivity.class));
@@ -340,7 +319,7 @@ public class HomeActivity extends FragmentActivity implements
 	}
 	
 	// LoaderManager.LoaderCallbacks<List<Accounts> methods:
-    public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+/*    public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
     {
     	setProgressBarIndeterminateVisibility(true);
     	return new HomeLoader(this, args);
@@ -357,5 +336,75 @@ public class HomeActivity extends FragmentActivity implements
     {
         // clear the data in the adapter.
     	adapterAccounts.setData(null);
+    }
+*/
+    private class HomeLoaderCallbacks implements LoaderManager.LoaderCallbacks<List<Account>>
+    {  
+    	Context context;
+    	
+    	public HomeLoaderCallbacks(HomeActivity homeActivity) 
+    	{
+    		context = homeActivity;
+		}
+
+		// LoaderManager.LoaderCallbacks<List<Accounts> methods:
+        public Loader<List<Account>> onCreateLoader(int id, Bundle args) 
+        {
+        	setProgressBarIndeterminateVisibility(true);
+        	return new HomeLoader(context, args);
+        }
+        
+        public void onLoadFinished(Loader<List<Account>> loader, List<Account> accounts) 
+        {
+            // Set the new data in the adapter.
+        	adapterAccounts.setData(accounts);
+        	setProgressBarIndeterminateVisibility(false);
+        }
+        
+        public void onLoaderReset(Loader<List<Account>> loader) 
+        {
+            // clear the data in the adapter.
+        	adapterAccounts.setData(null);
+        }    	
+    }
+    
+    private class DrawerItemClickListener implements ListView.OnItemClickListener
+    {
+    	public void onItemClick(AdapterView parent, View view, int position, long id)
+    	{
+    		selectItem(position);
+    	}
+    }
+    
+    private void selectItem(int position)
+    {
+    	// Make sure to close the Navigation Drawer.
+		mDrawerLayout.closeDrawer(mDrawerList);
+		
+    	// need to start new activities in here.
+    	switch(position)
+    	{
+    	case 0:
+    		startActivity(new Intent(this, AccountsActivity.class));   		
+    		break;
+    	case 1:
+			startActivity(new Intent(this, CategoriesActivity.class));
+    		break;    		
+    	case 2:
+			startActivity(new Intent(this, InstitutionsActivity.class));
+    		break;
+    	case 3:
+			startActivity(new Intent(this, PayeeActivity.class));
+    		break;
+    	case 4:
+			startActivity(new Intent(this, SchedulesActivity.class));
+    		break;
+    	case 5:
+			startActivity(new Intent(this, ReportsActivity.class));
+    		break;
+    	default:
+    		Toast.makeText(this, "We have a major fucking error!!!!", Toast.LENGTH_LONG).show();
+    		break;		
+    	}
     }
 }

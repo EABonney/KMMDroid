@@ -1,10 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-//import android.app.AlertDialog;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +27,9 @@ LoaderManager.LoaderCallbacks<Cursor>
 	private final static int[] TO = { android.R.id.text1 };
 	private OnSendParentDataListener onSendParentData;
 	private Activity ParentActivity;
-	//private String strSelection = null;
 	private String strParentId = "AStd::Asset";
 	Spinner spinParent;
 	SimpleCursorAdapter adapter;
-	//KMMDroidApp KMMDapp;
 	private boolean firstRun = true;
 	
 	/* (non-Javadoc)
@@ -65,14 +58,6 @@ LoaderManager.LoaderCallbacks<Cursor>
 	public void onCreate(Bundle savedState)
 	{
 		super.onCreate(savedState);
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
 	@Override
@@ -106,6 +91,7 @@ LoaderManager.LoaderCallbacks<Cursor>
         // or start a new one.
         getLoaderManager().initLoader(PARENT_LOADER, null, this);
         
+        Log.d(TAG, "Inside onCreateView()");
         return view;
 	}
 	
@@ -129,7 +115,8 @@ LoaderManager.LoaderCallbacks<Cursor>
 			{
 				Cursor c = (Cursor) parent.getAdapter().getItem(pos);			
 				strParentId = c.getString(0);
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				Log.d(TAG, "parentId: " + strParentId);
+				((CreateModifyAccountActivity) ParentActivity).setIsParentDirty(true);
 			}
 			else
 				firstRun = false;
@@ -157,6 +144,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 		
 		// Set the initial value of strParentId
 		Cursor c = (Cursor) adapter.getItem(0);
+		c.moveToFirst();
 		strParentId = c.getString(c.getColumnIndex("_id"));
 		
 		// Notify the ParentActivity to send us the Parent data.
@@ -210,11 +198,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public void sendParentData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendParentData.onSendParentData();
 	}
 	
 	private void updateUIElements()
 	{
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		String id = prefs.getString("ParentId", "");
 		
@@ -222,5 +212,14 @@ LoaderManager.LoaderCallbacks<Cursor>
 			putParentId(prefs.getString("ParentId", ""));
 		
 		spinParent.setSelection(setParent(this.strParentId));
+	}
+	
+	public Bundle getParentBundle()
+	{
+		Bundle bndlParent = new Bundle();
+		
+		bndlParent.putString("parentId", this.getParentId());
+		
+		return bndlParent;
 	}
 }

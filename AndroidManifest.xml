@@ -2,10 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.vanhlebarsoftware.kmmdroid"
       android:versionCode="3"
-      android:versionName="0.7.0.1"
-      android:installLocation="auto">
+      android:versionName="0.7.2.0" >
     <uses-sdk 
-        android:minSdkVersion="10"
+        android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
     <permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS"
@@ -37,6 +36,7 @@
     	
         <activity android:name=".WelcomeActivity"
                   android:label="@string/app_name"
+                  android:uiOptions="splitActionBarWhenNarrow"
                   android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -53,57 +53,70 @@
         </activity>
         <activity android:name=".HomeActivity"
         		  android:label="@string/titleHome"
+        		  android:uiOptions="splitActionBarWhenNarrow"
         		  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".LedgerActivity"
         		  android:label="@string/titleLedger"
+        		  android:uiOptions="splitActionBarWhenNarrow"
         		  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".ViewTransactionActivity"
 				  android:label="@string/titleViewTransaction"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".AccountsActivity"
 				  android:label="@string/titleAccounts"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".PayeeActivity"
 				  android:label="@string/titlePayees"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".TransactionsTabActivity"
 				  android:label="@string/titlePayeeTransactions"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateModifyPayeeActivity"
 				  android:label="@string/titleCreateModPayee"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeAddressActivity"
 				  android:label="@string/titlePayeeAddress"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeDefaultAccountActivity"
 				  android:label="@string/titlePayeeDefaultAccount"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeMatchingActivity"
 				  android:label="@string/titlePayeeMatching"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".PayeeReassignActivity"
 				  android:label="@string/titleReassignPayee"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CategoriesActivity"
 				  android:label="@string/titleCategories"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateModifyAccountActivity"
 				  android:label="@string/titleCreateAccounts"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateAccountInstitutionActivity"
@@ -112,10 +125,12 @@
 		</activity>
 		<activity android:name=".CreateAccountAccountActivity"
 				  android:label="@string/titleCreateAccountAccount"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CreateAccountParentActivity"
 				  android:label="@string/titleCreateAccountParent"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
@@ -125,50 +140,60 @@
 		</activity>
 		<activity android:name=".CategoriesGeneralActivity"
 				  android:label="@string/titleCategoryGeneral"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		<activity android:name=".CategoriesHierarchyActivity"
 				  android:label="@string/titleCategoryHierarchy"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyInstitutionActivity"
 				  android:label="@string/titleCreateModifyInstitution"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".InstitutionsActivity"
 				  android:label="@string/titleInstitutions"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyTransactionActivity"
 				  android:label="@string/titleCreateModifyTransactions"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifySplitsActivity"
 				  android:label="@string/titleCreateModifySplits"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".PrefsActivity"
 				  android:label="@string/titlePrefs"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 	
 		<activity android:name=".AboutActivity"
 				  android:label="@string/titleAbout"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulesActivity"
 			      android:label="@string/titleSchedules"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 			      android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CashRequirementsActivity"
 				  android:label="@string/titleCashRequirements"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
 		
@@ -180,36 +205,49 @@
 		<activity android:name=".ScheduleActionsActivity"
 		    	  android:theme="@style/DialogNoTitle"
 		    	  android:label="@string/titleDialogScheduleActions"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".CreateModifyScheduleActivity"
 		    	  android:label="@string/titleCreateModifySchedule"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulePaymentInfoActivity"
 		    	  android:label="@string/titleSchedulePaymentInfo"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>		
 		
 		<activity android:name=".ScheduleOptionsActivity"
 		    	  android:label="@string/titleScheduleOptions"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".ViewScheduleActivity"
 		    	  android:label="@string/titleSchedules"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".SchedulesNotificationsActivity"
 		    	  android:label="@string/titleSchedulesNotifications"
+        		  android:uiOptions="splitActionBarWhenNarrow"
+		    	  android:screenOrientation="portrait">
+		</activity>
+		
+		<activity android:name=".InvestmentActivity"
+		    	  android:label="@string/titleInvestmentActivity"
+		    	  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		</activity>
 		
 		<activity android:name=".HomeScreenConfiguration"
 		    	  android:label="@string/titleHomeWidgetConfiguration"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 		    	  android:screenOrientation="portrait">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -219,6 +257,7 @@
 		<activity
 				  android:name=".CloudIntegrationActivity"
 				  android:label="@string/titleDropbox"
+        		  android:uiOptions="splitActionBarWhenNarrow"
 				  android:screenOrientation="portrait">
 		</activity>
     	<activity
@@ -244,6 +283,7 @@
     	<activity
     	    	  android:name=".ReportsActivity"
     	    	  android:label="@string/titleReports"
+        		  android:uiOptions="splitActionBarWhenNarrow"
     	    	  android:theme="@style/ListFont"
     	    	  android:screenOrientation="portrait" >    	    
     	</activity>
@@ -261,16 +301,28 @@
 				  android:exported="false">
 		</provider>
 		
-		<receiver android:name=".BasicHomeWidget"
-				  android:label="@string/titleBasicHomeWidget">
-			<intent-filter>
-				  <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-			</intent-filter>		  
+		<receiver android:name=".WidgetPreferredAccounts"
+		    	  android:label="@string/widgetPreferredAccounts">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
 			<intent-filter>
 				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
 			</intent-filter>
-			<meta-data android:name="android.appwidget.provider"
-					   android:resource="@xml/basic_widget_info" />
+		    <meta-data android:name="android.appwidget.provider"
+		        	   android:resource="@xml/widget_preferredaccounts_info" />
+		</receiver>
+		
+		<receiver android:name=".WidgetSchedules"
+		    	  android:label="@string/widgetSchedules">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+			<intent-filter>
+				  <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+			</intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		        	   android:resource="@xml/widget_schedules_info" />
 		</receiver>
 		
 		<receiver android:name=".KMMDAlarmReceiver"
@@ -291,6 +343,14 @@
 		<service android:name=".KMMDNotificationsService">
 		</service>
 		<service android:name="com.vanhlebarsoftware.kmmdroid.KMMDDropboxService">
+		</service>
+		<service
+		    android:name=".WidgetPreferredAccountsRVService"
+		    android:permission="android.permission.BIND_REMOTEVIEWS" >
+		</service>
+		<service
+		    android:name=".WidgetSchedulesRVService"
+		    android:permission="android.permission.BIND_REMOTEVIEWS" >
 		</service>
     </application>
 </manifest>

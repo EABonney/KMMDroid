@@ -40,7 +40,7 @@ public class LedgerActivity extends FragmentActivity implements
 	TransactionAdapter adapter;
 	KMMDroidApp KMMDapp;
 	ListView listTransactions;
-	TextView textTitleLedger;
+	//TextView textTitleLedger;
 	KMMDCustomFastScrollView fastScrollView;
 	
 	// Items for the transactions query
@@ -63,7 +63,7 @@ public class LedgerActivity extends FragmentActivity implements
         
         // Find our views
         listTransactions = (ListView) findViewById(R.id.listTransactions);
-        textTitleLedger = (TextView) findViewById(R.id.titleLedger);
+        //textTitleLedger = (TextView) findViewById(R.id.titleLedger);
         fastScrollView = (KMMDCustomFastScrollView) findViewById(R.id.fast_scroll_view);
  
     	// Now hook into listTransactions ListView and set its onItemClickListener member
@@ -89,7 +89,7 @@ public class LedgerActivity extends FragmentActivity implements
         lastyear = (Calendar) today.clone();
         strLastYear = getDatabaseFormattedString(lastyear);
         
-		String selection[] = { AccountID, strToday, strLastYear };
+		String selection[] = { AccountID, strToday, strLastYear, AccountID, strToday, strLastYear };
 		selectionArgs = selection;
 		Bundle bundle = new Bundle();
 		bundle.putStringArray("selectionArgs", selectionArgs);
@@ -118,7 +118,7 @@ public class LedgerActivity extends FragmentActivity implements
 		strLastYear = getDatabaseFormattedString(lastyear);
 		
 		// Display the Account we are looking at in the TextView TitleLedger
-		textTitleLedger.setText(AccountName);
+		//textTitleLedger.setText(AccountName);
 		
         if( previousLocation == 0 )
         	previousLocation = adapter.getCount();
@@ -146,6 +146,7 @@ public class LedgerActivity extends FragmentActivity implements
 	    	{
 	    		Intent i = new Intent(getBaseContext(), ViewTransactionActivity.class);
 	    		i.putExtra("transactionId", trans.getTransId());
+	    		i.putExtra("fromWidgetId", "9999");
 	    		startActivity(i);
 	    		previousLocation = position;
 	    	}
@@ -177,6 +178,7 @@ public class LedgerActivity extends FragmentActivity implements
 				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 				i.putExtra("Action", ACTION_NEW);
 				i.putExtra("accountUsed", AccountID);
+				i.putExtra("fromWidgetId", "9999");
 				startActivity(i);
 				break;
 			case R.id.itemPrefs:
@@ -299,6 +301,8 @@ public class LedgerActivity extends FragmentActivity implements
 		
 		listTransactions.setSelection(previousLocation);
 		setProgressBarIndeterminateVisibility(false);
+		
+		Log.d(TAG, "Got all our transactions to display!");
 	}
 
 	public void onLoaderReset(Loader<List<Transaction>> loader) 

@@ -1,35 +1,46 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 
-public class CategoriesGeneralActivity extends FragmentActivity
+public class CategoriesGeneralActivity extends Fragment implements
+								LoaderManager.LoaderCallbacks<Cursor>
 {
-	private static final String TAG = "CategoriesGeneralActivity";
-	private static final String[] dbColumns = { "name", "ISOcode AS _id"};
-	private static final String strOrderBy = "name ASC";
+	private static final String TAG = CategoriesGeneralActivity.class.getSimpleName();
+	private static final int CATEGORYCURRENCY_LOADER = 0x20;
 	static final String[] FROM = { "name" };
 	static final int[] TO = { android.R.id.text1 };
-	private static int currencyPos = 0;
-	private static int categoryTypePos = 0;
-	String strCurrency = null;
+	private OnSendGeneralDataListener onSendGeneralData;
+	private String strTypeSelected = null;
+	private String strCategoryName = null;
+	private String strNotes = null;
+	private String strCurrency = null;
+	private int currencyPos = 0;
+	private int categoryTypePos = 0;
+	private int categoryType = 0;
 	private int numberOfPasses = 0;
-	private CreateModifyCategoriesActivity parentTabHost;
+	private boolean bNeedUpdateParent = true;
+	private Activity ParentActivity;
 	EditText editCategoryName;
 	EditText editCategoryNotes;
 	Spinner spinCategoryType;
@@ -38,26 +49,57 @@ public class CategoriesGeneralActivity extends FragmentActivity
 	Cursor cursorCurrency;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
-	KMMDroidApp KMMDapp;
+	//KMMDroidApp KMMDapp;
+	
+	@Override
+	public void onAttach(Activity activity)
+	{
+		super.onAttach(activity);
+		
+		// Save our ParentActivity
+		ParentActivity = activity;
+		
+		try
+		{
+			onSendGeneralData = (OnSendGeneralDataListener) activity;
+		}
+		catch(ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + " must implement OnSendGeneralDataListener");
+		}
+	}
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) 
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.categories_general);
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+	 */
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
         
-        // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // Get the tabHost on the parent.
-        parentTabHost = ((CreateModifyCategoriesActivity) this.getParent());
+        View view = inflater.inflate(R.layout.categories_general, container, false);
         
         // Find our views.
-        editCategoryName = (EditText) findViewById(R.id.categoryName);
-        editCategoryNotes = (EditText) findViewById(R.id.categoryNotes);
-        spinCategoryType = (Spinner) findViewById(R.id.categoryType);
-        spinCategoryCurrency = (Spinner) findViewById(R.id.categoryCurrency);
-        txtTotTrans = (TextView) findViewById(R.id.titleAccountTransactions);
+        editCategoryName = (EditText) view.findViewById(R.id.categoryName);
+        editCategoryNotes = (EditText) view.findViewById(R.id.categoryNotes);
+        spinCategoryType = (Spinner) view.findViewById(R.id.categoryType);
+        spinCategoryCurrency = (Spinner) view.findViewById(R.id.categoryCurrency);
+        txtTotTrans = (TextView) view.findViewById(R.id.titleAccountTransactions);
         
         // Set the OnItemSelectedListeners for the spinners.
         spinCategoryType.setOnItemSelectedListener(new CategoryGeneralOnItemSelectedListener());
@@ -69,8 +111,7 @@ public class CategoriesGeneralActivity extends FragmentActivity
 
 			public void afterTextChanged(Editable s) 
 			{
-				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
+				((CreateModifyCategoriesActivity) ParentActivity).setIsDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -85,8 +126,7 @@ public class CategoriesGeneralActivity extends FragmentActivity
 
 			public void afterTextChanged(Editable s) 
 			{
-				parentTabHost.setIsDirty(true);
-				Log.d(TAG, "changing isDirty from accountName!");
+				((CreateModifyCategoriesActivity) ParentActivity).setIsDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -96,47 +136,35 @@ public class CategoriesGeneralActivity extends FragmentActivity
 					int count) {}
         });
         
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
-        
+		// Set up the adapters
+		adapterCurrency = new SimpleCursorAdapter(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, null, FROM, TO, 0);
+		adapterCurrency.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinCategoryCurrency.setAdapter(adapterCurrency);
+		
+		adapterTypes = ArrayAdapter.createFromResource(getActivity().getBaseContext(), R.array.arrayTypes, android.R.layout.simple_spinner_item);
+		adapterTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		spinCategoryType.setAdapter(adapterTypes);
+		
+		// Prepare the loader. Either re-connect with the existing one,
+		// or start a new one.
+		getLoaderManager().initLoader(CATEGORYCURRENCY_LOADER, null, this);
+		
 		// We need to populate the user's default currency.
-		Cursor defaultCur = KMMDapp.db.query("kmmFileInfo", new String[] { "baseCurrency" }, null, null, null, null, null);
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor defaultCur = getActivity().getBaseContext().getContentResolver().query(u, new String[] { "baseCurrency" }, null, null, null);
 		defaultCur.moveToFirst();
 		currencyPos = getCurrencyPos(defaultCur.getString(0));
 		defaultCur.close();
+		
+        return view;
 	}
-	
+
 	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
-		
-		//Get all the currencies to be displayed.
-		cursorCurrency = KMMDapp.db.query("kmmCurrencies", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursorCurrency);
-		
-		// Set up the adapters
-		adapterCurrency = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorCurrency, FROM, TO);
-		adapterCurrency.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		adapterTypes = ArrayAdapter.createFromResource(this, R.array.arrayTypes, android.R.layout.simple_spinner_item);
-		adapterTypes.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		
-		spinCategoryCurrency.setAdapter(adapterCurrency);
-		spinCategoryType.setAdapter(adapterTypes);
-		
-		// Set the spinner to the correct type.
-		if(CreateModifyCategoriesActivity.strType == null)		
-			spinCategoryType.setSelection(0);
-		else if(CreateModifyCategoriesActivity.strType.equalsIgnoreCase("Income"))
-			spinCategoryType.setSelection(0);
-		else
-			spinCategoryType.setSelection(1);
-		
-		// Set the currency Spinner
-		spinCategoryCurrency.setSelection(currencyPos);
 	}
 	
 	public class CategoryGeneralOnItemSelectedListener implements OnItemSelectedListener
@@ -148,14 +176,31 @@ public class CategoriesGeneralActivity extends FragmentActivity
 				switch(parent.getId())
 				{
 					case R.id.categoryType:
-						CreateModifyCategoriesActivity.strType = parent.getItemAtPosition(pos).toString();
-						CreateModifyCategoriesActivity.inValidateParentId = true;
-						parentTabHost.setIsDirty(true);
+						categoryTypePos = pos;
+						categoryType = getCategoryTypeFromPos(categoryTypePos);
+						if( bNeedUpdateParent )
+						{
+							switch(categoryType)
+							{
+							case Account.ACCOUNT_EXPENSE:
+								((CreateModifyCategoriesActivity) ParentActivity).setParentId("AStd::Expense");
+								break;
+							case Account.ACCOUNT_INCOME:
+								((CreateModifyCategoriesActivity) ParentActivity).setParentId("AStd::Income");
+								break;
+							}
+							((CreateModifyCategoriesActivity) ParentActivity).setCategoryType(categoryType);
+							((CreateModifyCategoriesActivity) ParentActivity).setIsParentInvalid(true);
+							((CreateModifyCategoriesActivity) ParentActivity).setIsDirty(true);
+							((CreateModifyCategoriesActivity) ParentActivity).ReloadHierarchyLoader();
+						}
+						else
+							bNeedUpdateParent = true;
 						break;
 					case R.id.categoryCurrency:
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						strCurrency = c.getString(1);
-						parentTabHost.setIsDirty(true);
+						((CreateModifyCategoriesActivity) ParentActivity).setIsDirty(true);
 						break;
 				}
 			}
@@ -168,40 +213,37 @@ public class CategoriesGeneralActivity extends FragmentActivity
 		}		
 	}
 	
-	@Override
-	public void onBackPressed()
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
-		Log.d(TAG, "User clicked the back button");
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-					Log.d(TAG, "User cancelled back action.");
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
+		u = Uri.parse(u.toString());
+		String[] dbColumns = { "name", "ISOcode AS _id"};
+		String strOrderBy = "name ASC";
+		return new CursorLoader(getActivity().getBaseContext(), u, dbColumns, null, null, strOrderBy);
 	}
-	
+
+	public void onLoadFinished(Loader<Cursor> loader, Cursor currencies) 
+	{
+		adapterCurrency.swapCursor(currencies);
+		
+		// Notify the parent we need it's data if any.
+		sendGeneralData();
+		
+		// Update our UI
+		updateUIElements();
+	}
+
+	public void onLoaderReset(Loader<Cursor> loader) 
+	{
+		adapterCurrency.swapCursor(null);
+	}
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnSendGeneralDataListener
+	{
+		public void onSendGeneralData();
+	}
 	// ************************************************************************************************
 	// ******************************* Helper Functions ***********************************************
 	public String getCategoryName()
@@ -209,37 +251,59 @@ public class CategoriesGeneralActivity extends FragmentActivity
 		return editCategoryName.getText().toString();
 	}
 	
-	public String getCategoryCurrency()
+	public String getCurrency()
 	{
 		return strCurrency;
 	}
 	
-
+	public int getCategoryType()
+	{
+		return getCategoryTypeFromPos(this.categoryTypePos);
+	}
+	
 	public String getNotes()
 	{
 		return editCategoryNotes.getText().toString();
 	}
 	
+	public int getCategoryTypeFromPos(int pos)
+	{
+		switch(pos)
+		{
+		case 0:
+			return Account.ACCOUNT_INCOME;
+		case 1:
+			return Account.ACCOUNT_EXPENSE;
+		default:
+			return Account.ACCOUNT_INCOME;
+		}
+	}
 	public void putCategoryName(String name)
 	{
-		editCategoryName.setText(name);
+		this.strCategoryName = name;
 	}
 	
-	public void putCategoryType(int pos)
+	public void putCategoryType(int type)
 	{
-		categoryTypePos = pos;
-		CreateModifyCategoriesActivity.strType = spinCategoryType.getItemAtPosition(pos).toString();
-		CreateModifyCategoriesActivity.inValidateParentId = true;
+		switch(type)
+		{
+		case Account.ACCOUNT_EXPENSE:
+			this.categoryTypePos = 1;
+			break;
+		case Account.ACCOUNT_INCOME:
+			this.categoryTypePos = 0;
+			break;
+		}
 	}
 	
-	public void putCurrency(int pos)
+	public void putCurrency(String id)
 	{
-		currencyPos = pos;
+		strCurrency = id;
 	}
 	
 	public void putNotes(String notes)
 	{
-		editCategoryNotes.setText(notes);
+		this.strNotes = notes;
 	}
 	
 	public void putTransactionCount(String strCount)
@@ -249,27 +313,83 @@ public class CategoriesGeneralActivity extends FragmentActivity
 	
 	private int getCurrencyPos(String id)
 	{
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
+		u = Uri.parse(u.toString());
+		String[] dbColumns = { "name", "ISOcode AS id"};
+		String strOrderBy = "name ASC";
 		int i = 0;
-		
-		Cursor c = KMMDapp.db.query("kmmCurrencies", new String[] { "name", "ISOcode" },
-									null, null,	null, null, "name ASC");
-		startManagingCursor(c);
+
+		Cursor c = getActivity().getBaseContext().getContentResolver().query(u, dbColumns, null, null, strOrderBy);
 		c.moveToFirst();
-		
-		if(c.getCount() > 0)
+		while(!id.equals(c.getString(c.getColumnIndex("id"))))
 		{
-			while(!id.equals(c.getString(1)))
-			{
-				c.moveToNext();
-				i++;
-			}
+			c.moveToNext();
+			i++;
 		}
+
+		// Clean up our cursor.
+		c.close();
+
+		return i;
+	}
+	
+	public void sendGeneralData()
+	{
+		onSendGeneralData.onSendGeneralData();
+	}
+	
+	private void updateUIElements()
+	{
+		// We need to reset the numberofPasses variable to zero before doing any UI updates.
+		this.numberOfPasses = 0;
+		
+		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+		String Name = prefs.getString("Name", null);
+		int TypePos = prefs.getInt("TypePos", -1);
+		String Currency = prefs.getString("Currency", null);
+		String Notes = prefs.getString("Notes", null);
+		bNeedUpdateParent = prefs.getBoolean("needUpdateParent", true);
+		
+		if( Name != null )
+			editCategoryName.setText(Name);
+		else
+			editCategoryName.setText(strCategoryName);
+		
+		if( Notes != null )
+			editCategoryNotes.setText(Notes);
+		else
+			editCategoryNotes.setText(strNotes);
+		
+		// Set the spinner to the correct type.
+		if( TypePos != -1 )
+			spinCategoryType.setSelection(TypePos);
 		else
 		{
-			Log.d(TAG, "getCurrencyPos query returned no accounts!");
-			i = 0;
+			if(((CreateModifyCategoriesActivity) ParentActivity).getCategoryType() == Account.ACCOUNT_INCOME)		
+				spinCategoryType.setSelection(0);
+			else
+				spinCategoryType.setSelection(1);
 		}
 		
-		return i;
+		// Set the currency Spinner
+		if( Currency != null )
+			spinCategoryCurrency.setSelection(getCurrencyPos(Currency));
+		else
+			spinCategoryCurrency.setSelection(getCurrencyPos(strCurrency));	
+		
+		this.numberOfPasses = 2;
+	}
+	
+	public Bundle getGeneralBundle()
+	{
+		Bundle bdl = new Bundle();
+		
+		bdl.putString("categoryName", strCategoryName);
+		bdl.putInt("categoryType", categoryType);
+		bdl.putString("categoryCurrency", strCurrency);
+		bdl.putString("categoryNotes", strNotes);
+		
+		return bdl;
 	}
 }

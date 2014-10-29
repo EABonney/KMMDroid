@@ -91,7 +91,7 @@ public class CashRequirementsActivity extends FragmentActivity
 		cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { strAccountId }, null, null, strOrderBy, null);
 		startManagingCursor(cursor);
 		
-		Schedules = Schedule.BuildCashRequired(cursor, strStartDate, strEndDate, nBegBalance);
+		Schedules = Schedule.BuildCashRequired(cursor, strStartDate, strEndDate, nBegBalance, getBaseContext(), "9999");
 		
 		if(Schedules.size() > 0)
 		{
@@ -124,26 +124,11 @@ public class CashRequirementsActivity extends FragmentActivity
 	{
 		switch (item.getItemId())
 		{
-			case R.id.itemHome:
-				startActivity(new Intent(this, HomeActivity.class));
-				break;
-			case R.id.itemAccounts:
-				startActivity(new Intent(this, AccountsActivity.class));
-				break;
-			case R.id.itemInstitutions:
-				startActivity(new Intent(this, InstitutionsActivity.class));
-				break;
-			case R.id.itemPayees:
-				startActivity(new Intent(this, PayeeActivity.class));
-				break;
-			case R.id.itemCategories:
-				startActivity(new Intent(this, CategoriesActivity.class));
-				break;
 			case R.id.itemPrefs:
 				startActivity(new Intent(this, PrefsActivity.class));
 				break;
 			case R.id.itemAbout:
-				startActivity(new Intent(this, AboutActivity.class));
+				startActivity(new Intent(this, AboutFragment.class));
 				break;
 		}
 		

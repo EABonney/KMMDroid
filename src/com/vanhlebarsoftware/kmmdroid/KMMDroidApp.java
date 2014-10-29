@@ -206,6 +206,16 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 		return Splits;
 	}
 	
+	public void updatePrefs(String widgetId)
+	{
+		this.fullPath = this.prefs.getString("widgetDatabasePath" + widgetId, null);
+		String update = this.prefs.getString("updateFrequency" + widgetId, null);
+		if(update.equals("-1"))
+			this.autoUpdate = true;
+		else
+			this.autoUpdate = false;
+	}
+	
 	public void updateFileInfo(String updateColumn, int nChange)
 	{
 		Cursor cursor;
@@ -498,6 +508,8 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 				currentFile = item.findMatch(path);
 				if(currentFile != null)
 					break;
+				else
+					currentFile = new KMMDDeviceItem(new File(path));
 			}
 		}
 		else

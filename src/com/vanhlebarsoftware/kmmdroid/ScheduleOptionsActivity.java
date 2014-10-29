@@ -2,17 +2,24 @@ package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.Calendar;
 
+import com.vanhlebarsoftware.kmmdroid.SchedulePaymentInfoActivity.OnSendPaymentInfoListener;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -25,9 +32,11 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-public class ScheduleOptionsActivity extends FragmentActivity implements OnCheckedChangeListener
+public class ScheduleOptionsActivity extends Fragment implements
+										OnCheckedChangeListener
 {
 	private static final String TAG = ScheduleOptionsActivity.class.getSimpleName();
+	private OnSendOptionsListener onSendOptions;
 	private static final int MOVE_BEFORE = 0;
 	private static final int MOVE_AFTER = 1;
 	private static final int MOVE_NOTHING = 2;
@@ -37,7 +46,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 	private int intDay;
 	private int intWeekendOption = MOVE_NOTHING;
 	private int numberOfPasses = 0;
-	private CreateModifyScheduleActivity parentTabHost;
+	private Activity ParentActivity;
 	Spinner spinWeekendOptions;
 	CheckBox ckboxEstimate;
 	CheckBox ckboxAutoEnter;
@@ -53,33 +62,75 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 	Cursor cursor;
 	
 	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
 	@Override
-	protected void onCreate(Bundle savedInstanceState) 
+	public void onAttach(Activity activity) 
+	{
+		super.onAttach(activity);
+		
+		// Save our ParentActivity
+		ParentActivity = activity;
+		
+		try
+		{
+			onSendOptions = (OnSendOptionsListener) activity;
+		}
+		catch(ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + " must implement OnSendOptionsListener");
+		}
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.schedule_options);
+        //setContentView(R.layout.schedule_options);
         
         // Get the tabHost on the parent.
-        parentTabHost = ((CreateModifyScheduleActivity) this.getParent());
+        //parentTabHost = ((CreateModifyScheduleActivity) this.getParent());
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+	 */
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
+        
+        View view = inflater.inflate(R.layout.schedule_options, container, false);
         
         // Find our views
-        spinWeekendOptions = (Spinner) findViewById(R.id.scheduleWeekendOption);
-        ckboxEstimate = (CheckBox) findViewById(R.id.checkboxEstimate);
-        ckboxAutoEnter = (CheckBox) findViewById(R.id.checkboxAutoEnter);
-        ckboxScheduleEnds = (CheckBox) findViewById(R.id.checkboxEnd);
-        editEndDate = (EditText) findViewById(R.id.endDate);
-        editNumTransactions = (EditText) findViewById(R.id.scheduleNumTransactions);
-        btnSelectDate = (ImageButton) findViewById(R.id.buttonEndDate);
-        textEndDate = (TextView) findViewById(R.id.titleScheduleEndDate);
-        textRemainingTrans = (TextView) findViewById(R.id.titleScheduleNumTransactions);
+        spinWeekendOptions = (Spinner) view.findViewById(R.id.scheduleWeekendOption);
+        ckboxEstimate = (CheckBox) view.findViewById(R.id.checkboxEstimate);
+        ckboxAutoEnter = (CheckBox) view.findViewById(R.id.checkboxAutoEnter);
+        ckboxScheduleEnds = (CheckBox) view.findViewById(R.id.checkboxEnd);
+        editEndDate = (EditText) view.findViewById(R.id.endDate);
+        editNumTransactions = (EditText) view.findViewById(R.id.scheduleNumTransactions);
+        btnSelectDate = (ImageButton) view.findViewById(R.id.buttonEndDate);
+        textEndDate = (TextView) view.findViewById(R.id.titleScheduleEndDate);
+        textRemainingTrans = (TextView) view.findViewById(R.id.titleScheduleNumTransactions);
         
         // Set our OnClickListener events
         btnSelectDate.setOnClickListener(new View.OnClickListener() 
         {	
 			public void onClick(View v)
 			{
-				showDialog(SET_DATE_ID);
-				parentTabHost.setIsDirty(true);
+				DialogFragment dateFrag = new KMMDDatePickerFragment(editEndDate);
+				dateFrag.show(getFragmentManager(), "datePicker");
+				((CreateModifyScheduleActivity) ParentActivity).setIsDirty(true);
 			}
 		});
         
@@ -97,7 +148,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 
 			public void afterTextChanged(Editable s) 
 			{
-				parentTabHost.setIsDirty(true);
+				((CreateModifyScheduleActivity) ParentActivity).setIsDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -125,18 +176,21 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
         
         // display the current date
         updateDisplay();
+        return view;
 	}
+	
 	@Override
-	protected void onDestroy() 
+	public void onDestroy() 
 	{
 		super.onDestroy();
 	}
+	
 	@Override
-	protected void onResume() 
+	public void onResume() 
 	{
 		super.onResume();
 	
-		adapterWeekendOption = ArrayAdapter.createFromResource(this, R.array.scheduleWeekendOptions, android.R.layout.simple_spinner_item);
+		adapterWeekendOption = ArrayAdapter.createFromResource(getActivity().getBaseContext(), R.array.scheduleWeekendOptions, android.R.layout.simple_spinner_item);
 		adapterWeekendOption.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 		spinWeekendOptions.setAdapter(adapterWeekendOption);
 		
@@ -144,7 +198,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 		spinWeekendOptions.setSelection(intWeekendOption);
 	}
 	
-	@Override
+/*	@Override
 	public void onBackPressed()
 	{
 		if( parentTabHost.getIsDirty() )
@@ -175,7 +229,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 			finish();
 		}
 	}
-	
+*/	
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
 	{
 		switch( buttonView.getId() )
@@ -203,11 +257,11 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 			default:
 				break;	
 		}
-		parentTabHost.setIsDirty(true);
+		((CreateModifyScheduleActivity) ParentActivity).setIsDirty(true);
 	}
 	
 	// the callback received with the user "sets" the opening date in the dialog
-	private DatePickerDialog.OnDateSetListener mDateSetListener = 
+/*	private DatePickerDialog.OnDateSetListener mDateSetListener = 
 			new DatePickerDialog.OnDateSetListener() 
 			{				
 				public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) 
@@ -229,7 +283,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 		}
 		return null;
 	}
-
+*/
 	public class AccountOnItemSelectedListener implements OnItemSelectedListener
 	{
 		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
@@ -246,7 +300,7 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 							intWeekendOption = MOVE_AFTER;
 						else if( str.equals("Do nothing") )
 							intWeekendOption = MOVE_NOTHING;
-						parentTabHost.setIsDirty(true);
+						((CreateModifyScheduleActivity) ParentActivity).setIsDirty(true);
 						break;
 				}
 			}
@@ -258,9 +312,19 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 			// do nothing.
 		}		
 	}
-	
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnSendOptionsListener
+	{
+		public void onSendOptions();
+	}	
 	// **************************************************************************************************
 	// ************************************ Helper methods **********************************************
+	public void sendOptions()
+	{
+		onSendOptions.onSendOptions();
+	}
+	
 	public int getScheduleWeekendOption()
 	{
 		return this.intWeekendOption;
@@ -291,11 +355,11 @@ public class ScheduleOptionsActivity extends FragmentActivity implements OnCheck
 		return this.ckboxAutoEnter.isChecked() == true ? "Y" : "N";
 	}
 	
-	public void setScheduleAutoEnter(String str)
+	public void setScheduleAutoEnter(boolean str)
 	{
-		if( str.equals("Y") )
+		if( str )
 			this.ckboxAutoEnter.setChecked(true);
-		else if( str.equals("N") )
+		else
 			this.ckboxAutoEnter.setChecked(false);
 	}
 	

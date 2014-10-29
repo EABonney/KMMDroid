@@ -1,53 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
- 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="horizontal"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-    
-	<CheckBox 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:text="@string/titlePayeeUseDefault" 
-		android:id="@+id/payeeUseDefault"
-	/>
-    
-	<CheckBox 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:width="125sp"
-		android:layout_below="@+id/payeeUseDefault"
-		android:text="@string/titlePayeeDefaultIncome" 
-		android:id="@+id/checkboxPayeeDefaultIncome"
-		android:state_enabled="false"
-	/>  
-		
-    <Spinner 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="wrap_content"
-		android:layout_below="@+id/payeeUseDefault"
-		android:layout_toRightOf="@+id/checkboxPayeeDefaultIncome"
-    	android:id="@+id/payeeDefaultIncome" 
-    	android:state_enabled="false"
-    />
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-	<CheckBox 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-		android:width="125sp"
-		android:layout_below="@+id/checkboxPayeeDefaultIncome"
-		android:text="@string/titlePayeeDefaultExpense" 
-		android:id="@+id/checkboxPayeeDefaultExpense"
-		android:state_enabled="false"
-	/>  
-		
-    <Spinner 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="wrap_content"
-		android:layout_below="@+id/checkboxPayeeDefaultIncome"
-		android:layout_toRightOf="@+id/checkboxPayeeDefaultExpense"
-    	android:id="@+id/payeeDefaultExpense" 
-    	android:state_enabled="false"
-    />
-  
-</RelativeLayout>
+    <CheckBox
+        android:id="@+id/payeeUseDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/titlePayeeUseDefault" />
+    
+    <FrameLayout
+        android:id="@+id/incFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+        <FrameLayout
+        android:id="@+id/expFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

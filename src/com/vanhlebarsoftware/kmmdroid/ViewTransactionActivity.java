@@ -50,6 +50,7 @@ public class ViewTransactionActivity extends FragmentActivity
 	String Description = null;
 	String TransID = null;
 	String strStatus = null;
+	private String widgetId = null;
 	ArrayList<Split> Splits;
 	KMMDroidApp KMMDapp;
 	Cursor splits;
@@ -92,6 +93,7 @@ public class ViewTransactionActivity extends FragmentActivity
         // Set the Description, Amount, Date and Memo fields.
         Bundle extras = getIntent().getExtras();
         TransID = extras.getString("transactionId");
+        widgetId = extras.getString("fromWidgetId");
 	}
 
 	@Override
@@ -162,6 +164,7 @@ public class ViewTransactionActivity extends FragmentActivity
 				Intent i = new Intent(getBaseContext(), CreateModifyTransactionActivity.class);
 				i.putExtra("Action", ACTION_EDIT);
 				i.putExtra("transId", TransID);
+				i.putExtra("fromWidgetId", widgetId);
 				startActivity(i);
 				finish();
 				break;
@@ -194,7 +197,7 @@ public class ViewTransactionActivity extends FragmentActivity
 						// Need to update the accounts for the transaction that was just deleted.
 						for(int i=0; i < Splits.size(); i++)
 						{
-							Account.updateAccount(KMMDapp.db, Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
+							Account.updateAccount(getBaseContext(), Splits.get(i).getAccountId(), Splits.get(i).getValueFormatted(), -1);
 						}
 						// Update the number of transactions for the accounts used.
 						c.close();
@@ -231,7 +234,7 @@ public class ViewTransactionActivity extends FragmentActivity
 				return false;
 			
 			// Format the Amount properly.
-			String str = Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true);
+			String str = Transaction.convertToDollars(Transaction.convertToPennies(cursor.getString(columnIndex)), true, false);
 			((TextView) view).setText(str);
 			
 			return true;
@@ -259,7 +262,7 @@ public class ViewTransactionActivity extends FragmentActivity
 								 cursor.getString(C_SHARESFORMATTED), cursor.getString(C_PRICE),
 								 cursor.getString(C_PRICEFORMATTED), cursor.getString(C_MEMO),
 								 cursor.getString(C_ACCOUNTID), cursor.getString(C_CHECKNUMBER),
-								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID)) );
+								 cursor.getString(C_POSTDATE), cursor.getString(C_BANKID), "9999", getBaseContext()));
 			cursor.moveToNext();
 		}
 		

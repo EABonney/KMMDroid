@@ -190,7 +190,7 @@ public class KMMDService extends Service
 			c = getContentResolver().query(u, null, null, null, null);
 			c.moveToFirst();
 			views.setTextViewText(R.id.hrAccountName, c.getString(0));
-			strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)), true);
+			strBal = Transaction.convertToDollars(Transaction.convertToPennies(c.getString(1)), true, false);
 			views.setTextViewText(R.id.hrAccountBalance, strBal);
 			c.close();
 			
@@ -209,7 +209,8 @@ public class KMMDService extends Service
 			
 			// We have our open schedules from the database, now create the user defined period of cash flow.
 			ArrayList<Schedule> Schedules = new ArrayList<Schedule>();
-			Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal));
+			Schedules = Schedule.BuildCashRequired(c, strStartDate, strEndDate, Transaction.convertToPennies(strBal), getBaseContext(),
+												   String.valueOf(appWidgetId));
 
 			// close our cursor as we no longer need it.
 			c.close();
@@ -230,8 +231,8 @@ public class KMMDService extends Service
 				sch = Schedules.get(i-1);
 				Date = sch.getDueDate();
 				strDescription = sch.getDescription();
-				strAmount = Transaction.convertToDollars(sch.getAmount(), true);
-				strBalance = Transaction.convertToDollars(sch.getBalance(), true);
+				strAmount = Transaction.convertToDollars(sch.getAmount(), true, false);
+				strBalance = Transaction.convertToDollars(sch.getBalance(), true, false);
 				
 				// Convert the Calendar object to a string formated: Month Day, Year (1/10/12)
 				strDate = FormatDate(Date);
@@ -898,7 +899,7 @@ public class KMMDService extends Service
 		Log.d(TAG, "Skipped schedule uri: " + u.toString());
 		Cursor c = getContentResolver().query(u, null, null, null, null);
 
-		Schedule sch = new Schedule(c);
+		Schedule sch = new Schedule(c, getBaseContext(), widgetId);
 		sch.skipSchedule();
 		
 		// Update the nextPaymentDue and startDates for the actual schedule

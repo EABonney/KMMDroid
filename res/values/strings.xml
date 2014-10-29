@@ -41,6 +41,7 @@
     <string name="titlePayeeTelephone">Telephone: </string>
     <string name="titlePayeeEmail">Email: </string>
     <string name="titlePayeeNotes">Notes: </string>
+    <string name="titleInvestmentActivity">Investments</string>
     <string name="payeeMatching">Transaction Matching</string>
     <string name="payeeNoMatching">No matching</string>
     <string name="payeeMatchonName">Match on Payee name</string>
@@ -527,4 +528,11 @@
  	<string name="titleShowClosed">Show closed accounts</string>
  	<string name="titleClose">Close</string>
  	<string name="titleOpen">Open</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="titlePreferredAccounts">Preferred Accounts</string>
+    <string name="empty_widget_nopreferredaccounts">No Preferred Accounts</string>
+    <string name="empty_widget_noschedules">No schedules found</string>
+    <string name="widgetPreferredAccounts">KMMD - Preferred Accounts</string>
+    <string name="widgetSchedules">KMMD - Schedules</string>
 </resources>

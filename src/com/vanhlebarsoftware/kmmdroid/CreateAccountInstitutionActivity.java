@@ -1,8 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -16,7 +14,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,16 +99,6 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	public void onCreate(Bundle savedInstance)
 	{
         super.onCreate(savedInstance);
-		
-        Log.d(TAG, "CreatAccountInstitutionActivity::onCreate()");
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -172,6 +159,9 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 							spinInstitutions.setVisibility(View.GONE);
 							textInstitutions.setVisibility(View.GONE);
 							buttonNewInstitution.setVisibility(View.GONE);
+							// Remove the institution information from this account
+							institutionId = null;
+							institutionSelected = null;
 						}
 						else
 						{
@@ -179,10 +169,18 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 							textInstitutions.setVisibility(View.VISIBLE);
 							buttonNewInstitution.setVisibility(View.VISIBLE);
 							spinInstitutions.setSelection(0);
+							Cursor c = (Cursor) spinInstitutions.getSelectedItem();
+							if(c != null )
+							{
+								c.moveToFirst();
+								institutionId = c.getString(0);
+								institutionSelected = c.getString(1);
+								Log.d(TAG, "institudtionId: " + institutionId);
+							}
 						}
 						break;
 				}
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
         });
         
@@ -194,7 +192,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -209,7 +207,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsInstitutionDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -232,6 +230,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
         // or start a new one.
         getLoaderManager().initLoader(CAINSTITUTIONS_LOADER, null, this);
         
+        Log.d(TAG, "Inside onCreateView()");
         return view;
     }		
 
@@ -257,6 +256,7 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 			
 				institutionId = c.getString(0);
 				institutionSelected = c.getString(1);
+				Log.d(TAG, "institudtionId: " + institutionId);
 				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
 			}
 			else
@@ -286,9 +286,6 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		
 		// Notify the ParentActivity we need it's data if any.
 		sendInstitutionData();
-		
-		// Set the Institutions spinner to the proper location or default of zero.
-		//spinInstitutions.setSelection(setInstitution(institutionSelected, columnUsed));
 		
 		updateUIElements();
 	}
@@ -353,6 +350,11 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 		return !checked;
 	}
 	
+	public String getInstitution()
+	{
+		return institutionSelected;
+	}
+	
 	public String getInstitutionId()
 	{
 		return institutionId;
@@ -398,12 +400,13 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 	
 	public void sendInstitutionData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendInstitutionData.onSendInstitutionData();
 	}
 	
 	private void updateUIElements()
 	{
-		Log.d(TAG, "Updateing UI");
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		String strAN = prefs.getString("AccountNumber", null);
 		String strIB = prefs.getString("IBAN", null);
@@ -427,5 +430,18 @@ public class CreateAccountInstitutionActivity extends Fragment implements
 			accountIBAN.setText(strIB);
 		else
 			accountIBAN.setText(this.strIBAN);
+	}
+	
+	public Bundle getInstitutionBunde()
+	{
+		Bundle bundleInst = new Bundle();
+		
+		bundleInst.putString("institutionSelected", this.getInstitution());
+		bundleInst.putString("institutionId", this.getInstitutionId());
+		bundleInst.putString("strAccountNumber", this.getAccountNumber());
+		bundleInst.putString("strIBAN", this.getIBAN());
+		bundleInst.putBoolean("UseInst", this.getUseInstitution());
+		
+		return bundleInst;
 	}
 }

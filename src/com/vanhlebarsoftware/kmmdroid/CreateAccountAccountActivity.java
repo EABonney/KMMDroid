@@ -1,8 +1,8 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.Calendar;
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -16,7 +16,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +39,15 @@ LoaderManager.LoaderCallbacks<Cursor>
 	static final int SET_DATE_ID = 0;
 	private int TypeSelected = 0;
 	private int numberOfPasses = 0;
+	private int intYear;
+	private int intMonth;
+	private int intDay;
 	private String strTypeSelected = null;
 	private String currencySelected = null;
+	private String strAccountName = null;
+	private String strOpenDate = null;
+	private String strOpenBalance = null;
+	private boolean bPreferred = false;
 	private OnAccountPreferredCheckedListener onAccountPreferredCheckedListener;
 	private OnSendAccountDataListener onSendAccountData;
 	private Activity ParentActivity;
@@ -55,21 +61,11 @@ LoaderManager.LoaderCallbacks<Cursor>
 	TextView txtTotTrans;
 	SimpleCursorAdapter adapterCurrency;
 	ArrayAdapter<CharSequence> adapterTypes;
-	//KMMDroidApp KMMDapp;
 	
 	@Override
 	public void onCreate(Bundle savedState)
 	{
 		super.onCreate(savedState);
-
-        // Get our application
-        //KMMDapp = ((KMMDroidApp) getActivity().getApplication());
-        
-        // See if the database is already open, if not open it Read/Write.
-        //if(!KMMDapp.isDbOpen())
-        //{
-        //	KMMDapp.openDB();
-        //}
 	}
 	
 	@Override
@@ -86,6 +82,7 @@ LoaderManager.LoaderCallbacks<Cursor>
             // won't be displayed.  Note this is not needed -- we could
             // just run the code below, where we would create and return
             // the view hierarchy; it would just never be used.
+        	Log.d(TAG, "Container was null!!!");
             return null;
         }
         
@@ -106,9 +103,31 @@ LoaderManager.LoaderCallbacks<Cursor>
 			{
 				DialogFragment dateFrag = new KMMDDatePickerFragment(openDate);
 				dateFrag.show(getActivity().getSupportFragmentManager(), "datePicker");
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 			}
 		});
+        
+        openDate.addTextChangedListener(new TextWatcher()
+        {
+
+			public void afterTextChanged(Editable s) 
+			{
+				if( s.length() > 0 )
+				{
+					Log.d(TAG, "openDate: " + s.toString());
+					String tmp[] = s.toString().split("-");
+					intYear = Integer.valueOf(tmp[2]);
+					intMonth = Integer.valueOf(tmp[0]) - 1;
+					intDay = Integer.valueOf(tmp[1]);
+				}
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {}
+        });
         
         checkPreferred.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -117,7 +136,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 				switch( buttonView.getId() )
 				{
 					case R.id.checkboxAccountPreferred:
-						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+						((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 						break;
 				}
 			}
@@ -133,7 +152,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -148,7 +167,7 @@ LoaderManager.LoaderCallbacks<Cursor>
 
 			public void afterTextChanged(Editable s) 
 			{
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 			}
 
 			public void beforeTextChanged(CharSequence s, int start, int count,
@@ -171,6 +190,13 @@ LoaderManager.LoaderCallbacks<Cursor>
         // or start a new one.
         getLoaderManager().initLoader(CAACCOUNT_LOADER, null, this);
         
+        // get the current date
+        final Calendar c = Calendar.getInstance();
+        intYear = c.get(Calendar.YEAR);
+        intMonth = c.get(Calendar.MONTH);
+        intDay = c.get(Calendar.DAY_OF_MONTH);
+        
+        Log.d(TAG, "Inside onCreateView()");
         return view;
     }
 	
@@ -202,6 +228,8 @@ LoaderManager.LoaderCallbacks<Cursor>
 		{
 			throw new ClassCastException(activity.toString() + "must implement OnSendAccountDataListener");
 		}
+		
+		Log.d(TAG, "onAttach()");
 	}
 
 	@Override
@@ -250,12 +278,12 @@ LoaderManager.LoaderCallbacks<Cursor>
 						}
 						else
 							Log.d(TAG, "ERROR!!!");
-						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+						((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 						break;
 					case R.id.accountCurrency:
 						Cursor c = (Cursor) parent.getAdapter().getItem(pos);
 						currencySelected = c.getString(0);
-						((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+						((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 						break;
 				}
 			}
@@ -277,13 +305,14 @@ LoaderManager.LoaderCallbacks<Cursor>
 		switch( buttonView.getId() )
 		{
 			case R.id.checkboxAccountPreferred:
-				((CreateModifyAccountActivity) ParentActivity).setIsDirty(true);
+				((CreateModifyAccountActivity) ParentActivity).setIsAccountDirty(true);
 				break;
 		}
 	}
 	
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) 
 	{
+		Log.d(TAG, "Initializing the loader.......");
 		String dbColumns[] = { "ISOCode AS _id", "name" };
 		String frag = "#9999";
 		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_CURRENCY_URI, frag);
@@ -357,7 +386,10 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public String getAccountName()
 	{
-		return accountName.getText().toString();
+		if( accountName != null )
+			return accountName.getText().toString();
+		else
+			return this.strAccountName;
 	}
 	
 	public int getAccountType()
@@ -392,18 +424,32 @@ LoaderManager.LoaderCallbacks<Cursor>
 	public String getOpeningDate()
 	{
 		// We need to reverse the order of the date to be YYYY-MM-DD for SQL
-		String tmp = openDate.getText().toString();
-		String dates[] = tmp.split("-");
+		String tmp = null;
+		if( openDate != null )
+			tmp = openDate.getText().toString();
+		else
+			tmp = this.strOpenDate;
 		
-		return new StringBuilder()
-		.append(dates[2]).append("-")
-		.append(dates[0]).append("-")
-		.append(dates[1]).toString();
+		if(tmp != null)
+		{
+			String dates[] = tmp.split("-");
+		
+			return new StringBuilder()
+			.append(dates[2]).append("-")
+			.append(dates[0]).append("-")
+			.append(dates[1]).toString();
+		}
+		else
+			return tmp;
 	}
 	
 	public String getOpeningBalance()
 	{
-		String tmp = openBalance.getText().toString();
+		String tmp = null;
+		if( openBalance != null )
+			tmp = openBalance.getText().toString();
+		else
+			tmp = this.strOpenBalance;
 		
 		if( tmp.isEmpty() )
 			tmp = "0.00";
@@ -413,12 +459,16 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public boolean getPreferredAccount()
 	{
-		return checkPreferred.isChecked();
+		if( checkPreferred != null )
+			return checkPreferred.isChecked();
+		else
+			return this.bPreferred;
 	}
 	
 	public void putAccountName(String name)
 	{
-		accountName.setText(name);
+		//accountName.setText(name);
+		this.strAccountName = name;
 	}
 	
 	public void putAccountType(int type)
@@ -461,18 +511,20 @@ LoaderManager.LoaderCallbacks<Cursor>
 			date = date.trim();
 			String dates[] = date.split("-");	
 			
-			openDate.setText(dates[1] + "-" + dates[2] + "-" + dates[0]);
+			this.strOpenDate = dates[1] + "-" + dates[2] + "-" + dates[0];
 		}
 	}
 	
 	public void putOpeningBalance(String balance)
 	{
-		openBalance.setText(balance);
+		//openBalance.setText(balance);
+		this.strOpenBalance = balance;
 	}
 	
 	public void putPreferredAccount(boolean preferred)
 	{
-		checkPreferred.setChecked(preferred);
+		//checkPreferred.setChecked(preferred);
+		this.bPreferred = preferred;
 	}
 	
 	public void putTransactionCount(String strCount)
@@ -482,11 +534,13 @@ LoaderManager.LoaderCallbacks<Cursor>
 	
 	public void sendAccountData()
 	{
+		Log.d(TAG, "Asking for data from the parent...");
 		onSendAccountData.onSendAccountData();
 	}
 	
-	private void updateUIElements()
+	public void updateUIElements()
 	{
+		Log.d(TAG, "Updating UI");
 		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
 		
 		String accountName = prefs.getString("AccountName", null);
@@ -495,14 +549,22 @@ LoaderManager.LoaderCallbacks<Cursor>
 		String openDate = prefs.getString("OpenDate", null);
 		String openBalance = prefs.getString("OpenBalance", null);
 		boolean preferredAcct = prefs.getBoolean("PreferredAccount", false);
+		String acctTypeString = prefs.getString("AccountTypeString", null);
 		
         // Set the base currency from the file.
         currencySelected = getBaseCurrency();
         
 		if( accountName != null )
 			this.accountName.setText(accountName);
+		else
+			this.accountName.setText(this.strAccountName);
 		if( accountType != 0 )
 			this.putAccountType(accountType);
+		if( acctTypeString != null)
+			this.putAccountTypeString(acctTypeString);
+		else
+			this.putAccountTypeString(this.strTypeSelected);
+		
 		this.spinType.setSelection(this.TypeSelected);
 		if( currencyId != null )
 			this.spinCurrency.setSelection(setCurrency(currencyId));
@@ -510,9 +572,83 @@ LoaderManager.LoaderCallbacks<Cursor>
 			this.spinCurrency.setSelection(setCurrency(this.currencySelected));
 		if( openDate != null )
 			this.openDate.setText(openDate);
+		else
+			this.openDate.setText(this.strOpenDate);
 		if( openBalance != null )
 			this.openBalance.setText(openBalance);
+		else
+			this.openBalance.setText(this.strOpenBalance);
 		if( prefs.contains("PreferredAccount") )
 			this.checkPreferred.setChecked(preferredAcct);
+		else
+			this.checkPreferred.setChecked(this.bPreferred);
+		
+        // display the current date
+        updateDisplay();
+	}
+	
+	private void updateDisplay()
+	{
+		String strDay = null;
+		String strMonth = null;
+		switch(intDay)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+			case 9:
+				strDay = "0" + String.valueOf(intDay);
+				break;
+			default:
+				strDay = String.valueOf(intDay);
+			break;
+		}
+		
+		switch(intMonth)
+		{
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+				strMonth = "0" + String.valueOf(intMonth + 1);
+				break;
+			default:
+				strMonth = String.valueOf(intMonth + 1);
+				break;
+		}
+		
+		openDate.setText(
+				new StringBuilder()
+					// Month is 0 based so add 1
+					.append(strMonth).append("-")
+					.append(strDay).append("-")
+					.append(intYear));
+	}
+	public Bundle getAccountBundle()
+	{
+		Bundle bundleAcct = new Bundle();
+		
+		bundleAcct.putBoolean("preferred", this.getPreferredAccount());
+		bundleAcct.putString("name", this.getAccountName());
+		bundleAcct.putString("openDate", this.getOpeningDate());
+		bundleAcct.putString("openBalance", this.getOpeningBalance());
+		bundleAcct.putString("currencySelected", this.getCurrency());
+		bundleAcct.putString("strTypeSelected", this.getAccountTypeString());
+		bundleAcct.putInt("intTypeSelected", this.getAccountType());
+		bundleAcct.putString("accountTypeString", this.strTypeSelected);
+		Log.d(TAG, "accountTypeString: " + this.strTypeSelected);
+		
+		return bundleAcct;
 	}
 }

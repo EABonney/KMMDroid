@@ -1,30 +1,46 @@
 package com.vanhlebarsoftware.kmmdroid;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 {
 	private final static String TAG = TransactionsLoader.class.getSimpleName();
+	public final static String TRANSCHANGED = "Transactions-Changed";
 	List<Transaction> mTransactions;
 	Context mContext;
 	Bundle mBundle;
+	private TransactionsListener mObserver = null;
+	private String[] selectionArgs;
+	private boolean showAll;
 	
 	public TransactionsLoader(Context context, Bundle extras) 
 	{
 		super(context);
 		this.mContext = context;
 		this.mBundle = extras;
+		if( extras != null )
+		{
+			// We need to get the balance of this account.
+			selectionArgs = this.mBundle.getStringArray("selectionArgs");
+			showAll = this.mBundle.getBoolean("showAll", false);
+			Log.d(TAG, "showAll: " + showAll);
+			for(int i=0; i<selectionArgs.length;i++)
+				Log.d(TAG, "selectionArgs[" + i + "]: " + selectionArgs[i]);
+		}
 	}
 
 	@Override
@@ -82,6 +98,12 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
             deliverResult(mTransactions);
         }
         
+        // Start monitoring the data source.
+        if( this.mObserver == null )
+        {
+        	this.mObserver = new TransactionsListener(this);
+        }
+        
         if (takeContentChanged() || mTransactions == null )
         {
             // If the data has changed since the last time it was loaded
@@ -130,6 +152,14 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
             onReleaseResources(mTransactions);
             mTransactions = null;
         }
+        
+        // The loader is being reset so we should stop monitor for changes.
+        if( this.mObserver != null )
+        {
+        	Log.d(TAG, "Unregistering the Transactions observer.");
+            LocalBroadcastManager.getInstance(this.mContext).unregisterReceiver(this.mObserver);
+            this.mObserver = null;
+        }
     }
     
     /**
@@ -145,17 +175,12 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
     private List<Transaction> getTransactions()
     {
     	String dbSelection = null;
-    	// We need to get the balance of this account.
-    	String[] selectionArgs = this.mBundle.getStringArray("selectionArgs");
     	long balance = getBalance(selectionArgs[0]);
-    	
-    	for(int i=0; i < selectionArgs.length; i++)
-    		Log.d(TAG, "selectionArgs[" + i + "]: " + selectionArgs[i]);
     	
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		final Context context = getContext();
 		String[] dbColumns = {"transactionId AS _id", "payeeId", "value", "memo", "postDate", "name", "checkNumber", "reconcileFlag"};
-		if(this.mBundle.getBoolean("showAll"))
+		if( showAll )
 		{
 			dbSelection = "(kmmSplits.payeeId = kmmPayees.id AND accountId = ? AND txType = 'N') UNION SELECT transactionId, payeeId," +
 					" value, memo, postDate, bankId, checkNumber, reconcileFlag FROM kmmSplits WHERE payeeID IS NULL AND accountId = ?" +
@@ -179,13 +204,13 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 		c.moveToFirst();
 		// Make sure Transactions are empty.
 		transactions.clear();
+		Log.d(TAG, "Transactions returned: " + c.getCount());
 		
 		for(int i=0; i < c.getCount(); i++)
 		{
-			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(c.getString(c.getColumnIndex("value"))), true),
-									c.getString(c.getColumnIndex("name")), c.getString(c.getColumnIndex("postDate")),
-									c.getString(c.getColumnIndex("memo")), c.getString(c.getColumnIndex("_id")),
-									c.getString(c.getColumnIndex("reconcileFlag")), c.getString(c.getColumnIndex("checkNumber")));
+			trans = new Transaction(Transaction.convertToDollars(Account.convertBalance(c.getString(c.getColumnIndex("value"))), true, false),
+									c.getString(c.getColumnIndex("postDate")),
+									c.getString(c.getColumnIndex("memo")), c.getString(c.getColumnIndex("_id")), "9999", context);
 			transactions.add(trans);
 
 			c.moveToNext();
@@ -207,11 +232,14 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 		}
 		
 		// Create our "load more" option as a transaction to be displayed at the "end" of the list.
-		if( !mBundle.getBoolean("showAll") )
+		if( !showAll )
 		{
-			Transaction loadMore = new Transaction("0.00", getContext().getString(R.string.loadMoreRow), null, null, "999999", null, null);
+			Transaction loadMore = new Transaction("0.00", null, null, "999999", "9999", context);
 			transactions.add(0, loadMore);
 		}
+		
+		// Close our cursor.
+		c.close();
 		
 		return transactions;
     }
@@ -234,4 +262,25 @@ public class TransactionsLoader extends AsyncTaskLoader<List<Transaction>>
 			return arg0.getDate().compareTo(arg1.getDate());
 		}
 	}
+	
+    private class TransactionsListener extends BroadcastReceiver
+    {
+    	final TransactionsLoader mLoader;
+    	
+    	public TransactionsListener(TransactionsLoader loader)
+    	{
+    		mLoader = loader;
+        	Log.d(TAG, "Registering observer for Transaction changes.");
+        	LocalBroadcastManager.getInstance(mContext).registerReceiver(this, new IntentFilter(TRANSCHANGED));
+    	}
+    	
+		@Override
+		public void onReceive(Context context, Intent intent) 
+		{
+			Log.d(TAG, "Need to update the TransactionsLoader!");
+			mLoader.mBundle = intent.getExtras();
+			mLoader.onContentChanged();
+		}
+    	
+    }
 }

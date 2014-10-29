@@ -22,7 +22,7 @@ public class KMMDExpandableListAdapter extends BaseExpandableListAdapter
         return true;
     }
 
-    public KMMDExpandableListAdapter(Context context, ArrayList<String> groups, ArrayList<ArrayList<Account>> children, KMMDroidApp kmmdApp) 
+    public KMMDExpandableListAdapter(Context context, ArrayList<String> groups, ArrayList<ArrayList<Account>> children) 
     {
         this.context = context;
         this.groups = groups;

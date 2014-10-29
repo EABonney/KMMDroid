@@ -1,86 +1,105 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.ContextThemeWrapper;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.SimpleCursorAdapter;
-import android.widget.Spinner;
 
-public class PayeeDefaultAccountActivity extends FragmentActivity implements OnCheckedChangeListener
+public class PayeeDefaultAccountActivity extends Fragment implements 
+													OnCheckedChangeListener
 {
-	private static final String TAG = "PayeeDefaultAccountActivity";
-	private static final String dbTable = "kmmAccounts";
-	private static final String[] dbColumns = { "accountName", "id AS _id"};
-	private static final String strSelectionInc = "accountTypeString=? AND (balance != '0/1')";
-	private static final String strSelectionExp = "accountTypeString=? AND (balance != '0/1')";
-	private static final String strOrderBy = "accountName ASC";
-	static final String[] FROM = { "accountName" };
-	static final int[] TO = { android.R.id.text1 };
-	String strIncAccountSelected = null;
-	String strExpAccountSelected = null;
-	int IncSpinnerPos = 0;
-	int ExpSpinnerPos = 0;
-	private int numberOfPasses = 0;
-	private CreateModifyPayeeActivity parentTabHost;
-	KMMDroidApp KMMDapp;
-	Cursor cursorInc;
-	Cursor cursorExp;
-	Spinner spinIncome;
-	Spinner spinExpense;
-	CheckBox checkboxInc;
-	CheckBox checkboxExp;
+	private static final String TAG = PayeeDefaultAccountActivity.class.getSimpleName();
+	private OnUseDefaultCheckedListener onUseDefaultChecked;
+	private OnSendDefaultDataListener onSendDefaultData;
+	private Activity ParentTab;
+	Fragment expFrag = null;
+	Fragment incFrag = null;
 	CheckBox checkboxDefaultEnabled;
-	SimpleCursorAdapter adapterInc;
-	SimpleCursorAdapter adapterExp;
 	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) 
+	{
+		super.onAttach(activity);
+		
+		// Save our ParentActivity
+		ParentTab = activity;
+		
+		try
+		{
+			onUseDefaultChecked = (OnUseDefaultCheckedListener) activity;
+		}
+		catch(ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + " must implement OnUseDefaultCheckedListener");
+		}
+		
+		try
+		{
+			onSendDefaultData = (OnSendDefaultDataListener) activity;
+		}
+		catch(ClassCastException e)
+		{
+			throw new ClassCastException(activity.toString() + " must implement OnSendDefaultDataListener");
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
+	 */
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
+        if (container == null) 
+        {
+            // We have different layouts, and in one of them this
+            // fragment's containing frame doesn't exist.  The fragment
+            // may still be created from its saved state, but there is
+            // no reason to try to create its view hierarchy because it
+            // won't be displayed.  Note this is not needed -- we could
+            // just run the code below, where we would create and return
+            // the view hierarchy; it would just never be used.
+            return null;
+        }
+        
+        View view = inflater.inflate(R.layout.payee_defaultaccount, container, false);
+        
+        // Find our views
+        checkboxDefaultEnabled = (CheckBox) view.findViewById(R.id.payeeUseDefault);
+        
+        // Hook into our onClickListener Events for the checkboxes.
+        checkboxDefaultEnabled.setOnCheckedChangeListener(this);
+        
+        // Add the fragments for the expense and income spinners.
+        if( expFrag == null)
+        {
+        	expFrag = new PayeeDefaultExpFragment();
+        	incFrag = new PayeeDefaultIncFragment();
+        	FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        	ft.add(R.id.incFragment, incFrag, "incomeFragment");
+        	ft.add(R.id.expFragment, expFrag, "expenseFragment");
+        	ft.commit();
+        	this.getChildFragmentManager().executePendingTransactions();
+        }
+        
+		return view;
+	}
+
 	@Override
     public void onCreate(Bundle savedInstanceState) 
 	{
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.payee_defaultaccount);
-        
-        // Get our application
-        KMMDapp = ((KMMDroidApp) getApplication());
-        
-        // Get the tabHost on the parent.
-        parentTabHost = ((CreateModifyPayeeActivity) this.getParent());
-        
-        // Find our views
-        spinIncome = (Spinner) findViewById(R.id.payeeDefaultIncome);
-        spinExpense = (Spinner) findViewById(R.id.payeeDefaultExpense);
-        checkboxInc = (CheckBox) findViewById(R.id.checkboxPayeeDefaultIncome);
-        checkboxExp = (CheckBox) findViewById(R.id.checkboxPayeeDefaultExpense);
-        checkboxDefaultEnabled = (CheckBox) findViewById(R.id.payeeUseDefault);
-        
-        // Hook into our onClickListener Events for the checkboxes.
-        checkboxDefaultEnabled.setOnCheckedChangeListener(this);
-        checkboxInc.setOnCheckedChangeListener(this);
-        checkboxExp.setOnCheckedChangeListener(this);
-        
-        // Make the spinners and Income/Expense checkboxes disabled.
-        spinIncome.setEnabled(false);
-        spinExpense.setEnabled(false);
-        checkboxInc.setEnabled(false);
-        checkboxExp.setEnabled(false);
-        
-        // Set the OnItemSelectedListeners for the spinners.
-        spinIncome.setOnItemSelectedListener(new PayeeDefaultOnItemSelectedListener());
-        spinExpense.setOnItemSelectedListener(new PayeeDefaultOnItemSelectedListener());
-        
-        // See if the database is already open, if not open it Read/Write.
-        if(!KMMDapp.isDbOpen())
-        {
-        	KMMDapp.openDB();
-        }
     }
 
 	@Override
@@ -90,61 +109,13 @@ public class PayeeDefaultAccountActivity extends FragmentActivity implements OnC
 	}
 	
 	@Override
-	protected void onResume()
+	public void onResume()
 	{
 		super.onResume();
 		
-		//Get all the accounts to be displayed.
-		cursorInc = KMMDapp.db.query(dbTable, dbColumns, strSelectionInc, new String[] { getString(R.string.Income) }, null, null, strOrderBy);
-		startManagingCursor(cursorInc);
-		cursorExp = KMMDapp.db.query(dbTable, dbColumns, strSelectionExp, new String[] { getString(R.string.Expense) }, null, null, strOrderBy);
-		startManagingCursor(cursorExp);
+		sendDefaultData();
 		
-		// Set up the adapter
-		adapterInc = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorInc, FROM, TO);
-		adapterExp = new SimpleCursorAdapter(this, android.R.layout.simple_spinner_item, cursorExp, FROM, TO);
-		adapterInc.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		adapterExp.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-		
-		//adapter.setViewBinder(VIEW_BINDER);
-		spinIncome.setAdapter(adapterInc);
-		spinExpense.setAdapter(adapterExp);
-		
-		// Set the spinners location.
-		spinIncome.setSelection(IncSpinnerPos);
-		spinExpense.setSelection(ExpSpinnerPos);
-	}
-	
-	@Override
-	public void onBackPressed()
-	{
-		if( parentTabHost.getIsDirty() )
-		{
-			AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogNoTitle));
-			alertDel.setTitle(R.string.BackActionWarning);
-			alertDel.setMessage(getString(R.string.titleBackActionWarning));
-
-			alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					finish();
-				}
-			});
-			
-			alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
-			{
-				public void onClick(DialogInterface dialog, int whichButton) 
-				{
-					// Canceled.
-				}
-			});				
-			alertDel.show();
-		}
-		else
-		{
-			finish();
-		}
+		updateUIElements();
 	}
 	
 	public void onCheckedChanged(CompoundButton btn, boolean arg1) 
@@ -153,133 +124,147 @@ public class PayeeDefaultAccountActivity extends FragmentActivity implements OnC
 		{
 			case R.id.payeeUseDefault:
 				// if the user is selecting the checkbox, turn on the Income/Exp checkboxes
-				if( btn.isChecked() )
-				{
-			        checkboxInc.setEnabled(true);
-			        checkboxExp.setEnabled(true);					
-				}
-				else
-				{
-					checkboxInc.setEnabled(false);
-					checkboxExp.setEnabled(false);
-					
-					// Need to also ensure that the spinners are disabled as well.
-					spinIncome.setEnabled(false);
-					spinExpense.setEnabled(false);
-					
-					// Return both Income/Expense checkboxes to unchecked status.
-					checkboxInc.setChecked(false);
-					checkboxExp.setChecked(false);
-				}
-				break;
-			case R.id.checkboxPayeeDefaultExpense:
-				//If the user is selecting the checkbox, turn on the spinner.
-				if ( btn.isChecked() )
-				{
-					spinExpense.setEnabled(true);
-					
-					// also ensure that the user can only check Income OR Expense for default.
-					checkboxInc.setChecked(false);
-				}
-				else
-					spinExpense.setEnabled(false);
-				break;
-			case R.id.checkboxPayeeDefaultIncome:
-				//If the user is selecting the checkbox, turn on the spinner.
-				if( btn.isChecked() )
-				{
-					spinIncome.setEnabled(true);
-					
-					// also ensure that the user can only check Income OR Expense for default.
-					checkboxExp.setChecked(false);
-				}
-				else
-					spinIncome.setEnabled(false);
+				onUseDefaultChecked.onUseDefaultChecked(btn.isChecked());
 				break;
 		}
-		parentTabHost.setIsDirty(true);
+		((CreateModifyPayeeActivity) ParentTab).setIsDirty(true);
+	}
+	// *******************************************************************************************************
+	// *********************************** Public Event Interfaces *******************************************
+	public interface OnUseDefaultCheckedListener
+	{
+		public void onUseDefaultChecked(boolean flag);
+	}
+	
+	public interface OnSendDefaultDataListener
+	{
+		public void onSendDefaultData();
+	}
+	// ************************************************************************************************
+	// ******************************* Helper Functions ***********************************************
+	private void sendDefaultData()
+	{
+		onSendDefaultData.onSendDefaultData();
 	}
 	
 	public boolean getUseDefaults()
 	{
 		return checkboxDefaultEnabled.isChecked();
 	}
-	
-	public boolean getUseIncome()
-	{
-		return checkboxInc.isChecked();
-	}
-	
-	public boolean getUseExpense()
-	{
-		return checkboxExp.isChecked();
-	}
-	
-	public String getIncomeAccount()
-	{
-		return strIncAccountSelected;
-	}
-	
-	public String getExpenseAccount()
-	{
-		return strExpAccountSelected;
-	}
-	
+
 	public void putUseDefaults(boolean b)
 	{
 		checkboxDefaultEnabled.setChecked(b);
 	}
 	
-	public void putUseIncome(boolean b)
+	public void putDefaultAccountId(String id)
 	{
-		checkboxInc.setChecked(b);
-		checkboxInc.setEnabled(b);
-	}
-	
-	public void putUseExpense(boolean b)
-	{
-		checkboxExp.setChecked(b);
-		checkboxExp.setEnabled(b);
-	}
-	
-	public void putIncomeAccount(int position)
-	{
-		IncSpinnerPos = position;
-	}
-	
-	public void putExpenseAccount(int position)
-	{
-		ExpSpinnerPos = position;
-	}
-	
-	public class PayeeDefaultOnItemSelectedListener implements OnItemSelectedListener
-	{
-		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
+		boolean idFound = false;
+		// Get our cursors to look up the id.
+		String[] dbColumns = { "accountName", "id AS _id"};
+		String strSelectionInc = "accountType=? AND (balance != '0/1')";
+		String strOrderBy = "accountName ASC";
+		String frag = "#9999";
+		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
+		u = Uri.parse(u.toString());
+		Cursor incCur = getActivity().getBaseContext().getContentResolver().query(u, dbColumns, strSelectionInc, 
+										new String[] { String.valueOf(Account.ACCOUNT_INCOME) }, strOrderBy);
+		Cursor expCur = getActivity().getBaseContext().getContentResolver().query(u, dbColumns, strSelectionInc, 
+				new String[] { String.valueOf(Account.ACCOUNT_EXPENSE) }, strOrderBy);
+		PayeeDefaultIncFragment incFrag = (PayeeDefaultIncFragment) this.getChildFragmentManager().findFragmentByTag("incomeFragment");
+		PayeeDefaultExpFragment expFrag = (PayeeDefaultExpFragment) this.getChildFragmentManager().findFragmentByTag("expenseFragment");
+		incCur.moveToFirst();
+		expCur.moveToFirst();
+		incFrag.adapterInc.getCursor();
+		for(int i=0; i < incCur.getCount(); i++)
 		{
-			if( numberOfPasses > 1 )
+			if( id.equals(incCur.getString(incCur.getColumnIndex("_id"))) )
 			{
-				Cursor c = (Cursor) parent.getAdapter().getItem(pos);
-			
-				switch ( parent.getId() )
-				{
-					case R.id.payeeDefaultIncome:
-						strIncAccountSelected = c.getString(1);
-						parentTabHost.setIsDirty(true);
-						break;
-					case R.id.payeeDefaultExpense:
-						strExpAccountSelected = c.getString(1);
-						parentTabHost.setIsDirty(true);
-						break;
-					default:
-						break;
-				}
+				idFound = true;
+				
+				// Let's set the spinner to the correct location and turn off the expense fragment
+				this.checkboxDefaultEnabled.setChecked(true);
+				incFrag.checkboxInc.setChecked(true);
+				incFrag.setSpinnerPos(i, id);
+				expFrag.checkboxExp.setChecked(false);
+				expFrag.checkboxExp.setEnabled(false);
+				expFrag.spinExpense.setEnabled(false);
+				break;
 			}
 			else
-				numberOfPasses++;
+				incCur.moveToNext();
 		}
+		
+		if( !idFound )
+		{
+			for(int i=0; i < expCur.getCount(); i++)
+			{
+				if( id.equals(expCur.getString(expCur.getColumnIndex("_id"))) )
+				{
+					idFound = true;
+					
+					// Let's set the spinner to the correct location and turn off the income fragment
+					this.checkboxDefaultEnabled.setChecked(true);
+					expFrag.checkboxExp.setChecked(true);
+					expFrag.setSpinnerPos(i, id);
+					incFrag.checkboxInc.setChecked(false);
+					incFrag.checkboxInc.setEnabled(false);
+					incFrag.spinIncome.setEnabled(false);
+					break;					
+				}
+				else
+					expCur.moveToNext();
+			}
+		}
+		
+		// Clean up our Cursors
+		expCur.close();
+		incCur.close();
+	}
+	
+	public boolean getUseIncome()
+	{
+		PayeeDefaultIncFragment incFrag = (PayeeDefaultIncFragment) this.getChildFragmentManager().findFragmentByTag("incomeFragment");
+		return incFrag.checkboxInc.isChecked();
+	}
+	
+	public boolean getUseExpense()
+	{
+		PayeeDefaultExpFragment expFrag = (PayeeDefaultExpFragment) this.getChildFragmentManager().findFragmentByTag("expenseFragment");
+		return expFrag.checkboxExp.isChecked();
+	}
+	
+	public String getIncomeAccount()
+	{
+		PayeeDefaultIncFragment incFrag = (PayeeDefaultIncFragment) this.getChildFragmentManager().findFragmentByTag("incomeFragment");
 
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// do nothing.
-		}		
+		return incFrag.getIncomeId();
+	}
+	
+	public String getExpenseAccount()
+	{
+		PayeeDefaultExpFragment expFrag = (PayeeDefaultExpFragment) this.getChildFragmentManager().findFragmentByTag("expenseFragment");
+
+		return expFrag.getExpensId();
+	}
+	
+	private void updateUIElements()
+	{
+		SharedPreferences prefs = getActivity().getPreferences(Activity.MODE_PRIVATE);
+		int useDefault = prefs.getInt("UseDefault", -1);
+		int useIncome = prefs.getInt("UseIncome", -1);
+		int useExpense = prefs.getInt("UseExpense", -1);
+		String incId = prefs.getString("IncId", null);
+		String expId = prefs.getString("ExpId", null);
+
+		if( useDefault != -1 )
+		{
+			this.checkboxDefaultEnabled.setChecked(false);
+			if( useIncome > 0 )
+				this.putDefaultAccountId(incId);
+			else if( useExpense > 0 )
+				this.putDefaultAccountId(expId);
+		}
+		
 	}
 }

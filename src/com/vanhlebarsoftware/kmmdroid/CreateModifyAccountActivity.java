@@ -1,10 +1,6 @@
 package com.vanhlebarsoftware.kmmdroid;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -28,7 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
@@ -49,52 +43,25 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	private static final int ACTION_EDIT = 2;
 	private static final int A_CREDITCARD = 4;
 	private static final int A_LOAN = 5;
-	private static final int A_INVESTMENT = 7;
-	private static final int C_ID = 0;
-	private static final int C_INSTITUTIONID = 1;
-	private static final int C_PARENTID = 2;
-	private static final int C_OPENINGDATE = 5;
-	private static final int C_ACCOUNTNUMBER = 6;
-	private static final int C_ACCOUNTTYPE = 7;
-	private static final int C_ACCOUNTTYPESTRING = 8;
-	private static final int C_ACCOUNTNAME = 10;
-	private static final int C_CURRENCYID = 12;
-	private static final int C_BALANCEFORMATTED = 14;	
-	private static final int C_TRANSACTIONCOUNT = 15;
-	
+	private static final int A_INVESTMENT = 7;	
 	private int Action = 0;
 	private String accountId = null;
 	private String parentAccountSelection = null;
 	private boolean returnFromDelete = false;
 	private boolean isDirty = false;
 	private boolean firstRun = true;
+	private boolean bAccountDirty = false;
+	private boolean bInstitutionDirty = false;
+	private boolean bParentDirty = false;
 	KMMDroidApp KMMDapp;
 	TextView payeeName;
-	TextView title;
-	//SimpleCursorAdapter adapter;
+	//TextView title;
 	TabHost tabHost;
 	
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, CreateModifyAccountActivity.TabInfo>();
 	private TabInfo mLastTab = null;
-	
-	/********************************************************************************************************
-	 * Class variables to hold the Institution data - used to pass down to the fragment and to save in db.
-	 *******************************************************************************************************/
-	String InstId = null;
-	String AccountNum = null;
-	String IBAN = null;
-	boolean useInst = false;
-	
-	String AccountName = null;
-	int AccountType = 0;
-	String AccountTypeString = null;
-	String CurrencyId = null;
-	String OpeningDate = null;
-	String OpeningBal = null;
-	String TransCount = null;
-	boolean PreferredAcct = false;
-	
-	String ParentId = null;
+	boolean useInst = false;	
+	Account account;
 	
 	/* Called when the activity is first created. */
 	@Override
@@ -113,14 +80,18 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Action");
         
-        // If we are editing then we need to retrieve the payeeId
+        // If we are editing we need to pull the account in now then, or create a new empty account.
         if (Action == ACTION_EDIT)
         {
         	accountId = extras.getString("AccountId");
+        	account = Account.getAccount(this, accountId);
+        	account.logAccount();
         	//find our view and update it for the correct title.
-        	title = (TextView) findViewById(R.id.titleCreateModAccount);
-        	title.setText(R.string.titleEditModAccount);
+        	//title = (TextView) findViewById(R.id.titleCreateModAccount);
+        	//title.setText(R.string.titleEditModAccount);
         }
+        else
+        	account = new Account(this);
         
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
@@ -154,17 +125,11 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 			// See if we are editing and if so pull the data into the forms.
 			if ( Action == ACTION_EDIT )
 			{
-				final String[] dbColumns = { "*" };
-				String frag = "#9999";
-				Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountId + frag);
-				u = Uri.parse(u.toString());
-				Cursor c = getBaseContext().getContentResolver().query(u, dbColumns, null, null, null);
-				
-				c.moveToFirst();
 				// Check to see if we are editing one of the currently supported account types. If not tell the user and then return to the
 				// account lists.
-				if( c.getInt(C_ACCOUNTTYPE) == A_CREDITCARD || c.getInt(C_ACCOUNTTYPE) == A_LOAN ||
-						c.getInt(C_ACCOUNTTYPE) == A_INVESTMENT )
+				if(account.getAccountType() == Account.ACCOUNT_CREDITCARD || 
+						account.getAccountType() == Account.ACCOUNT_LOAN ||
+						account.getAccountType() == Account.ACCOUNT_INVESTMENT )
 				{
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -178,107 +143,14 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 					});
 					alert.show();					
 				}
-				
-				// If we returned anything other than just one record we have issues.
-				if ( c.getCount() == 0 )
-				{
-					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-					alert.setTitle(getString(R.string.error));
-					alert.setMessage(getString(R.string.categoryNotFound));
-
-					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							finish();
-						}
-					});
-					alert.show();
-				}
-				
-				if ( c.getCount() > 1)
-				{
-					AlertDialog.Builder alert = new AlertDialog.Builder(this);
-					
-					alert.setTitle(getString(R.string.error));
-					alert.setMessage(getString(R.string.categoryNotFound));
-
-					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							finish();
-						}
-					});
-					alert.show();
-				}
-
-				// Get the KeyValuePairs for this id.
-				String strColumns[] = { "kvpData" };
-				String strSelection = "kvpId=? AND kvpType='ACCOUNT' AND kvpKey='IBAN'";
-				String selectionArgs[] = { c.getString(c.getColumnIndex("id")) };
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-				u = Uri.parse(u.toString());
-				Cursor kmmKVP = getContentResolver().query(u, strColumns, strSelection, selectionArgs, null);
-				
-				// We have the correct account Id, so now popluate the forms fields.
-				AccountNum = c.getString(c.getColumnIndex("accountNumber"));
-				// if we have an institudtionID then we need to populate the fields.
-				if(c.getString(c.getColumnIndex("institutionId")) != null)
-				{
+				if( account.getInstitutionId() != null)
 					useInst = true;
-					InstId = c.getString(c.getColumnIndex("institutionId"));
-				}
 				else
-				{
 					useInst = false;
-				}
-				if( kmmKVP.getCount() > 0)
-				{
-					kmmKVP.moveToFirst();
-					IBAN = kmmKVP.getString(kmmKVP.getColumnIndex("kvpData"));
-				}
-				kmmKVP.close();
-
-				ParentId = c.getString(c.getColumnIndex("parentId"));
-				
-				AccountName = c.getString(c.getColumnIndex("accountName"));
-				AccountType = c.getInt(c.getColumnIndex("accountType"));
-				AccountTypeString = c.getString(c.getColumnIndex("accountTypeString"));
-				CurrencyId = c.getString(c.getColumnIndex("currencyId"));
-				// We actually need to pull the correct balance information for this account, if query returns null, then opening bal was zero.
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());
-				Cursor bal = getContentResolver().query(u, new String[] { "valueFormatted", "postDate" }, "accountId=? AND splitId='0' AND "
-														+ "(payeeId IS NULL OR payeeId='')", new String[] { accountId }, null);
-				if( bal.getCount() > 0 )
-				{
-					bal.moveToFirst();
-					OpeningDate = bal.getString(bal.getColumnIndex("postDate"));
-					OpeningBal = bal.getString(bal.getColumnIndex("valueFormatted"));
-				}
-				else
-				{
-					OpeningDate = c.getString(c.getColumnIndex("openingDate"));
-					OpeningBal = "";
-				}
-				bal.close();
-				TransCount = String.valueOf(c.getInt(c.getColumnIndex("transactionCount")));
-
-				// Get the KeyValuePairs for this id.
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-				u = Uri.parse(u.toString());
-				strSelection = "kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'";
-				kmmKVP = getBaseContext().getContentResolver().query(u, strColumns, strSelection, selectionArgs, null);
-				if( kmmKVP.getCount() > 0 )
-					PreferredAcct = true;
-				else
-					PreferredAcct = false;
-				
-				// Close our cursors.
-				c.close();
-				kmmKVP.close();     						
 			}
+			else
+				account = new Account(this.getBaseContext());
 		}
 	}
 	
@@ -354,6 +226,15 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
                 }
             }
 
+            // Mark the tab we are moving to as dirty.
+            if(tag.equalsIgnoreCase("institution"))
+            	this.bInstitutionDirty = true;
+            if(tag.equalsIgnoreCase("account"))
+            	this.bAccountDirty = true;
+            if(tag.equalsIgnoreCase("parent"))
+            	this.bParentDirty = true;
+            
+            Log.d(TAG, "Changing tabs now...to tab: " + tag);
             mLastTab = newTab;
             ft.commit();
             this.getSupportFragmentManager().executePendingTransactions();
@@ -432,26 +313,60 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	{
 		switch (item.getItemId())
 		{
-			case R.id.itemsave:
-				Log.d(TAG, "Saving acccount....");
-				String instId, accountNumber, accountIBAN, parentId, accountType, accountTypeString, accountName;
-				String currencyId, balance, openDate, preferredAcct = "No";
-				int transactionCount = 0;
-				
-				// Get the Institution elements
-				Fragment accountInst = this.getSupportFragmentManager().findFragmentByTag("institution");
-				boolean useInst = ((CreateAccountInstitutionActivity) accountInst).getUseInstitution();
-				if(useInst)
-					instId = ((CreateAccountInstitutionActivity) accountInst).getInstitutionId();
+			case R.id.itemCancel:
+				if( getIsDirty() )
+				{
+					AlertDialog.Builder alertDel = new AlertDialog.Builder(new ContextThemeWrapper(this,
+																			R.style.AlertDialogNoTitle));
+					alertDel.setTitle(R.string.BackActionWarning);
+					alertDel.setMessage(getString(R.string.titleBackActionWarning));
+
+					alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int whichButton)
+						{
+							finish();
+						}
+					});
+					
+					alertDel.setNegativeButton(getString(R.string.titleButtonCancel), new DialogInterface.OnClickListener() 
+					{
+						public void onClick(DialogInterface dialog, int whichButton) 
+						{
+							// Canceled.
+							Log.d(TAG, "User cancelled back action.");
+						}
+					});				
+					alertDel.show();
+				}
 				else
-					instId = "";
-				accountNumber = ((CreateAccountInstitutionActivity) accountInst).getAccountNumber();
-				accountIBAN = ((CreateAccountInstitutionActivity) accountInst).getIBAN();
+				{
+					finish();
+				}
+				break;
+			case R.id.itemsave:	
+				//this.onTabChanged("account");
+				Log.d(TAG, "accountTypeString: " + account.getAccountTypeString());
+				// Update the account object to reflect any changes before saving.
+				Fragment fragAcct = getSupportFragmentManager().findFragmentByTag("account");
+				Fragment fragInst = getSupportFragmentManager().findFragmentByTag("institution");
+				Fragment fragParent = getSupportFragmentManager().findFragmentByTag("parent");
 				
-				// Get the general Account elements
-				Fragment accountAcct = this.getSupportFragmentManager().findFragmentByTag("account");
-				accountName = ((CreateAccountAccountActivity) accountAcct).getAccountName();
-				if(accountName.isEmpty())
+				Bundle bdlAcct = null;
+				Bundle bdlInst = null;
+				Bundle bdlParent = null;
+				
+				if(bAccountDirty)
+					bdlAcct = ((CreateAccountAccountActivity) fragAcct).getAccountBundle();
+				if(bInstitutionDirty)
+					bdlInst = ((CreateAccountInstitutionActivity) fragInst).getInstitutionBunde();
+				if(bParentDirty)
+					bdlParent = ((CreateAccountParentActivity) fragParent).getParentBundle();
+				
+				fillAccountData(bdlAcct, bdlInst, bdlParent);
+				//account.getDataChanges(this);
+
+				if(account.getName().isEmpty())
 				{
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 				
@@ -465,136 +380,19 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 					alert.show();
 				}
 				else
-				{
-					accountType = String.valueOf(((CreateAccountAccountActivity) accountAcct).getAccountType());
-					accountTypeString = ((CreateAccountAccountActivity) accountAcct).getAccountTypeString();
-					currencyId = ((CreateAccountAccountActivity) accountAcct).getCurrency();
-					openDate = ((CreateAccountAccountActivity) accountAcct).getOpeningDate();
-					balance = ((CreateAccountAccountActivity) accountAcct).getOpeningBalance();
-					if( ((CreateAccountAccountActivity) accountAcct).getPreferredAccount() )
-						preferredAcct = "Yes";
-					
-					// Get the Parent account
-					Fragment accountParent = this.getSupportFragmentManager().findFragmentByTag("parent");
-					parentId = ((CreateAccountParentActivity) accountParent).getParentId();
-				
-					// Create the ContentValue pairs and then insert the new account.
-					ContentValues valuesAccount = new ContentValues();
+				{			
 					if(Action == ACTION_NEW)
-						accountId = createAccountId();
-
-					valuesAccount.put("id", accountId);
-					valuesAccount.put("institutionId", instId);
-					valuesAccount.put("parentId", parentId);
-					valuesAccount.put("openingDate", openDate);
-					Log.d(TAG, "accountNumber: " + accountNumber);
-					valuesAccount.put("accountNumber", accountNumber);
-					valuesAccount.put("accountType", accountType);
-					valuesAccount.put("accountTypeString", accountTypeString);
-					valuesAccount.put("accountName", accountName);
-					valuesAccount.put("description", "");
-					valuesAccount.put("currencyId", currencyId);
+						account.createAccountId(this);
 					
 					switch(Action)
 					{
 						case ACTION_NEW:
-							valuesAccount.put("transactionCount", transactionCount);
-							valuesAccount.put("isStockAccount", "N");
-							valuesAccount.put("lastReconciled", "");
-							valuesAccount.put("lastModified", "");
-							// We initially set the balance and balanceFormatted to zero because they are updated to the actual amounts
-							// when the splits are posted later on in createTransaction().
-							valuesAccount.put("balance", "0/1");
-							valuesAccount.put("balanceFormatted", "0.00");
-
-							try 
-							{
-								String frag = "#9999";
-								Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-								u = Uri.parse(u.toString());
-								getBaseContext().getContentResolver().insert(u,valuesAccount);
-								frag = "#9999";
-								u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-								u = Uri.parse(u.toString());
-								getBaseContext().getContentResolver().update(u, null, "transactions", new String[] { "1" });
-								getBaseContext().getContentResolver().update(u, null, "hiAccountId", new String[] { "1" });
-								getBaseContext().getContentResolver().update(u, null, "accounts", new String[] { "1" });
-							} 
-							catch (SQLException e)
-							{
-								Log.d(TAG, "error: " + e.getMessage());
-							}
-							increaseAccountId();
-							// We need to put the additional information in the kmmKeyValuePairs table for this account.
-							String kvpType = "ACCOUNT";
-							String kvpId = accountId;
-							ContentValues valuesKVP = new ContentValues();
-							valuesKVP.put("kvpType", kvpType);
-							valuesKVP.put("kvpId", kvpId);
-							valuesKVP.put("kvpKey", "IBAN");
-							valuesKVP.put("kvpData", accountIBAN);
-							String frag = "#9999";
-							Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-							u = Uri.parse(u.toString());
-							getBaseContext().getContentResolver().insert(u, valuesKVP);
-							valuesKVP.clear();
-							if( preferredAcct.equalsIgnoreCase("Yes") )
-							{
-								valuesKVP.put("kvpType", kvpType);
-								valuesKVP.put("kvpId", kvpId);
-								valuesKVP.put("kvpKey", "PreferredAccount");
-								valuesKVP.put("kvpData", "Yes");
-								getBaseContext().getContentResolver().insert(u, valuesKVP);
-							}
-							// Create the transaction and splits for any opening balance that was entered by the user.
-							createTransaction(openDate, currencyId, balance, accountId);
+							account.logAccount();
+							account.SaveAccount(this);
 							break;
 						case ACTION_EDIT:
-							// First we need to get the old account balance and make any necessary adjustments to this balance based on
-							// the changes the user may have made to our Opening balance amount for this account.
-							// Now we need to adjust any Splits/Transactions we originally had for this account.
-							adjustOpenTrans(accountId, balance, openDate, currencyId);
-							// Actually update the account now.
-							frag = "#9999";
-							u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountId + frag);
-							u = Uri.parse(u.toString());
-							getBaseContext().getContentResolver().update(u, valuesAccount, null, null);
-							// We need to put the additional information in the kmmKeyValuePairs table for this account.
-							kvpType = "ACCOUNT";
-							kvpId = accountId;
-							valuesKVP = new ContentValues();
-							valuesKVP.put("kvpType", kvpType);
-							valuesKVP.put("kvpId", kvpId);
-							valuesKVP.put("kvpKey", "IBAN");
-							valuesKVP.put("kvpData", accountIBAN);
-							frag = "#9999";
-							u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
-							u = Uri.parse(u.toString());
-							getBaseContext().getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?", 
-																		 new String[] { accountId, kvpType, "IBAN" });
-							valuesKVP.clear();
-							// See if the account was previously setup as a preferred account.
-							Cursor c = getBaseContext().getContentResolver().query(u, new String[] { "kvpData" },
-									"kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'", new String[] { accountId }, null);
-							if( preferredAcct.equalsIgnoreCase("Yes") )
-							{
-								valuesKVP.put("kvpType", kvpType);
-								valuesKVP.put("kvpId", kvpId);
-								valuesKVP.put("kvpKey", "PreferredAccount");
-								valuesKVP.put("kvpData", "Yes");
-								if( c.getCount() > 0)
-									getBaseContext().getContentResolver().update(u, valuesKVP, "kvpId=? AND kvpType=? AND kvpKey=?",
-																			 new String[] { accountId, kvpType, "PreferredAccount" } );
-								else
-									getBaseContext().getContentResolver().insert(u, valuesKVP);
-							}
-							else
-							{
-								if(c.getCount() > 0)
-									getBaseContext().getContentResolver().delete(u, "kvpId=? AND kvpType='ACCOUNT' AND kvpKey='PreferredAccount'",
-																				 new String[] {accountId});
-							}
-							c.close();
+							account.logAccount();
+							account.UpdateAccount(this);
 							break;
 					}
 				}
@@ -635,23 +433,6 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 				finish();
 				break;
 			case R.id.itemDelete:
-				// Need to find our transactionId that belongs to this account so we can delete it.
-				/*frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());
-				Cursor c = getBaseContext().getContentResolver().query(u, new String[] { "transactionId" }, "accountId=? AND splitId='0'" +
-																	   " AND (payeeid IS NULL OR payeeId='')", new String[] { accountId }, null);
-				c.moveToFirst();
-				String transId = c.getString(c.getColumnIndex("transactionId"));
-				c.close();
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());
-				getBaseContext().getContentResolver().delete(u, "transactionId=?", new String[] { transId });
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, frag);
-				u = Uri.parse(u.toString());
-				getBaseContext().getContentResolver().delete(u, "id=?", new String[] { transId });*/
 				frag = "#9999";
 				u = Uri.withAppendedPath(KMMDProvider.CONTENT_KVP_URI, frag);
 				u = Uri.parse(u.toString());
@@ -729,371 +510,58 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 	{
 		// Send the Institution data back to the fragment.
 		Fragment Inst = this.getSupportFragmentManager().findFragmentByTag("institution");
-		((CreateAccountInstitutionActivity) Inst).putAccountNumber(AccountNum);
-		((CreateAccountInstitutionActivity) Inst).putIBAN(IBAN);
-		((CreateAccountInstitutionActivity) Inst).putInstitutionId(InstId);
+		((CreateAccountInstitutionActivity) Inst).putAccountNumber(account.getAccountNumber());
+		((CreateAccountInstitutionActivity) Inst).putIBAN(account.getIBAN());
+		((CreateAccountInstitutionActivity) Inst).putInstitutionId(account.getInstitutionId());
 		((CreateAccountInstitutionActivity) Inst).putUseInstitution(useInst);
 	}
 	
 	public void onSendParentData() 
 	{
 		// Send the Parent data back to the fragment.
-		Fragment Parent = this.getSupportFragmentManager().findFragmentByTag("parent");		
-		((CreateAccountParentActivity) Parent).putParentId(ParentId);
+		Fragment Parent = this.getSupportFragmentManager().findFragmentByTag("parent");	
+		if(account.getParentId() != null)
+			((CreateAccountParentActivity) Parent).putParentId(account.getParentId());
 	}
 
 	public void onSendAccountData() 
 	{
 		// Send the account data back to the fragment.
 		Fragment Account = this.getSupportFragmentManager().findFragmentByTag("account");
-		((CreateAccountAccountActivity) Account).putAccountName(AccountName);
-		((CreateAccountAccountActivity) Account).putAccountType(AccountType);
-		((CreateAccountAccountActivity) Account).putAccountTypeString(AccountTypeString);
-		((CreateAccountAccountActivity) Account).putCurrency(CurrencyId);
-		((CreateAccountAccountActivity) Account).putOpeningDate(OpeningDate);
-		((CreateAccountAccountActivity) Account).putOpeningBalance(OpeningBal);
-		((CreateAccountAccountActivity) Account).putTransactionCount(TransCount);
-		((CreateAccountAccountActivity) Account).putPreferredAccount(PreferredAcct);
+		((CreateAccountAccountActivity) Account).putAccountName(account.getName());
+		((CreateAccountAccountActivity) Account).putAccountType(account.getAccountType());
+		((CreateAccountAccountActivity) Account).putAccountTypeString(account.getAccountTypeString());
+		((CreateAccountAccountActivity) Account).putCurrency(account.getCurrencyId());
+		((CreateAccountAccountActivity) Account).putOpeningDate(account.getOpenDate());
+		((CreateAccountAccountActivity) Account).putOpeningBalance(account.getBalance());
+		((CreateAccountAccountActivity) Account).putTransactionCount(String.valueOf(account.getTransactionCount()));
+		((CreateAccountAccountActivity) Account).putPreferredAccount(account.getIsPreferred());
 	}
 	// *****************************************************************************************************************************
-	// ********************************************** Helper Functions *************************************************************
-	
-	private String createAccountId()
-	{
-		final String[] dbColumns = { "hiAccountId"};
-		final String strOrderBy = "hiAccountId DESC";
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-		u = Uri.parse(u.toString());
-		// Run a query to get the Acount ids so we can create a new one.
-		Cursor c = getBaseContext().getContentResolver().query(u, dbColumns, null, null, strOrderBy);
-		
-		c.moveToFirst();
-
-		// Since id is in A000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = c.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "A";
-		for(int i= 0; i < (6 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		// Close our cursor.
-		c.close();
-		
-		return newId;
-	}
-	
-	private String createTransactionId()
-	{
-		final String[] dbColumns = { "hiTransactionId"};
-		// Run a query to get the Transaction ids so we can create a new one.
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-		u = Uri.parse(u.toString());
-		Cursor cursor = getContentResolver().query(u, dbColumns, null, null, null);
-		
-		cursor.moveToFirst();
-
-		// Since id is in T000000000000000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = cursor.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "T";
-		for(int i= 0; i < (18 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		// close our cursor
-		cursor.close();
-		
-		return newId;
-	}
-	
-	private void increaseAccountId()
-	{
-		final String[] dbColumns = { "hiAccountId"};
-		final String strOrderBy = "hiAccountId DESC";
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-		u = Uri.parse(u.toString());
-		// Run a query to get the Account ids so we can create a new one.
-		Cursor cursor = getContentResolver().query(u, dbColumns, null, null, strOrderBy);
-		
-		cursor.moveToFirst();
-		int lastId = cursor.getInt(0);	
-		lastId = lastId + 1;
-		
-		getBaseContext().getContentResolver().update(u, null, "hiAccountId", new String[] { "0" });
-
-		// close our cursor.
-		cursor.close();
-	}
-	
-	private String createBalance(String formattedValue)
-	{
-		StringTokenizer split = new StringTokenizer(formattedValue, ".");
-		String dollars = split.nextToken();
-		String cents = split.nextToken();
-		String balance = dollars + cents;
-		String denominator = "/100";
-		
-		return balance + denominator;
-	}
-	
-	private String updateBalance(String newOpenBal)
-	{
-		long longNewOpenBal = Transaction.convertToPennies(newOpenBal);
-		long longOldAcctBal = 0;
-		long longOldOpenBal = 0;
-		long longDifference = 0;
-		String newBal = null;
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI,accountId + frag);
-		u = Uri.parse(u.toString());
-		Cursor acct = getContentResolver().query(u, null, null, null, null);
-		if( acct.getCount() == 1 )
-		{
-			acct.moveToFirst();
-			longOldAcctBal = Transaction.convertToPennies(acct.getString(acct.getColumnIndex("balanceFormatted")));
-		}
-		else
-		{
-			longOldAcctBal = (long) 0;
-		}
-		
-		frag = "#9999";
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-		u = Uri.parse(u.toString());
-		Cursor bal = getContentResolver().query(u, new String[] { "valueFormatted", "postDate" }, "accountId=? AND splitId='0' AND "
-												+ "(payeeId IS NULL OR payeeId='')", new String[] { accountId }, null);
-		if( bal.getCount() > 0 )
-		{
-			bal.moveToFirst();
-			longOldOpenBal = Transaction.convertToPennies(bal.getString(bal.getColumnIndex("valueFormatted")));
-			longDifference = longNewOpenBal - longOldOpenBal;
-			newBal = Transaction.convertToDollars(longOldAcctBal + longDifference, false);
-		}
-		else
-			newBal = Transaction.convertToDollars(longOldAcctBal + longNewOpenBal, false);
-		
-		// Clean up our cursors.
-		acct.close();
-		bal.close();
-		
-		Log.d(TAG, "newOpenBal: " + newOpenBal);
-		Log.d(TAG, "longNewOpenBal: " + longNewOpenBal);
-		Log.d(TAG, "longOldAcctBal: " + longOldAcctBal);
-		Log.d(TAG, "longOldOpenBal: " + longOldOpenBal);
-		Log.d(TAG, "longDifference: " + longDifference);
-		Log.d(TAG, "newBal: " + newBal);
-		
-		return newBal;
-	}
-	
-	private void adjustOpenTrans(String acctId, String openBalance, String openDate, String baseCurId)
-	{
-		// Run a query to get the accountId for "Opening Balances".
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-		u = Uri.parse(u.toString());
-		String Columns[] = { "id" };
-		String Selection = "accountName='Opening Balances'";
-		Cursor openBalanceCursor = getContentResolver().query(u, Columns, Selection, null, null);
-		openBalanceCursor.moveToFirst();
-		String OpeningBalancesId = openBalanceCursor.getString(openBalanceCursor.getColumnIndex("id"));
-		// clean up our cursor.
-		openBalanceCursor.close();
-		long longOpenBal = Transaction.convertToPennies(openBalance);
-		// First let's see if this account even has an opening balance transaction to begin with.
-		frag = "#9999";
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-		u = Uri.parse(u.toString());
-		Cursor splits = getContentResolver().query(u, new String[] { "*" }, "accountId=? AND splitId='0' AND "
-												+ "(payeeId IS NULL OR payeeId='')", new String[] { acctId }, null);
-
-		// If query returns null then we didn't have any previous opening balance transactions.
-		// If we have an opening balance entry now, we need to create the transaction and the splits.
-		if( splits.getCount() == 0 )
-		{
-			Log.d(TAG, "We didn't have any previous opening balance, so we are creating the transaction now.");
-			if( longOpenBal != 0 )
-				createTransaction(openDate, baseCurId, openBalance, acctId);
-		}
-		else if( splits.getCount() > 0 )
-		{
-			frag = "#9999";
-			u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, accountId + frag);
-			u = Uri.parse(u.toString());
-			String newBalance = updateBalance(openBalance);
-			ContentValues cv = new ContentValues();
-			cv.put("balance", createBalance(newBalance));
-			cv.put("balanceFormatted", newBalance);
-			getBaseContext().getContentResolver().update(u, cv, null, null);
-			
-			// If account had an opening transaction AND our current Opening Balance is not zero, update previous transaction with 
-			// current value.
-			splits.moveToFirst();
-			if( longOpenBal != 0 )
-			{
-				Log.d(TAG, "We had a previous opening balance AND the user changed it to a non-zero amount, updating splits.");
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());				
-				cv.clear();
-				cv.put("value", createBalance(openBalance));
-				cv.put("valueFormatted", openBalance);
-				cv.put("shares", createBalance(openBalance));
-				cv.put("sharesFormatted", openBalance);
-				getContentResolver().update(u, cv, "transactionId=? AND accountId=?", 
-						new String[] { splits.getString(splits.getColumnIndex("transactionId")), acctId });
-				cv.clear();
-				// Now adjust the other side of the transaction, just using the negative.
-				String revBal = Transaction.convertToDollars(longOpenBal * -1, false);
-				cv.put("value", createBalance(revBal));
-				cv.put("valueFormatted", revBal);
-				cv.put("shares", createBalance(revBal));
-				cv.put("sharesFormatted", revBal);
-				getContentResolver().update(u, cv, "transactionId=? AND accountId=?", 
-						new String[] { splits.getString(splits.getColumnIndex("transactionId")), OpeningBalancesId });
-			}
-			else if( longOpenBal == 0 )
-			{
-				Log.d(TAG, "We had a previous opening balance but the user has changed it to zero, deleting previous splits and transaction");
-				// If account had an opening transaction AND our current Opening Balance is zero, we need to delete previous transaction
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_SPLIT_URI, frag);
-				u = Uri.parse(u.toString());	
-				getContentResolver().delete(u, "transactionId=?", new String[] { splits.getString(splits.getColumnIndex("transactionId")) });
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI,splits.getString(splits.getColumnIndex("transactionId")) + frag);
-				u = Uri.parse(u.toString());	
-				getContentResolver().delete(u, null, null);
-				// Reduce the number of transactions and splits in kmmFileInfo table.
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-				u = Uri.parse(u.toString());
-				getBaseContext().getContentResolver().update(u, null, "transactions", new String[] { "-1" });
-				getBaseContext().getContentResolver().update(u, null, "splits", new String[] { "-2" });
-				// Reduce the number of transactions listed in kmmAccounts table for this account.
-				frag = "#9999";
-				u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-				u = Uri.parse(u.toString());				
-				Cursor acct = getBaseContext().getContentResolver().query(u, new String[] { "transactionCount" },
-						"id=?", new String[] { acctId }, null);
-				acct.moveToFirst();
-				cv.clear();
-				int count = acct.getInt(acct.getColumnIndex("transactionCount"));
-				cv.put("transactionCount", count - 1);
-				getBaseContext().getContentResolver().update(u, cv, "id=?", new String[] { acctId });
-				// clean up our cursor.
-				acct.close();
-			}
-		}
-		else
-			Log.d(TAG, "Some how we didn't catch our splits/transactions update!");
-		
-		// clean up our cursor.
-		splits.close();
-	}
-	
+	// ********************************************** Helper Functions *************************************************************	
 	public void setIsDirty(boolean flag)
 	{
 		this.isDirty = flag;
 	}
 	
+	public void setIsInstitutionDirty(boolean flag)
+	{
+		this.bInstitutionDirty = flag;
+	}
+	
+	public void setIsAccountDirty(boolean flag)
+	{
+		this.bAccountDirty = flag;
+	}
+	
+	public void setIsParentDirty(boolean flag)
+	{
+		this.bParentDirty = flag;
+	}
+	
 	public boolean getIsDirty()
 	{
 		return this.isDirty;
-	}
-	
-	private void createTransaction(String openDate, String baseCurId, String openBal, String acctId)
-	{
-		// Run a query to get the accountId for "Opening Balances".
-		String frag = "#9999";
-		Uri u = Uri.withAppendedPath(KMMDProvider.CONTENT_ACCOUNT_URI, frag);
-		u = Uri.parse(u.toString());
-		String Columns[] = { "id" };
-		String Selection = "accountName='Opening Balances'";
-		Cursor openBalanceCursor = getContentResolver().query(u, Columns, Selection, null, null);
-		openBalanceCursor.moveToFirst();
-		String OpeningBalancesId = openBalanceCursor.getString(openBalanceCursor.getColumnIndex("id"));
-		openBalanceCursor.close();
-		
-		// create the ContentValue pairs
-		ContentValues valuesTrans = new ContentValues();
-		
-		valuesTrans.put("txType", "N");
-		valuesTrans.put("postDate", openDate);
-		valuesTrans.put("memo", "");
-		
-        // get the current date
-        final Calendar c = Calendar.getInstance();
-        valuesTrans.put("entryDate", new StringBuilder()
-			// Month is 0 based so add 1
-			.append(c.get(Calendar.YEAR)).append("-")
-			.append(c.get(Calendar.MONTH) + 1).append("-")
-			.append(c.get(Calendar.DAY_OF_MONTH)).toString());
-        
-		valuesTrans.put("currencyId", baseCurId);
-		valuesTrans.put("bankId", "");
-		// Need to create the transaction id.
-		String id = createTransactionId();
-		valuesTrans.put("id", id);
-		
-		// Enter the transaction into the kmmTransactions table.
-		frag = "#9999";
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_TRANSACTION_URI, frag);
-		u = Uri.parse(u.toString());
-		getBaseContext().getContentResolver().insert(u, valuesTrans);
-		
-		// We need to take our editAmount string which "may" contain a '.' as the decimal and replace it with the localized seperator.
-		DecimalFormat decimal = new DecimalFormat();
-		char decChar = decimal.getDecimalFormatSymbols().getDecimalSeparator();
-		String strAmount = openBal.replace('.', decChar);
-		
-		// Create the splits information to be saved.
-		// Take the amount entered as is, use it for the account's balance and then use the negative of that amount as the offset to
-		// Open Balances.
-		ArrayList<Split> splits = new ArrayList<Split>();
-		String value = null, formatted = null;
-		value = Account.createBalance(Transaction.convertToPennies(openBal));
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-		splits.add(new Split(id, "N", 0, "", "", "", "0", value, formatted, value, formatted,
-				 "", "", "", acctId, "", openDate, ""));
-		value = Account.createBalance(Transaction.convertToPennies(openBal) * -1);
-		formatted = Transaction.convertToDollars(Account.convertBalance(value), false);
-		splits.add(new Split(id, "N", 1, "", "", "", "0", value, formatted, value, formatted,
-				 "", "", "", OpeningBalancesId, "", openDate, ""));		
-		
-		// Actually enter the transaction and splits into the database, update the fileInfo table and the account with the # of transactions.
-		frag = "#9999";
-		u = Uri.withAppendedPath(KMMDProvider.CONTENT_FILEINFO_URI, frag);
-		u = Uri.parse(u.toString());
-		getBaseContext().getContentResolver().update(u, null, "hiTransactionId", new String[] { "1" });
-		getBaseContext().getContentResolver().update(u, null, "transactions", new String[] { "1" });
-		getBaseContext().getContentResolver().update(u, null, "splits", new String[] { String.valueOf(splits.size()) });
-
-		for(int i=0; i < splits.size(); i++)
-		{
-			Split s = splits.get(i);
-			s.commitSplit(false, KMMDapp.db);
-			Account.updateAccount(KMMDapp.db, s.getAccountId(), s.getValueFormatted(), 1);
-		}
-		getBaseContext().getContentResolver().update(u, null, "lastModified", new String[] { "0" });
 	}
 
 	/**
@@ -1122,11 +590,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
         		this.tabHost.newTabSpec("parent").setIndicator(getString(R.string.AccountTabSubAccount)),
         		( tabInfo = new TabInfo("parent", CreateAccountParentActivity.class, args)));
         this.mapTabInfo.put(tabInfo.tag, tabInfo);
-                     
-        // Cycle through the tabs to populate all fields correctly.
-        //this.onTabChanged("institution");
-        //this.onTabChanged("account");
-        //this.onTabChanged("parent");
+
         this.firstRun = false;
         
         // Default to first tab
@@ -1182,6 +646,7 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 		{
 			edit.putString("AccountName", ((CreateAccountAccountActivity) tab).accountName.getText().toString());
 			edit.putInt("AccountType", ((CreateAccountAccountActivity) tab).getAccountType());
+			edit.putString("AccountTypeString", ((CreateAccountAccountActivity) tab).getAccountTypeString());
 			edit.putString("CurrencyId", ((CreateAccountAccountActivity) tab).getCurrency());
 			edit.putString("OpenDate", ((CreateAccountAccountActivity) tab).openDate.getText().toString());
 			edit.putString("OpenBalance", ((CreateAccountAccountActivity) tab).openBalance.getText().toString());
@@ -1205,6 +670,33 @@ public class CreateModifyAccountActivity extends FragmentActivity implements
 		accounts.putExtra("activity", AccountsLoader.ACTIVITY_ACCOUNTS);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(accounts);
 		LocalBroadcastManager.getInstance(this).sendBroadcast(home);
+	}
+	
+	private void fillAccountData(Bundle bdlAccount, Bundle bdlInstitution, Bundle bdlParent)
+	{
+		// Populate the account information from the supplied bundle
+		if(bdlAccount != null)
+		{
+			account.setIsPreferred(bdlAccount.getBoolean("preferred"));
+			account.setAccountName(bdlAccount.getString("name"));
+			account.setOpenDate(bdlAccount.getString("openDate"));
+			account.setOpenBalance(bdlAccount.getString("openBalance"));
+			account.setCurrency(bdlAccount.getString("currencySelected"));
+			account.setAccountType(bdlAccount.getInt("intTypeSelected"));
+			account.setAccountType(bdlAccount.getString("accountTypeString"));
+		}
+		
+		// Populate the Institution information from the supplied bundle
+		if(bdlInstitution != null)
+		{
+			account.setInstitutionId(bdlInstitution.getString("institutionId"));
+			account.setIBAN(bdlInstitution.getString("strIBAN"));
+			account.setAccountNumber(bdlInstitution.getString("strAccountNumber"));
+		}
+		
+		// Populate the Parent information from the supplied bundle
+		if(bdlParent != null)
+			account.setParentId(bdlParent.getString("parentId"));
 	}
 	// *****************************************************************************************************************************
 	// ********************************************** Helper Classes ***************************************************************

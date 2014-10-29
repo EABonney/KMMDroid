@@ -1,45 +1,52 @@
 package com.vanhlebarsoftware.kmmdroid;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.TabActivity;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.TabHost.TabContentFactory;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
-public class CreateModifyPayeeActivity extends TabActivity
+public class CreateModifyPayeeActivity extends FragmentActivity implements
+												TabHost.OnTabChangeListener,
+												PayeeAddressActivity.OnSendPayeeAddressListener,
+												TransactionsTabActivity.OnSendTransactionTabDataListener,
+												PayeeDefaultAccountActivity.OnUseDefaultCheckedListener,
+												PayeeDefaultAccountActivity.OnSendDefaultDataListener,
+												PayeeDefaultIncFragment.OnUseDefaultIncomeListener,
+												PayeeDefaultExpFragment.OnUseDefaultExpenseListener,
+												PayeeMatchingActivity.OnSendMatchingDataListener
 {
 	private static final String TAG = "CreateModifyPayeeActivity";
 	private static final int ACTION_NEW = 1;
 	private static final int ACTION_EDIT = 2;
-	private static final int PAYEE_NAME = 1;
-	private static final int PAYEE_EMAIL = 3;
-	private static final int PAYEE_STREET = 4;
-	private static final int PAYEE_ZIPCODE = 6;
-	private static final int PAYEE_PHONE = 8;
-	private static final int PAYEE_NOTES = 9;
-	private static final int PAYEE_DEFAULTACCOUNTID = 10;
-	private static final int PAYEE_MATCHDATA = 11;
-	private static final int AC_EXPENSE = 13;
-	private static final int AC_INCOME = 12;
-	private static final String dbTable = "kmmPayees";
 	private int Action = 0;
 	private String payeeId = null;
+	private String payeeName = null;
 	private boolean returnFromDelete = false;
 	private boolean isDirty = false;
+	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, CreateModifyPayeeActivity.TabInfo>();
+	private TabInfo mLastTab = null;
+	Payee payee = null;
 	KMMDroidApp KMMDapp;
-	Cursor cursor;
-	TextView payeeName;
 	SimpleCursorAdapter adapter;
 	TabHost tabHost;
 	
@@ -49,55 +56,26 @@ public class CreateModifyPayeeActivity extends TabActivity
 	{
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.createmod_payee);
-
-        // Find our views
-        payeeName = (TextView) findViewById(R.id.titleCreateModPayee);
         
         // Get the Activity and payee name.
         Bundle extras = getIntent().getExtras();
         Action = extras.getInt("Activity");
-        payeeName.setText(extras.getString("PayeeName"));
         
         // If we are editing then we need to retrieve the payeeId
         if (Action == ACTION_EDIT)
-        	payeeId = extras.getString("PayeeId");
-        
-        //Resources res = getResources(); // Resource object to get Drawables
-        tabHost = getTabHost();  // The activity TabHost
-        TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-        Intent intent;  // Reusable Intent for each tab
-
-        // Create an Intent to launch an Activity for the tab (to be reused)
-        intent = new Intent().setClass(this, PayeeAddressActivity.class);
-
-        // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("payeeaddress").setIndicator(getString(R.string.PayeeTabAddress))
-                      .setContent(intent);
-        tabHost.addTab(spec);
-
-        // Do the same for the other tabs
-        intent = new Intent().setClass(this, PayeeDefaultAccountActivity.class);
-        spec = tabHost.newTabSpec("payeedefault").setIndicator(getString(R.string.PayeeTabDefault))
-                      .setContent(intent);
-        tabHost.addTab(spec);
-
-        intent = new Intent().setClass(this, PayeeMatchingActivity.class);
-        spec = tabHost.newTabSpec("payeematching").setIndicator(getString(R.string.PayeeTabMatching))
-                      .setContent(intent);
-        tabHost.addTab(spec);
-
-        if( Action == ACTION_EDIT )
         {
-        	intent = new Intent().setClass(this, TransactionsTabActivity.class);
-        	intent.putExtra("PayeeId", payeeId);
-        	intent.putExtra("PayeeName", extras.getString("PayeeName"));
-        	spec = tabHost.newTabSpec("payeetransactions").setIndicator(getString(R.string.TabTransactions))
-                      .setContent(intent);
-        	tabHost.addTab(spec);
-
-        	tabHost.setCurrentTab(0);
+        	payee = new Payee(this, extras.getString("PayeeId"));
+        	payeeName = extras.getString("PayeeName");
         }
+        else
+        	payee = new Payee(this, null);
         
+		initialiseTabHost(savedInstanceState);
+		if (savedInstanceState != null) 
+		{
+            tabHost.setCurrentTabByTag(savedInstanceState.getString("tab")); //set the tab as per the saved state
+        }
+
         // Get our application
         KMMDapp = ((KMMDroidApp) getApplication());
 
@@ -112,6 +90,11 @@ public class CreateModifyPayeeActivity extends TabActivity
 	public void onDestroy()
 	{
 		super.onDestroy();
+		
+		SharedPreferences prefs = getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences.Editor edit = prefs.edit();
+		edit.clear();
+		edit.apply();
 	}
 	
 	@Override
@@ -123,14 +106,9 @@ public class CreateModifyPayeeActivity extends TabActivity
 		{
 			// See if we are editing and if so pull the data into the forms.
 			if ( Action == ACTION_EDIT )
-			{
-				final String[] dbColumns = { "*" };
-				final String strSelection = "id=?";
-				cursor = KMMDapp.db.query(dbTable, dbColumns, strSelection, new String[] { payeeId }, null, null, null);
-				startManagingCursor(cursor);
-			
+			{		
 				// If we returned anything other than just one record we have issues.
-				if ( cursor.getCount() == 0 )
+				if ( payee.getId() == null )
 				{
 					AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -145,70 +123,6 @@ public class CreateModifyPayeeActivity extends TabActivity
 					alert.show();
 				}
 			
-				if ( cursor.getCount() > 1)
-				{
-					AlertDialog.Builder alert = new AlertDialog.Builder(this);
-					
-					alert.setTitle(getString(R.string.error));
-					alert.setMessage(getString(R.string.payeeNotFound));
-
-					alert.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int whichButton) {
-							finish();
-						}
-					});
-					alert.show();
-				}
-			
-				cursor.moveToFirst();
-				// We have the correct payeeId to edit. Populate the fields now.
-				// Populate the Address elements
-				getTabHost().setCurrentTab(0);
-				Activity payeeAddress = this.getCurrentActivity();
-				((PayeeAddressActivity) payeeAddress).putPayeeName(cursor.getString(PAYEE_NAME));
-				((PayeeAddressActivity) payeeAddress).putPayeeAddress(cursor.getString(PAYEE_STREET));
-				((PayeeAddressActivity) payeeAddress).putPayeePostalCode(cursor.getString(PAYEE_ZIPCODE));
-				((PayeeAddressActivity) payeeAddress).putPayeePhone(cursor.getString(PAYEE_PHONE));
-				((PayeeAddressActivity) payeeAddress).putPayeeEmail(cursor.getString(PAYEE_EMAIL));
-				((PayeeAddressActivity) payeeAddress).putPayeeNotes(cursor.getString(PAYEE_NOTES));
-
-				// Populate the default account elements.
-				getTabHost().setCurrentTab(1);
-				Activity payeeDefaults = this.getCurrentActivity();
-				int pos = 0;
-				switch( getAccountType( cursor.getString(PAYEE_DEFAULTACCOUNTID)) )
-				{
-					case AC_INCOME:
-						Log.d(TAG, "AC_INCOME");
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(true);
-						pos = getListViewPos(cursor.getString(PAYEE_DEFAULTACCOUNTID), AC_INCOME);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(true);
-						((PayeeDefaultAccountActivity) payeeDefaults).putIncomeAccount(pos);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(false);
-						break;
-					case AC_EXPENSE:
-						Log.d(TAG, "AC_EXPENSE");
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(true);
-						pos = getListViewPos(cursor.getString(PAYEE_DEFAULTACCOUNTID), AC_EXPENSE);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(true);
-						((PayeeDefaultAccountActivity) payeeDefaults).putExpenseAccount(pos);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(false);
-						break;
-					default:
-						Log.d(TAG, "Default");
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseDefaults(false);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseExpense(false);
-						((PayeeDefaultAccountActivity) payeeDefaults).putUseIncome(false);
-						break;
-				}
-			
-				// Popluate the default matching tab.
-				getTabHost().setCurrentTab(2);
-				Activity payeeMatching = this.getCurrentActivity();
-				((PayeeMatchingActivity) payeeMatching).putMatchingType(cursor.getInt(PAYEE_MATCHDATA));
-				
-				// Make sure the 1st tab is displayed to the user.
-				getTabHost().setCurrentTab(0);
 				isDirty = false;
 			}
 		}
@@ -221,6 +135,41 @@ public class CreateModifyPayeeActivity extends TabActivity
 			
 			finish();
 		}
+	}
+	
+	public void onTabChanged(String tag) 
+	{
+		TabInfo newTab = this.mapTabInfo.get(tag);
+		if (mLastTab != newTab) 
+		{
+			FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
+            if (mLastTab != null) 
+            {
+                if (mLastTab.fragment != null) 
+                {
+                	// save the tabs UI elements.
+               		saveTabUI(mLastTab.fragment);
+                	ft.detach(mLastTab.fragment);
+                }
+            }
+            if (newTab != null) 
+            {
+                if (newTab.fragment == null) 
+                {
+                    newTab.fragment = Fragment.instantiate(this,
+                            newTab.clss.getName(), newTab.args);
+                    ft.add(R.id.realtabcontent, newTab.fragment, newTab.tag);
+                } 
+                else 
+                {
+                    ft.attach(newTab.fragment);
+                }
+            }
+
+            mLastTab = newTab;
+            ft.commit();
+            this.getSupportFragmentManager().executePendingTransactions();
+		}		
 	}
 	
 	// Called first time the user clicks on the menu button
@@ -239,95 +188,17 @@ public class CreateModifyPayeeActivity extends TabActivity
 		switch (item.getItemId())
 		{
 			case R.id.itemsave:
-				String name, address, postalcode, phone, email, notes, accountInc, accountExp;
-				boolean usedefault, useInc, useExp;
-				int matchingType;
-				
-				// Get the Address elements
-				getTabHost().setCurrentTab(0);
-				Activity payeeAddress = this.getCurrentActivity();
-				//name = payeeName.getText().toString();
-				name = ((PayeeAddressActivity) payeeAddress).getPayeeName();
-				address = ((PayeeAddressActivity) payeeAddress).getPayeeAddress();
-				postalcode = ((PayeeAddressActivity) payeeAddress).getPayeePostalCode();
-				phone = ((PayeeAddressActivity) payeeAddress).getPayeePhone();
-				email = ((PayeeAddressActivity) payeeAddress).getPayeeEmail();
-				notes = ((PayeeAddressActivity) payeeAddress).getPayeeNotes();
-				
-				// Get the Default Account elements
-				getTabHost().setCurrentTab(1);
-				Activity payeeDefaults = this.getCurrentActivity();
-				usedefault = ((PayeeDefaultAccountActivity) payeeDefaults).getUseDefaults();
-				useInc = ((PayeeDefaultAccountActivity) payeeDefaults).getUseIncome();
-				useExp = ((PayeeDefaultAccountActivity) payeeDefaults).getUseExpense();
-				accountInc = ((PayeeDefaultAccountActivity) payeeDefaults).getIncomeAccount();
-				accountExp = ((PayeeDefaultAccountActivity) payeeDefaults).getExpenseAccount();
-				
-				// Get the matching type elements
-				getTabHost().setCurrentTab(2);
-				Activity payeeMatching = this.getCurrentActivity();
-				matchingType = ((PayeeMatchingActivity) payeeMatching).getMatchingType();
-				
-				String id = null;
+				// Get our changes.
+				payee.getDataChanges();
+
 				if (Action == ACTION_NEW)
-					id = createPayeeId();
+				{
+					payee.createPayeeId();
+					payee.Save();
+				}
 				else
-					id = payeeId;
+					payee.Update();
 				
-				// Create the ContentValue pairs for the insert query.
-				ContentValues valuesPayee = new ContentValues();
-				valuesPayee.put("id", id);
-				valuesPayee.put("name", name);
-				valuesPayee.put("reference", "");
-				valuesPayee.put("email", email);
-				valuesPayee.put("addressStreet", address);
-				valuesPayee.put("addressCity", "");
-				valuesPayee.put("addressState", "");
-				valuesPayee.put("addressZipcode", postalcode);
-				valuesPayee.put("telephone", phone);
-				valuesPayee.put("notes", notes);
-				switch ( matchingType )
-				{
-					case R.id.payeeMatchonName:
-						valuesPayee.put("matchData", 1);
-						break;
-					case R.id.payeeNoMatching:
-						valuesPayee.put("matchData", 0);
-						break;
-				}
-				if ( usedefault )
-				{
-					if ( useInc )
-						valuesPayee.put("defaultAccountId", accountInc);
-					if ( useExp )
-						valuesPayee.put("defaultAccountId", accountExp);
-					
-					Log.d(TAG, "accontInc: " + accountInc + 
-							" accountExp: " + accountExp);
-				}
-				valuesPayee.put("matchIgnoreCase", "Y");
-				valuesPayee.put("matchKeys", "");
-				
-				switch (Action)
-				{
-					case ACTION_NEW:
-						// Attempt to insert the newly created Payee.
-						try 
-						{
-							KMMDapp.db.insertOrThrow(dbTable, null, valuesPayee);
-							KMMDapp.updateFileInfo("hiPayeeId", 1);
-							KMMDapp.updateFileInfo("payees", 1);
-						} 
-						catch (SQLException e) 
-						{
-							Log.d(TAG, "Insert error: " + e.getMessage());
-						}
-						increasePayeeId();
-						break;
-					case ACTION_EDIT:
-						KMMDapp.db.update(dbTable, valuesPayee, "id=?", new String[] { payeeId });
-						break;
-				}
 				KMMDapp.updateFileInfo("lastModified", 0);
 				
 				//Mark file as dirty
@@ -338,8 +209,7 @@ public class CreateModifyPayeeActivity extends TabActivity
 			case R.id.itemDelete:
 				AlertDialog.Builder alertDel = new AlertDialog.Builder(this);
 				alertDel.setTitle(R.string.delete);
-				alertDel.setMessage(getString(R.string.deletemsg) + " " + payeeName.getText().
-						toString() + "?");
+				alertDel.setMessage(getString(R.string.deletemsg) + " " + payeeName + "?");
 
 				alertDel.setPositiveButton(getString(R.string.titleButtonOK), new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -364,113 +234,93 @@ public class CreateModifyPayeeActivity extends TabActivity
 		return true;
 	}
 	
-// ************************************************************************************************
-// ******************************* Helper Functions ***********************************************
-	
-	private String createPayeeId()
+	public void onSendPayeeAddressData() 
 	{
-		final String[] dbColumns = { "hiPayeeId"};
-		final String strOrderBy = "hiPayeeId DESC";
-		// Run a query to get the Payee ids so we can create a new one.
-		cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		
-		cursor.moveToFirst();
-
-		// Since id is in P000000 format, we need to pick off the actual number then increase by 1.
-		int lastId = cursor.getInt(0);
-		lastId = lastId +1;
-		String nextId = Integer.toString(lastId);
-		
-		// Need to pad out the number so we get back to our P000000 format
-		String newId = "P";
-		for(int i= 0; i < (6 - nextId.length()); i++)
-		{
-			newId = newId + "0";
-		}
-		
-		// Tack on the actual number created.
-		newId = newId + nextId;
-		
-		return newId;
+		// Send the payee address information to the fragment.
+		Fragment address = this.getSupportFragmentManager().findFragmentByTag("address");
+		((PayeeAddressActivity) address).putPayeeName(payee.getName());
+		((PayeeAddressActivity) address).putPayeeAddress(payee.getStreet());
+		((PayeeAddressActivity) address).putPayeePostalCode(payee.getZipCode());
+		((PayeeAddressActivity) address).putPayeePhone(payee.getTelephone());
+		((PayeeAddressActivity) address).putPayeeEmail(payee.getEmail());
+		((PayeeAddressActivity) address).putPayeeNotes(payee.getNotes());
 	}
 	
-	private void increasePayeeId()
+	public void onSendDefaultData() 
 	{
-		final String[] dbColumns = { "hiPayeeId" };
-		final String strOrderBy = "hiPayeeId DESC";
-		
-		cursor = KMMDapp.db.query("kmmFileInfo", dbColumns, null, null, null, null, strOrderBy);
-		startManagingCursor(cursor);
-		cursor.moveToFirst();
-		
-		int id = cursor.getInt(0);
-		id = id + 1;
-		
-		ContentValues values = new ContentValues();
-		values.put("hiPayeeId", id);
-		
-		KMMDapp.db.update("kmmFileInfo", values, null, null);
-	}
-	
-	private int getAccountType(String account)
-	{
-		Log.d(TAG, "getAccountType, account: " + account);
-		if( account == null )
-			return 0;
-		else
+		PayeeDefaultAccountActivity defaultAccount = (PayeeDefaultAccountActivity) this.getSupportFragmentManager()
+				.findFragmentByTag("default");
+		if(payee.getDefualtAccountId() != null )
 		{
-			Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountType" }, "id=?", 
-				new String[] { account }, null, null, null);
-			startManagingCursor(c);
-			c.moveToFirst();
-
-			Log.d(TAG, "getAcountType Return: " + c.getString(0));
-			return Integer.parseInt(c.getString(0));
-
-		}
-	}
-	
-	private int getListViewPos(String name, int type)
-	{
-		Log.d(TAG, "getListViewPos: " + name);
-		int i = 0;
-		String strType = null;
-		switch (type)
-		{
-			case AC_INCOME:
-				strType = "Income";
-				break;
-			case AC_EXPENSE:
-				strType = "Expense";
-				break;
-		}
-		Cursor c = KMMDapp.db.query("kmmAccounts", new String[] { "accountName", "id" }, 
-									"accountTypeString=? AND (balance != '0/1')", new String[] { strType },
-									null, null, "accountName ASC");
-		startManagingCursor(c);
-		c.moveToFirst();
-		
-		if(c.getCount() > 0)
-		{
-			Log.d(TAG, "name: " + name + " cursorName: " + c.getString(1));
-			while(!name.equals(c.getString(1)))
-			{
-				Log.d(TAG, "name: " + name + " cursorName: " + c.getString(1));
-				c.moveToNext();
-				i++;
-			}
+			defaultAccount.putUseDefaults(true);
+			defaultAccount.putDefaultAccountId(payee.getDefualtAccountId());
 		}
 		else
-		{
-			Log.d(TAG, "getListViewPos query returned no accounts!");
-			i = 0;
-		}
-		
-		Log.d(TAG, "getListViewPos returning: " + String.valueOf(i));
-		return i;
+			defaultAccount.putUseDefaults(false);
 	}
 	
+	public void onSendTransactionTabData() 
+	{
+		// Send in our CategoryId for the transactions to be loaded.
+		Fragment transactions = this.getSupportFragmentManager().findFragmentByTag("transactions");
+		((TransactionsTabActivity) transactions).putPayeeInfo(payee.getId(), payee.getName());		
+	}
+
+	public void onUseDefaultChecked(boolean flag) 
+	{
+		PayeeDefaultAccountActivity defaultAccount = (PayeeDefaultAccountActivity) this.getSupportFragmentManager()
+				.findFragmentByTag("default");
+		PayeeDefaultIncFragment incFrag = (PayeeDefaultIncFragment) defaultAccount.getChildFragmentManager()
+				.findFragmentByTag("incomeFragment");
+		PayeeDefaultExpFragment expFrag = (PayeeDefaultExpFragment) defaultAccount.getChildFragmentManager()
+				.findFragmentByTag("expenseFragment");
+
+		// If the Income Fragment is checked, then we must not enable the Expense Fragment.
+		if( !incFrag.checkboxInc.isChecked() )
+		{
+			expFrag.checkboxExp.setEnabled(flag);
+			expFrag.spinExpense.setEnabled(flag);			
+		}
+		
+		if( !expFrag.checkboxExp.isChecked() )
+		{
+			incFrag.checkboxInc.setEnabled(flag);
+			incFrag.spinIncome.setEnabled(flag);
+		}
+	}
+	
+	public void onUseDefaultIncome(boolean flag) 
+	{
+		// We need to do the opposite of what the user has selected in the Income Fragment
+		// to the Expense Fragment.
+		PayeeDefaultAccountActivity defaultAccount = (PayeeDefaultAccountActivity) this.getSupportFragmentManager()
+				.findFragmentByTag("default");
+		PayeeDefaultExpFragment expFrag = (PayeeDefaultExpFragment) defaultAccount.getChildFragmentManager()
+				.findFragmentByTag("expenseFragment");
+		expFrag.checkboxExp.setEnabled(!flag);
+		expFrag.spinExpense.setEnabled(!flag);		
+	}
+	
+	public void onUseDefaultExpense(boolean flag) 
+	{
+		// We need to do the opposite of what the user has selected in the Expense Fragment
+		// to the Income Fragment.
+		PayeeDefaultAccountActivity defaultAccount = (PayeeDefaultAccountActivity) this.getSupportFragmentManager()
+				.findFragmentByTag("default");
+		PayeeDefaultIncFragment incFrag = (PayeeDefaultIncFragment) defaultAccount.getChildFragmentManager()
+				.findFragmentByTag("incomeFragment");
+		incFrag.checkboxInc.setEnabled(!flag);
+		incFrag.spinIncome.setEnabled(!flag);		
+	}
+	
+	public void onSendMatchingData() 
+	{
+		PayeeMatchingActivity matching = (PayeeMatchingActivity) this.getSupportFragmentManager()
+				.findFragmentByTag("matching");
+		matching.putMatchingType(payee.getMatchData());
+	}
+	// ************************************************************************************************
+	// ******************************* Helper Functions ***********************************************
 	public void setIsDirty(boolean flag)
 	{
 		this.isDirty = flag;
@@ -479,5 +329,161 @@ public class CreateModifyPayeeActivity extends TabActivity
 	public boolean getIsDirty()
 	{
 		return this.isDirty;
+	}
+	
+	/**
+	 * Initialise the Tab Host
+	 */
+	private void initialiseTabHost(Bundle args) 
+	{
+		tabHost = (TabHost)findViewById(android.R.id.tabhost);
+        tabHost.setup();
+        TabInfo tabInfo = null;
+
+        // Add the fragment for Institution
+        CreateModifyPayeeActivity.addTab(this, this.tabHost, 
+        		this.tabHost.newTabSpec("address").setIndicator(getString(R.string.PayeeTabAddress)),
+        		( tabInfo = new TabInfo("address", PayeeAddressActivity.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        
+        CreateModifyPayeeActivity.addTab(this, this.tabHost,
+        		this.tabHost.newTabSpec("default").setIndicator(getString(R.string.PayeeTabDefault)),
+        		( tabInfo = new TabInfo("default", PayeeDefaultAccountActivity.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        
+        CreateModifyPayeeActivity.addTab(this, this.tabHost,
+        		this.tabHost.newTabSpec("matching").setIndicator(getString(R.string.PayeeTabMatching)),
+        		( tabInfo = new TabInfo("matching", PayeeMatchingActivity.class, args)));
+        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        
+        if( Action == ACTION_EDIT )
+        {
+           	Bundle extras = new Bundle();
+            extras.putString("PayeeId", payeeId);
+            extras.putString("PayeeName", extras.getString("PayeeName"));
+        	
+            // Add the fragment for the Transactions
+            CreateModifyPayeeActivity.addTab(this, this.tabHost,
+            		this.tabHost.newTabSpec("transactions").setIndicator(getString(R.string.TabTransactions)),
+            		( tabInfo = new TabInfo("transactions", TransactionsTabActivity.class, extras)));
+            this.mapTabInfo.put(tabInfo.tag, tabInfo);
+        }
+        
+        // Default to first tab
+        this.onTabChanged("address");
+        
+        // Set the listener for the tab host.
+        tabHost.setOnTabChangedListener(this);
+	}
+	
+	/**
+	 * @param activity
+	 * @param tabHost
+	 * @param tabSpec
+	 * @param clss
+	 * @param args
+	 */
+	private static void addTab(CreateModifyPayeeActivity activity, TabHost tabHost, TabHost.TabSpec tabSpec, TabInfo tabInfo) 
+	{
+		// Attach a Tab view factory to the spec
+		tabSpec.setContent(activity.new TabFactory(activity));
+        String tag = tabSpec.getTag();
+
+        // Check to see if we already have a fragment for this tab, probably
+        // from a previously saved state.  If so, deactivate it, because our
+        // initial state is that a tab isn't shown.
+        tabInfo.fragment = activity.getSupportFragmentManager().findFragmentByTag(tag);
+        if (tabInfo.fragment != null && !tabInfo.fragment.isDetached()) 
+        {
+            FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+            ft.detach(tabInfo.fragment);
+            ft.commit();
+            activity.getSupportFragmentManager().executePendingTransactions();
+        }
+
+        tabHost.addTab(tabSpec);
+	}
+	
+	private void saveTabUI(Fragment tab)
+	{
+		String tag = tab.getTag();
+		SharedPreferences prefs = getPreferences(Activity.MODE_PRIVATE);
+		SharedPreferences.Editor edit = prefs.edit();
+		
+		if( tag.equalsIgnoreCase("address") )
+		{
+			edit.putString("Name", ((PayeeAddressActivity) tab).getPayeeName());
+			edit.putString("Address", ((PayeeAddressActivity) tab).getPayeeAddress());
+			edit.putString("PostalCode", ((PayeeAddressActivity) tab).getPayeePostalCode());
+			edit.putString("Telephone", ((PayeeAddressActivity) tab).getPayeePhone());
+			edit.putString("Email", ((PayeeAddressActivity) tab).getPayeeEmail());
+			edit.putString("Notes", ((PayeeAddressActivity) tab).getPayeeNotes());
+		}
+		else if( tag.equalsIgnoreCase("default") )
+		{
+			edit.putInt("UseDefault", ((PayeeDefaultAccountActivity) tab).getUseDefaults() ? 1 : 0);
+			edit.putInt("UseIncome", ((PayeeDefaultAccountActivity) tab).getUseIncome() ? 1 : 0);
+			edit.putString("IncId", ((PayeeDefaultAccountActivity) tab).getIncomeAccount());
+			edit.putInt("UseExpense", ((PayeeDefaultAccountActivity) tab).getUseExpense() ? 1 : 0);
+			edit.putString("ExpId", ((PayeeDefaultAccountActivity) tab).getExpenseAccount());
+		}
+		else if( tag.equalsIgnoreCase("matching") )
+		{
+			edit.putInt("MatchType", ((PayeeMatchingActivity) tab).getMatchingType());
+		}
+		
+		edit.apply();
+	}
+	
+	// *****************************************************************************************************************************
+	// ********************************************** Helper Classes ***************************************************************
+
+	/**
+	 * 
+	 * @author mwho
+	 *
+	 */
+	private class TabInfo 
+	{
+		 private String tag;
+         private Class<?> clss;
+         private Bundle args;
+         private Fragment fragment;
+         
+         TabInfo(String tag, Class<?> clazz, Bundle args) 
+         {
+        	 this.tag = tag;
+        	 this.clss = clazz;
+        	 this.args = args;
+         }
+	}
+	
+	/**
+	 * 
+	 * @author mwho
+	 *
+	 */
+	class TabFactory implements TabContentFactory 
+	{
+		private final Context mContext;
+
+	    /**
+	     * @param context
+	     */
+	    public TabFactory(Context context) 
+	    {
+	        mContext = context;
+	    }
+
+	    /** (non-Javadoc)
+	     * @see android.widget.TabHost.TabContentFactory#createTabContent(java.lang.String)
+	     */
+	    public View createTabContent(String tag) 
+	    {
+	        View v = new View(mContext);
+	        v.setMinimumWidth(0);
+	        v.setMinimumHeight(0);
+	        return v;
+	    }
 	}
 }
