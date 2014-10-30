@@ -1,0 +1,2853 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res" >
+            <file
+                name="icon"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-ldpi/icon.png"
+                qualifiers="ldpi-v4"
+                type="drawable" />
+            <file
+                name="basic_widget_info"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/xml/basic_widget_info.xml"
+                qualifiers=""
+                type="xml" />
+            <file
+                name="widget_schedules_info"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/xml/widget_schedules_info.xml"
+                qualifiers=""
+                type="xml" />
+            <file
+                name="widget_preferredaccounts_info"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/xml/widget_preferredaccounts_info.xml"
+                qualifiers=""
+                type="xml" />
+            <file
+                name="prefs"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/xml/prefs.xml"
+                qualifiers=""
+                type="xml" />
+            <file
+                name="ic_launcher"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-hdpi/ic_launcher.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="scrollbar_handle_accelerated_anim2"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-hdpi/scrollbar_handle_accelerated_anim2.9.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="icon"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-hdpi/icon.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="ic_drawer"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-hdpi/ic_drawer.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="categories"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/categories.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="welcome"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/welcome.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="widget_schedule_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/widget_schedule_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="time_preference"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/time_preference.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="cashrequirements_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/cashrequirements_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createaccount_parent"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createaccount_parent.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="dialogscheduleactions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/dialogscheduleactions.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="investment"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/investment.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="categories_general"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/categories_general.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="fragment_payee"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/fragment_payee.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="view_transaction"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/view_transaction.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedule_notifications"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedule_notifications.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="home_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/home_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="navigationbar"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/navigationbar.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="ledger_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/ledger_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createaccount_institution"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createaccount_institution.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_transactions_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_transactions_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="about_fragment"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/about_fragment.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_defaultaccount"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_defaultaccount.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createaccount_account"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createaccount_account.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="new_database"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/new_database.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="basichomewidget"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/basichomewidget.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="about_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/about_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedules_rows"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedules_rows.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="basichomewidget_updated"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/basichomewidget_updated.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="file_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/file_view.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="loadmoretransactions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/loadmoretransactions.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="cashrequirementsoptions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/cashrequirementsoptions.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_schedule"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_schedule.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_transaction"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_transaction.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="category_fragment"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/category_fragment.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="home"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/home.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="cashrequirements"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/cashrequirements.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="preferred_accounts_widget"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/preferred_accounts_widget.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="reports"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/reports.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="about"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/about.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_address"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_address.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="fragment_payeedefaultincome"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/fragment_payeedefaultincome.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="account_fragment"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/account_fragment.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="institutions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/institutions.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="homescreenconfiguration"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/homescreenconfiguration.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedule_paymentinfo"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedule_paymentinfo.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="investment_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/investment_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="drawer_list_item"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/drawer_list_item.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_splits"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_splits.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedules"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedules.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_payee"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_payee.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="institution_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/institution_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="accounts_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/accounts_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_category"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_category.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="create_accounts"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/create_accounts.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_transactions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_transactions.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="ledger"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/ledger.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="categories_hierarchy"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/categories_hierarchy.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="createmod_institution"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createmod_institution.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedule_options"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedule_options.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_matching"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_matching.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="file_view_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/file_view_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="fragment_payeedefaultexpense"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/fragment_payeedefaultexpense.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="payee_reassign"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_reassign.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="widget_schedules"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/widget_schedules.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="categories_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/categories_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="accounts"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/accounts.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="splits_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/splits_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="schedule_notifications_row"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/schedule_notifications_row.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="group_layout"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/group_layout.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="cloudintegration"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/cloudintegration.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="icon"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable-mdpi/icon.png"
+                qualifiers="mdpi-v4"
+                type="drawable" />
+            <file
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/values/attrs.xml"
+                qualifiers="" >
+                <declare-styleable name="CustomFastScrollView" >
+                    <attr
+                        name="overlayWidth"
+                        format="dimension" />
+                    <attr
+                        name="overlayHeight"
+                        format="dimension" />
+                    <attr
+                        name="overlayTextSize"
+                        format="dimension" />
+                    <attr
+                        name="overlayScrollThumbWidth"
+                        format="dimension" />
+                </declare-styleable>
+            </file>
+            <file
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/values/styles.xml"
+                qualifiers="" >
+
+                <style
+                    name="DialogNoTitle"
+                    parent="@android:style/Theme.Dialog" >
+                    <item name="android:windowNoTitle">
+true
+                    </item>
+                </style>
+
+                <style
+                    name="ListFont"
+                    parent="@android:style/Widget.ListView" >
+                    <item name="android:textColor">
+@android:color/black
+                    </item>
+                </style>
+
+                <style
+                    name="AlertDialogNoTitle"
+                    parent="@style/DialogNoTitle" >
+                    <item name="android:windowNoTitle">
+true
+                    </item>
+                </style>
+            </file>
+            <file
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/values/dropbox_keys.xml"
+                qualifiers="" >
+                <string name="app_secret" >9une0wyysnrsafz
+                </string>
+                <string name="app_key" >1r7ua9d5ckmxwse
+                </string>
+            </file>
+            <file
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/values/strings.xml"
+                qualifiers="" >
+                <string name="PayeeTabAddress" >Address
+                </string>
+                <string name="freqHalfMonths2" >half months
+                </string>
+                <string name="titlePayeesAvailable" >Available payees:
+                </string>
+                <string name="titleHomeWidgetError" >For performance reasons we currently only allow one instance of
+	    the KMyMoney for Droid home widget.
+                </string>
+                <string name="HalfMonth" >Half-month
+                </string>
+                <string name="homeConfigInstructions" >Please enter your preferences for this widget below.
+                </string>
+                <string name="titleSchedulesNotifications" >Schedules due
+                </string>
+                <string name="titlePreferenceOverDueSchedules" >Over due schedules
+                </string>
+                <string name="titleInstitutionStreet" >Street: 
+                </string>
+                <string name="titleSync" >Sync
+                </string>
+                <string name="titleAccountPreferred" >Preferred account
+                </string>
+                <string name="titleDropboxAutoSync" >Auto Sync
+                </string>
+                <string name="titleInstitutionPhone" >Telephone/Fax: 
+                </string>
+                <string name="ThreeWeeks" >Three Weeks
+                </string>
+                <string name="ManualDeposit" >Manual deposit
+                </string>
+                <string name="titleScheduleNotifications" >Receive notifications
+                </string>
+                <string name="titlesrFrequency" >Frequency
+                </string>
+                <string name="crash_dialog_title" >KMMDroid has crashed
+                </string>
+
+                <string-array name="ShortMonthNames" >
+                    <item>
+@string/Jan
+                    </item>
+                    <item>
+@string/Feb
+                    </item>
+                    <item>
+@string/Mar
+                    </item>
+                    <item>
+@string/Apr
+                    </item>
+                    <item>
+@string/May
+                    </item>
+                    <item>
+@string/Jun
+                    </item>
+                    <item>
+@string/Jul
+                    </item>
+                    <item>
+@string/Aug
+                    </item>
+                    <item>
+@string/Sep
+                    </item>
+                    <item>
+@string/Oct
+                    </item>
+                    <item>
+@string/Nov
+                    </item>
+                    <item>
+@string/Dec
+                    </item>
+                </string-array>
+
+                <string name="loadingMoreTransactions" >Loading more transactions.....
+                </string>
+                <string name="homeConfigNumWeeksDisplayTitle" >Number of weeks to display
+                </string>
+
+                <string-array name="UpdateFrequency" >
+                    <item>
+@string/None
+                    </item>
+                    <item>
+@string/FifteenMinutes
+                    </item>
+                    <item>
+@string/ThirtyMinutes
+                    </item>
+                    <item>
+@string/OneHour
+                    </item>
+                    <item>
+@string/TwoHours
+                    </item>
+                    <item>
+@string/FourHours
+                    </item>
+                    <item>
+@string/SixHours
+                    </item>
+                    <item>
+@string/AutoUpdate
+                    </item>
+                </string-array>
+
+                <string name="titleCreateModifySchedule" >New Schedule
+                </string>
+                <string name="titleInstitutionCity" >City: 
+                </string>
+                <string name="titleCategoryDate" >Date: 
+                </string>
+                <string name="titleGoogleDriveSync" >Google Drive Sync
+                </string>
+                <string name="PayeeTabMatching" >Matching
+                </string>
+                <string name="empty_widget_nopreferredaccounts" >No Preferred Accounts
+                </string>
+                <string name="buttonSetDate" >Set Date
+                </string>
+                <string name="doNothing" >Do nothing
+                </string>
+                <string name="OneHour" >1 hour
+                </string>
+                <string name="MoneyMarket" >Money Market
+                </string>
+                <string name="TwoWeeks" >Two Weeks
+                </string>
+                <string name="PayeeTabDefault" >Default
+                </string>
+                <string name="freq2Yearly" >Twice yearly
+                </string>
+                <string name="descriptionAddTransaction" >Add Transaction
+                </string>
+                <string name="BackActionWarning" >Changes will be lost
+                </string>
+                <string name="titleUbuntuOne" >UbuntuOne
+                </string>
+                <string name="buttonChooseCategory" >Choose a category
+                </string>
+                <string name="titleCategoryNotes" >Notes: 
+                </string>
+                <string name="summaryDisplayFrequency" >Number of weeks to display
+                </string>
+                <string name="Stock" >Stock
+                </string>
+                <string name="titleCreateModifyTransactions" >New Transaction
+                </string>
+                <string name="Savings" >Savings
+                </string>
+                <string name="notreconciled" >Not reconciled
+                </string>
+                <string name="freqWeekly" >Weekly
+                </string>
+                <string name="itemSave" >Save
+                </string>
+                <string name="itemCancel" >Cancel
+                </string>
+                <string name="titleCategoryHierarchy" >Category Hierarchy
+                </string>
+                <string name="titleAccountNumber" >Account number
+                </string>
+                <string name="itemNumReports" ># of Reports: 
+                </string>
+                <string name="Asset" >Asset
+                </string>
+                <string name="freq2Weeks" >Every other week
+                </string>
+                <string name="titleUbuntuOneSync" >UbuntuOne Sync
+                </string>
+                <string name="vtlabel_Amount" >Amount: 
+                </string>
+                <string name="titleScheduleOptions" >Options
+                </string>
+                <string name="TwentyFourHours" >24 hours
+                </string>
+                <string name="buttonEnter" >Enter
+                </string>
+                <string name="Jan" >Jan
+                </string>
+                <string name="titlePayeeDefaultAccount" >Default Account
+                </string>
+                <string name="titleAutoSyncFreq" >Autosync Frequency
+                </string>
+                <string name="titleEdit" >Edit
+                </string>
+                <string name="summaryDropboxUploadonExit" >Upload file upon exit
+                </string>
+
+                <string-array name="arrayTypes" >
+                    <item>
+Income
+                    </item>
+                    <item>
+Expense
+                    </item>
+                </string-array>
+
+                <string name="titleButtonEdit" >Edit
+                </string>
+                <string name="titlePayeeName" >Name: 
+                </string>
+                <string name="titleCreateModPayee" >Create New Payee
+                </string>
+                <string name="titleHomeWidgetConfiguration" >Widget Configuration
+                </string>
+                <string name="cleared" >Cleared
+                </string>
+                <string name="freq30Days" >Every thirty days
+                </string>
+                <string name="titlePayeeNotes" >Notes: 
+                </string>
+                <string name="titleInstitutionBIC" >BIC: 
+                </string>
+                <string name="titleAccountType" >Account type
+                </string>
+                <string name="ThirtyMinutes" >30 minutes
+                </string>
+                <string name="titlesrDescription" >Description
+                </string>
+
+                <string-array name="scheduleWeekendOptions" >
+                    <item>
+@string/changeDateBefore
+                    </item>
+                    <item>
+@string/changeDateAfter
+                    </item>
+                    <item>
+@string/doNothing
+                    </item>
+                </string-array>
+
+                <string name="titlePayees" >Payees
+                </string>
+                <string name="FiveMinutes" >5 minutes
+                </string>
+                <string name="titleAccountName" >Account name
+                </string>
+                <string name="titlePreferencesCheckSchedulesNotifications" >Check schedules during notifications
+                </string>
+                <string name="homeConfigDatabaseTitle" >Select a file for this widget
+                </string>
+                <string name="titleAccountOpenBalance" >Opening balance
+                </string>
+                <string name="titleCategoryOptions" >Options
+                </string>
+                <string name="TabTransactions" >Transactions
+                </string>
+                <string name="pref_acra_disabled" >Error reporting is off
+                </string>
+                <string name="titlePayeeUseDefault" >Use the default account for this new 
+    									transaction with this payee
+                </string>
+                <string name="TwoHours" >2 hours
+                </string>
+                <string name="payeeMatchonName" >Match on Payee name
+                </string>
+                <string name="Year" >Year
+                </string>
+                <string name="titlePayeeDefaultCategory" >Default category
+                </string>
+                <string name="Week" >Week
+                </string>
+                <string name="messageLogOut" >Logging out!
+                </string>
+                <string name="itemNumPrices" ># of Prices: 
+                </string>
+                <string name="Month" >Month
+                </string>
+                <string name="Other" >Other
+                </string>
+                <string name="titleWelcome" >Welcome
+                </string>
+                <string name="titleNavBar" >Navigation Bar
+                </string>
+                <string name="titlePreferenceNotifications" >Notifications
+                </string>
+                <string name="titleInvestmentActivity" >Investments
+                </string>
+                <string name="titleSubAccount" >This account is a sub-account of:
+                </string>
+                <string name="titleReports" >Reports
+                </string>
+                <string name="titleSyncAll" >All
+                </string>
+                <string name="titleButtonCancel" >Cancel
+                </string>
+                <string name="titleStartNew" >Start a new KMyMoney database
+                </string>
+                <string name="itemFileCreated" >Created: 
+                </string>
+                <string name="crash_dialog_comment_prompt" >Please give us more information about what you where doing at the time of the crash:
+                </string>
+                <string name="titlesrAmount" >Amount
+                </string>
+
+                <string-array name="WeeksToDisplayValues" >
+                    <item>
+"1"
+                    </item>
+                    <item>
+"2"
+                    </item>
+                    <item>
+"3"
+                    </item>
+                    <item>
+"4"
+                    </item>
+                </string-array>
+
+                <string name="CreditCard" >Credit Card
+                </string>
+                <string name="freqAny" >Any
+                </string>
+                <string name="buttonEdit" >Edit
+                </string>
+                <string name="titleClose" >Close
+                </string>
+                <string name="None" >None
+                </string>
+                <string name="DirectDeposit" >Direct deposit
+                </string>
+                <string name="Nov" >Nov
+                </string>
+                <string name="titleUpdateFrequency" >Update frequence
+                </string>
+                <string name="titleAccountInstitution" >Institution
+                </string>
+                <string name="Day" >Day
+                </string>
+                <string name="titleLastUsedFile" >Last used file location.
+                </string>
+                <string name="unableToDelete" >Unable to delete your record for the following reason: 
+                </string>
+                <string name="titleFileChooser" >Choose a File
+                </string>
+                <string name="freq8Weeks" >Every eight weeks
+                </string>
+                <string name="changeDateAfter" >Move after
+                </string>
+                <string name="titlePayeeDefaultIncome" >Income
+                </string>
+                <string name="BankTransfer" >Bank transfer
+                </string>
+                <string name="summaryLastUsedFile" >Location of the last used file
+                </string>
+                <string name="summaryScheduleNotifications" >Do you want to receive notifications of schedules due?
+                </string>
+                <string name="titleOpen" >Open
+                </string>
+                <string name="titleCreateAccountAccount" >Create Account
+                </string>
+                <string name="titleOpenDatabase" >Open a current KMyMoney database
+                </string>
+                <string name="titleScheduleAccount" >Account:
+                </string>
+                <string name="titleMenuNav" >Menu
+                </string>
+                <string name="splitTransaction" >- Split Transaction -
+                </string>
+                <string name="titleMemo" >Memo: 
+                </string>
+                <string name="titlePayeeMatching" >Matching
+                </string>
+                <string name="OneWeek" >One Week
+                </string>
+                <string name="deletemsg" >Are you sure you want to delete payee: 
+                </string>
+                <string name="titleSynchronization" >Synchronization
+                </string>
+                <string name="AccountTabAccount" >Account
+                </string>
+                <string name="crash_dialog_ok_toast" >Thank you for helping make KMMDroid a better applicaition.
+                </string>
+                <string name="titleAccountInstructions2" >Enter the name of the account under which it is known within
+		KMyMoney. Select the type for the new account. Enter the date the account was opened and its
+		currency.
+                </string>
+                <string name="titlePreferenceTimeToRun" >Time to run
+                </string>
+                <string name="freqMonth" >Month
+                </string>
+                <string name="vtlabel_Number" >Number: 
+                </string>
+                <string name="Sep" >Sep
+                </string>
+                <string name="titleButtonDelete" >Delete
+                </string>
+                <string name="error" >Error!
+                </string>
+                <string name="drawer_open" >Open navigation drawer
+                </string>
+                <string name="itemNumBudgets" ># of Budgets: 
+                </string>
+                <string name="titleNumber" >Number: 
+                </string>
+                <string name="vtlabel_Description" >Description:
+                </string>
+                <string name="freqEvery" >Every
+                </string>
+                <string name="freq3Weeks" >Every three weeks
+                </string>
+                <string name="Expense" >Expense
+                </string>
+                <string name="itemLastModified" >Last modified:
+                </string>
+                <string name="scheduleDescription" >What would you like to do with: 
+                </string>
+                <string name="titleNoSchedules" >Sorry but your search returned no schedules.
+                </string>
+                <string name="May" >May
+                </string>
+                <string name="Currency" >Currency
+                </string>
+                <string name="AutoUpdate" >Upon KMyMoney modification
+                </string>
+                <string name="Mar" >Mar
+                </string>
+                <string name="titleNewInstitution" >New Institution
+                </string>
+
+                <string-array name="SchedulePaymentMethod" >
+                    <item>
+@string/Other
+                    </item>
+                    <item>
+@string/BankTransfer
+                    </item>
+                    <item>
+@string/StandingOrder
+                    </item>
+                    <item>
+@string/ManualDeposit
+                    </item>
+                    <item>
+@string/DirectDeposit
+                    </item>
+                </string-array>
+
+                <string name="buttonSplit" >Splits
+                </string>
+                <string name="freqHalfMonth" >Half-month
+                </string>
+                <string name="app_name" >KMyMoney for Droid
+                </string>
+                <string name="homeConfigDefaultUpdateFreqTitle" >How often to refresh this widget
+                </string>
+                <string name="titleCategoryName" >Name: 
+                </string>
+                <string name="titleDueToday" >Today
+                </string>
+                <string name="titleAutoEntered" >Automatically entered schedules
+                </string>
+                <string name="freqYearly" >Yearly
+                </string>
+                <string name="titleUnassigned" >Unassigned: 
+                </string>
+                <string name="titleAccountOpenDate" >Opening date
+                </string>
+                <string name="titleNewDatabase" >New Database
+                </string>
+                <string name="vtlabel_Splits" >Categories
+                </string>
+                <string name="itemVersion" >Version: 
+                </string>
+                <string name="Dec" >Dec
+                </string>
+                <string name="titleCreateModCategory" >Create new category
+                </string>
+                <string name="titleSchedulePaymentInfo" >Payment info
+                </string>
+                <string name="payeeNoMatching" >No matching
+                </string>
+                <string name="freq3Months" >Every three months
+                </string>
+                <string name="titlePreferredAccounts" >Preferred Accounts
+                </string>
+                <string name="itemNumCurrencies" ># of Currencies: 
+                </string>
+                <string name="titleSumofSplits" >Sum of splits: 
+                </string>
+                <string name="Investment" >Investment
+                </string>
+                <string name="buttonNewInstitution" >New Institution
+                </string>
+                <string name="titleInstitutionPostalCode" >Postal Code: 
+                </string>
+                <string name="skip" >Skip schedule
+                </string>
+                <string name="descriptionRefresh" >Refresh
+                </string>
+                <string name="drawer_close" >Close navigation drawer
+                </string>
+                <string name="titleCheckSchedulesStartup" >Check schedules at start up
+                </string>
+
+                <string-array name="arrayAccountTypes" >
+                    <item>
+Asset
+                    </item>
+                    <item>
+Checking
+                    </item>
+                    <item>
+Equity
+                    </item>
+                    <item>
+Liability
+                    </item>
+                    <item>
+Savings
+                    </item>
+                </string-array>
+
+                <string name="titleDialogScheduleActions" >Enter or Skip
+                </string>
+                <string name="crash_dialog_text" >An unexpected error occurred forcing the
+	    application to stop. Please help us fix this by sending us error data,
+	    all you have to do is click OK.
+                </string>
+                <string name="close" >Close File
+                </string>
+                <string name="messageLinkSuccessful" >Your account has been successfully linked!
+                </string>
+                <string name="CategoriesTabHierarchy" >Hierarchy
+                </string>
+                <string name="freqOnce" >Once
+                </string>
+                <string name="titleLedger" >Ledger
+                </string>
+                <string name="summaryLinkToDropbox" >Would you like to link KMMDroid with your Dropbox account?
+                </string>
+                <string name="itemFileVersion" >File Version: 
+                </string>
+                <string name="titleInstitutionRoutingNumber" >Routing Number: 
+                </string>
+                <string name="Checking" >Checking
+                </string>
+                <string name="titleCategoryType" >Type: 
+                </string>
+                <string name="buttonLogout" >Logout
+                </string>
+                <string name="titleCategoryGeneral" >General Category
+                </string>
+                <string name="titlePastDue" >Past due
+                </string>
+                <string name="itemNumSchedules" ># of Schedules: 
+                </string>
+
+                <string-array name="TransactionStatus" >
+                    <item>
+@string/notreconciled
+                    </item>
+                    <item>
+@string/cleared
+                    </item>
+                    <item>
+@string/reconciled
+                    </item>
+                </string-array>
+
+                <string name="freq2Months" >Every other month
+                </string>
+                <string name="titleAbout" >About
+                </string>
+                <string name="AccountTabSubAccount" >SubAccount
+                </string>
+                <string name="buttonSubmit" >Submit
+                </string>
+                <string name="SixHours" >6 hours
+                </string>
+                <string name="titleTransactionAmount" >Transaction amount: 
+                </string>
+                <string name="titleCreateModAccount" >New Account Setup
+                </string>
+                <string name="reconciled" >Reconciled
+                </string>
+                <string name="AccountTabInstitution" >Institution
+                </string>
+                <string name="titleChooseFrequency" >Choose a frequency
+                </string>
+                <string name="msgPayeeName" >Payee name:
+                </string>
+                <string name="summaryDropboxAutoSync" >Periodically check file status
+                </string>
+                <string name="buttonLog" >Send log to Developer
+                </string>
+
+                <string-array name="WeeksToDisplay" >
+                    <item>
+@string/OneWeek
+                    </item>
+                    <item>
+@string/TwoWeeks
+                    </item>
+                    <item>
+@string/ThreeWeeks
+                    </item>
+                    <item>
+@string/FourWeeks
+                    </item>
+                </string-array>
+
+                <string name="titlePayeePostalCode" >Postal Code: 
+                </string>
+                <string name="Loan" >Loan
+                </string>
+                <string name="summaryDropboxStartupCheck" >Check for outdate file on startup
+                </string>
+                <string name="itemNumSecurities" ># of Securities: 
+                </string>
+                <string name="messageDropboxLinkError" >Couldn\'t authenticate with Dropbox: 
+                </string>
+                <string name="titleCategory" >Category: 
+                </string>
+                <string name="menuRecent" >Recent
+                </string>
+                <string name="Income" >Income
+                </string>
+                <string name="titleScheduleFrequency" >Frequency:
+                </string>
+                <string name="freqDay" >Day
+                </string>
+                <string name="Cash" >Cash
+                </string>
+                <string name="summaryOpenLastUsed" >Open last used file on return?
+                </string>
+                <string name="titleScheduleEnd" >This schedule will end at some time
+                </string>
+                <string name="titleAccount" >Account: 
+                </string>
+                <string name="titleCategoryCurrency" >Currency: 
+                </string>
+                <string name="titleDropboxUploadonExit" >Upload on exit
+                </string>
+                <string name="titleDate" >Date: 
+                </string>
+                <string name="buttonDelete" >Delete
+                </string>
+                <string name="titleBasicHomeWidget" >KMyMoney for Droid
+                </string>
+                <string name="titleScheduleNumTransactions" >Number of transactions remaining
+                </string>
+                <string name="titleCloudServices" >Cloud Services
+                </string>
+                <string name="titleSyncDropbox" >Dropbox
+                </string>
+                <string name="titleCreateAccounts" >Create Accounts
+                </string>
+                <string name="buttonOneYear" >One year
+                </string>
+                <string name="receive_home_update_notifications_permission_label" >Receive Home Widgets Notifications
+                </string>
+                <string name="titleButtonOK" >OK
+                </string>
+                <string name="FileChooserLocation" >Current Dir:
+                </string>
+                <string name="titleButtonNo" >No
+                </string>
+                <string name="buttonAll" >All
+                </string>
+                <string name="titleSplitsMessage" >You have an amount left unassigned. Click Ok to have the transaction automatically balanced or
+		click Cancel to go back and edit your splits.
+                </string>
+                <string name="titleLinkToDropbox" >Link to Dropbox
+                </string>
+                <string name="titleSchedulePaymentMethod" >Payment method
+                </string>
+                <string name="send_home_update_notifications_permission_label" >Send Home Widgets Notifications
+                </string>
+                <string name="titleSplitConfirmation" >Splits unbalanced
+                </string>
+                <string name="titleDelete" >Delete
+                </string>
+                <string name="StandingOrder" >Standing order
+                </string>
+                <string name="titlesrNextDueDate" >Next Due Date
+                </string>
+                <string name="titlePreferencesSchedules" >Schedule Options
+                </string>
+                <string name="payeeMoreThanOne" >Somehow we found more than one payee.
+                </string>
+
+                <string-array name="DropboxFreq" >
+                    <item>
+@string/FiveMinutes
+                    </item>
+                    <item>
+@string/FifteenMinutes
+                    </item>
+                    <item>
+@string/ThirtyMinutes
+                    </item>
+                    <item>
+@string/OneHour
+                    </item>
+                    <item>
+@string/TwoHours
+                    </item>
+                    <item>
+@string/FourHours
+                    </item>
+                    <item>
+@string/SixHours
+                    </item>
+                    <item>
+@string/TwelveHours
+                    </item>
+                    <item>
+@string/TwentyFourHours
+                    </item>
+                </string-array>
+
+                <string name="titleDropboxStartupCheck" >Check at startup
+                </string>
+                <string name="categoryNotFound" >Category not found!
+                </string>
+                <string name="loadMoreRow" >-- Load more transactions --
+                </string>
+                <string name="titleEditModAccount" >Edit Account
+                </string>
+                <string name="titleAccountInstructions" >If this account is managed by an institution please select
+		the institution from the list. If the institution does not exist yet, please choose the New
+		Institution button to create it. Otherwise, check the box below to create an account with out an
+		institution. Enter the account number used by the institution to identify the account.
+                </string>
+
+                <string-array name="Reports" >
+                    <item>
+@string/titleCashRequirements
+                    </item>
+                </string-array>
+
+                <string name="titleShowClosed" >Show closed accounts
+                </string>
+                <string name="summaryPreferenceTimeToRun" >When do you wish to be reminded?
+                </string>
+                <string name="titleKMMDAlarmReceiver" >Alarm Receiver
+                </string>
+                <string name="buttonOneMonth" >One month
+                </string>
+                <string name="titleStatus" >Status: 
+                </string>
+                <string name="titleHideClosed" >Hide closed accounts
+                </string>
+                <string name="crash_toast_text" >Something went wrong, please send us a crash report to  let us know what you where doing and to help fix the issue.
+                </string>
+                <string name="widgetSchedules" >KMMD - Schedules
+                </string>
+                <string name="titleBegDate" >Beginning Date: 
+                </string>
+                <string name="titleDisplayFrequency" >Display Frequency
+                </string>
+                <string name="accountNotSupported" >Currently this account type is not able to be edited in KMM for Droid. It will be add
+		eventually. We apologize for the limitation right now. Thanks for understanding.
+                </string>
+                <string name="titleCategoryBalance" >Balance: 
+                </string>
+                <string name="titleOpeningInfo" >Opening information
+                </string>
+                <string name="titleOptions" >Options
+                </string>
+                <string name="pref_acra_enabled" >Error reporting is on
+                </string>
+                <string name="titleAccountSubAccount" >Subaccount of
+                </string>
+                <string name="titlePayeeTransactions" >Payee Transactions
+                </string>
+                <string name="titleScheduleWeekendOption" >Non-processing day option:
+                </string>
+                <string name="titleReassignPayee" >Reassign Payee
+                </string>
+                <string name="titleGoogleDrive" >Google Drive
+                </string>
+                <string name="vtlabel_Date" >Date: 
+                </string>
+                <string name="vtlabel_Memo" >Memo: 
+                </string>
+                <string name="freqWeeks" >weeks
+                </string>
+                <string name="changeDateBefore" >Move before
+                </string>
+                <string name="titlePreferencesAutoEnterSchedulesNotifications" >Auto enter schedules during notifications
+                </string>
+                <string name="freqMonths" >months
+                </string>
+                <string name="titlePayeeAddress" >Address: 
+                </string>
+                <string name="buttonSave" >Save
+                </string>
+                <string name="titleDropbox" >Dropbox
+                </string>
+                <string name="titleViewTransaction" >Transaction
+                </string>
+                <string name="receive_home_update_notifications_permission_description" >Used to ensure security between KMyMoneyDroid and the Homescreen Widgets
+                </string>
+                <string name="freqDays" >days
+                </string>
+                <string name="Jul" >Jul
+                </string>
+                <string name="itemNumAccounts" ># of Accounts: 
+                </string>
+                <string name="Jun" >Jun
+                </string>
+                <string name="titleSelectanAccount" >Select an Account
+                </string>
+                <string name="FileChooserParentDirectory" >Parent Directory
+                </string>
+                <string name="Feb" >Feb
+                </string>
+                <string name="titleSchedules" >Schedules
+                </string>
+                <string name="freqWeek" >Week
+                </string>
+                <string name="titleHome" >Home
+                </string>
+                <string name="titleCategoryCheckNumber" >Last check number: 
+                </string>
+                <string name="titleButtonYes" >Yes
+                </string>
+                <string name="itemInsertRow" >New Split
+                </string>
+                <string name="freq4Weeks" >Every four weeks
+                </string>
+                <string name="FifteenMinutes" >15 minutes
+                </string>
+                <string name="titleAmount" >Amount: 
+                </string>
+
+                <string-array name="TransactionTypes" >
+                    <item>
+Deposit
+                    </item>
+                    <item>
+Transfer
+                    </item>
+                    <item>
+Withdrawal
+                    </item>
+                </string-array>
+                <string-array name="DropboxFreqValues" >
+                    <item>
+"300000"
+                    </item>
+                    <item>
+"900000"
+                    </item>
+                    <item>
+"1800000"
+                    </item>
+                    <item>
+"3600000"
+                    </item>
+                    <item>
+"7200000"
+                    </item>
+                    <item>
+"14400000"
+                    </item>
+                    <item>
+"21600000"
+                    </item>
+                    <item>
+"43200000"
+                    </item>
+                    <item>
+"86400000"
+                    </item>
+                </string-array>
+
+                <string name="titleCreateAccountParent" >Create Parent
+                </string>
+                <string name="titleScheduleAutoEnter" >Enter this schedule into the register automatically when it is due
+                </string>
+                <string name="Apr" >Apr
+                </string>
+                <string name="titleInstitutionName" >Name: 
+                </string>
+                <string name="summaryPayeeReassign" >The transactions associated with the selected payee needs to be 
+    	re-assigned to a different payee before the selected payee can be deleted. Please select
+    	a payee from the list below.
+                </string>
+                <string name="unableToReassign" >Unable to reassign this Payee. Your payee was NOT deleted!
+                </string>
+                <string name="itemNumPayees" ># of Payees: 
+                </string>
+                <string name="lostDatabase" >Error!! Missing database
+                </string>
+                <string name="FileChooserFolder" >Folder
+                </string>
+                <string name="FourWeeks" >Four Weeks
+                </string>
+                <string name="titleCashRequirements" >Cash Required
+                </string>
+                <string name="titleEndDate" >Ending Date: 
+                </string>
+                <string name="titleCreateModifySplits" >Splits
+                </string>
+                <string name="titleDatabaseName" >Please enter a database name
+                </string>
+                <string name="titleBackActionWarning" >Your changes will be lost if you proceed! Do you really wish to proceed?
+                </string>
+                <string name="titleOpenLastUsed" >Open Last Used
+                </string>
+                <string name="Equity" >Equity
+                </string>
+                <string name="summaryCheckSchedulesStartup" >Check and auto enter schedules at startup
+                </string>
+                <string name="titleCreateModifyInstitution" >Create Institution
+                </string>
+                <string name="payeeNotFound" >Payee not found!
+                </string>
+                <string name="titleScheduleEstimate" >The amount is an estimate because it varies for each payment
+                </string>
+                <string name="titleNoInstitution" >No institution
+                </string>
+                <string name="titlePayeeEmail" >Email: 
+                </string>
+
+                <string-array name="scheduleFreqDescription" >
+                    <item>
+@string/Once
+                    </item>
+                    <item>
+@string/Day
+                    </item>
+                    <item>
+@string/Week
+                    </item>
+                    <item>
+@string/HalfMonth
+                    </item>
+                    <item>
+@string/Month
+                    </item>
+                    <item>
+@string/Year
+                    </item>
+                </string-array>
+
+                <string name="titleAccountTransactions" >Total Transactions: 
+                </string>
+                <string name="AssetLoan" >Asset Loan
+                </string>
+                <string name="buttonSkip" >Skip
+                </string>
+                <string name="FileChooserFile" >File Size:
+                </string>
+                <string name="Oct" >Oct
+                </string>
+                <string name="defaultNotificationTime" >Default notification time
+                </string>
+                <string name="titlesrPayee" >Payee
+                </string>
+                <string name="titleAccountCurrency" >Currency
+                </string>
+                <string name="accountNameNotEntered" >You must enter a name for this account!
+                </string>
+                <string name="titlePreferenceHomeWidget" >Home Widget
+                </string>
+                <string name="homeConfigDefaultAccountTitle" >Default account for this widget
+                </string>
+                <string name="payeeMatching" >Transaction Matching
+                </string>
+                <string name="titleAccounts" >Accounts
+                </string>
+                <string name="titlePrefs" >Options
+                </string>
+                <string name="freq4Months" >Every four months
+                </string>
+                <string name="titlePayeeDefaultExpense" >Expense
+                </string>
+                <string name="menuOpen" >Open
+                </string>
+                <string name="titleNavigation" >Navigation
+                </string>
+                <string name="titleSkipSchedule" >Do you really want to skip this schedule?
+                </string>
+                <string name="itemClearAll" >Clear All
+                </string>
+                <string name="itemNumKVPS" ># of KVPS: 
+                </string>
+                <string name="titleCategoryPriceEntry" >Price entry: 
+                </string>
+                <string name="freqTimes" >times
+                </string>
+                <string name="Liability" >Liability
+                </string>
+                <string name="titleDropboxSync" >Sync with Dropbox
+                </string>
+                <string name="widgetPreferredAccounts" >KMMD - Preferred Accounts
+                </string>
+                <string name="CategoriesTabGeneral" >General
+                </string>
+                <string name="empty_widget_noschedules" >No schedules found
+                </string>
+                <string name="titlePreferencesAutoEnterScheduleStartup" >Auto enter schedules at start up
+                </string>
+                <string name="titleDeleteTransaction" >Do you really want to delete this transaction?
+                </string>
+                <string name="Once" >Once
+                </string>
+                <string name="send_home_update_notifications_permission_description" >Used to ensure security between KMyMoneyDroid and the Homescreen Widgets
+                </string>
+                <string name="titleLoadMore" >Load more
+                </string>
+
+                <string-array name="UpdateFreqValues" >
+                    <item>
+"0"
+                    </item>
+                    <item>
+"900000"
+                    </item>
+                    <item>
+"1800000"
+                    </item>
+                    <item>
+"3600000"
+                    </item>
+                    <item>
+"7200000"
+                    </item>
+                    <item>
+"14400000"
+                    </item>
+                    <item>
+"21600000"
+                    </item>
+                    <item>
+"-1"
+                    </item>
+                </string-array>
+
+                <string name="titleNew" >New
+                </string>
+                <string name="Aug" >Aug
+                </string>
+                <string name="titleAccountIBAN" >IBAN
+                </string>
+                <string name="FourHours" >4 hours
+                </string>
+                <string name="buttonLogin" >Login
+                </string>
+                <string name="titleCreateAccountInstitution" >Create Institution
+                </string>
+                <string name="pref_disable_acra" >Report crashes?
+                </string>
+                <string name="itemNumInstitutions" ># of Institutions: 
+                </string>
+                <string name="freqDaily" >Daily
+                </string>
+                <string name="splitsNotBalanced" >Your transaction is not balanced! If you would like to make the transaction amount equal your splits
+		total press "OK". Press "Cancel" to go back and edit your splits.
+                </string>
+                <string name="freqHalfMonths" >Every half month
+                </string>
+                <string name="titleInstitutions" >Institutions
+                </string>
+                <string name="summaryFrequency" >Choose an update frequency
+                </string>
+                <string name="titlePayeeTelephone" >Telephone: 
+                </string>
+                <string name="titleWifiOnly" >Use WiFi only
+                </string>
+                <string name="titleCategories" >Categories
+                </string>
+                <string name="vtlabel_Status" >Status: 
+                </string>
+                <string name="titleViewSchedule" >Schedule
+                </string>
+                <string name="titleTransactionType" >Transaction Type: 
+                </string>
+                <string name="titleScheduleEndDate" >Date of final transaction
+                </string>
+                <string name="titlePayeeToFrom" >Pay to: 
+                </string>
+                <string name="TwelveHours" >12 hours
+                </string>
+                <string name="titlePreferencesDueTodaySchedules" >Schedules due today
+                </string>
+                <string name="itemNumTransactions" ># of Transactions: 
+                </string>
+
+                <string-array name="scheduleFrequency" >
+                    <item>
+"1"
+                    </item>
+                    <item>
+"2"
+                    </item>
+                    <item>
+"3"
+                    </item>
+                    <item>
+"4"
+                    </item>
+                    <item>
+"5"
+                    </item>
+                    <item>
+"6"
+                    </item>
+                    <item>
+"7"
+                    </item>
+                    <item>
+"8"
+                    </item>
+                    <item>
+"9"
+                    </item>
+                    <item>
+"10"
+                    </item>
+                    <item>
+"11"
+                    </item>
+                    <item>
+"12"
+                    </item>
+                </string-array>
+
+                <string name="freqYear" >Year
+                </string>
+                <string name="titleScheduleName" >Schedule name:
+                </string>
+                <string name="freqYears" >years
+                </string>
+                <string name="freqMonthly" >Monthly
+                </string>
+                <string name="delete" >Delete
+                </string>
+                <string name="createNewPayee" >Create a new payee
+                </string>
+                <string name="itemNumSplits" ># of Splits: 
+                </string>
+                <string name="homeWidgetError" >Error
+                </string>
+            </file>
+            <file
+                name="calendar_day"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/calendar_day.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_checking"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_checking.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_liability"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_liability.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="payees_tab_transactions"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/payees_tab_transactions.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="home_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/home_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="reports_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/reports_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="homewidget_refresh"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/homewidget_refresh.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_add"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_add.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="schedule_skip"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/schedule_skip.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="payees_tab_default"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/payees_tab_default.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ic_launcher"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/ic_launcher.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_cash"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_cash.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="titlelabel_background"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/titlelabel_background.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="institutions_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/institutions_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="scrollbar_handle_accelerated_anim2"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/scrollbar_handle_accelerated_anim2.9.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="split"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/split.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_asset"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_asset.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="schedule_enter"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/schedule_enter.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_credit_card"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_credit_card.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="schedules_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/schedules_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="transaction_add"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/transaction_add.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ic_tab_grey"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/ic_tab_grey.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="arrow"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/arrow.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="schedule"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/schedule.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="homewidget_wrench"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/homewidget_wrench.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="accounts_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/accounts_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="homewidget_icon"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/homewidget_icon.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="payees_tab_matching"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/payees_tab_matching.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="titlelabel_background_orig"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/titlelabel_background_orig.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="background"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/background.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="categories_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/categories_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_savings"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_savings.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="kmymoney1"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/kmymoney1.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ic_tab_white"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/ic_tab_white.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="ledgers_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/ledgers_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="startlogo"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/startlogo.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="payees_view"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/payees_view.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_loan"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_loan.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="payees_tab_address"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/payees_tab_address.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="newacct"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/newacct.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="bg_texture"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/bg_texture.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="account_types_investments"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/account_types_investments.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="kmymoney"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/drawable/kmymoney.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/values-de/strings.xml"
+                qualifiers="de" >
+                <string name="titleOpenDatabase" >Vorhandene KMyMoney Datenbank öffnen
+                </string>
+                <string name="titleScheduleEndDate" >Datum der letzten Zahlung
+                </string>
+                <string name="scheduleDescription" >Was möchten Sie tun mit: 
+                </string>
+                <string name="summaryLinkToDropbox" >Möchten Sie Ihr Dropbox-Konto mit dieser App verknüpfen?
+                </string>
+                <string name="Savings" >Sparkonto
+                </string>
+                <string name="titleTransactionType" >Art der Buchung: 
+                </string>
+                <string name="Week" >wöchentlich
+                </string>
+                <string name="descriptionAddTransaction" >Buchung hinzufügen
+                </string>
+                <string name="TwoHours" >2 Stunden
+                </string>
+                <string name="titleViewSchedule" >Geplante Buchungen
+                </string>
+                <string name="itemNumSecurities" >Anzahl der Wertpapiere: 
+                </string>
+                <string name="itemSave" >Speichern
+                </string>
+                <string name="titleUnassigned" >Nicht zugewiesen: 
+                </string>
+                <string name="itemNumSplits" >Anzahl der Split-Buchungen: 
+                </string>
+                <string name="delete" >Löschen
+                </string>
+                <string name="Jan" >Jan
+                </string>
+                <string name="lostDatabase" >Fehler! Datenbank fehlt.
+                </string>
+                <string name="titleCategoryDate" >Datum: 
+                </string>
+                <string name="AccountTabAccount" >Konto
+                </string>
+                <string name="titleKMMDAlarmReceiver" >Alarm
+                </string>
+                <string name="homeConfigInstructions" >Bitte Widget mit den untenstehenden Optionen einrichten.
+                </string>
+                <string name="titleWelcome" >Willkommen
+                </string>
+                <string name="itemNumCurrencies" >Währungen: 
+                </string>
+                <string name="None" >nicht aktualisieren
+                </string>
+                <string name="summaryLastUsedFile" >Speicherort der zuletzt verwendeten Datei
+                </string>
+                <string name="Asset" >Anlage
+                </string>
+                <string name="titleSplitsMessage" >Ein Teilbetrag wurde nicht zugewiesen. Drücken Sie "OK", um die Buchung automatisch anzugleichen
+	  oder drücken Sie "Abbrechen", um die Split-Buchung weiter zu bearbeiten.
+                </string>
+                <string name="titleSync" >Sync
+                </string>
+                <string name="CategoriesTabHierarchy" >Hierarchie
+                </string>
+                <string name="titleCategoryCheckNumber" >Letzte Schecknummer: 
+                </string>
+                <string name="buttonSkip" >Überspringen
+                </string>
+                <string name="skip" >Geplante Buchung überspringen
+                </string>
+                <string name="receive_home_update_notifications_permission_description" >Erlaubt sichere Kommunikation zwischen App und zugehörigem Widget
+                </string>
+                <string name="OneHour" >1 Stunde
+                </string>
+                <string name="titleNoInstitution" >Ohne Institut anlegen
+                </string>
+                <string name="Oct" >Okt
+                </string>
+                <string name="titleCreateModifyInstitution" >Geldinstitut anlegen
+                </string>
+                <string name="titlePayeeAddress" >Adresse: 
+                </string>
+                <string name="titleEndDate" >Enddatum: 
+                </string>
+                <string name="itemNumSchedules" >Geplante Buchungen: 
+                </string>
+                <string name="titleUbuntuOneSync" >Mit UbuntuOne abgleichen
+                </string>
+                <string name="titleGoogleDriveSync" >Mit Google Drive abgleichen
+                </string>
+                <string name="notreconciled" >Nicht abgeglichen
+                </string>
+                <string name="titleSchedules" >Geplante Buchungen
+                </string>
+                <string name="homeConfigDatabaseTitle" >Datenbank-Datei für dieses Widget wählen
+                </string>
+                <string name="titleAmount" >Betrag: 
+                </string>
+                <string name="titleScheduleEstimate" >Dies ist eine Schätzung, da der Betrag für jede Zahlung schwankt
+                </string>
+                <string name="titleReassignPayee" >Zuweisung Empfänger
+                </string>
+
+                <string-array name="scheduleWeekendOptions" >
+                    <item>
+@string/changeDateBefore
+                    </item>
+                    <item>
+@string/changeDateAfter
+                    </item>
+                    <item>
+@string/doNothing
+                    </item>
+                </string-array>
+
+                <string name="titleCreateModifySplits" >Split-Buchung
+                </string>
+                <string name="titleUpdateFrequency" >Aktualisierungsintervall
+                </string>
+                <string name="titleDropbox" >Dropbox
+                </string>
+                <string name="titleAccountOpenBalance" >Eröffnungssaldo
+                </string>
+                <string name="titleAccountPreferred" >Bevorzugtes Konto
+                </string>
+                <string name="accountNotSupported" >Zur Zeit werden diese Kontoarten von dieser App nicht unterstützt. Vielleicht werden sie 
+	  aber in Zukunft noch ergänzt. Wir entschuldigen uns für diese Einschränkung. Danke für Ihr Verständnis.
+                </string>
+                <string name="titleViewTransaction" >Buchung
+                </string>
+                <string name="titleAccountCurrency" >Währung
+                </string>
+                <string name="PayeeTabDefault" >Standardkonto
+                </string>
+                <string name="receive_home_update_notifications_permission_label" >Benachrichtigungen von Widget-Übersicht empfangen
+                </string>
+
+                <string-array name="WeeksToDisplay" >
+                    <item>
+@string/OneWeek
+                    </item>
+                    <item>
+@string/TwoWeeks
+                    </item>
+                    <item>
+@string/ThreeWeeks
+                    </item>
+                    <item>
+@string/FourWeeks
+                    </item>
+                </string-array>
+
+                <string name="titleSyncAll" >Alle
+                </string>
+                <string name="titlePreferenceNotifications" >Benachrichtigungen
+                </string>
+                <string name="AccountTabInstitution" >Institut
+                </string>
+                <string name="titleScheduleFrequency" >Häufigkeit:
+                </string>
+                <string name="titleSelectanAccount" >Konto wählen
+                </string>
+                <string name="titleDialogScheduleActions" >Eintragen oder Überspringen
+                </string>
+                <string name="buttonDelete" >Löschen
+                </string>
+                <string name="titleInstitutionPhone" >Telefon/Fax: 
+                </string>
+                <string name="titlePayeeMatching" >Zuordnung
+                </string>
+                <string name="titleCreateAccountParent" >Übergeordnetes Konto anlegen
+                </string>
+                <string name="Liability" >Verbindlichkeit
+                </string>
+                <string name="titleButtonDelete" >Löschen
+                </string>
+                <string name="homeConfigNumWeeksDisplayTitle" >Anzahl der darzustellenden Wochen
+                </string>
+                <string name="FileChooserFile" >Dateigröße:
+                </string>
+                <string name="summaryFrequency" >Aktualisierungsintervall wählen
+                </string>
+                <string name="Apr" >Apr
+                </string>
+                <string name="DirectDeposit" >Lastschrifteinzug
+                </string>
+                <string name="titleSkipSchedule" >Wollen Sie diese geplante Buchung wirklich überspringen?
+                </string>
+                <string name="buttonSave" >Speichern
+                </string>
+                <string name="titleUbuntuOne" >UbuntuOne
+                </string>
+                <string name="titleButtonEdit" >Bearbeiten
+                </string>
+                <string name="titlePayeeToFrom" >Zahlen an: 
+                </string>
+                <string name="vtlabel_Memo" >Notiz: 
+                </string>
+                <string name="titleBasicHomeWidget" >KMyMoney für Android
+                </string>
+                <string name="titleScheduleNumTransactions" >Anzahl verbleibender Buchungen
+                </string>
+                <string name="titleAccountInstructions" >Falls dieses Konto von einem Geldinstitut geführt wird wählen Sie bitte
+		das entsprechene Institut aus der Liste. Wenn das Institut noch nicht angelegt ist, so drücken Sie die Schaltfläche 
+		"Neues Geldinstitut". Andersfalls "Ohne Institut anlegen" anwählen. Darunter die Kontonummer angeben, die von der Bank vergeben wurde.
+                </string>
+                <string name="titlePayeesAvailable" >Verfügbare Empfänger:
+                </string>
+                <string name="titleCategoryOptions" >Optionen
+                </string>
+                <string name="titleScheduleAccount" >Konto:
+                </string>
+                <string name="titleNoSchedules" >Ihre Suche ergab keine geplanten Buchungen.
+                </string>
+                <string name="summaryPreferenceTimeToRun" >Um welche Uhrzeit soll erinnert werden?
+                </string>
+                <string name="payeeNotFound" >Empfänger nicht gefunden!
+                </string>
+                <string name="titleLoadMore" >weitere laden
+                </string>
+                <string name="ThreeWeeks" >Drei Wochen
+                </string>
+
+                <string-array name="TransactionStatus" >
+                    <item>
+@string/notreconciled
+                    </item>
+                    <item>
+@string/cleared
+                    </item>
+                    <item>
+@string/reconciled
+                    </item>
+                </string-array>
+
+                <string name="titlePayeeName" >Name: 
+                </string>
+                <string name="TwoWeeks" >Zwei Wochen
+                </string>
+                <string name="titleInstitutionBIC" >BIC: 
+                </string>
+                <string name="titlePayees" >Empfänger
+                </string>
+                <string name="Expense" >Ausgabe
+                </string>
+                <string name="titleInstitutionName" >Name: 
+                </string>
+                <string name="CreditCard" >Kreditkarte
+                </string>
+
+                <string-array name="TransactionTypes" >
+                    <item>
+Gutschrift
+                    </item>
+                    <item>
+Umbuchung
+                    </item>
+                    <item>
+Belastung
+                    </item>
+                </string-array>
+
+                <string name="Month" >monatlich
+                </string>
+                <string name="titleCategoryGeneral" >Allgemein
+                </string>
+                <string name="ManualDeposit" >Scheck ausstellen
+                </string>
+                <string name="vtlabel_Amount" >Betrag: 
+                </string>
+                <string name="titlePreferenceOverDueSchedules" >Überfällige Buchungen
+                </string>
+                <string name="TabTransactions" >Buchungen
+                </string>
+                <string name="buttonLogin" >Einloggen
+                </string>
+                <string name="titleNew" >Neu
+                </string>
+                <string name="titlePreferencesCheckSchedulesNotifications" >Prüfe geplante Buchungen bei Benachrichtigungen
+                </string>
+                <string name="createNewPayee" >Neuen Zahlungsempfänger anlegen
+                </string>
+                <string name="titleDelete" >Löschen
+                </string>
+                <string name="titleCreateAccountInstitution" >Geldinstitut anlegen
+                </string>
+                <string name="titleScheduleEnd" >Zahlungen enden zu einem bestimmten Termin
+                </string>
+                <string name="descriptionRefresh" >Aktualisieren
+                </string>
+                <string name="titleSplitConfirmation" >Split-Buchung unausgeglichen
+                </string>
+                <string name="titleAccount" >Konto: 
+                </string>
+
+                <string-array name="ShortMonthNames" >
+                    <item>
+@string/Jan
+                    </item>
+                    <item>
+@string/Feb
+                    </item>
+                    <item>
+@string/Mar
+                    </item>
+                    <item>
+@string/Apr
+                    </item>
+                    <item>
+@string/May
+                    </item>
+                    <item>
+@string/Jun
+                    </item>
+                    <item>
+@string/Jul
+                    </item>
+                    <item>
+@string/Aug
+                    </item>
+                    <item>
+@string/Sep
+                    </item>
+                    <item>
+@string/Oct
+                    </item>
+                    <item>
+@string/Nov
+                    </item>
+                    <item>
+@string/Dec
+                    </item>
+                </string-array>
+
+                <string name="titleDueToday" >Heute
+                </string>
+                <string name="accountNameNotEntered" >Sie müssen einen Namen für das Konto eingeben!
+                </string>
+                <string name="titleChooseFrequency" >Aktualisierungsintervall
+                </string>
+
+                <string-array name="WeeksToDisplayValues" >
+                    <item>
+"1"
+                    </item>
+                    <item>
+"2"
+                    </item>
+                    <item>
+"3"
+                    </item>
+                    <item>
+"4"
+                    </item>
+                </string-array>
+
+                <string name="titleSchedulesNotifications" >Fällige Buchungen
+                </string>
+                <string name="menuRecent" >Letztes
+                </string>
+                <string name="titleBegDate" >Startdatum: 
+                </string>
+                <string name="Year" >jährlich
+                </string>
+                <string name="vtlabel_Date" >Datum: 
+                </string>
+                <string name="titleInstitutions" >Geldinstitute
+                </string>
+                <string name="titleCreateAccounts" >Konten eröffnen
+                </string>
+                <string name="titleCategoryName" >Name: 
+                </string>
+                <string name="titlesrFrequency" >Häufigkeit
+                </string>
+                <string name="titlePayeeUseDefault" >Buchung für diesen Empfänger dem Standardkonto zuordnen
+                </string>
+                <string name="vtlabel_Number" >Nummer: 
+                </string>
+                <string name="Investment" >Investition
+                </string>
+                <string name="titleCategoryNotes" >Notizen: 
+                </string>
+                <string name="titleCreateModCategory" >Neue Kategorie anlegen
+                </string>
+                <string name="titleAccountOpenDate" >Eröffnungsdatum
+                </string>
+
+                <string-array name="arrayAccountTypes" >
+                    <item>
+Anlagen
+                    </item>
+                    <item>
+Girokonto
+                    </item>
+                    <item>
+Eigenkapital
+                    </item>
+                    <item>
+Verbindlichkeiten
+                    </item>
+                    <item>
+Sparkonto
+                    </item>
+                </string-array>
+
+                <string name="titleCategoryPriceEntry" >Werteingabe: 
+                </string>
+                <string name="titleAbout" >Über
+                </string>
+                <string name="titlePreferencesAutoEnterSchedulesNotifications" >Trage geplante Buchungen bei Benachrichtigungen ein
+                </string>
+                <string name="titleHomeWidgetError" >Um Leistungseinbrüche zu vermeiden ist z.Z. nur ein Widget erlaubt.
+                </string>
+                <string name="titleCashRequirements" >Vorhersage für Eigenkapital
+                </string>
+                <string name="titleEditModAccount" >Konto bearbeiten
+                </string>
+                <string name="buttonLogout" >Ausloggen
+                </string>
+                <string name="titleCategoryBalance" >Stand: 
+                </string>
+                <string name="titleWifiOnly" >Nur WLAN benutzen
+                </string>
+                <string name="error" >Fehler!
+                </string>
+                <string name="itemFileVersion" >Datei Version: 
+                </string>
+                <string name="summaryScheduleNotifications" >Möchten Sie bei überfälligen Buchungen benachrichtigt werden?
+                </string>
+                <string name="titlePayeeEmail" >E-Mail: 
+                </string>
+                <string name="buttonAll" >Alles laden
+                </string>
+                <string name="SixHours" >6 Stunden
+                </string>
+                <string name="itemNumPrices" >Preise: 
+                </string>
+                <string name="msgPayeeName" >Name des Empfängers:
+                </string>
+                <string name="itemNumAccounts" >Anzahl der Konten: 
+                </string>
+                <string name="Nov" >Nov
+                </string>
+                <string name="titlesrPayee" >Zahlungsempfänger
+                </string>
+                <string name="summaryPayeeReassign" >Die dem Empfänger zugeordneten Buchungen müssen einem anderen Empfänger zugewiesen werden -
+      der ursprüngliche Empfänger kann sonst nicht gelöscht werden. Bitte einen Empfänger aus untenstehender Liste wählen.
+                </string>
+                <string name="titleLinkToDropbox" >Link zu Dropbox
+                </string>
+                <string name="itemLastModified" >Zuletzt geändert:
+                </string>
+                <string name="titleButtonNo" >Nein
+                </string>
+                <string name="titlePreferenceHomeWidget" >Übersicht
+                </string>
+                <string name="CategoriesTabGeneral" >Allgemein
+                </string>
+                <string name="summaryDropboxUploadonExit" >Datei beim Schliessen hochladen
+                </string>
+                <string name="menuOpen" >Öffnen
+                </string>
+                <string name="titleAccountName" >Kontoname
+                </string>
+                <string name="Mar" >Mär
+                </string>
+                <string name="itemNumKVPS" >Anzahl an "KVPS" (Debug): 
+                </string>
+                <string name="titlePreferenceTimeToRun" >Erinnerung um
+                </string>
+                <string name="titleMenuNav" >Menü
+                </string>
+                <string name="titleButtonOK" >Ok
+                </string>
+                <string name="titleCreateModifyTransactions" >Neue Buchung
+                </string>
+                <string name="titleSumofSplits" >Summe der Split-Buchungen: 
+                </string>
+                <string name="unableToReassign" >Zahlungsempfänger konnte nicht neu zugewiesen werden. Der Empfänger wurde NICHT gelöscht!
+                </string>
+                <string name="titleCreateModPayee" >Neuen Empfänger anlegen
+                </string>
+                <string name="titleNewInstitution" >Neues Geldinstitut
+                </string>
+                <string name="May" >Mai
+                </string>
+                <string name="ThirtyMinutes" >30 Minuten
+                </string>
+                <string name="titlePayeeDefaultExpense" >Ausgabe
+                </string>
+                <string name="titleButtonYes" >Ja
+                </string>
+                <string name="titleCategories" >Kategorien
+                </string>
+                <string name="AutoUpdate" >nur wenn geändert (energiesparend)
+                </string>
+                <string name="titleSchedulePaymentMethod" >Zahlungsmethode
+                </string>
+                <string name="buttonChooseCategory" >Kategorie wählen
+                </string>
+                <string name="titleScheduleOptions" >Optionen
+                </string>
+                <string name="send_home_update_notifications_permission_description" >Erlaubt sichere Kommunikation zwischen App und zugehörigem Widget
+                </string>
+                <string name="titlePrefs" >Optionen
+                </string>
+                <string name="buttonSubmit" >Anlegen
+                </string>
+                <string name="titleAutoEntered" >Automatisch eingetragene geplante Buchungen
+                </string>
+                <string name="buttonEnter" >Eintragen
+                </string>
+                <string name="titleScheduleName" >Name der geplanten Buchung:
+                </string>
+                <string name="send_home_update_notifications_permission_label" >Benachrichtigungen an Widget-Übersicht senden
+                </string>
+                <string name="itemInsertRow" >Neue Split-Buchung
+                </string>
+                <string name="titleEdit" >Bearbeiten
+                </string>
+                <string name="buttonNewInstitution" >Neues Geldinstitut
+                </string>
+                <string name="payeeMatching" >Buchungs-Zuordnung
+                </string>
+                <string name="titleSchedulePaymentInfo" >Zahlungsdaten
+                </string>
+                <string name="titleOpenLastUsed" >Zuletzt verwendete Datenbank öffnen
+                </string>
+                <string name="Loan" >Kredit
+                </string>
+                <string name="titleAccounts" >Konten
+                </string>
+                <string name="titlePayeeDefaultCategory" >Standard-Kategorie
+                </string>
+                <string name="itemNumReports" >Berichte: 
+                </string>
+                <string name="BackActionWarning" >Änderungen werden verloren gehen
+                </string>
+                <string name="Checking" >Girokonto
+                </string>
+                <string name="cleared" >Verrechnet
+                </string>
+                <string name="AccountTabSubAccount" >Unterkonto
+                </string>
+                <string name="FileChooserParentDirectory" >Übergeordnetes Verzeichnis
+                </string>
+                <string name="titleInstitutionCity" >Stadt: 
+                </string>
+                <string name="titleDate" >Datum: 
+                </string>
+                <string name="itemNumInstitutions" >Anzahl der Geldinstitute: 
+                </string>
+                <string name="titlesrNextDueDate" >Nächste Fälligkeit
+                </string>
+
+                <string-array name="scheduleFrequency" >
+                    <item>
+"1"
+                    </item>
+                    <item>
+"2"
+                    </item>
+                    <item>
+"3"
+                    </item>
+                    <item>
+"4"
+                    </item>
+                    <item>
+"5"
+                    </item>
+                    <item>
+"6"
+                    </item>
+                    <item>
+"7"
+                    </item>
+                    <item>
+"8"
+                    </item>
+                    <item>
+"9"
+                    </item>
+                    <item>
+"10"
+                    </item>
+                    <item>
+"11"
+                    </item>
+                    <item>
+"12"
+                    </item>
+                </string-array>
+
+                <string name="titleAccountTransactions" >Gesamtzahl der Buchungen: 
+                </string>
+                <string name="doNothing" >Datum unverändert übernehmen
+                </string>
+                <string name="summaryCheckSchedulesStartup" >Geplante Buchungen beim Start prüfen und eintragen
+                </string>
+                <string name="itemFileCreated" >Angelegt: 
+                </string>
+                <string name="titleCreateModifySchedule" >Neue geplante Buchung
+                </string>
+                <string name="titleCategoryHierarchy" >Hierarchie
+                </string>
+                <string name="titleFileChooser" >Datei wählen
+                </string>
+
+                <string-array name="Reports" >
+                    <item>
+@string/titleCashRequirements
+                    </item>
+                </string-array>
+
+                <string name="titleGoogleDrive" >Google Drive
+                </string>
+                <string name="titlePreferencesAutoEnterScheduleStartup" >Geplante Buchungen autom. beim Start eintragen
+                </string>
+                <string name="buttonSplit" >Split-Buchung
+                </string>
+                <string name="titleOptions" >Optionen
+                </string>
+                <string name="titleCategory" >Kategorie: 
+                </string>
+                <string name="changeDateAfter" >Datum auf den folgenden Arbeitstag ändern
+                </string>
+                <string name="titleReports" >Berichte
+                </string>
+                <string name="titleOpeningInfo" >Eröffnungs-Informationen
+                </string>
+                <string name="titleMemo" >Notiz: 
+                </string>
+                <string name="titleTransactionAmount" >Buchungsbetrag: 
+                </string>
+                <string name="BankTransfer" >Überweisung
+                </string>
+                <string name="titleButtonCancel" >Abbrechen
+                </string>
+                <string name="titleScheduleWeekendOption" >Wenn die geplante Buchung nicht auf einen Bankarbeitstag fällt:
+                </string>
+                <string name="titleInstitutionRoutingNumber" >Bankleitzahl: 
+                </string>
+                <string name="vtlabel_Splits" >Kategorien
+                </string>
+                <string name="titleAccountType" >Konto-Typ
+                </string>
+                <string name="itemNumPayees" >Anzahl der Empfänger: 
+                </string>
+                <string name="changeDateBefore" >Datum auf den vorherigen Arbeitstag ändern
+                </string>
+                <string name="titleScheduleAutoEnter" >Diese geplante Buchung bei Fälligkeit automatisch in das Kontenbuch eintragen
+                </string>
+                <string name="app_name" >KMyMoney für Android
+                </string>
+                <string name="titleHomeWidgetConfiguration" >Widget Einrichtung
+                </string>
+                <string name="homeWidgetError" >Fehler
+                </string>
+                <string name="titleNewDatabase" >Neue Datenbank
+                </string>
+                <string name="loadMoreRow" >-- Weitere Buchungen --
+                </string>
+                <string name="titleDropboxStartupCheck" >Beim Starten prüfen
+                </string>
+                <string name="titleSyncDropbox" >Dropbox
+                </string>
+                <string name="categoryNotFound" >Kategorie nicht gefunden!
+                </string>
+                <string name="OneWeek" >Eine Woche
+                </string>
+                <string name="Day" >täglich
+                </string>
+                <string name="titleSubAccount" >Dies ist ein Unterkonto von:
+                </string>
+                <string name="titleDropboxAutoSync" >Auto-Sync
+                </string>
+                <string name="titleInstitutionStreet" >Straße: 
+                </string>
+                <string name="titlePayeeTelephone" >Telefon: 
+                </string>
+                <string name="itemNumTransactions" >Anzahl der Buchungen: 
+                </string>
+                <string name="itemNumBudgets" >Anzahl an Budgets: 
+                </string>
+                <string name="HalfMonth" >14-tägig
+                </string>
+                <string name="titleCloudServices" >Cloud Dienste
+                </string>
+                <string name="payeeMoreThanOne" >Es existieren mehrere Empfänger.
+                </string>
+                <string name="titlesrDescription" >Beschreibung
+                </string>
+                <string name="titleAccountInstitution" >Geldinstitut
+                </string>
+                <string name="titleDatabaseName" >Bitte Datenbanknamen eingeben
+                </string>
+                <string name="close" >Datei schliessen
+                </string>
+                <string name="Sep" >Sep
+                </string>
+                <string name="homeConfigDefaultAccountTitle" >Standardkonto für dieses Widget
+                </string>
+                <string name="summaryOpenLastUsed" >Datenbank beibehalten?
+                </string>
+                <string name="Income" >Einnahme
+                </string>
+                <string name="titleStartNew" >Neue KMyMoney anlegen
+                </string>
+                <string name="payeeMatchonName" >Einem Zahlungsempfänger zuordnen
+                </string>
+                <string name="titleNavBar" >Navigationsleiste
+                </string>
+                <string name="FileChooserFolder" >Ordner
+                </string>
+                <string name="PayeeTabAddress" >Adresse
+                </string>
+                <string name="summaryDropboxAutoSync" >Datei periodisch auf Veränderungen prüfen
+                </string>
+                <string name="homeConfigDefaultUpdateFreqTitle" >Aktualisierungsintervall des Widgets
+                </string>
+                <string name="PayeeTabMatching" >Zuordnung
+                </string>
+                <string name="titleCheckSchedulesStartup" >Geplante Buchungen beim Start überprüfen
+                </string>
+
+                <string-array name="scheduleFreqDescription" >
+                    <item>
+@string/Once
+                    </item>
+                    <item>
+@string/Day
+                    </item>
+                    <item>
+@string/Week
+                    </item>
+                    <item>
+@string/HalfMonth
+                    </item>
+                    <item>
+@string/Month
+                    </item>
+                    <item>
+@string/Year
+                    </item>
+                </string-array>
+
+                <string name="titleAccountNumber" >Kontonummer
+                </string>
+                <string name="Aug" >Aug
+                </string>
+                <string name="titlePayeeDefaultAccount" >Standardkonto
+                </string>
+                <string name="reconciled" >Abgeglichen
+                </string>
+
+                <string-array name="arrayTypes" >
+                    <item>
+Einnahme
+                    </item>
+                    <item>
+Ausgabe
+                    </item>
+                </string-array>
+
+                <string name="splitTransaction" >- Split-Buchung -
+                </string>
+                <string name="titleDropboxSync" >Mit Dropbox abgleichen
+                </string>
+                <string name="titleScheduleNotifications" >Benachrichtigungen erhalten
+                </string>
+                <string name="AssetLoan" >Asset Loan
+                </string>
+                <string name="titleLastUsedFile" >Zuletzt verwendeter Dateiort.
+                </string>
+                <string name="itemVersion" >Version: 
+                </string>
+                <string name="vtlabel_Status" >Status: 
+                </string>
+
+                <string-array name="UpdateFreqValues" >
+                    <item>
+"0"
+                    </item>
+                    <item>
+"900000"
+                    </item>
+                    <item>
+"1800000"
+                    </item>
+                    <item>
+"3600000"
+                    </item>
+                    <item>
+"7200000"
+                    </item>
+                    <item>
+"14400000"
+                    </item>
+                    <item>
+"21600000"
+                    </item>
+                    <item>
+"-1"
+                    </item>
+                </string-array>
+
+                <string name="titleNavigation" >Navigation
+                </string>
+                <string name="Jun" >Jun
+                </string>
+                <string name="Stock" >Aktie
+                </string>
+                <string name="Cash" >Bargeld
+                </string>
+                <string name="titleNumber" >Nummer: 
+                </string>
+                <string name="buttonEdit" >Bearbeiten
+                </string>
+                <string name="titleCreateAccountAccount" >Konto eröffnen
+                </string>
+                <string name="titleDropboxUploadonExit" >Beim Verlassen hochladen
+                </string>
+                <string name="FourHours" >4 Stunden
+                </string>
+
+                <string-array name="UpdateFrequency" >
+                    <item>
+@string/None
+                    </item>
+                    <item>
+@string/FifteenMinutes
+                    </item>
+                    <item>
+@string/ThirtyMinutes
+                    </item>
+                    <item>
+@string/OneHour
+                    </item>
+                    <item>
+@string/TwoHours
+                    </item>
+                    <item>
+@string/FourHours
+                    </item>
+                    <item>
+@string/SixHours
+                    </item>
+                    <item>
+@string/AutoUpdate
+                    </item>
+                </string-array>
+
+                <string name="titleCategoryCurrency" >Währung: 
+                </string>
+                <string name="Currency" >Währung
+                </string>
+                <string name="summaryDropboxStartupCheck" >Beim Start nach veralteter Datei suchen
+                </string>
+                <string name="Jul" >Jul
+                </string>
+                <string name="loadingMoreTransactions" >Weitere Buchungen werden geladen...
+                </string>
+                <string name="titlePayeePostalCode" >Postleitzahl: 
+                </string>
+                <string name="titlePayeeNotes" >Notizen: 
+                </string>
+                <string name="titleAccountInstructions2" >Bitte den Namen des Kontos eingeben, wie er von KMyMoney erwartet wird. Des Weiteren den Konto-Typ sowie 
+	  Währung und Eröffnungsdatum eingeben.
+                </string>
+                <string name="MoneyMarket" >Geldmarkt
+                </string>
+                <string name="Other" >Andere
+                </string>
+                <string name="titlePayeeTransactions" >Buchungen
+                </string>
+                <string name="titleBackActionWarning" >Ihre Änderungen werden verloren gehen, wenn Sie die Aktion fortsetzen. Wollen Sie wirklich fortsetzen?
+                </string>
+                <string name="StandingOrder" >Dauerauftrag
+                </string>
+                <string name="Dec" >Dez
+                </string>
+                <string name="titlePreferencesDueTodaySchedules" >Heute fällige Zahlungen
+                </string>
+
+                <string-array name="SchedulePaymentMethod" >
+                    <item>
+@string/Other
+                    </item>
+                    <item>
+@string/BankTransfer
+                    </item>
+                    <item>
+@string/StandingOrder
+                    </item>
+                    <item>
+@string/ManualDeposit
+                    </item>
+                    <item>
+@string/DirectDeposit
+                    </item>
+                </string-array>
+
+                <string name="deletemsg" >Sind Sie sicher, dass Sie folgenden Empfänger löschen möchten: 
+                </string>
+                <string name="titleCategoryType" >Typ: 
+                </string>
+                <string name="Once" >einmalig
+                </string>
+                <string name="splitsNotBalanced" >Ihre Split-Buchung ist nicht ausgeglichen! Um den Gesamtbetrag der Buchung an die Summe der 
+	  Split-Buchungen anzugleichen drücken Sie "OK". Mittels "Abbrechen" kann die Split-Buchung weiter editiert werden.
+                </string>
+                <string name="FourWeeks" >Vier Wochen
+                </string>
+                <string name="Feb" >Feb
+                </string>
+                <string name="buttonOneYear" >Ein Jahr
+                </string>
+                <string name="titleHome" >Startseite
+                </string>
+                <string name="titlesrAmount" >Betrag
+                </string>
+                <string name="payeeNoMatching" >Keine Zuordnung
+                </string>
+                <string name="buttonSetDate" >Datum wählen...
+                </string>
+                <string name="buttonOneMonth" >Einen Monat
+                </string>
+                <string name="titleCreateModAccount" >Neues Konto eröffnen
+                </string>
+                <string name="titlePayeeDefaultIncome" >Einnahme
+                </string>
+                <string name="titleLedger" >Kontenbuch
+                </string>
+                <string name="titleAccountSubAccount" >Unterkonto von
+                </string>
+                <string name="buttonLog" >Sende Logdatei zum Entwickler
+                </string>
+                <string name="titleInstitutionPostalCode" >Postleitzahl: 
+                </string>
+                <string name="titlePastDue" >Überfällig
+                </string>
+                <string name="itemCancel" >Abbrechen
+                </string>
+                <string name="vtlabel_Description" >Beschreibung:
+                </string>
+                <string name="titleDisplayFrequency" >Buchungsvorschau
+                </string>
+                <string name="summaryDisplayFrequency" >Anzahl der darzustellenden Wochen
+                </string>
+                <string name="titleStatus" >Status: 
+                </string>
+                <string name="titleDeleteTransaction" >Wollen Sie diese Buchung wirklich löschen?
+                </string>
+                <string name="FileChooserLocation" >Aktuelles Verzeichnis:
+                </string>
+                <string name="itemClearAll" >Alles entfernen
+                </string>
+                <string name="titlePreferencesSchedules" >Einstellungen für geplante Buchungen
+                </string>
+                <string name="titleAccountIBAN" >IBAN
+                </string>
+                <string name="Equity" >Eigenkapital
+                </string>
+                <string name="FifteenMinutes" >15 Minuten
+                </string>
+                <string name="unableToDelete" >Konnte Eintrag aus folgendem Grund nicht löschen: 
+                </string>
+            </file>
+            <file
+                name="ledger_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/ledger_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="splits_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/splits_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="payees_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/payees_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="home_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/home_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="edit_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/edit_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="save_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/save_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="accounts_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/accounts_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="categories_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/categories_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="institutions_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/institutions_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="schedules_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/schedules_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="reports_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/reports_menu.xml"
+                qualifiers=""
+                type="menu" />
+            <file
+                name="welcome_menu"
+                path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/welcome_menu.xml"
+                qualifiers=""
+                type="menu" />
+        </source>
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/generated/res/rs/debug" />
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/generated/res/generated/debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/debug/res" />
+    </dataSet>
+
+</merger>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="#62B1F6">
+    
+    <TextView
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_gravity="left"
+    	android:text="@string/titleSubAccount"
+    	android:textSize="14sp"
+    	android:gravity="center_vertical"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    	android:paddingBottom="10sp"
+    />
+    
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:id="@+id/categorySubAccount"
+    	android:layout_marginLeft="25sp"
+    	android:layout_marginRight="25sp"
+    />
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/categories_hierarchy.xml -->

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout 
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:orientation="vertical"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent">
+<TabHost 
+    android:id="@android:id/tabhost"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+  	android:background="#62B1F6">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="5dp">
+    	<TextView
+    		android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+    		android:layout_gravity="left"
+    		android:background="@drawable/titlelabel_background"
+	    	android:text="@string/titleCreateModPayee"
+    		android:id="@+id/titleCreateModPayee"
+    		android:textSize="25sp"
+	    	android:gravity="center_vertical"
+    		android:textColor="@android:color/white"
+    		android:paddingLeft="10sp"
+    	/>
+    	
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0" />
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0" />
+        <FrameLayout
+            android:id="@+id/realtabcontent"
+            android:layout_height="0dp"
+            android:layout_width="fill_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+</TabHost>
+</LinearLayout>

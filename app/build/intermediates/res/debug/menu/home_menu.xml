@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+    	android:id="@+id/itemPrefs"
+    	android:icon="@android:drawable/ic_menu_preferences"
+    	android:title="@string/titlePrefs">
+    </item>
+    <item 
+    	android:title="@string/close"
+    	android:id="@+id/close"
+    	android:icon="@android:drawable/ic_menu_close_clear_cancel">
+    </item>
+    <item android:id="@+id/Sync" android:title="@string/titleSync">
+        <menu>
+            <item android:id="@+id/syncDropbox" android:title="@string/titleSyncDropbox" />
+            <item android:id="@+id/syncAll" android:title="@string/titleSyncAll" />
+        </menu>
+    </item>
+    <item 
+    	android:id="@+id/itemAbout" 
+    	android:title="@string/titleAbout"
+    	android:icon="@android:drawable/ic_menu_help">
+    </item>
+    
+</menu>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/home_menu.xml -->

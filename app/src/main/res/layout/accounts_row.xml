@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:id="@+id/accountRow">
+
+		<ImageView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="center"
+			android:src="@drawable/account_add"
+			android:id="@+id/arIcon" >
+		</ImageView>
+				
+		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/arAccountName"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+
+		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:layout_gravity="center_vertical"
+			android:gravity="center"
+			android:id="@+id/arAccountType"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+						
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:gravity="right"
+			android:id="@+id/arAccountBalance"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+	</LinearLayout>
+</LinearLayout>

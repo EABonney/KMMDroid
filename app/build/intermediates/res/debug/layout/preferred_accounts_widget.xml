@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#50FFFFFF"
+    android:orientation="vertical" >
+
+  <!-- Main Account to display -->
+  <LinearLayout
+  	    	android:orientation="horizontal"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:background="#38B2B2" > 
+  	<ImageView
+    	android:id="@+id/kmmd_icon"
+    	android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+		android:clickable="true"
+		android:contentDescription="@string/app_name"
+		android:src="@drawable/homewidget_icon" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_refresh"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@drawable/homewidget_refresh" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_widgetSettings"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@drawable/homewidget_wrench" >	    
+	</ImageView>
+  </LinearLayout>
+  <!-- End Main Account to display -->
+	<ListView
+	    android:id="@+id/preferredListView"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
+	</ListView>
+	
+	<TextView 
+	    android:id="@+id/empty_widget_text"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:gravity="center"
+	    android:text="@string/empty_widget_nopreferredaccounts" />
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/preferred_accounts_widget.xml -->

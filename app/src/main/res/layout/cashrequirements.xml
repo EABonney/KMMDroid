@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="#62B1F6">
+
+   	<!-- Layout for Transactions Listing Area -->
+   	<ListView
+   		android:layout_height="fill_parent"
+   		android:layout_width="fill_parent"
+   		android:id="@+id/listCashRequirements"
+    	android:background="#afff"
+		android:cacheColorHint="#00000000">    
+   	</ListView>
+   	
+   	<!-- This is used to tell a user that we did not return any schedules -->
+   	<TextView 
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_gravity="center"
+    	android:text="@string/titleNoSchedules"
+    	android:id="@+id/titleNoSchedules"
+    	android:textSize="25sp"
+    	android:gravity="center_vertical"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    	android:visibility="gone"
+   	/>
+</LinearLayout>

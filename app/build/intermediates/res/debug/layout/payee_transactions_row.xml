@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:id="@+id/payeeTransRow">
+			
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/ptrDate"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+			
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/ptrAccount"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+			
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/ptrDetails"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+			
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:layout_weight="1"
+			android:gravity="right"
+			android:id="@+id/ptrAmount"
+			android:textSize="12sp"
+			android:textColor="@android:color/black" />
+	</LinearLayout>
+</LinearLayout><!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_transactions_row.xml -->

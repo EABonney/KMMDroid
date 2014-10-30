@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ScheduleActionsActivity" >
+
+  	<TextView
+  		android:layout_width="wrap_content"
+  		android:layout_height="wrap_content"
+  		android:text="@string/scheduleDescription"
+  		android:id="@+id/scheduleDescription">
+  	</TextView>
+ 	<LinearLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="wrap_content"
+ 	    android:orientation="horizontal" >
+    	<Button
+    	    android:id="@+id/btnEnterSchedule"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="@string/buttonEnter" />
+
+    	<Button
+        	android:id="@+id/btnSkipSchedule"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="@string/buttonSkip" />
+	</LinearLayout>
+ 	<LinearLayout
+ 	    android:layout_width="match_parent"
+ 	    android:layout_height="match_parent"
+ 	    android:orientation="horizontal" >
+    	<Button
+    	    android:id="@+id/btnEditSchedule"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="@string/buttonEdit" />
+
+    	<Button
+        	android:id="@+id/btnDeleteSchedule"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:text="@string/buttonDelete" />
+	</LinearLayout>
+</LinearLayout><!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/dialogscheduleactions.xml -->

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="horizontal"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+    <TextView
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:width="100sp"
+    	android:gravity="center_vertical"
+    	android:text="@string/titleAccountSubAccount"
+    	android:id="@+id/titleAccountSubAccount"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    	android:paddingLeft="10sp"
+    />	
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent"
+    	android:layout_below="@id/titleAccountSubAccount"
+    	android:id="@+id/accountSubAccount"
+    /> 
+</RelativeLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/createaccount_parent.xml -->

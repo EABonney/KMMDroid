@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+ 	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:gravity="center_horizontal"
+    	android:text="@string/payeeMatching"
+    	android:textSize="15sp"
+    	android:textColor="@android:color/white"
+    />
+		
+    <RadioGroup 
+    	android:id="@+id/radioGroup1" 
+    	android:layout_width="wrap_content" 
+    	android:layout_height="wrap_content" >
+        	<RadioButton 
+        		android:text="@string/payeeNoMatching"
+        		android:id="@+id/payeeNoMatching"
+        		android:layout_height="wrap_content" 
+        		android:layout_width="wrap_content" 
+        		android:checked="true">
+        	</RadioButton>
+        	<RadioButton
+        		android:text="@string/payeeMatchonName"
+        		android:id="@+id/payeeMatchonName"
+        		android:layout_height="wrap_content" 
+        		android:layout_width="wrap_content">
+        	</RadioButton>
+	</RadioGroup>
+    
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_matching.xml -->

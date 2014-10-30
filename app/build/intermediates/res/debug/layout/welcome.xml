@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#62B1F6"
+    android:weightSum="1">
+  
+    <ImageView 
+    	android:src="@drawable/startlogo"
+    	android:layout_height="match_parent"
+    	android:layout_width="wrap_content"
+    	android:layout_gravity="center_vertical"
+    	android:scaleType="fitXY">
+    </ImageView>
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/welcome.xml -->

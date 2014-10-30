@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:demoapp= "http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="#62B1F6">
+    
+   	<!-- Layout for Transactions Listing Area -->
+   	<com.vanhlebarsoftware.kmmdroid.KMMDCustomFastScrollView 
+   	    android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        demoapp:overlayWidth="225dp"
+        demoapp:overlayHeight="110dp"
+        demoapp:overlayTextSize="36dp"
+        demoapp:overlayScrollThumbWidth="60dp"
+        android:id="@+id/fast_scroll_view" >
+	   	<ListView
+   			android:layout_height="fill_parent"
+   			android:layout_width="fill_parent"
+   			android:id="@+id/listTransactions"
+    		android:background="#afff"
+			android:cacheColorHint="#00000000">    
+   		</ListView>
+        <TextView 
+            android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" />
+   	</com.vanhlebarsoftware.kmmdroid.KMMDCustomFastScrollView>
+</LinearLayout>
+

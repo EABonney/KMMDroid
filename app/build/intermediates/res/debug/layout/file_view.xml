@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content">
+
+	<TextView 
+		android:text="@+id/titleFCName" 
+		android:id="@+id/titleFCName" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:singleLine="true" 
+		android:textStyle="bold" 
+		android:layout_marginTop="5dip" 
+		android:layout_marginLeft="5dip">
+	</TextView>
+	
+	<TextView 
+		android:text="@+id/titleFCDescription" 
+		android:id="@+id/titleFCDescription" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:layout_marginLeft="10dip">
+	</TextView>
+
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/file_view.xml -->

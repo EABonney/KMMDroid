@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="#62B1F6">
+	
+   	<!-- Layout for Account Listing Area -->
+   	<ListView
+   		android:layout_height="fill_parent"
+   		android:layout_width="fill_parent"
+   		android:id="@+id/listPayeeTransView"
+    	android:background="#afff"
+    	android:cacheColorHint="#00000000"
+   		android:layout_marginTop="20sp"
+   		android:layout_marginLeft="15sp"
+    	android:layout_marginRight="15sp"
+   		android:layout_marginBottom="30sp">    
+   	</ListView>
+</LinearLayout>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/payee_transactions.xml -->

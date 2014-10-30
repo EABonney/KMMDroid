@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+ 
+	<CheckBox 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:width="125sp"
+		android:text="@string/titlePayeeDefaultIncome" 
+		android:id="@+id/checkboxPayeeDefaultIncome"
+		android:state_enabled="false"
+	/>  
+		
+    <Spinner 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="wrap_content"
+    	android:id="@+id/payeeDefaultIncome" 
+    	android:state_enabled="false"
+    />
+</LinearLayout><!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/fragment_payeedefaultincome.xml -->

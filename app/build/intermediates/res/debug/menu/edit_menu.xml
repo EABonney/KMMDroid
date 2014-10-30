@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+        android:title="@string/titleEdit" 
+        android:id="@+id/itemEdit" 
+        android:icon="@android:drawable/ic_menu_edit">
+    </item>
+    <item 
+        android:title="@string/delete" 
+        android:icon="@android:drawable/ic_menu_delete" 
+        android:id="@+id/itemDelete">
+    </item>
+    <item 
+        android:title="@string/itemCancel" 
+        android:id="@+id/itemCancel" 
+        android:icon="@android:drawable/ic_menu_close_clear_cancel">
+    </item>
+    <item 
+    	android:id="@+id/itemAbout" 
+    	android:title="@string/titleAbout" 
+    	android:icon="@android:drawable/ic_menu_help">
+    </item>
+</menu>
+<!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/menu/edit_menu.xml -->

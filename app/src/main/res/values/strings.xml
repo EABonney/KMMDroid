@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KMyMoney for Droid</string>
+    <string name="titleWelcome">Welcome</string>
+    <string name="titleStartNew">Start a new KMyMoney database</string>
+    <string name="titleOpenDatabase">Open a current KMyMoney database</string>
+    <string name="titleOpenLastUsed">Open Last Used</string>
+    <string name="summaryOpenLastUsed">Open last used file on return?</string>
+    <string name="titleLastUsedFile">Last used file location.</string>
+    <string name="summaryLastUsedFile">Location of the last used file</string>
+    <string name="titleFileChooser">Choose a File</string>
+    <string name="titleDatabaseName">Please enter a database name</string>
+    <string name="titleButtonOK">OK</string>
+    <string name="titleButtonCancel">Cancel</string>
+    <string name="titleButtonEdit">Edit</string>
+    <string name="titleButtonDelete">Delete</string>
+    <string name="titleNewDatabase">New Database</string>
+    <string name="titleHome">Home</string>
+    <string name="titleLedger">Ledger</string>
+    <string name="titleViewTransaction">Transaction</string>
+    <string name="vtlabel_Description">Description:</string>
+    <string name="vtlabel_Date">Date: </string>
+    <string name="vtlabel_Status">Status: </string>
+    <string name="vtlabel_Number">Number: </string>
+    <string name="vtlabel_Amount">Amount: </string>
+    <string name="vtlabel_Memo">Memo: </string>
+    <string name="vtlabel_Splits">Categories</string>
+    <string name="titlePrefs">Options</string>
+    <string name="titleAccounts">Accounts</string>
+    <string name="titleCategories">Categories</string>
+    <string name="titlePayees">Payees</string>
+    <string name="titleNew">New</string>
+    <string name="titleEdit">Edit</string>
+    <string name="titleDelete">Delete</string>
+    <string name="titlePayeeTransactions">Payee Transactions</string>
+    <string name="titleCreateModPayee">Create New Payee</string>
+    <string name="titlePayeeDefaultAccount">Default Account</string>
+    <string name="titlePayeeMatching">Matching</string>
+    <string name="titlePayeeAddress">Address: </string>
+    <string name="titlePayeePostalCode">Postal Code: </string>
+    <string name="titlePayeeTelephone">Telephone: </string>
+    <string name="titlePayeeEmail">Email: </string>
+    <string name="titlePayeeNotes">Notes: </string>
+    <string name="titleInvestmentActivity">Investments</string>
+    <string name="payeeMatching">Transaction Matching</string>
+    <string name="payeeNoMatching">No matching</string>
+    <string name="payeeMatchonName">Match on Payee name</string>
+    <string name="titlePayeeUseDefault">Use the default account for this new 
+    									transaction with this payee</string>
+    <string name="titlePayeeDefaultCategory">Default category</string>
+    <string name="titlePayeeDefaultIncome">Income</string>
+    <string name="titlePayeeDefaultExpense">Expense</string>
+    <string name="itemSave">Save</string>
+    <string name="itemCancel">Cancel</string>
+    <string name="itemClearAll">Clear All</string>
+    <string name="summaryPayeeReassign">The transactions associated with the selected payee needs to be 
+    	re-assigned to a different payee before the selected payee can be deleted. Please select
+    	a payee from the list below.</string>
+    <string name="titlePayeesAvailable">Available payees:</string>
+    <string name="titleReassignPayee">Reassign Payee</string>
+    <string name="delete">Delete</string>
+    <string name="deletemsg">Are you sure you want to delete payee: </string>
+    <string name="error">Error!</string>
+    <string name="unableToReassign">Unable to reassign this Payee. Your payee was NOT deleted!</string>
+	<string name="unableToDelete">Unable to delete your record for the following reason: </string>
+	<string name="createNewPayee">Create a new payee</string>
+	<string name="msgPayeeName">Payee name:</string>
+	<string name="payeeNotFound">Payee not found!</string>
+	<string name="payeeMoreThanOne">Somehow we found more than one payee.</string>
+	<string name="menuOpen">Open</string>
+	<string name="menuRecent">Recent</string>
+	<string name="close">Close File</string>
+	<string name="titleCreateModCategory">Create new category</string>
+	<string name="titleCategoryGeneral">General Category</string>
+	<string name="titleCategoryHierarchy">Category Hierarchy</string>
+	<string name="titleCategoryName">Name: </string>
+	<string name="titleOpeningInfo">Opening information</string>
+	<string name="titleCategoryType">Type: </string>
+	<string-array name="arrayTypes">
+		<item>Income</item>
+		<item>Expense</item>
+	</string-array>
+	<string name="titleCategoryCurrency">Currency: </string>
+	<string name="titleCategoryDate">Date: </string>
+	<string name="titleCategoryBalance">Balance: </string>
+	<string name="titleCategoryOptions">Options</string>
+	<string name="titleCategoryCheckNumber">Last check number: </string>
+	<string name="titleCategoryNotes">Notes: </string>
+	<string name="titleCategoryPriceEntry">Price entry: </string>
+	<string name="titleSubAccount">This account is a sub-account of:</string>
+	<string name="accountNameNotEntered">You must enter a name for this account!</string>
+	<string name="categoryNotFound">Category not found!</string>
+	<string name="titleCreateModAccount">New Account Setup</string>
+	<string name="titleEditModAccount">Edit Account</string>
+	<string name="titleNewInstitution">New Institution</string>
+	<string name="titleInstitutionName">Name: </string>
+	<string name="titleInstitutionStreet">Street: </string>
+	<string name="titleInstitutionCity">City: </string>
+	<string name="titleInstitutionPostalCode">Postal Code: </string>
+	<string name="titleInstitutionPhone">Telephone/Fax: </string>
+	<string name="titleInstitutionRoutingNumber">Routing Number: </string>
+	<string name="titleInstitutionBIC">BIC: </string>
+	<string name="titleAccountInstructions">If this account is managed by an institution please select
+		the institution from the list. If the institution does not exist yet, please choose the New
+		Institution button to create it. Otherwise, check the box below to create an account with out an
+		institution. Enter the account number used by the institution to identify the account.
+	</string>
+	<string name="titleNoInstitution">No institution</string>
+	<string name="titleAccountInstitution">Institution</string>
+	<string name="buttonNewInstitution">New Institution</string>
+	<string name="titleAccountNumber">Account number</string>
+	<string name="titleAccountIBAN">IBAN</string>
+	<string name="titleAccountInstructions2">Enter the name of the account under which it is known within
+		KMyMoney. Select the type for the new account. Enter the date the account was opened and its
+		currency.
+	</string>
+	<string name="titleAccountName">Account name</string>
+	<string name="titleAccountType">Account type</string>
+	<string name="titleAccountCurrency">Currency</string>
+	<string name="buttonSetDate">Set Date</string>
+	<string name="titleAccountOpenDate">Opening date</string>
+	<string name="titleAccountOpenBalance">Opening balance</string>
+	<string name="titleAccountPreferred">Preferred account</string>
+	<string name="titleAccountSubAccount">Subaccount of</string>
+	<string name="titleAccountTransactions">Total Transactions: </string>
+	<string name="titleCreateAccounts">Create Accounts</string>
+	<string name="titleCreateAccountInstitution">Create Institution</string>
+	<string name="titleCreateAccountAccount">Create Account</string>
+	<string name="titleCreateAccountParent">Create Parent</string>
+	<string-array name="arrayAccountTypes">
+		<item>Asset</item>
+		<item>Checking</item>
+		<item>Equity</item>
+		<item>Liability</item>
+		<item>Savings</item>
+	</string-array>
+	<string name="titleCreateModifyInstitution">Create Institution</string>
+	<string name="accountNotSupported">Currently this account type is not able to be edited in KMM for Droid. It will be add
+		eventually. We apologize for the limitation right now. Thanks for understanding.</string>
+	<string name="titleInstitutions">Institutions</string>
+	<string name="titleCreateModifyTransactions">New Transaction</string>
+	<string-array name="TransactionTypes">
+		<item>Deposit</item>
+		<item>Transfer</item>
+		<item>Withdrawal</item>
+	</string-array>
+	<string name="titleTransactionType">Transaction Type: </string>
+	<string name="titlePayeeToFrom">Pay to: </string>
+	<string name="titleCategory">Category: </string>
+	<string name="titleNumber">Number: </string>
+	<string name="titleDate">Date: </string>
+	<string name="titleAmount">Amount: </string>
+	<string name="notreconciled">Not reconciled</string>
+	<string name="cleared">Cleared</string>
+	<string name="reconciled">Reconciled</string>
+	<string-array name="TransactionStatus">
+		<item>@string/notreconciled</item>
+		<item>@string/cleared</item>
+		<item>@string/reconciled</item>
+	</string-array>
+	<string name="titleStatus">Status: </string>
+	<string name="buttonSplit">Splits</string>
+	<string name="titleMemo">Memo: </string>
+	<string name="buttonChooseCategory">Choose a category</string>
+	<string name="titleDeleteTransaction">Do you really want to delete this transaction?</string>
+	<string name="titleSumofSplits">Sum of splits: </string>
+	<string name="titleUnassigned">Unassigned: </string>
+	<string name="titleTransactionAmount">Transaction amount: </string>
+	<string name="titleCreateModifySplits">Splits</string>
+	<string name="itemInsertRow">New Split</string>
+	<string name="splitTransaction">- Split Transaction -</string>
+	<string name="titleAbout">About</string>
+	<string name="itemVersion">Version: </string>
+	<string name="itemFileVersion">File Version: </string>
+	<string name="itemFileCreated">Created: </string>
+	<string name="itemLastModified">Last modified:</string>
+	<string name="itemNumInstitutions"># of Institutions: </string>
+	<string name="itemNumAccounts"># of Accounts: </string>
+	<string name="itemNumPayees"># of Payees: </string>
+	<string name="itemNumTransactions"># of Transactions: </string>
+	<string name="itemNumSplits"># of Splits: </string>
+	<string name="itemNumSecurities"># of Securities: </string>
+	<string name="itemNumPrices"># of Prices: </string>
+	<string name="itemNumCurrencies"># of Currencies: </string>
+	<string name="itemNumSchedules"># of Schedules: </string>
+	<string name="itemNumReports"># of Reports: </string>
+	<string name="itemNumKVPS"># of KVPS: </string>
+	<string name="itemNumBudgets"># of Budgets: </string>
+	<string name="splitsNotBalanced">Your transaction is not balanced! If you would like to make the transaction amount equal your splits
+		total press "OK". Press "Cancel" to go back and edit your splits.</string>
+	<string name="titleSplitConfirmation">Splits unbalanced</string>
+	<string name="titleSplitsMessage">You have an amount left unassigned. Click Ok to have the transaction automatically balanced or
+		click Cancel to go back and edit your splits.</string>
+	<string name="titleSchedules">Schedules</string>
+	<string name="titlesrDescription">Description</string>
+	<string name="titlesrPayee">Payee</string>
+	<string name="titlesrFrequency">Frequency</string>
+	<string name="titlesrNextDueDate">Next Due Date</string>
+	<string name="titlesrAmount">Amount</string>
+	<string name="titleCashRequirements">Cash Required</string>
+	<string name="titleOptions">Options</string>
+	<string name="titleAccount">Account: </string>
+	<string name="titleBegDate">Beginning Date: </string>
+	<string name="titleEndDate">Ending Date: </string>
+	<string name="buttonSubmit">Submit</string>
+	<string name="titleNoSchedules">Sorry but your search returned no schedules.</string>
+	<string name="titleBasicHomeWidget">KMyMoney for Droid</string>
+	<string name="titlePreferenceHomeWidget">Home Widget</string>
+	<string name="titleUpdateFrequency">Update frequence</string>
+	<string name="summaryFrequency">Choose an update frequency</string>
+	<string name="None">None</string>
+	<string name="FiveMinutes">5 minutes</string>
+	<string name="FifteenMinutes">15 minutes</string>
+	<string name="ThirtyMinutes">30 minutes</string>
+	<string name="OneHour">1 hour</string>
+	<string name="TwoHours">2 hours</string>
+	<string name="FourHours">4 hours</string>
+	<string name="SixHours">6 hours</string>
+	<string name="TwelveHours">12 hours</string>
+	<string name="TwentyFourHours">24 hours</string>
+	<string name="AutoUpdate">Upon KMyMoney modification</string>
+	<string-array name="UpdateFrequency">
+	    <item>@string/None</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
+	    <item>@string/AutoUpdate</item>
+	</string-array>
+	<string-array name="UpdateFreqValues">
+	    <item>"0"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"-1"</item>
+	</string-array>
+	<string name="titleSelectanAccount">Select an Account</string>
+	<string name="titleChooseFrequency">Choose a frequency</string>
+	<string name="titleDisplayFrequency">Display Frequency</string>
+	<string name="summaryDisplayFrequency">Number of weeks to display</string>
+	<string name="OneWeek">One Week</string>
+	<string name="TwoWeeks">Two Weeks</string>
+	<string name="ThreeWeeks">Three Weeks</string>
+	<string name="FourWeeks">Four Weeks</string>
+	<string-array name="WeeksToDisplay">
+	    <item>@string/OneWeek</item>
+	    <item>@string/TwoWeeks</item>
+	    <item>@string/ThreeWeeks</item>
+	    <item>@string/FourWeeks</item>
+	</string-array>
+	<string-array name="WeeksToDisplayValues">
+	    <item>"1"</item>
+	    <item>"2"</item>
+	    <item>"3"</item>
+	    <item>"4"</item>
+	</string-array>
+	<string name="send_home_update_notifications_permission_label">Send Home Widgets Notifications</string>
+	<string name="send_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="receive_home_update_notifications_permission_label">Receive Home Widgets Notifications</string>
+	<string name="receive_home_update_notifications_permission_description">Used to ensure security between KMyMoneyDroid and the Homescreen Widgets</string>
+	<string name="descriptionRefresh">Refresh</string>
+	<string name="descriptionAddTransaction">Add Transaction</string>
+	<string name="titleDialogScheduleActions">Enter or Skip</string>
+	<string name="buttonEnter">Enter</string>
+	<string name="buttonSkip">Skip</string>
+	<string name="buttonEdit">Edit</string>
+	<string name="buttonDelete">Delete</string>
+	<string name="scheduleDescription">What would you like to do with: </string>
+	<string name="titleSkipSchedule">Do you really want to skip this schedule?</string>
+	<string name="homeConfigInstructions">Please enter your preferences for this widget below.</string>
+	<string name="homeConfigDatabaseTitle">Select a file for this widget</string>
+	<string name="homeConfigDefaultAccountTitle">Default account for this widget</string>
+	<string name="homeConfigDefaultUpdateFreqTitle">How often to refresh this widget</string>
+	<string name="homeConfigNumWeeksDisplayTitle">Number of weeks to display</string>
+	<string name="titleHomeWidgetConfiguration">Widget Configuration</string>
+	<string name="buttonSave">Save</string>
+	<string name="skip">Skip schedule</string>
+	<string name="titleButtonYes">Yes</string>
+	<string name="titleButtonNo">No</string>
+	<string name="homeWidgetError">Error</string>
+	<string name="titleHomeWidgetError">For performance reasons we currently only allow one instance of
+	    the KMyMoney for Droid home widget.</string>
+	<string name="titleCreateModifySchedule">New Schedule</string>
+	<string name="titleSchedulePaymentInfo">Payment info</string>
+	<string name="titleScheduleName">Schedule name:</string>
+	<string name="titleScheduleFrequency">Frequency:</string>
+	<string name="titleScheduleAccount">Account:</string>
+	<string name="titleScheduleOptions">Options</string>
+	<string name="titleScheduleWeekendOption">Non-processing day option:</string>
+	<string name="titleScheduleEstimate">The amount is an estimate because it varies for each payment</string>
+	<string name="titleScheduleAutoEnter">Enter this schedule into the register automatically when it is due</string>
+	<string name="titleScheduleEnd">This schedule will end at some time</string>
+	<string name="titleScheduleEndDate">Date of final transaction</string>
+	<string name="titleScheduleNumTransactions">Number of transactions remaining</string>
+	<string name="doNothing">Do nothing</string>
+	<string name="changeDateBefore">Move before</string>
+	<string name="changeDateAfter">Move after</string>
+	<string-array name="scheduleWeekendOptions">
+	    <item>@string/changeDateBefore</item>
+	    <item>@string/changeDateAfter</item>
+	    <item>@string/doNothing</item>
+	</string-array>
+	<string-array name="scheduleFrequency">
+		<item>"1"</item>
+		<item>"2"</item>
+		<item>"3"</item>
+		<item>"4"</item>
+		<item>"5"</item>
+		<item>"6"</item>
+		<item>"7"</item>
+		<item>"8"</item>
+		<item>"9"</item>
+		<item>"10"</item>
+		<item>"11"</item>
+		<item>"12"</item>	    
+	</string-array>
+	<string name="Once">Once</string>
+	<string name="Day">Day</string>
+	<string name="Week">Week</string>
+	<string name="HalfMonth">Half-month</string>
+	<string name="Month">Month</string>
+	<string name="Year">Year</string>
+	<string-array name="scheduleFreqDescription">
+	    <item>@string/Once</item>
+	    <item>@string/Day</item>
+	    <item>@string/Week</item>
+	    <item>@string/HalfMonth</item>
+	    <item>@string/Month</item>
+	    <item>@string/Year</item>
+	</string-array>
+	<string name="titleSchedulePaymentMethod">Payment method</string>
+	<string name="Other">Other</string>
+	<string name="BankTransfer">Bank transfer</string>
+	<string name="StandingOrder">Standing order</string>
+	<string name="ManualDeposit">Manual deposit</string>
+	<string name="DirectDeposit">Direct deposit</string>
+	<string-array name="SchedulePaymentMethod">
+	    <item>@string/Other</item>
+	    <item>@string/BankTransfer</item>
+	    <item>@string/StandingOrder</item>
+	    <item>@string/ManualDeposit</item>
+	    <item>@string/DirectDeposit</item>
+	</string-array>
+	<string name="titleViewSchedule">Schedule</string>
+	<string name="titlePreferenceNotifications">Notifications</string>
+	<string name="titleScheduleNotifications">Receive notifications</string>
+	<string name="summaryScheduleNotifications">Do you want to receive notifications of schedules due?</string>
+	<string name="titlePreferenceOverDueSchedules">Over due schedules</string>
+	<string name="titlePreferencesDueTodaySchedules">Schedules due today</string>
+	<string name="titlePreferenceTimeToRun">Time to run</string>
+	<string name="summaryPreferenceTimeToRun">When do you wish to be reminded?</string>
+	<string name="titleSchedulesNotifications">Schedules due</string>
+	<string name="titlePastDue">Past due</string>
+	<string name="titleDueToday">Today</string>
+	<string name="titleKMMDAlarmReceiver">Alarm Receiver</string>
+	<string name="titlePreferencesSchedules">Schedule Options</string>
+	<string name="titleCheckSchedulesStartup">Check schedules at start up</string>
+	<string name="summaryCheckSchedulesStartup">Check and auto enter schedules at startup</string>
+	<string name="titlePreferencesAutoEnterScheduleStartup">Auto enter schedules at start up</string>
+	<string name="titlePreferencesCheckSchedulesNotifications">Check schedules during notifications</string>
+	<string name="titlePreferencesAutoEnterSchedulesNotifications">Auto enter schedules during notifications</string>
+	<string name="titleAutoEntered">Automatically entered schedules</string>
+	<string name="titleDropbox">Dropbox</string>
+	<string name="buttonLogin">Login</string>
+	<string name="buttonLogout">Logout</string>
+    <string name="titleLinkToDropbox">Link to Dropbox</string>
+    <string name="summaryLinkToDropbox">Would you like to link KMMDroid with your Dropbox account?</string>
+    <string name="titleCloudServices">Cloud Services</string>
+    <string name="titleGoogleDrive">Google Drive</string>
+    <string name="titleUbuntuOne">UbuntuOne</string>
+    <string name="titleDropboxSync">Sync with Dropbox</string>
+    <string name="titleGoogleDriveSync">Google Drive Sync</string>
+    <string name="titleUbuntuOneSync">UbuntuOne Sync</string>
+    <string name="titleWifiOnly">Use WiFi only</string>
+    <string name="titleDropboxStartupCheck">Check at startup</string>
+    <string name="summaryDropboxStartupCheck">Check for outdate file on startup</string>
+    <string name="titleDropboxUploadonExit">Upload on exit</string>
+    <string name="summaryDropboxUploadonExit">Upload file upon exit</string>
+    <string name="titleDropboxAutoSync">Auto Sync</string>
+    <string name="summaryDropboxAutoSync">Periodically check file status</string>
+    <string name="titleSyncAll">All</string>
+    <string name="titleSyncDropbox">Dropbox</string>
+    <string name="titleSync">Sync</string>
+    <string name="lostDatabase">Error!! Missing database</string>
+    <string name="Checking">Checking</string>
+    <string name="Savings">Savings</string>
+    <string name="Cash">Cash</string>
+    <string name="CreditCard">Credit Card</string>
+    <string name="Loan">Loan</string>
+    <string name="Investment">Investment</string>
+    <string name="MoneyMarket">Money Market</string>
+    <string name="Asset">Asset</string>
+    <string name="Liability">Liability</string>
+    <string name="Currency">Currency</string>
+    <string name="Income">Income</string>
+    <string name="Expense">Expense</string>
+    <string name="AssetLoan">Asset Loan</string>
+    <string name="Stock">Stock</string>
+    <string name="Equity">Equity</string>
+    <string name="PayeeTabAddress">Address</string>
+    <string name="PayeeTabDefault">Default</string>
+    <string name="PayeeTabMatching">Matching</string>
+    <string name="CategoriesTabGeneral">General</string>
+    <string name="CategoriesTabHierarchy">Hierarchy</string>
+    <string name="AccountTabInstitution">Institution</string>
+    <string name="AccountTabAccount">Account</string>
+    <string name="AccountTabSubAccount">SubAccount</string>
+    <string name="TabTransactions">Transactions</string>
+    <string name="FileChooserLocation">Current Dir:</string>
+    <string name="FileChooserFolder">Folder</string>
+    <string name="FileChooserParentDirectory">Parent Directory</string>
+    <string name="FileChooserFile">File Size:</string>
+    <string name="BackActionWarning">Changes will be lost</string>
+    <string name="titleBackActionWarning">Your changes will be lost if you proceed! Do you really wish to proceed?</string>
+    <string name="titlePayeeName">Name: </string>
+    <string name="titleLoadMore">Load more</string>
+    <string name="buttonOneMonth">One month</string>
+    <string name="buttonOneYear">One year</string>
+    <string name="buttonAll">All</string>
+    <string name="titleReports">Reports</string>
+    <string name="titleNavigation">Navigation</string>
+    <string name="titleMenuNav">Menu</string>
+    <string name="titleNavBar">Navigation Bar</string>
+    <string-array name="Reports">
+        <item>@string/titleCashRequirements</item>
+    </string-array>
+    <string name="buttonLog">Send log to Developer</string>
+    <string name="loadMoreRow">-- Load more transactions --</string>
+    <string name="loadingMoreTransactions">Loading more transactions.....</string>
+    <string name="Jan">Jan</string>
+    <string name="Feb">Feb</string>
+    <string name="Mar">Mar</string>
+    <string name="Apr">Apr</string>
+    <string name="May">May</string>
+    <string name="Jun">Jun</string>
+    <string name="Jul">Jul</string>
+    <string name="Aug">Aug</string>
+    <string name="Sep">Sep</string>
+    <string name="Oct">Oct</string>
+    <string name="Nov">Nov</string>
+    <string name="Dec">Dec</string>
+    <string-array name="ShortMonthNames">
+        <item>@string/Jan</item>
+        <item>@string/Feb</item>
+        <item>@string/Mar</item>
+        <item>@string/Apr</item>
+        <item>@string/May</item>
+        <item>@string/Jun</item>
+        <item>@string/Jul</item>
+        <item>@string/Aug</item>
+        <item>@string/Sep</item>
+        <item>@string/Oct</item>
+        <item>@string/Nov</item>
+        <item>@string/Dec</item>
+    </string-array>
+    <string name="freqEvery">Every</string>
+    <string name="freqOnce">Once</string>
+    <string name="freqTimes">times</string>
+    <string name="freqDay">Day</string>
+    <string name="freqDaily">Daily</string>
+    <string name="freq30Days">Every thirty days</string>
+    <string name="freqDays">days</string>
+    <string name="freqWeek">Week</string>
+    <string name="freqWeekly">Weekly</string>
+    <string name="freqWeeks">weeks</string>
+    <string name="freq2Weeks">Every other week</string>
+    <string name="freq3Weeks">Every three weeks</string>
+    <string name="freq4Weeks">Every four weeks</string>
+    <string name="freq8Weeks">Every eight weeks</string>
+    <string name="freqHalfMonth">Half-month</string>
+    <string name="freqHalfMonths">Every half month</string>
+    <string name="freqHalfMonths2">half months</string>
+    <string name="freqMonth">Month</string>
+    <string name="freqMonthly">Monthly</string>
+    <string name="freq2Months">Every other month</string>
+    <string name="freq3Months">Every three months</string>
+    <string name="freq4Months">Every four months</string>
+    <string name="freqMonths">months</string>
+    <string name="freq2Yearly">Twice yearly</string>
+    <string name="freqYear">Year</string>
+    <string name="freqYearly">Yearly</string>
+    <string name="freqYears">years</string>
+    <string name="freqAny">Any</string>
+	<string name="crash_toast_text">Something went wrong, please send us a crash report to  let us know what you where doing and to help fix the issue.</string>
+	<string name="crash_dialog_title">KMMDroid has crashed</string>
+	<string name="crash_dialog_text">An unexpected error occurred forcing the
+	    application to stop. Please help us fix this by sending us error data,
+	    all you have to do is click OK.</string>
+	<string name="crash_dialog_comment_prompt">Please give us more information about what you where doing at the time of the crash:</string>
+	<string name="crash_dialog_ok_toast">Thank you for helping make KMMDroid a better applicaition.</string>
+	<string name="pref_disable_acra">Report crashes?</string>
+	<string name="pref_acra_enabled">Error reporting is on</string>
+	<string name="pref_acra_disabled">Error reporting is off</string>
+	<string name="titleSynchronization">Synchronization</string>
+	<string name="messageLinkSuccessful">Your account has been successfully linked!</string>
+	<string name="messageDropboxLinkError">Couldn\'t authenticate with Dropbox: </string>
+	<string name="messageLogOut">Logging out!</string>
+	<string name="defaultNotificationTime">Default notification time</string>
+	<string name="titleAutoSyncFreq">Autosync Frequency</string>
+	<string-array name="DropboxFreq">
+	    <item>@string/FiveMinutes</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
+	    <item>@string/TwelveHours</item>
+	    <item>@string/TwentyFourHours</item>
+	</string-array>
+	<string-array name="DropboxFreqValues">
+	    <item>"300000"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"43200000"</item>
+	    <item>"86400000"</item>
+	</string-array>
+	<string name="titleHideClosed">Hide closed accounts</string>
+ 	<string name="titleShowClosed">Show closed accounts</string>
+ 	<string name="titleClose">Close</string>
+ 	<string name="titleOpen">Open</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="titlePreferredAccounts">Preferred Accounts</string>
+    <string name="empty_widget_nopreferredaccounts">No Preferred Accounts</string>
+    <string name="empty_widget_noschedules">No schedules found</string>
+    <string name="widgetPreferredAccounts">KMMD - Preferred Accounts</string>
+    <string name="widgetSchedules">KMMD - Schedules</string>
+</resources>

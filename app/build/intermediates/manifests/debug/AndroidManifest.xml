@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.vanhlebarsoftware.kmmdroid"
+    android:versionCode="3"
+    android:versionName="0.7.2.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="16" />
+
+    <permission
+        android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS"
+        android:description="@string/send_home_update_notifications_permission_description"
+        android:label="@string/send_home_update_notifications_permission_label"
+        android:permissionGroup="android.permission-group.PERSONAL_INFO"
+        android:protectionLevel="normal" >
+    </permission>
+    <permission
+        android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS"
+        android:description="@string/receive_home_update_notifications_permission_description"
+        android:label="@string/receive_home_update_notifications_permission_label"
+        android:permissionGroup="android.permission-group.PERSONAL_INFO"
+        android:protectionLevel="normal" >
+    </permission>
+
+    <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.SEND_HOME_UPDATE_NOTIFICATIONS" />
+    <uses-permission android:name="com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name="com.vanhlebarsoftware.kmmdroid.KMMDroidApp"
+        android:allowBackup="true"
+        android:icon="@drawable/kmymoney"
+        android:label="@string/app_name" >
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.WelcomeActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.FileChooser"
+            android:label="@string/titleFileChooser"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.NewDatabaseActivity"
+            android:label="@string/titleNewDatabase"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.HomeActivity"
+            android:label="@string/titleHome"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.LedgerActivity"
+            android:label="@string/titleLedger"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.ViewTransactionActivity"
+            android:label="@string/titleViewTransaction"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.AccountsActivity"
+            android:label="@string/titleAccounts"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PayeeActivity"
+            android:label="@string/titlePayees"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.TransactionsTabActivity"
+            android:label="@string/titlePayeeTransactions"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyPayeeActivity"
+            android:label="@string/titleCreateModPayee"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PayeeAddressActivity"
+            android:label="@string/titlePayeeAddress"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PayeeDefaultAccountActivity"
+            android:label="@string/titlePayeeDefaultAccount"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PayeeMatchingActivity"
+            android:label="@string/titlePayeeMatching"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PayeeReassignActivity"
+            android:label="@string/titleReassignPayee"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CategoriesActivity"
+            android:label="@string/titleCategories"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyAccountActivity"
+            android:label="@string/titleCreateAccounts"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateAccountInstitutionActivity"
+            android:label="@string/titleCreateAccountInstitution"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateAccountAccountActivity"
+            android:label="@string/titleCreateAccountAccount"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateAccountParentActivity"
+            android:label="@string/titleCreateAccountParent"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyCategoriesActivity"
+            android:label="@string/titleCreateModCategory"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CategoriesGeneralActivity"
+            android:label="@string/titleCategoryGeneral"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CategoriesHierarchyActivity"
+            android:label="@string/titleCategoryHierarchy"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyInstitutionActivity"
+            android:label="@string/titleCreateModifyInstitution"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.InstitutionsActivity"
+            android:label="@string/titleInstitutions"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyTransactionActivity"
+            android:label="@string/titleCreateModifyTransactions"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifySplitsActivity"
+            android:label="@string/titleCreateModifySplits"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.PrefsActivity"
+            android:label="@string/titlePrefs"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.AboutActivity"
+            android:label="@string/titleAbout"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.SchedulesActivity"
+            android:label="@string/titleSchedules"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CashRequirementsActivity"
+            android:label="@string/titleCashRequirements"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CashRequirementsOptionsActivity"
+            android:label="@string/titleOptions"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.ScheduleActionsActivity"
+            android:label="@string/titleDialogScheduleActions"
+            android:screenOrientation="portrait"
+            android:theme="@style/DialogNoTitle"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CreateModifyScheduleActivity"
+            android:label="@string/titleCreateModifySchedule"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.SchedulePaymentInfoActivity"
+            android:label="@string/titleSchedulePaymentInfo"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.ScheduleOptionsActivity"
+            android:label="@string/titleScheduleOptions"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.ViewScheduleActivity"
+            android:label="@string/titleSchedules"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.SchedulesNotificationsActivity"
+            android:label="@string/titleSchedulesNotifications"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.InvestmentActivity"
+            android:label="@string/titleInvestmentActivity"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.HomeScreenConfiguration"
+            android:label="@string/titleHomeWidgetConfiguration"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.CloudIntegrationActivity"
+            android:label="@string/titleDropbox"
+            android:screenOrientation="portrait"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask" >
+            <intent-filter>
+
+                <!-- Change this to be db- followed by your app key -->
+                <data android:scheme="db-1r7ua9d5ckmxwse" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.LoadMoreTransactionsActivity"
+            android:label="@string/titleLoadMore"
+            android:screenOrientation="portrait"
+            android:theme="@style/DialogNoTitle" >
+        </activity>
+        <activity
+            android:name="com.vanhlebarsoftware.kmmdroid.ReportsActivity"
+            android:label="@string/titleReports"
+            android:screenOrientation="portrait"
+            android:theme="@style/ListFont"
+            android:uiOptions="splitActionBarWhenNarrow" >
+        </activity>
+        <activity
+            android:name="org.acra.CrashReportDialog"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+
+        <provider
+            android:name="com.vanhlebarsoftware.kmmdroid.KMMDProvider"
+            android:authorities="com.vanhlebarsoftware.kmmdroid.kmmdprovider"
+            android:exported="false" >
+        </provider>
+
+        <receiver
+            android:name="com.vanhlebarsoftware.kmmdroid.WidgetPreferredAccounts"
+            android:label="@string/widgetPreferredAccounts" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_preferredaccounts_info" />
+        </receiver>
+        <receiver
+            android:name="com.vanhlebarsoftware.kmmdroid.WidgetSchedules"
+            android:label="@string/widgetSchedules" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.vanhlebarsoftware.kmmdroid.DATA_CHANGED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_schedules_info" />
+        </receiver>
+        <receiver
+            android:name="com.vanhlebarsoftware.kmmdroid.KMMDAlarmReceiver"
+            android:label="@string/titleKMMDAlarmReceiver" >
+            <intent-filter>
+                <action android:name="com.vanhlebarsoftware.kmmdroid.CHECK_SCHEDULES" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.vanhlebarsoftware.kmmdroid.KMMDBootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.vanhlebarsoftware.kmmdroid.KMMDService" >
+        </service>
+        <service android:name="com.vanhlebarsoftware.kmmdroid.KMMDNotificationsService" >
+        </service>
+        <service android:name="com.vanhlebarsoftware.kmmdroid.KMMDDropboxService" >
+        </service>
+        <service
+            android:name="com.vanhlebarsoftware.kmmdroid.WidgetPreferredAccountsRVService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+        <service
+            android:name="com.vanhlebarsoftware.kmmdroid.WidgetSchedulesRVService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" >
+        </service>
+    </application>
+
+</manifest>

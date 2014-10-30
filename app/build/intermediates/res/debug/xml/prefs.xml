@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+    	android:summary="@string/summaryOpenLastUsed"
+    	android:key="openLastUsed"
+    	android:title="@string/titleOpenLastUsed">
+    </CheckBoxPreference>
+    <CheckBoxPreference 
+        android:key="acra.enable"
+        android:title="@string/pref_disable_acra"
+        android:summaryOn="@string/pref_acra_enabled"
+        android:summaryOff="@string/pref_acra_disabled"
+        android:defaultValue="true" />
+    <PreferenceCategory 
+        android:title="@string/titleNavigation" >
+        <CheckBoxPreference 
+            android:title="@string/titleMenuNav"
+            android:key="navMenu" 
+            android:defaultValue="true" >
+        </CheckBoxPreference>
+        <CheckBoxPreference 
+            android:title="@string/titleNavBar"
+            android:key="navBar"
+            android:defaultValue="false" >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+	
+    <PreferenceCategory
+        android:title="@string/titleSynchronization" >
+    <PreferenceScreen 
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/titleCloudServices">
+        <CheckBoxPreference 
+            android:title="@string/titleWifiOnly"
+            android:key="useWiFiOnly"/>
+        <PreferenceScreen 
+            android:title="@string/titleDropbox">
+            <CheckBoxPreference 
+                android:title="@string/titleDropboxSync"
+                android:key="dropboxSync">
+            </CheckBoxPreference>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxStartupCheck"
+                android:title="@string/titleDropboxStartupCheck"
+                android:key="dropboxStartupCheck"/>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxUploadonExit"
+                android:title="@string/titleDropboxUploadonExit"
+                android:key="dropboxUploadonExit"/>
+            <CheckBoxPreference
+                android:summary="@string/summaryDropboxAutoSync"
+                android:title="@string/titleDropboxAutoSync"
+                android:key="dropboxAutoSync"/>
+            <ListPreference
+                android:title="@string/titleAutoSyncFreq"
+                android:entries="@array/DropboxFreq"
+                android:entryValues="@array/DropboxFreqValues"
+                android:key="dropboxFrequency"/>
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/titleGoogleDrive">
+            <CheckBoxPreference
+                android:title="@string/titleGoogleDriveSync"
+                android:key="googledriveSync" />
+        </PreferenceScreen>
+        <PreferenceScreen
+            android:title="@string/titleUbuntuOne">
+            <CheckBoxPreference
+                android:title="@string/titleUbuntuOneSync"
+                android:key="ubuntuoneSync"/>
+    	</PreferenceScreen>
+    </PreferenceScreen>
+	</PreferenceCategory>
+    <PreferenceCategory 
+		android:title="@string/titlePreferenceNotifications">
+        	<CheckBoxPreference
+        	    android:key="receiveNotifications"
+        	    android:title="@string/titleScheduleNotifications"
+        	    android:summary="@string/summaryScheduleNotifications" android:dependency="openLastUsed"/>
+        	<CheckBoxPreference
+        	    android:title="@string/titlePreferenceOverDueSchedules"
+        	    android:key="overdueSchedules"
+        	    android:dependency="receiveNotifications"/>
+        	<CheckBoxPreference
+        	    android:title="@string/titlePreferencesDueTodaySchedules"
+        	    android:key="dueTodaySchedules"
+        	    android:dependency="receiveNotifications"/>
+        	<com.vanhlebarsoftware.kmmdroid.KMMDTimePreference
+        	    android:name="@string/titlePreferenceTimeToRun"
+        	    android:summary="@string/summaryPreferenceTimeToRun"
+        	    android:dialogLayout="@layout/time_preference"
+        	    android:title="@string/defaultNotificationTime"
+        	    android:key="notificationTime"
+				android:dependency="receiveNotifications" />
+    </PreferenceCategory>
+    <PreferenceCategory 
+        android:title="@string/titlePreferencesSchedules">
+        <CheckBoxPreference
+            android:title="@string/titleCheckSchedulesStartup"
+            android:key="checkSchedulesStartup"
+            android:summary="@string/summaryCheckSchedulesStartup"
+            android:dependency="openLastUsed"/>
+        <CheckBoxPreference
+            android:title="@string/titlePreferencesAutoEnterScheduleStartup"
+            android:key="autoEnterScheduleStartup"
+            android:dependency="checkSchedulesStartup"/>
+        <CheckBoxPreference
+            android:title="@string/titlePreferencesCheckSchedulesNotifications"
+            android:key="checkSchedulesNotifications"
+            android:dependency="openLastUsed"/>
+    </PreferenceCategory>
+    
+</PreferenceScreen><!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/xml/prefs.xml -->

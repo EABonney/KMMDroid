@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KMyMoney für Android</string>
+    <string name="titleWelcome">Willkommen</string>
+    <string name="titleStartNew">Neue KMyMoney anlegen</string>
+    <string name="titleOpenDatabase">Vorhandene KMyMoney Datenbank öffnen</string>
+    <string name="titleOpenLastUsed">Zuletzt verwendete Datenbank öffnen</string>
+    <string name="summaryOpenLastUsed">Datenbank beibehalten?</string>
+    <string name="titleLastUsedFile">Zuletzt verwendeter Dateiort.</string>
+    <string name="summaryLastUsedFile">Speicherort der zuletzt verwendeten Datei</string>
+    <string name="titleFileChooser">Datei wählen</string>
+    <string name="titleDatabaseName">Bitte Datenbanknamen eingeben</string>
+    <string name="titleButtonOK">Ok</string>
+    <string name="titleButtonCancel">Abbrechen</string>
+    <string name="titleButtonEdit">Bearbeiten</string>
+    <string name="titleButtonDelete">Löschen</string>
+    <string name="titleNewDatabase">Neue Datenbank</string>
+    <string name="titleHome">Startseite</string>
+    <string name="titleLedger">Kontenbuch</string>
+    <string name="titleViewTransaction">Buchung</string>
+    <string name="vtlabel_Description">Beschreibung:</string>
+    <string name="vtlabel_Date">Datum: </string>
+    <string name="vtlabel_Status">Status: </string>
+    <string name="vtlabel_Number">Nummer: </string>
+    <string name="vtlabel_Amount">Betrag: </string>
+    <string name="vtlabel_Memo">Notiz: </string>
+    <string name="vtlabel_Splits">Kategorien</string>
+    <string name="titlePrefs">Optionen</string>
+    <string name="titleAccounts">Konten</string>
+    <string name="titleCategories">Kategorien</string>
+    <string name="titlePayees">Empfänger</string>
+    <string name="titleNew">Neu</string>
+    <string name="titleEdit">Bearbeiten</string>
+    <string name="titleDelete">Löschen</string>
+    <string name="titlePayeeTransactions">Buchungen</string>
+    <string name="titleCreateModPayee">Neuen Empfänger anlegen</string>
+    <string name="titlePayeeDefaultAccount">Standardkonto</string>
+    <string name="titlePayeeMatching">Zuordnung</string>
+    <string name="titlePayeeAddress">Adresse: </string>
+    <string name="titlePayeePostalCode">Postleitzahl: </string>
+    <string name="titlePayeeTelephone">Telefon: </string>
+    <string name="titlePayeeEmail">E-Mail: </string>
+    <string name="titlePayeeNotes">Notizen: </string>
+    <string name="payeeMatching">Buchungs-Zuordnung</string>
+    <string name="payeeNoMatching">Keine Zuordnung</string>
+    <string name="payeeMatchonName">Einem Zahlungsempfänger zuordnen</string>
+    <string name="titlePayeeUseDefault">Buchung für diesen Empfänger dem Standardkonto zuordnen</string>
+    <string name="titlePayeeDefaultCategory">Standard-Kategorie</string>
+    <string name="titlePayeeDefaultIncome">Einnahme</string>
+    <string name="titlePayeeDefaultExpense">Ausgabe</string>
+    <string name="itemSave">Speichern</string>
+    <string name="itemCancel">Abbrechen</string>
+    <string name="itemClearAll">Alles entfernen</string>
+    <string name="summaryPayeeReassign">Die dem Empfänger zugeordneten Buchungen müssen einem anderen Empfänger zugewiesen werden -
+      der ursprüngliche Empfänger kann sonst nicht gelöscht werden. Bitte einen Empfänger aus untenstehender Liste wählen.</string>
+    <string name="titlePayeesAvailable">Verfügbare Empfänger:</string>
+    <string name="titleReassignPayee">Zuweisung Empfänger</string>
+    <string name="delete">Löschen</string>
+    <string name="deletemsg">Sind Sie sicher, dass Sie folgenden Empfänger löschen möchten: </string>
+    <string name="error">Fehler!</string>
+    <string name="unableToReassign">Zahlungsempfänger konnte nicht neu zugewiesen werden. Der Empfänger wurde NICHT gelöscht!</string>
+	<string name="unableToDelete">Konnte Eintrag aus folgendem Grund nicht löschen: </string>
+	<string name="createNewPayee">Neuen Zahlungsempfänger anlegen</string>
+	<string name="msgPayeeName">Name des Empfängers:</string>
+	<string name="payeeNotFound">Empfänger nicht gefunden!</string>
+	<string name="payeeMoreThanOne">Es existieren mehrere Empfänger.</string>
+	<string name="menuOpen">Öffnen</string>
+	<string name="menuRecent">Letztes</string>
+	<string name="close">Datei schliessen</string>
+	<string name="titleCreateModCategory">Neue Kategorie anlegen</string>
+	<string name="titleCategoryGeneral">Allgemein</string>
+	<string name="titleCategoryHierarchy">Hierarchie</string>
+	<string name="titleCategoryName">Name: </string>
+	<string name="titleOpeningInfo">Eröffnungs-Informationen</string>
+	<string name="titleCategoryType">Typ: </string>
+	<string-array name="arrayTypes">
+		<item>Einnahme</item>
+		<item>Ausgabe</item>
+	</string-array>
+	<string name="titleCategoryCurrency">Währung: </string>
+	<string name="titleCategoryDate">Datum: </string>
+	<string name="titleCategoryBalance">Stand: </string>
+	<string name="titleCategoryOptions">Optionen</string>
+	<string name="titleCategoryCheckNumber">Letzte Schecknummer: </string>
+	<string name="titleCategoryNotes">Notizen: </string>
+	<string name="titleCategoryPriceEntry">Werteingabe: </string>
+	<string name="titleSubAccount">Dies ist ein Unterkonto von:</string>
+	<string name="accountNameNotEntered">Sie müssen einen Namen für das Konto eingeben!</string>
+	<string name="categoryNotFound">Kategorie nicht gefunden!</string>
+	<string name="titleCreateModAccount">Neues Konto eröffnen</string>
+	<string name="titleEditModAccount">Konto bearbeiten</string>
+	<string name="titleNewInstitution">Neues Geldinstitut</string>
+	<string name="titleInstitutionName">Name: </string>
+	<string name="titleInstitutionStreet">Straße: </string>
+	<string name="titleInstitutionCity">Stadt: </string>
+	<string name="titleInstitutionPostalCode">Postleitzahl: </string>
+	<string name="titleInstitutionPhone">Telefon/Fax: </string>
+	<string name="titleInstitutionRoutingNumber">Bankleitzahl: </string>
+	<string name="titleInstitutionBIC">BIC: </string>
+	<string name="titleAccountInstructions">Falls dieses Konto von einem Geldinstitut geführt wird wählen Sie bitte
+		das entsprechene Institut aus der Liste. Wenn das Institut noch nicht angelegt ist, so drücken Sie die Schaltfläche 
+		"Neues Geldinstitut". Andersfalls "Ohne Institut anlegen" anwählen. Darunter die Kontonummer angeben, die von der Bank vergeben wurde.
+	</string>
+	<string name="titleNoInstitution">Ohne Institut anlegen</string>
+	<string name="titleAccountInstitution">Geldinstitut</string>
+	<string name="buttonNewInstitution">Neues Geldinstitut</string>
+	<string name="titleAccountNumber">Kontonummer</string>
+	<string name="titleAccountIBAN">IBAN</string>
+	<string name="titleAccountInstructions2">Bitte den Namen des Kontos eingeben, wie er von KMyMoney erwartet wird. Des Weiteren den Konto-Typ sowie 
+	  Währung und Eröffnungsdatum eingeben.
+	</string>
+	<string name="titleAccountName">Kontoname</string>
+	<string name="titleAccountType">Konto-Typ</string>
+	<string name="titleAccountCurrency">Währung</string>
+	<string name="buttonSetDate">Datum wählen...</string>
+	<string name="titleAccountOpenDate">Eröffnungsdatum</string>
+	<string name="titleAccountOpenBalance">Eröffnungssaldo</string>
+	<string name="titleAccountPreferred">Bevorzugtes Konto</string>
+	<string name="titleAccountSubAccount">Unterkonto von</string>
+	<string name="titleAccountTransactions">Gesamtzahl der Buchungen: </string>
+	<string name="titleCreateAccounts">Konten eröffnen</string>
+	<string name="titleCreateAccountInstitution">Geldinstitut anlegen</string>
+	<string name="titleCreateAccountAccount">Konto eröffnen</string>
+	<string name="titleCreateAccountParent">Übergeordnetes Konto anlegen</string>
+	<string-array name="arrayAccountTypes">
+		<item>Anlagen</item>
+		<item>Girokonto</item>
+		<item>Eigenkapital</item>
+		<item>Verbindlichkeiten</item>
+		<item>Sparkonto</item>
+	</string-array>
+	<string name="titleCreateModifyInstitution">Geldinstitut anlegen</string>
+	<string name="accountNotSupported">Zur Zeit werden diese Kontoarten von dieser App nicht unterstützt. Vielleicht werden sie 
+	  aber in Zukunft noch ergänzt. Wir entschuldigen uns für diese Einschränkung. Danke für Ihr Verständnis.</string>
+	<string name="titleInstitutions">Geldinstitute</string>
+	<string name="titleCreateModifyTransactions">Neue Buchung</string>
+	<string-array name="TransactionTypes">
+		<item>Gutschrift</item>
+		<item>Umbuchung</item>
+		<item>Belastung</item>
+	</string-array>
+	<string name="titleTransactionType">Art der Buchung: </string>
+	<string name="titlePayeeToFrom">Zahlen an: </string>
+	<string name="titleCategory">Kategorie: </string>
+	<string name="titleNumber">Nummer: </string>
+	<string name="titleDate">Datum: </string>
+	<string name="titleAmount">Betrag: </string>
+	<string name="notreconciled">Nicht abgeglichen</string>
+	<string name="cleared">Verrechnet</string>
+	<string name="reconciled">Abgeglichen</string>
+	<string-array name="TransactionStatus">
+		<item>@string/notreconciled</item>
+		<item>@string/cleared</item>
+		<item>@string/reconciled</item>
+	</string-array>
+	<string name="titleStatus">Status: </string>
+	<string name="buttonSplit">Split-Buchung</string>
+	<string name="titleMemo">Notiz: </string>
+	<string name="buttonChooseCategory">Kategorie wählen</string>
+	<string name="titleDeleteTransaction">Wollen Sie diese Buchung wirklich löschen?</string>
+	<string name="titleSumofSplits">Summe der Split-Buchungen: </string>
+	<string name="titleUnassigned">Nicht zugewiesen: </string>
+	<string name="titleTransactionAmount">Buchungsbetrag: </string>
+	<string name="titleCreateModifySplits">Split-Buchung</string>
+	<string name="itemInsertRow">Neue Split-Buchung</string>
+	<string name="splitTransaction">- Split-Buchung -</string>
+	<string name="titleAbout">Über</string>
+	<string name="itemVersion">Version: </string>
+	<string name="itemFileVersion">Datei Version: </string>
+	<string name="itemFileCreated">Angelegt: </string>
+	<string name="itemLastModified">Zuletzt geändert:</string>
+	<string name="itemNumInstitutions">Anzahl der Geldinstitute: </string>
+	<string name="itemNumAccounts">Anzahl der Konten: </string>
+	<string name="itemNumPayees">Anzahl der Empfänger: </string>
+	<string name="itemNumTransactions">Anzahl der Buchungen: </string>
+	<string name="itemNumSplits">Anzahl der Split-Buchungen: </string>
+	<string name="itemNumSecurities">Anzahl der Wertpapiere: </string>
+	<string name="itemNumPrices">Preise: </string>
+	<string name="itemNumCurrencies">Währungen: </string>
+	<string name="itemNumSchedules">Geplante Buchungen: </string>
+	<string name="itemNumReports">Berichte: </string>
+	<string name="itemNumKVPS">Anzahl an "KVPS" (Debug): </string>
+	<string name="itemNumBudgets">Anzahl an Budgets: </string>
+	<string name="splitsNotBalanced">Ihre Split-Buchung ist nicht ausgeglichen! Um den Gesamtbetrag der Buchung an die Summe der 
+	  Split-Buchungen anzugleichen drücken Sie "OK". Mittels "Abbrechen" kann die Split-Buchung weiter editiert werden.</string>
+	<string name="titleSplitConfirmation">Split-Buchung unausgeglichen</string>
+	<string name="titleSplitsMessage">Ein Teilbetrag wurde nicht zugewiesen. Drücken Sie "OK", um die Buchung automatisch anzugleichen
+	  oder drücken Sie "Abbrechen", um die Split-Buchung weiter zu bearbeiten.</string>
+	<string name="titleSchedules">Geplante Buchungen</string>
+	<string name="titlesrDescription">Beschreibung</string>
+	<string name="titlesrPayee">Zahlungsempfänger</string>
+	<string name="titlesrFrequency">Häufigkeit</string>
+	<string name="titlesrNextDueDate">Nächste Fälligkeit</string>
+	<string name="titlesrAmount">Betrag</string>
+	<string name="titleCashRequirements">Vorhersage für Eigenkapital</string>
+	<string name="titleOptions">Optionen</string>
+	<string name="titleAccount">Konto: </string>
+	<string name="titleBegDate">Startdatum: </string>
+	<string name="titleEndDate">Enddatum: </string>
+	<string name="buttonSubmit">Anlegen</string>
+	<string name="titleNoSchedules">Ihre Suche ergab keine geplanten Buchungen.</string>
+	<string name="titleBasicHomeWidget">KMyMoney für Android</string>
+	<string name="titlePreferenceHomeWidget">Übersicht</string>
+	<string name="titleUpdateFrequency">Aktualisierungsintervall</string>
+	<string name="summaryFrequency">Aktualisierungsintervall wählen</string>
+	<string name="None">nicht aktualisieren</string>
+	<string name="FifteenMinutes">15 Minuten</string>
+	<string name="ThirtyMinutes">30 Minuten</string>
+	<string name="OneHour">1 Stunde</string>
+	<string name="TwoHours">2 Stunden</string>
+	<string name="FourHours">4 Stunden</string>
+	<string name="SixHours">6 Stunden</string>
+	<string name="AutoUpdate">nur wenn geändert (energiesparend)</string>
+	<string-array name="UpdateFrequency">
+	    <item>@string/None</item>
+	    <item>@string/FifteenMinutes</item>
+	    <item>@string/ThirtyMinutes</item>
+	    <item>@string/OneHour</item>
+	    <item>@string/TwoHours</item>
+	    <item>@string/FourHours</item>
+	    <item>@string/SixHours</item>
+	    <item>@string/AutoUpdate</item>
+	</string-array>
+	<string-array name="UpdateFreqValues">
+	    <item>"0"</item>
+	    <item>"900000"</item>
+	    <item>"1800000"</item>
+	    <item>"3600000"</item>
+	    <item>"7200000"</item>
+	    <item>"14400000"</item>
+	    <item>"21600000"</item>
+	    <item>"-1"</item>
+	</string-array>
+	<string name="titleSelectanAccount">Konto wählen</string>
+	<string name="titleChooseFrequency">Aktualisierungsintervall</string>
+	<string name="titleDisplayFrequency">Buchungsvorschau</string>
+	<string name="summaryDisplayFrequency">Anzahl der darzustellenden Wochen</string>
+	<string name="OneWeek">Eine Woche</string>
+	<string name="TwoWeeks">Zwei Wochen</string>
+	<string name="ThreeWeeks">Drei Wochen</string>
+	<string name="FourWeeks">Vier Wochen</string>
+	<string-array name="WeeksToDisplay">
+	    <item>@string/OneWeek</item>
+	    <item>@string/TwoWeeks</item>
+	    <item>@string/ThreeWeeks</item>
+	    <item>@string/FourWeeks</item>
+	</string-array>
+	<string-array name="WeeksToDisplayValues">
+	    <item>"1"</item>
+	    <item>"2"</item>
+	    <item>"3"</item>
+	    <item>"4"</item>
+	</string-array>
+	<string name="send_home_update_notifications_permission_label">Benachrichtigungen an Widget-Übersicht senden</string>
+	<string name="send_home_update_notifications_permission_description">Erlaubt sichere Kommunikation zwischen App und zugehörigem Widget</string>
+	<string name="receive_home_update_notifications_permission_label">Benachrichtigungen von Widget-Übersicht empfangen</string>
+	<string name="receive_home_update_notifications_permission_description">Erlaubt sichere Kommunikation zwischen App und zugehörigem Widget</string>
+	<string name="descriptionRefresh">Aktualisieren</string>
+	<string name="descriptionAddTransaction">Buchung hinzufügen</string>
+	<string name="titleDialogScheduleActions">Eintragen oder Überspringen</string>
+	<string name="buttonEnter">Eintragen</string>
+	<string name="buttonSkip">Überspringen</string>
+	<string name="buttonEdit">Bearbeiten</string>
+	<string name="buttonDelete">Löschen</string>
+	<string name="scheduleDescription">Was möchten Sie tun mit: </string>
+	<string name="titleSkipSchedule">Wollen Sie diese geplante Buchung wirklich überspringen?</string>
+	<string name="homeConfigInstructions">Bitte Widget mit den untenstehenden Optionen einrichten.</string>
+	<string name="homeConfigDatabaseTitle">Datenbank-Datei für dieses Widget wählen</string>
+	<string name="homeConfigDefaultAccountTitle">Standardkonto für dieses Widget</string>
+	<string name="homeConfigDefaultUpdateFreqTitle">Aktualisierungsintervall des Widgets</string>
+	<string name="homeConfigNumWeeksDisplayTitle">Anzahl der darzustellenden Wochen</string>
+	<string name="titleHomeWidgetConfiguration">Widget Einrichtung</string>
+	<string name="buttonSave">Speichern</string>
+	<string name="skip">Geplante Buchung überspringen</string>
+	<string name="titleButtonYes">Ja</string>
+	<string name="titleButtonNo">Nein</string>
+	<string name="homeWidgetError">Fehler</string>
+	<string name="titleHomeWidgetError">Um Leistungseinbrüche zu vermeiden ist z.Z. nur ein Widget erlaubt.</string>
+	<string name="titleCreateModifySchedule">Neue geplante Buchung</string>
+	<string name="titleSchedulePaymentInfo">Zahlungsdaten</string>
+	<string name="titleScheduleName">Name der geplanten Buchung:</string>
+	<string name="titleScheduleFrequency">Häufigkeit:</string>
+	<string name="titleScheduleAccount">Konto:</string>
+	<string name="titleScheduleOptions">Optionen</string>
+	<string name="titleScheduleWeekendOption">Wenn die geplante Buchung nicht auf einen Bankarbeitstag fällt:</string>
+	<string name="titleScheduleEstimate">Dies ist eine Schätzung, da der Betrag für jede Zahlung schwankt</string>
+	<string name="titleScheduleAutoEnter">Diese geplante Buchung bei Fälligkeit automatisch in das Kontenbuch eintragen</string>
+	<string name="titleScheduleEnd">Zahlungen enden zu einem bestimmten Termin</string>
+	<string name="titleScheduleEndDate">Datum der letzten Zahlung</string>
+	<string name="titleScheduleNumTransactions">Anzahl verbleibender Buchungen</string>
+	<string name="doNothing">Datum unverändert übernehmen</string>
+	<string name="changeDateBefore">Datum auf den vorherigen Arbeitstag ändern</string>
+	<string name="changeDateAfter">Datum auf den folgenden Arbeitstag ändern</string>
+	<string-array name="scheduleWeekendOptions">
+	    <item>@string/changeDateBefore</item>
+	    <item>@string/changeDateAfter</item>
+	    <item>@string/doNothing</item>
+	</string-array>
+	<string-array name="scheduleFrequency">
+		<item>"1"</item>
+		<item>"2"</item>
+		<item>"3"</item>
+		<item>"4"</item>
+		<item>"5"</item>
+		<item>"6"</item>
+		<item>"7"</item>
+		<item>"8"</item>
+		<item>"9"</item>
+		<item>"10"</item>
+		<item>"11"</item>
+		<item>"12"</item>	    
+	</string-array>
+	<string name="Once">einmalig</string>
+	<string name="Day">täglich</string>
+	<string name="Week">wöchentlich</string>
+	<string name="HalfMonth">14-tägig</string>
+	<string name="Month">monatlich</string>
+	<string name="Year">jährlich</string>
+	<string-array name="scheduleFreqDescription">
+	    <item>@string/Once</item>
+	    <item>@string/Day</item>
+	    <item>@string/Week</item>
+	    <item>@string/HalfMonth</item>
+	    <item>@string/Month</item>
+	    <item>@string/Year</item>
+	</string-array>
+	<string name="titleSchedulePaymentMethod">Zahlungsmethode</string>
+	<string name="Other">Andere</string>
+	<string name="BankTransfer">Überweisung</string>
+	<string name="StandingOrder">Dauerauftrag</string>
+	<string name="ManualDeposit">Scheck ausstellen</string>
+	<string name="DirectDeposit">Lastschrifteinzug</string>
+	<string-array name="SchedulePaymentMethod">
+	    <item>@string/Other</item>
+	    <item>@string/BankTransfer</item>
+	    <item>@string/StandingOrder</item>
+	    <item>@string/ManualDeposit</item>
+	    <item>@string/DirectDeposit</item>
+	</string-array>
+	<string name="titleViewSchedule">Geplante Buchungen</string>
+	<string name="titlePreferenceNotifications">Benachrichtigungen</string>
+	<string name="titleScheduleNotifications">Benachrichtigungen erhalten</string>
+	<string name="summaryScheduleNotifications">Möchten Sie bei überfälligen Buchungen benachrichtigt werden?</string>
+	<string name="titlePreferenceOverDueSchedules">Überfällige Buchungen</string>
+	<string name="titlePreferencesDueTodaySchedules">Heute fällige Zahlungen</string>
+	<string name="titlePreferenceTimeToRun">Erinnerung um</string>
+	<string name="summaryPreferenceTimeToRun">Um welche Uhrzeit soll erinnert werden?</string>
+	<string name="titleSchedulesNotifications">Fällige Buchungen</string>
+	<string name="titlePastDue">Überfällig</string>
+	<string name="titleDueToday">Heute</string>
+	<string name="titleKMMDAlarmReceiver">Alarm</string>
+	<string name="titlePreferencesSchedules">Einstellungen für geplante Buchungen</string>
+	<string name="titleCheckSchedulesStartup">Geplante Buchungen beim Start überprüfen</string>
+	<string name="summaryCheckSchedulesStartup">Geplante Buchungen beim Start prüfen und eintragen</string>
+	<string name="titlePreferencesAutoEnterScheduleStartup">Geplante Buchungen autom. beim Start eintragen</string>
+	<string name="titlePreferencesCheckSchedulesNotifications">Prüfe geplante Buchungen bei Benachrichtigungen</string>
+	<string name="titlePreferencesAutoEnterSchedulesNotifications">Trage geplante Buchungen bei Benachrichtigungen ein</string>
+	<string name="titleAutoEntered">Automatisch eingetragene geplante Buchungen</string>
+	<string name="titleDropbox">Dropbox</string>
+	<string name="buttonLogin">Einloggen</string>
+	<string name="buttonLogout">Ausloggen</string>
+    <string name="titleLinkToDropbox">Link zu Dropbox</string>
+    <string name="summaryLinkToDropbox">Möchten Sie Ihr Dropbox-Konto mit dieser App verknüpfen?</string>
+    <string name="titleCloudServices">Cloud Dienste</string>
+    <string name="titleGoogleDrive">Google Drive</string>
+    <string name="titleUbuntuOne">UbuntuOne</string>
+    <string name="titleDropboxSync">Mit Dropbox abgleichen</string>
+    <string name="titleGoogleDriveSync">Mit Google Drive abgleichen</string>
+    <string name="titleUbuntuOneSync">Mit UbuntuOne abgleichen</string>
+    <string name="titleWifiOnly">Nur WLAN benutzen</string>
+    <string name="titleDropboxStartupCheck">Beim Starten prüfen</string>
+    <string name="summaryDropboxStartupCheck">Beim Start nach veralteter Datei suchen</string>
+    <string name="titleDropboxUploadonExit">Beim Verlassen hochladen</string>
+    <string name="summaryDropboxUploadonExit">Datei beim Schliessen hochladen</string>
+    <string name="titleDropboxAutoSync">Auto-Sync</string>
+    <string name="summaryDropboxAutoSync">Datei periodisch auf Veränderungen prüfen</string>
+    <string name="titleSyncAll">Alle</string>
+    <string name="titleSyncDropbox">Dropbox</string>
+    <string name="titleSync">Sync</string>
+    <string name="lostDatabase">Fehler! Datenbank fehlt.</string>
+    <string name="Checking">Girokonto</string>
+    <string name="Savings">Sparkonto</string>
+    <string name="Cash">Bargeld</string>
+    <string name="CreditCard">Kreditkarte</string>
+    <string name="Loan">Kredit</string>
+    <string name="Investment">Investition</string>
+    <string name="MoneyMarket">Geldmarkt</string>
+    <string name="Asset">Anlage</string>
+    <string name="Liability">Verbindlichkeit</string>
+    <string name="Currency">Währung</string>
+    <string name="Income">Einnahme</string>
+    <string name="Expense">Ausgabe</string>
+    <string name="AssetLoan">Asset Loan</string>
+    <string name="Stock">Aktie</string>
+    <string name="Equity">Eigenkapital</string>
+    <string name="PayeeTabAddress">Adresse</string>
+    <string name="PayeeTabDefault">Standardkonto</string>
+    <string name="PayeeTabMatching">Zuordnung</string>
+    <string name="CategoriesTabGeneral">Allgemein</string>
+    <string name="CategoriesTabHierarchy">Hierarchie</string>
+    <string name="AccountTabInstitution">Institut</string>
+    <string name="AccountTabAccount">Konto</string>
+    <string name="AccountTabSubAccount">Unterkonto</string>
+    <string name="TabTransactions">Buchungen</string>
+    <string name="FileChooserLocation">Aktuelles Verzeichnis:</string>
+    <string name="FileChooserFolder">Ordner</string>
+    <string name="FileChooserParentDirectory">Übergeordnetes Verzeichnis</string>
+    <string name="FileChooserFile">Dateigröße:</string>
+    <string name="BackActionWarning">Änderungen werden verloren gehen</string>
+    <string name="titleBackActionWarning">Ihre Änderungen werden verloren gehen, wenn Sie die Aktion fortsetzen. Wollen Sie wirklich fortsetzen?</string>
+    <string name="titlePayeeName">Name: </string>
+    <string name="titleLoadMore">weitere laden</string>
+    <string name="buttonOneMonth">Einen Monat</string>
+    <string name="buttonOneYear">Ein Jahr</string>
+    <string name="buttonAll">Alles laden</string>    
+    <string name="titleReports">Berichte</string>
+    <string name="titleNavigation">Navigation</string>
+    <string name="titleMenuNav">Menü</string>
+    <string name="titleNavBar">Navigationsleiste</string>
+    <string-array name="Reports">
+        <item>@string/titleCashRequirements</item>
+    </string-array>    
+    <string name="buttonLog">Sende Logdatei zum Entwickler</string>
+    <string name="loadMoreRow">-- Weitere Buchungen --</string>
+    <string name="loadingMoreTransactions">Weitere Buchungen werden geladen...</string>
+    <string name="Jan">Jan</string>
+    <string name="Feb">Feb</string>
+    <string name="Mar">Mär</string>
+    <string name="Apr">Apr</string>
+    <string name="May">Mai</string>
+    <string name="Jun">Jun</string>
+    <string name="Jul">Jul</string>
+    <string name="Aug">Aug</string>
+    <string name="Sep">Sep</string>
+    <string name="Oct">Okt</string>
+    <string name="Nov">Nov</string>
+    <string name="Dec">Dez</string>
+    <string-array name="ShortMonthNames">
+        <item>@string/Jan</item>
+        <item>@string/Feb</item>
+        <item>@string/Mar</item>
+        <item>@string/Apr</item>
+        <item>@string/May</item>
+        <item>@string/Jun</item>
+        <item>@string/Jul</item>
+        <item>@string/Aug</item>
+        <item>@string/Sep</item>
+        <item>@string/Oct</item>
+        <item>@string/Nov</item>
+        <item>@string/Dec</item>
+    </string-array>
+</resources>

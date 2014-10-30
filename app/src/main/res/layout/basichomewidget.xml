@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="5dp"
+    android:background="#50FFFFFF"
+    android:orientation="vertical"
+    android:padding="5dp">
+  
+  <!-- Main Account to display -->
+  <LinearLayout
+  	    	android:orientation="horizontal"
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"> 
+  	<ImageView
+    	android:id="@+id/kmmd_icon"
+    	android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+		android:clickable="true"
+		android:contentDescription="@string/app_name"
+		android:src="@drawable/homewidget_icon" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_refresh"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@drawable/homewidget_refresh" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_addTransaction"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionAddTransaction"
+	    android:src="@drawable/transaction_add" >
+	</ImageView>
+	<ImageView 
+	    android:id="@+id/kmmd_widgetSettings"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:paddingRight="15dp"
+	    android:clickable="true"
+	    android:contentDescription="@string/descriptionRefresh"
+	    android:src="@drawable/homewidget_wrench" >	    
+	</ImageView>
+	<TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/hrAccountName"
+		android:textColor="@android:color/black" />		
+  	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/hrAccountBalance"
+		android:textColor="@android:color/black" />
+  </LinearLayout>
+  <!-- End Main Account to display -->
+  
+  <!-- First schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowOne"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"> 
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate1"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName1"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount1"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount1"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End first schedule row -->
+
+  <!-- Second schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowTwo"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate2"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName2"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount2"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount2"
+		android:textColor="@android:color/black" />
+  </LinearLayout>
+  <!-- End second schedule row -->
+  
+  <!-- third schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowThree"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"> 
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate3"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName3"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount3"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount3"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End third schedule row -->
+  
+  <!-- Fourth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowFour"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate4"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName4"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount4"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount4"
+		android:textColor="@android:color/black" />
+  </LinearLayout>
+  <!-- End fourth schedule row -->
+  
+  <!-- Fifth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowFive"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"> 
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate5"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName5"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount5"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount5"
+		android:textColor="@android:color/black" />
+  </LinearLayout>
+  <!-- End fifth schedule row -->
+  
+  <!-- Sixth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowSix"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate6"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName6"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount6"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount6"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End sixth schedule row -->
+
+  <!-- Seventh schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowSeven"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate7"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName7"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount7"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount7"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End seventh schedule row -->
+  
+  <!-- Eightth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowEight"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate8"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName8"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount8"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount8"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End eightth schedule row -->
+  
+  <!-- Nineth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowNine"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate9"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName9"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount9"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount9"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End nineth schedule row -->
+  
+  <!-- tenth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowTen"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate10"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName10"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount10"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount10"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End tenth schedule row -->
+
+  <!-- Eleventh schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowEleven"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate11"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName11"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount11"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount11"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End eleventh schedule row -->
+  
+  <!-- Twelveth schedule row -->
+  <LinearLayout
+        android:id="@+id/hwRowTwelve"
+        android:clickable="true"
+      	android:orientation="horizontal"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+  <TextView 
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:id="@+id/scheduleDate12"
+		android:textColor="@android:color/black" />		
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="left"
+		android:singleLine="true"
+		android:ellipsize="end"
+		android:id="@+id/scheduleName12"
+		android:textColor="@android:color/black" /> 
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/scheduleAmount12"
+		android:textColor="@android:color/black" />
+  <TextView
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:layout_weight="1"
+		android:gravity="right"
+		android:id="@+id/BalanceAmount12"
+		android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End twelveth schedule row -->
+</LinearLayout>

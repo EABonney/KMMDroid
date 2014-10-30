@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+    	android:id="@+id/itemNew"
+    	android:icon="@android:drawable/ic_menu_add"
+    	android:title="@string/titleNew">
+    </item>
+    <item 
+    	android:id="@+id/itemOpen"
+    	android:title="@string/menuOpen">
+    </item>
+    <item 
+    	android:id="@+id/itemRecent"
+    	android:title="@string/menuRecent">
+    </item>
+    <item 
+        android:id="@+id/Sync" 
+        android:title="@string/titleSync">
+        <menu>
+            <item 
+                android:id="@+id/syncDropbox" 
+                android:title="@string/titleSyncDropbox" />
+            <item 
+                android:id="@+id/syncAll" 
+                android:title="@string/titleSyncAll" />
+        </menu>
+    </item>
+</menu>

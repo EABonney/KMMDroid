@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "21.0.2"
+
+    defaultConfig {
+        applicationId "com.vanhlebarsoftware.kmmdroid"
+        minSdkVersion 14
+        targetSdkVersion 16
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_5
+            targetCompatibility JavaVersion.VERSION_1_5
+        }
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:18.0.0'
+    compile files('src/main/java/acra-4.4.0.jar')
+    compile files('src/main/java/dropbox-android-sdk-1.5.3.jar')
+    compile files('src/main/java/httpclient-4.0.3.jar')
+    compile files('src/main/java/json_simple-1.1.jar')
+}

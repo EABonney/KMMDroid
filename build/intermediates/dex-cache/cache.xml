@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/intermediates/pre-dexed/debug/acra-4.4.0-6aae259ad7114f71e31040818858dd7f56bbae42.jar"
+        jar="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/java/acra-4.4.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="d2613d074b20674c3d05d6d8615292b6172d1366"/>
+    <item
+        dex="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/intermediates/pre-dexed/debug/httpclient-4.0.3-c6acee8ac28b0e5826c5f7af844c3d5a29bfbfbb.jar"
+        jar="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/java/httpclient-4.0.3.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="eebf00fc3417031e9fa34afd85ccf11365ca2304"/>
+    <item
+        dex="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/intermediates/pre-dexed/debug/json_simple-1.1-56166510fc549251a8cf192d22a9e19904ea2986.jar"
+        jar="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/java/json_simple-1.1.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="5e303a03d04e6788dddfa3655272580ae0fc13bb"/>
+    <item
+        dex="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/intermediates/pre-dexed/debug/support-v4-18.0.0-89f5ceb148714a6ee11c4182e969fc37246cdb8b.jar"
+        jar="/mnt/Home-2/Apps/Android/extras/android/m2repository/com/android/support/support-v4/18.0.0/support-v4-18.0.0.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="44ec51e9d395a47aab135e5e1b556c0007442156"/>
+    <item
+        dex="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/intermediates/pre-dexed/debug/dropbox-android-sdk-1.5.3-738696d19b11346b95a58266ae42d5a61b871e23.jar"
+        jar="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/java/dropbox-android-sdk-1.5.3.jar"
+        jumboMode="false"
+        revision="21.0.2"
+        sha1="7d1e0dff41cadb166a52ad44cc03d4dd41b7044e"/>
+
+</pre-dex-items>

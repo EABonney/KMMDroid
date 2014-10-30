@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" 
+    android:background="#62B1F6" >
+   
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:id="@+id/schNotificationsRow">
+ 		<!-- First schedule row -->
+  		<TextView 
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:id="@+id/scheduleDate"
+			android:textColor="@android:color/black" />		
+	  	<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:gravity="left"
+			android:singleLine="true"
+			android:ellipsize="end"
+			android:id="@+id/scheduleName"
+			android:textColor="@android:color/black" /> 
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:gravity="right"
+			android:id="@+id/scheduleAmount"
+			android:textColor="@android:color/black" /> 
+  </LinearLayout>
+  <!-- End first schedule row -->
+</LinearLayout>

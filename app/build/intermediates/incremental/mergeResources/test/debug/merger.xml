@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="2" >
+
+    <dataSet config="main" >
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/androidTest/res" />
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/generated/res/rs/test/debug" />
+        <source path="/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/build/generated/res/generated/test/debug" />
+    </dataSet>
+
+</merger>
