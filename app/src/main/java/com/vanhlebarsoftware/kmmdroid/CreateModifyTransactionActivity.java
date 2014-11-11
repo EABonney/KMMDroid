@@ -113,7 +113,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         fromWidgetId = extras.getString("fromWidgetId");
         
         // Make sure that our KMMDApp is pointing to the correct preference area, main app or from a specified widgetId.
-        if(fromWidgetId != null)
+        if(fromWidgetId != null && !fromWidgetId.equalsIgnoreCase("9999"))
         {
         	KMMDapp.updatePrefs(fromWidgetId);
         }
@@ -122,7 +122,10 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
         {
         	Log.d(TAG, "From homeWidget: " + String.valueOf(fromHomeWidget));
         	transaction = new Transaction(getBaseContext(), null, this.fromWidgetId);
-        	accountUsed = extras.getString("accountUsed");
+            if(fromWidgetId.equalsIgnoreCase("9999"))
+            	accountUsed = extras.getString("accountUsed");
+            else
+                accountUsed = KMMDapp.getWidgetAccountUsed();
         }
         else if( Action == ACTION_EDIT )
         	transaction = new Transaction(getBaseContext(), extras.getString("transId"), this.fromWidgetId); 
@@ -550,7 +553,7 @@ public class CreateModifyTransactionActivity extends FragmentActivity implements
 		// Date is stored MM-DD-YYYY
 		String[] date = this.transDate.getText().toString().split("-");
 		Calendar cal = Calendar.getInstance();
-		cal.set(Integer.valueOf(date[2]), Integer.valueOf(date[0]) - 1, Integer.valueOf(date[1]));
+		cal.set(Integer.valueOf(date[2]), (Integer.valueOf(date[0]) - 1), Integer.valueOf(date[1]));
 		
 		return cal;
 	}

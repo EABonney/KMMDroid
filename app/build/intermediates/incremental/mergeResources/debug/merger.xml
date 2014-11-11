@@ -429,18 +429,18 @@ true
                 </style>
 
                 <style
-                    name="ListFont"
-                    parent="@android:style/Widget.ListView" >
-                    <item name="android:textColor">
-@android:color/black
-                    </item>
-                </style>
-
-                <style
                     name="AlertDialogNoTitle"
                     parent="@style/DialogNoTitle" >
                     <item name="android:windowNoTitle">
 true
+                    </item>
+                </style>
+
+                <style
+                    name="ListFont"
+                    parent="@android:style/Widget.ListView" >
+                    <item name="android:textColor">
+@android:color/black
                     </item>
                 </style>
             </file>
@@ -461,10 +461,10 @@ true
                 </string>
                 <string name="titlePayeesAvailable" >Available payees:
                 </string>
+                <string name="HalfMonth" >Half-month
+                </string>
                 <string name="titleHomeWidgetError" >For performance reasons we currently only allow one instance of
 	    the KMyMoney for Droid home widget.
-                </string>
-                <string name="HalfMonth" >Half-month
                 </string>
                 <string name="homeConfigInstructions" >Please enter your preferences for this widget below.
                 </string>
@@ -476,9 +476,9 @@ true
                 </string>
                 <string name="titleSync" >Sync
                 </string>
-                <string name="titleAccountPreferred" >Preferred account
-                </string>
                 <string name="titleDropboxAutoSync" >Auto Sync
+                </string>
+                <string name="titleAccountPreferred" >Preferred account
                 </string>
                 <string name="titleInstitutionPhone" >Telephone/Fax: 
                 </string>
@@ -576,9 +576,9 @@ true
                 </string>
                 <string name="empty_widget_nopreferredaccounts" >No Preferred Accounts
                 </string>
-                <string name="buttonSetDate" >Set Date
-                </string>
                 <string name="doNothing" >Do nothing
+                </string>
+                <string name="buttonSetDate" >Set Date
                 </string>
                 <string name="OneHour" >1 hour
                 </string>
@@ -590,19 +590,19 @@ true
                 </string>
                 <string name="freq2Yearly" >Twice yearly
                 </string>
-                <string name="descriptionAddTransaction" >Add Transaction
-                </string>
                 <string name="BackActionWarning" >Changes will be lost
+                </string>
+                <string name="descriptionAddTransaction" >Add Transaction
                 </string>
                 <string name="titleUbuntuOne" >UbuntuOne
                 </string>
-                <string name="buttonChooseCategory" >Choose a category
-                </string>
-                <string name="titleCategoryNotes" >Notes: 
+                <string name="Stock" >Stock
                 </string>
                 <string name="summaryDisplayFrequency" >Number of weeks to display
                 </string>
-                <string name="Stock" >Stock
+                <string name="titleCategoryNotes" >Notes: 
+                </string>
+                <string name="buttonChooseCategory" >Choose a category
                 </string>
                 <string name="titleCreateModifyTransactions" >New Transaction
                 </string>
@@ -612,9 +612,9 @@ true
                 </string>
                 <string name="freqWeekly" >Weekly
                 </string>
-                <string name="itemSave" >Save
-                </string>
                 <string name="itemCancel" >Cancel
+                </string>
+                <string name="itemSave" >Save
                 </string>
                 <string name="titleCategoryHierarchy" >Category Hierarchy
                 </string>
@@ -736,9 +736,9 @@ Expense
                 </string>
                 <string name="titlePreferenceNotifications" >Notifications
                 </string>
-                <string name="titleInvestmentActivity" >Investments
-                </string>
                 <string name="titleSubAccount" >This account is a sub-account of:
+                </string>
+                <string name="titleInvestmentActivity" >Investments
                 </string>
                 <string name="titleReports" >Reports
                 </string>
@@ -753,6 +753,10 @@ Expense
                 <string name="crash_dialog_comment_prompt" >Please give us more information about what you where doing at the time of the crash:
                 </string>
                 <string name="titlesrAmount" >Amount
+                </string>
+                <string name="freqAny" >Any
+                </string>
+                <string name="CreditCard" >Credit Card
                 </string>
 
                 <string-array name="WeeksToDisplayValues" >
@@ -770,10 +774,6 @@ Expense
                     </item>
                 </string-array>
 
-                <string name="CreditCard" >Credit Card
-                </string>
-                <string name="freqAny" >Any
-                </string>
                 <string name="buttonEdit" >Edit
                 </string>
                 <string name="titleClose" >Close
@@ -784,11 +784,11 @@ Expense
                 </string>
                 <string name="Nov" >Nov
                 </string>
-                <string name="titleUpdateFrequency" >Update frequence
+                <string name="Day" >Day
                 </string>
                 <string name="titleAccountInstitution" >Institution
                 </string>
-                <string name="Day" >Day
+                <string name="titleUpdateFrequency" >Update frequence
                 </string>
                 <string name="titleLastUsedFile" >Last used file location.
                 </string>
@@ -804,25 +804,25 @@ Expense
                 </string>
                 <string name="BankTransfer" >Bank transfer
                 </string>
-                <string name="summaryLastUsedFile" >Location of the last used file
-                </string>
                 <string name="summaryScheduleNotifications" >Do you want to receive notifications of schedules due?
                 </string>
-                <string name="titleOpen" >Open
+                <string name="summaryLastUsedFile" >Location of the last used file
                 </string>
                 <string name="titleCreateAccountAccount" >Create Account
                 </string>
-                <string name="titleOpenDatabase" >Open a current KMyMoney database
-                </string>
-                <string name="titleScheduleAccount" >Account:
+                <string name="titleOpen" >Open
                 </string>
                 <string name="titleMenuNav" >Menu
                 </string>
-                <string name="splitTransaction" >- Split Transaction -
+                <string name="titleScheduleAccount" >Account:
+                </string>
+                <string name="titleOpenDatabase" >Open a current KMyMoney database
+                </string>
+                <string name="titlePayeeMatching" >Matching
                 </string>
                 <string name="titleMemo" >Memo: 
                 </string>
-                <string name="titlePayeeMatching" >Matching
+                <string name="splitTransaction" >- Split Transaction -
                 </string>
                 <string name="OneWeek" >One Week
                 </string>
@@ -832,13 +832,13 @@ Expense
                 </string>
                 <string name="AccountTabAccount" >Account
                 </string>
-                <string name="crash_dialog_ok_toast" >Thank you for helping make KMMDroid a better applicaition.
+                <string name="titlePreferenceTimeToRun" >Time to run
                 </string>
                 <string name="titleAccountInstructions2" >Enter the name of the account under which it is known within
 		KMyMoney. Select the type for the new account. Enter the date the account was opened and its
 		currency.
                 </string>
-                <string name="titlePreferenceTimeToRun" >Time to run
+                <string name="crash_dialog_ok_toast" >Thank you for helping make KMMDroid a better applicaition.
                 </string>
                 <string name="freqMonth" >Month
                 </string>
@@ -846,9 +846,9 @@ Expense
                 </string>
                 <string name="Sep" >Sep
                 </string>
-                <string name="titleButtonDelete" >Delete
-                </string>
                 <string name="error" >Error!
+                </string>
+                <string name="titleButtonDelete" >Delete
                 </string>
                 <string name="drawer_open" >Open navigation drawer
                 </string>
@@ -874,9 +874,9 @@ Expense
                 </string>
                 <string name="Currency" >Currency
                 </string>
-                <string name="AutoUpdate" >Upon KMyMoney modification
-                </string>
                 <string name="Mar" >Mar
+                </string>
+                <string name="AutoUpdate" >Upon KMyMoney modification
                 </string>
                 <string name="titleNewInstitution" >New Institution
                 </string>
@@ -931,9 +931,9 @@ Expense
                 </string>
                 <string name="titleSchedulePaymentInfo" >Payment info
                 </string>
-                <string name="payeeNoMatching" >No matching
-                </string>
                 <string name="freq3Months" >Every three months
+                </string>
+                <string name="payeeNoMatching" >No matching
                 </string>
                 <string name="titlePreferredAccounts" >Preferred Accounts
                 </string>
@@ -945,15 +945,15 @@ Expense
                 </string>
                 <string name="buttonNewInstitution" >New Institution
                 </string>
-                <string name="titleInstitutionPostalCode" >Postal Code: 
-                </string>
                 <string name="skip" >Skip schedule
+                </string>
+                <string name="titleInstitutionPostalCode" >Postal Code: 
                 </string>
                 <string name="descriptionRefresh" >Refresh
                 </string>
-                <string name="drawer_close" >Close navigation drawer
-                </string>
                 <string name="titleCheckSchedulesStartup" >Check schedules at start up
+                </string>
+                <string name="drawer_close" >Close navigation drawer
                 </string>
 
                 <string-array name="arrayAccountTypes" >
@@ -1508,9 +1508,9 @@ Withdrawal
                 </string>
                 <string name="pref_disable_acra" >Report crashes?
                 </string>
-                <string name="itemNumInstitutions" ># of Institutions: 
-                </string>
                 <string name="freqDaily" >Daily
+                </string>
+                <string name="itemNumInstitutions" ># of Institutions: 
                 </string>
                 <string name="splitsNotBalanced" >Your transaction is not balanced! If you would like to make the transaction amount equal your splits
 		total press "OK". Press "Cancel" to go back and edit your splits.
@@ -1519,9 +1519,9 @@ Withdrawal
                 </string>
                 <string name="titleInstitutions" >Institutions
                 </string>
-                <string name="summaryFrequency" >Choose an update frequency
-                </string>
                 <string name="titlePayeeTelephone" >Telephone: 
+                </string>
+                <string name="summaryFrequency" >Choose an update frequency
                 </string>
                 <string name="titleWifiOnly" >Use WiFi only
                 </string>
@@ -1595,9 +1595,9 @@ Withdrawal
                 </string>
                 <string name="createNewPayee" >Create a new payee
                 </string>
-                <string name="itemNumSplits" ># of Splits: 
-                </string>
                 <string name="homeWidgetError" >Error
+                </string>
+                <string name="itemNumSplits" ># of Splits: 
                 </string>
             </file>
             <file
@@ -1840,9 +1840,9 @@ Withdrawal
                 </string>
                 <string name="itemNumSecurities" >Anzahl der Wertpapiere: 
                 </string>
-                <string name="itemSave" >Speichern
-                </string>
                 <string name="titleUnassigned" >Nicht zugewiesen: 
+                </string>
+                <string name="itemSave" >Speichern
                 </string>
                 <string name="itemNumSplits" >Anzahl der Split-Buchungen: 
                 </string>
@@ -1850,21 +1850,21 @@ Withdrawal
                 </string>
                 <string name="Jan" >Jan
                 </string>
-                <string name="lostDatabase" >Fehler! Datenbank fehlt.
-                </string>
                 <string name="titleCategoryDate" >Datum: 
+                </string>
+                <string name="lostDatabase" >Fehler! Datenbank fehlt.
                 </string>
                 <string name="AccountTabAccount" >Konto
                 </string>
-                <string name="titleKMMDAlarmReceiver" >Alarm
-                </string>
                 <string name="homeConfigInstructions" >Bitte Widget mit den untenstehenden Optionen einrichten.
                 </string>
-                <string name="titleWelcome" >Willkommen
+                <string name="titleKMMDAlarmReceiver" >Alarm
+                </string>
+                <string name="None" >nicht aktualisieren
                 </string>
                 <string name="itemNumCurrencies" >Währungen: 
                 </string>
-                <string name="None" >nicht aktualisieren
+                <string name="titleWelcome" >Willkommen
                 </string>
                 <string name="summaryLastUsedFile" >Speicherort der zuletzt verwendeten Datei
                 </string>
@@ -1934,9 +1934,9 @@ Withdrawal
                 </string>
                 <string name="titleDropbox" >Dropbox
                 </string>
-                <string name="titleAccountOpenBalance" >Eröffnungssaldo
-                </string>
                 <string name="titleAccountPreferred" >Bevorzugtes Konto
+                </string>
+                <string name="titleAccountOpenBalance" >Eröffnungssaldo
                 </string>
                 <string name="accountNotSupported" >Zur Zeit werden diese Kontoarten von dieser App nicht unterstützt. Vielleicht werden sie 
 	  aber in Zukunft noch ergänzt. Wir entschuldigen uns für diese Einschränkung. Danke für Ihr Verständnis.
@@ -1946,8 +1946,6 @@ Withdrawal
                 <string name="titleAccountCurrency" >Währung
                 </string>
                 <string name="PayeeTabDefault" >Standardkonto
-                </string>
-                <string name="receive_home_update_notifications_permission_label" >Benachrichtigungen von Widget-Übersicht empfangen
                 </string>
 
                 <string-array name="WeeksToDisplay" >
@@ -1965,9 +1963,11 @@ Withdrawal
                     </item>
                 </string-array>
 
-                <string name="titleSyncAll" >Alle
+                <string name="receive_home_update_notifications_permission_label" >Benachrichtigungen von Widget-Übersicht empfangen
                 </string>
                 <string name="titlePreferenceNotifications" >Benachrichtigungen
+                </string>
+                <string name="titleSyncAll" >Alle
                 </string>
                 <string name="AccountTabInstitution" >Institut
                 </string>
@@ -1997,17 +1997,17 @@ Withdrawal
                 </string>
                 <string name="Apr" >Apr
                 </string>
-                <string name="DirectDeposit" >Lastschrifteinzug
-                </string>
                 <string name="titleSkipSchedule" >Wollen Sie diese geplante Buchung wirklich überspringen?
+                </string>
+                <string name="DirectDeposit" >Lastschrifteinzug
                 </string>
                 <string name="buttonSave" >Speichern
                 </string>
-                <string name="titleUbuntuOne" >UbuntuOne
+                <string name="titlePayeeToFrom" >Zahlen an: 
                 </string>
                 <string name="titleButtonEdit" >Bearbeiten
                 </string>
-                <string name="titlePayeeToFrom" >Zahlen an: 
+                <string name="titleUbuntuOne" >UbuntuOne
                 </string>
                 <string name="vtlabel_Memo" >Notiz: 
                 </string>
@@ -2015,11 +2015,11 @@ Withdrawal
                 </string>
                 <string name="titleScheduleNumTransactions" >Anzahl verbleibender Buchungen
                 </string>
+                <string name="titlePayeesAvailable" >Verfügbare Empfänger:
+                </string>
                 <string name="titleAccountInstructions" >Falls dieses Konto von einem Geldinstitut geführt wird wählen Sie bitte
 		das entsprechene Institut aus der Liste. Wenn das Institut noch nicht angelegt ist, so drücken Sie die Schaltfläche 
 		"Neues Geldinstitut". Andersfalls "Ohne Institut anlegen" anwählen. Darunter die Kontonummer angeben, die von der Bank vergeben wurde.
-                </string>
-                <string name="titlePayeesAvailable" >Verfügbare Empfänger:
                 </string>
                 <string name="titleCategoryOptions" >Optionen
                 </string>
@@ -2349,19 +2349,19 @@ Sparkonto
                 </string>
                 <string name="itemNumReports" >Berichte: 
                 </string>
-                <string name="BackActionWarning" >Änderungen werden verloren gehen
-                </string>
                 <string name="Checking" >Girokonto
+                </string>
+                <string name="BackActionWarning" >Änderungen werden verloren gehen
                 </string>
                 <string name="cleared" >Verrechnet
                 </string>
                 <string name="AccountTabSubAccount" >Unterkonto
                 </string>
-                <string name="FileChooserParentDirectory" >Übergeordnetes Verzeichnis
+                <string name="titleDate" >Datum: 
                 </string>
                 <string name="titleInstitutionCity" >Stadt: 
                 </string>
-                <string name="titleDate" >Datum: 
+                <string name="FileChooserParentDirectory" >Übergeordnetes Verzeichnis
                 </string>
                 <string name="itemNumInstitutions" >Anzahl der Geldinstitute: 
                 </string>
@@ -2411,15 +2411,17 @@ Sparkonto
                 </string>
                 <string name="doNothing" >Datum unverändert übernehmen
                 </string>
-                <string name="summaryCheckSchedulesStartup" >Geplante Buchungen beim Start prüfen und eintragen
-                </string>
                 <string name="itemFileCreated" >Angelegt: 
+                </string>
+                <string name="summaryCheckSchedulesStartup" >Geplante Buchungen beim Start prüfen und eintragen
                 </string>
                 <string name="titleCreateModifySchedule" >Neue geplante Buchung
                 </string>
+                <string name="titleFileChooser" >Datei wählen
+                </string>
                 <string name="titleCategoryHierarchy" >Hierarchie
                 </string>
-                <string name="titleFileChooser" >Datei wählen
+                <string name="titleGoogleDrive" >Google Drive
                 </string>
 
                 <string-array name="Reports" >
@@ -2428,13 +2430,11 @@ Sparkonto
                     </item>
                 </string-array>
 
-                <string name="titleGoogleDrive" >Google Drive
-                </string>
-                <string name="titlePreferencesAutoEnterScheduleStartup" >Geplante Buchungen autom. beim Start eintragen
+                <string name="titleOptions" >Optionen
                 </string>
                 <string name="buttonSplit" >Split-Buchung
                 </string>
-                <string name="titleOptions" >Optionen
+                <string name="titlePreferencesAutoEnterScheduleStartup" >Geplante Buchungen autom. beim Start eintragen
                 </string>
                 <string name="titleCategory" >Kategorie: 
                 </string>
@@ -2442,45 +2442,45 @@ Sparkonto
                 </string>
                 <string name="titleReports" >Berichte
                 </string>
-                <string name="titleOpeningInfo" >Eröffnungs-Informationen
-                </string>
                 <string name="titleMemo" >Notiz: 
+                </string>
+                <string name="titleOpeningInfo" >Eröffnungs-Informationen
                 </string>
                 <string name="titleTransactionAmount" >Buchungsbetrag: 
                 </string>
-                <string name="BankTransfer" >Überweisung
-                </string>
                 <string name="titleButtonCancel" >Abbrechen
                 </string>
-                <string name="titleScheduleWeekendOption" >Wenn die geplante Buchung nicht auf einen Bankarbeitstag fällt:
+                <string name="BankTransfer" >Überweisung
+                </string>
+                <string name="vtlabel_Splits" >Kategorien
                 </string>
                 <string name="titleInstitutionRoutingNumber" >Bankleitzahl: 
                 </string>
-                <string name="vtlabel_Splits" >Kategorien
+                <string name="titleScheduleWeekendOption" >Wenn die geplante Buchung nicht auf einen Bankarbeitstag fällt:
                 </string>
                 <string name="titleAccountType" >Konto-Typ
                 </string>
                 <string name="itemNumPayees" >Anzahl der Empfänger: 
                 </string>
-                <string name="changeDateBefore" >Datum auf den vorherigen Arbeitstag ändern
+                <string name="app_name" >KMyMoney für Android
                 </string>
                 <string name="titleScheduleAutoEnter" >Diese geplante Buchung bei Fälligkeit automatisch in das Kontenbuch eintragen
                 </string>
-                <string name="app_name" >KMyMoney für Android
+                <string name="changeDateBefore" >Datum auf den vorherigen Arbeitstag ändern
                 </string>
                 <string name="titleHomeWidgetConfiguration" >Widget Einrichtung
                 </string>
-                <string name="homeWidgetError" >Fehler
-                </string>
                 <string name="titleNewDatabase" >Neue Datenbank
                 </string>
-                <string name="loadMoreRow" >-- Weitere Buchungen --
+                <string name="homeWidgetError" >Fehler
                 </string>
                 <string name="titleDropboxStartupCheck" >Beim Starten prüfen
                 </string>
-                <string name="titleSyncDropbox" >Dropbox
+                <string name="loadMoreRow" >-- Weitere Buchungen --
                 </string>
                 <string name="categoryNotFound" >Kategorie nicht gefunden!
+                </string>
+                <string name="titleSyncDropbox" >Dropbox
                 </string>
                 <string name="OneWeek" >Eine Woche
                 </string>
@@ -2490,9 +2490,9 @@ Sparkonto
                 </string>
                 <string name="titleDropboxAutoSync" >Auto-Sync
                 </string>
-                <string name="titleInstitutionStreet" >Straße: 
-                </string>
                 <string name="titlePayeeTelephone" >Telefon: 
+                </string>
+                <string name="titleInstitutionStreet" >Straße: 
                 </string>
                 <string name="itemNumTransactions" >Anzahl der Buchungen: 
                 </string>
@@ -2506,9 +2506,9 @@ Sparkonto
                 </string>
                 <string name="titlesrDescription" >Beschreibung
                 </string>
-                <string name="titleAccountInstitution" >Geldinstitut
-                </string>
                 <string name="titleDatabaseName" >Bitte Datenbanknamen eingeben
+                </string>
+                <string name="titleAccountInstitution" >Geldinstitut
                 </string>
                 <string name="close" >Datei schliessen
                 </string>
@@ -2530,13 +2530,9 @@ Sparkonto
                 </string>
                 <string name="PayeeTabAddress" >Adresse
                 </string>
-                <string name="summaryDropboxAutoSync" >Datei periodisch auf Veränderungen prüfen
-                </string>
                 <string name="homeConfigDefaultUpdateFreqTitle" >Aktualisierungsintervall des Widgets
                 </string>
-                <string name="PayeeTabMatching" >Zuordnung
-                </string>
-                <string name="titleCheckSchedulesStartup" >Geplante Buchungen beim Start überprüfen
+                <string name="summaryDropboxAutoSync" >Datei periodisch auf Veränderungen prüfen
                 </string>
 
                 <string-array name="scheduleFreqDescription" >
@@ -2560,13 +2556,19 @@ Sparkonto
                     </item>
                 </string-array>
 
-                <string name="titleAccountNumber" >Kontonummer
+                <string name="titleCheckSchedulesStartup" >Geplante Buchungen beim Start überprüfen
                 </string>
-                <string name="Aug" >Aug
+                <string name="PayeeTabMatching" >Zuordnung
+                </string>
+                <string name="titleAccountNumber" >Kontonummer
                 </string>
                 <string name="titlePayeeDefaultAccount" >Standardkonto
                 </string>
+                <string name="Aug" >Aug
+                </string>
                 <string name="reconciled" >Abgeglichen
+                </string>
+                <string name="splitTransaction" >- Split-Buchung -
                 </string>
 
                 <string-array name="arrayTypes" >
@@ -2578,17 +2580,15 @@ Ausgabe
                     </item>
                 </string-array>
 
-                <string name="splitTransaction" >- Split-Buchung -
+                <string name="titleScheduleNotifications" >Benachrichtigungen erhalten
                 </string>
                 <string name="titleDropboxSync" >Mit Dropbox abgleichen
                 </string>
-                <string name="titleScheduleNotifications" >Benachrichtigungen erhalten
-                </string>
                 <string name="AssetLoan" >Asset Loan
                 </string>
-                <string name="titleLastUsedFile" >Zuletzt verwendeter Dateiort.
-                </string>
                 <string name="itemVersion" >Version: 
+                </string>
+                <string name="titleLastUsedFile" >Zuletzt verwendeter Dateiort.
                 </string>
                 <string name="vtlabel_Status" >Status: 
                 </string>
@@ -2622,21 +2622,17 @@ Ausgabe
 
                 <string name="titleNavigation" >Navigation
                 </string>
-                <string name="Jun" >Jun
-                </string>
                 <string name="Stock" >Aktie
+                </string>
+                <string name="Jun" >Jun
                 </string>
                 <string name="Cash" >Bargeld
                 </string>
                 <string name="titleNumber" >Nummer: 
                 </string>
-                <string name="buttonEdit" >Bearbeiten
-                </string>
                 <string name="titleCreateAccountAccount" >Konto eröffnen
                 </string>
-                <string name="titleDropboxUploadonExit" >Beim Verlassen hochladen
-                </string>
-                <string name="FourHours" >4 Stunden
+                <string name="buttonEdit" >Bearbeiten
                 </string>
 
                 <string-array name="UpdateFrequency" >
@@ -2666,22 +2662,26 @@ Ausgabe
                     </item>
                 </string-array>
 
-                <string name="titleCategoryCurrency" >Währung: 
+                <string name="FourHours" >4 Stunden
                 </string>
-                <string name="Currency" >Währung
+                <string name="titleDropboxUploadonExit" >Beim Verlassen hochladen
+                </string>
+                <string name="titleCategoryCurrency" >Währung: 
                 </string>
                 <string name="summaryDropboxStartupCheck" >Beim Start nach veralteter Datei suchen
                 </string>
-                <string name="Jul" >Jul
+                <string name="Currency" >Währung
                 </string>
-                <string name="loadingMoreTransactions" >Weitere Buchungen werden geladen...
+                <string name="Jul" >Jul
                 </string>
                 <string name="titlePayeePostalCode" >Postleitzahl: 
                 </string>
-                <string name="titlePayeeNotes" >Notizen: 
+                <string name="loadingMoreTransactions" >Weitere Buchungen werden geladen...
                 </string>
                 <string name="titleAccountInstructions2" >Bitte den Namen des Kontos eingeben, wie er von KMyMoney erwartet wird. Des Weiteren den Konto-Typ sowie 
 	  Währung und Eröffnungsdatum eingeben.
+                </string>
+                <string name="titlePayeeNotes" >Notizen: 
                 </string>
                 <string name="MoneyMarket" >Geldmarkt
                 </string>
@@ -2720,48 +2720,48 @@ Ausgabe
                 </string>
                 <string name="titleCategoryType" >Typ: 
                 </string>
-                <string name="Once" >einmalig
-                </string>
                 <string name="splitsNotBalanced" >Ihre Split-Buchung ist nicht ausgeglichen! Um den Gesamtbetrag der Buchung an die Summe der 
 	  Split-Buchungen anzugleichen drücken Sie "OK". Mittels "Abbrechen" kann die Split-Buchung weiter editiert werden.
                 </string>
-                <string name="FourWeeks" >Vier Wochen
+                <string name="Once" >einmalig
                 </string>
-                <string name="Feb" >Feb
+                <string name="FourWeeks" >Vier Wochen
                 </string>
                 <string name="buttonOneYear" >Ein Jahr
                 </string>
-                <string name="titleHome" >Startseite
+                <string name="Feb" >Feb
                 </string>
                 <string name="titlesrAmount" >Betrag
+                </string>
+                <string name="titleHome" >Startseite
                 </string>
                 <string name="payeeNoMatching" >Keine Zuordnung
                 </string>
                 <string name="buttonSetDate" >Datum wählen...
                 </string>
-                <string name="buttonOneMonth" >Einen Monat
-                </string>
                 <string name="titleCreateModAccount" >Neues Konto eröffnen
+                </string>
+                <string name="buttonOneMonth" >Einen Monat
                 </string>
                 <string name="titlePayeeDefaultIncome" >Einnahme
                 </string>
-                <string name="titleLedger" >Kontenbuch
-                </string>
                 <string name="titleAccountSubAccount" >Unterkonto von
                 </string>
-                <string name="buttonLog" >Sende Logdatei zum Entwickler
+                <string name="titleLedger" >Kontenbuch
                 </string>
                 <string name="titleInstitutionPostalCode" >Postleitzahl: 
                 </string>
-                <string name="titlePastDue" >Überfällig
+                <string name="buttonLog" >Sende Logdatei zum Entwickler
                 </string>
-                <string name="itemCancel" >Abbrechen
+                <string name="titlePastDue" >Überfällig
                 </string>
                 <string name="vtlabel_Description" >Beschreibung:
                 </string>
-                <string name="titleDisplayFrequency" >Buchungsvorschau
+                <string name="itemCancel" >Abbrechen
                 </string>
                 <string name="summaryDisplayFrequency" >Anzahl der darzustellenden Wochen
+                </string>
+                <string name="titleDisplayFrequency" >Buchungsvorschau
                 </string>
                 <string name="titleStatus" >Status: 
                 </string>
@@ -2775,9 +2775,9 @@ Ausgabe
                 </string>
                 <string name="titleAccountIBAN" >IBAN
                 </string>
-                <string name="Equity" >Eigenkapital
-                </string>
                 <string name="FifteenMinutes" >15 Minuten
+                </string>
+                <string name="Equity" >Eigenkapital
                 </string>
                 <string name="unableToDelete" >Konnte Eintrag aus folgendem Grund nicht löschen: 
                 </string>

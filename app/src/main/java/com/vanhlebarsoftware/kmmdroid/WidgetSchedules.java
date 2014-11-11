@@ -18,6 +18,7 @@ public class WidgetSchedules extends AppWidgetProvider
 	public static final String DATA_CHANGED = "com.vanhlebarsoftware.kmmdroid.DATA_CHANGED";
 	public static final String RECEIVE_HOME_UPDATE_NOTIFICATIONS = "com.vanhlebarsoftware.kmmdroid.RECEIVE_HOME_UPDATE_NOTIFICATIONS";
 	private static final String URI_SCHEME = "com.vanhlebarsoftware.kmmdroid";
+    private static final int ACTION_NEW = 1;
 	private static final int ACTION_ENTER_SCHEDULE = 3;
 
 	/* (non-Javadoc)
@@ -86,6 +87,16 @@ public class WidgetSchedules extends AppWidgetProvider
 			intent.setAction(action);
 			pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 			views.setOnClickPendingIntent(R.id.kmmd_widgetSettings, pendingIntent);
+
+            // New transaction icon
+            intent = new Intent(context, CreateModifyTransactionActivity.class);
+            intent.putExtra("widgetId", String.valueOf(appWidgetId));
+            intent.putExtra("Action", ACTION_NEW);
+            intent.putExtra("fromWidgetId", String.valueOf(appWidgetId));
+            action = "com.vanhlebarsoftware.kmmdrod.NewTransaction" + "#" + String.valueOf(appWidgetId);
+            intent.setAction(action);
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            views.setOnClickPendingIntent(R.id.kmmd_addTransaction, pendingIntent);
 			
 			// Notify the App Widget Manager to update the widget using the modified remote view.
 			appWidgetManager.updateAppWidget(appWidgetId, views);

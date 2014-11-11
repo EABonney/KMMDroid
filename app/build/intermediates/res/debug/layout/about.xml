@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
+
 	<fragment
-        android:name="com.vanhlebarsoftware.kmmdroid.AboutFragment" 
+        android:name="com.vanhlebarsoftware.kmmdroid.AboutFragment"
         android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:gravity="center_vertical"
-    	android:id="@+id/aboutFragment"	    
-	/>
+    	android:id="@+id/aboutFragment"
+        tools:layout="@layout/about_row" />
 </LinearLayout>
 <!-- From: file:/mnt/Home-2/Development/AndroidStudioProjects/KMMDroid/app/src/main/res/layout/about.xml -->

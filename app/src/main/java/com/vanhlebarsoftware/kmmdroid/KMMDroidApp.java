@@ -51,6 +51,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public SharedPreferences prefs;
 	SQLiteDatabase db;
 	private String fullPath = null;
+    private String widgetAcctUsed = null;
 	private boolean dbOpen = false;
 	private boolean serviceRunning = false;
 	private boolean autoUpdate = true;
@@ -185,6 +186,11 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	{
 		return this.fullPath;
 	}
+
+    public String getWidgetAccountUsed()
+    {
+        return this.widgetAcctUsed;
+    }
 	
 	public boolean isDbOpen()
 	{
@@ -209,6 +215,7 @@ public class KMMDroidApp extends Application implements OnSharedPreferenceChange
 	public void updatePrefs(String widgetId)
 	{
 		this.fullPath = this.prefs.getString("widgetDatabasePath" + widgetId, null);
+        this.widgetAcctUsed = this.prefs.getString("accountUsed" + widgetId, null);
 		String update = this.prefs.getString("updateFrequency" + widgetId, null);
 		if(update.equals("-1"))
 			this.autoUpdate = true;

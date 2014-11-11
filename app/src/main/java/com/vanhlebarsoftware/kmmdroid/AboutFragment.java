@@ -3,21 +3,22 @@ package com.vanhlebarsoftware.kmmdroid;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Loader;
+//import android.app.Fragment;
+//import android.app.LoaderManager;
+//import android.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorAdapter;
+//import android.widget.SimpleCursorAdapter;
 import android.content.*;
-//import android.support.v4.app.FragmentActivity;
-//import android.support.v4.app.LoaderManager;
-//import android.support.v4.content.Loader;
-//import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.widget.TextView;
-//import android.support.v4.content.*;
+import android.support.v4.content.*;
 import android.net.*;
 import android.widget.*;
 import android.view.Window;
@@ -44,6 +45,7 @@ public class AboutFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+        Log.d(TAG, "Indside onCreateView()");
         View view = inflater.inflate(R.layout.about_fragment, container, false);
 
         // Get our views
@@ -78,6 +80,7 @@ public class AboutFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
+        Log.d(TAG, "Inside onActivityCreated()");
         super.onActivityCreated(savedInstanceState);
 
         // Prepare the loader.  Either re-connect with an existing one,

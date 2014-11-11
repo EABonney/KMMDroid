@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -208,7 +210,10 @@ public class ViewTransactionActivity extends FragmentActivity
 							Intent intent = new Intent(KMMDService.DATA_CHANGED);
 							sendBroadcast(intent, KMMDService.RECEIVE_HOME_UPDATE_NOTIFICATIONS);
 						}
-						
+
+                        // Send off our message locally to update the ledger views and homescreen.
+                        sendTransChangedMsg();
+
 						//Mark file as dirty
 						KMMDapp.markFileIsDirty(true, "9999");
 						finish();
@@ -269,4 +274,17 @@ public class ViewTransactionActivity extends FragmentActivity
 		cursor.close();
 		return splits;
 	}
+
+    private void sendTransChangedMsg()
+    {
+        Log.d(TAG, "Sending Transactions-Change event.");
+        Intent category = new Intent(TransactionsLoader.TRANSCHANGED);
+        Intent home = new Intent(HomeLoader.HOMECHANGED);
+
+        // Notify our Transactions to update.
+        LocalBroadcastManager.getInstance(this).sendBroadcast(category);
+
+        // Notify our Home screen to update.
+        LocalBroadcastManager.getInstance(this).sendBroadcast(home);
+    }
 }
